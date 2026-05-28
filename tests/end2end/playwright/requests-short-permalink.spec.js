@@ -6,7 +6,7 @@ test.describe('Read short link permalink @requests @read', () => {
     test('Read short link permalink', async({ request }) => {
         let params = new URLSearchParams({
             o:'g',
-            id:'h47yokjwuJ4o',
+            id:'18cpdxABubeZ',
             repository: 'testsrepository',
             project: 'short_link_permalink',
         });
@@ -21,11 +21,12 @@ test.describe('Read short link permalink @requests @read', () => {
         expect(body.plink).toHaveProperty('layers', ["single_wms_lines","single_wms_baselayer"]);
         expect(body.plink).toHaveProperty('opacities', [1, 1]);
         expect(body.plink).toHaveProperty('styles', ["default", "default"]);
+        expect(body.plink).toHaveProperty('symbology', ['','']);
     })
 
     test('Error: missing operation parameter', async({ request }) => {
         let params = new URLSearchParams({
-            id:'h47yokjwuJ4o',
+            id:'18cpdxABubeZ',
             repository: 'testsrepository',
             project: 'short_link_permalink',
         });
@@ -39,7 +40,7 @@ test.describe('Read short link permalink @requests @read', () => {
     test('Error: missing repository parameter', async({ request }) => {
         let params = new URLSearchParams({
             o:'g',
-            id:'h47yokjwuJ4o',
+            id:'18cpdxABubeZ',
             project: 'short_link_permalink'
         });
 
@@ -52,7 +53,7 @@ test.describe('Read short link permalink @requests @read', () => {
     test('Error: missing project parameter', async({ request }) => {
         let params = new URLSearchParams({
             o:'g',
-            id:'h47yokjwuJ4o',
+            id:'18cpdxABubeZ',
             repository: 'testsrepository'
         });
 
@@ -78,7 +79,7 @@ test.describe('Read short link permalink @requests @read', () => {
     test('Error: invalid repository parameter', async({ request }) => {
         let params = new URLSearchParams({
             o:'g',
-            id:'h47yokjwuJ4o',
+            id:'18cpdxABubeZ',
             repository: 'testsrepositoryXXX',
             project: 'short_link_permalink'
         });
@@ -94,7 +95,7 @@ test.describe('Read short link permalink @requests @read', () => {
     test('Error: invalid project parameter', async({ request }) => {
         let params = new URLSearchParams({
             o:'g',
-            id:'h47yokjwuJ4o',
+            id:'18cpdxABubeZ',
             repository: 'testsrepository',
             project: 'short_link_permalinkXXX'
         });
@@ -139,14 +140,39 @@ test.describe('Add short link permalink @requests @write', () => {
                     bbox:["3.764613","43.570735","3.989626","43.675979"],
                     layers:["single_wms_points","single_wms_lines","single_wms_baselayer"],
                     styles:["classified","default","default"],
-                    opacities:[1,1,1]
+                    opacities:[1,1,1],
+                    symbology: ['','','']
                 }
             }
         });
 
         const body = await checkJson(response);
-        expect(body).toHaveProperty('permalink', 'L3xLkXFxD3ZB');
+        expect(body).toHaveProperty('permalink', '7ZqbMKgf8BHE');
     });
+
+    /*test('to remove', async ({request}) => {
+        let params = new URLSearchParams({
+            o:'add',
+            repository: 'testsrepository',
+            project: 'short_link_permalink',
+        });
+
+        let url = `/index.php/lizmap/permalink?${params}`;
+        let response = await request.post(url, {
+            data: {
+                permalink: {
+                    bbox:["3.772082","43.547726","3.997095","43.652970"],
+                    layers:["single_wms_lines","single_wms_baselayer"],
+                    styles:["default","default"],
+                    opacities:[1,1],
+                    symbology: ['','']
+                }
+            }
+        });
+
+        const body = await checkJson(response);
+        expect(body).toHaveProperty('permalink', '7ZqbMKgf8BHE');
+    })*/
 
     test('Add short link permalink, only bbox', async({ request }) => {
         // Add a short link permalink
@@ -163,13 +189,14 @@ test.describe('Add short link permalink @requests @write', () => {
                     bbox:["3.764613","43.570735","3.989626","43.675979"],
                     layers:[],
                     styles:[],
-                    opacities:[]
+                    opacities:[],
+                    symbology:[]
                 }
             }
         });
 
         const body = await checkJson(response);
-        expect(body).toHaveProperty('permalink', 'jj9JZG3rqVlY');
+        expect(body).toHaveProperty('permalink', 'odWd3JBHQFde');
     });
 
     test('Error: missing operation parameter', async({ request }) => {
@@ -185,7 +212,8 @@ test.describe('Add short link permalink @requests @write', () => {
                     bbox:["3.764613","43.570735","3.989626","43.675979"],
                     layers:["single_wms_points","single_wms_lines","single_wms_baselayer"],
                     styles:["classified","default","default"],
-                    opacities:[1,1,1]
+                    opacities:[1,1,1],
+                    symbology:['','','']
                 }
             }
         });
@@ -207,7 +235,8 @@ test.describe('Add short link permalink @requests @write', () => {
                     bbox:["3.764613","43.570735","3.989626","43.675979"],
                     layers:["single_wms_points","single_wms_lines","single_wms_baselayer"],
                     styles:["classified","default","default"],
-                    opacities:[1,1,1]
+                    opacities:[1,1,1],
+                    symbology: ['','','']
                 }
             }
         });
@@ -229,7 +258,8 @@ test.describe('Add short link permalink @requests @write', () => {
                     bbox:["3.764613","43.570735","3.989626","43.675979"],
                     layers:["single_wms_points","single_wms_lines","single_wms_baselayer"],
                     styles:["classified","default","default"],
-                    opacities:[1,1,1]
+                    opacities:[1,1,1],
+                    symbology: ['','','']
                 }
             }
         });
@@ -252,7 +282,8 @@ test.describe('Add short link permalink @requests @write', () => {
                     bbox:["3.764613","43.570735","3.989626","43.675979"],
                     layers:["single_wms_points","single_wms_lines","single_wms_baselayer"],
                     styles:["classified","default","default"],
-                    opacities:[1,1,1]
+                    opacities:[1,1,1],
+                    symbology: ['','','']
                 }
             }
         });
@@ -275,7 +306,8 @@ test.describe('Add short link permalink @requests @write', () => {
                     bbox:["3.764613","43.570735","3.989626","43.675979"],
                     layers:["single_wms_points","single_wms_lines","single_wms_baselayer"],
                     styles:["classified","default","default"],
-                    opacities:[1,1,1]
+                    opacities:[1,1,1],
+                    symbology: ['','','']
                 }
             }
         });
@@ -297,7 +329,8 @@ test.describe('Add short link permalink @requests @write', () => {
                 permalink: {
                     layers:["single_wms_points","single_wms_lines","single_wms_baselayer"],
                     styles:["classified","default","default"],
-                    opacities:[1,1,1]
+                    opacities:[1,1,1],
+                    symbology: ['','','']
                 }
             }
         });
@@ -320,7 +353,8 @@ test.describe('Add short link permalink @requests @write', () => {
                     bbox:["3.764613","43.570735","3.989626"],
                     layers:["single_wms_points","single_wms_lines","single_wms_baselayer"],
                     styles:["classified","default","default"],
-                    opacities:[1,1,1]
+                    opacities:[1,1,1],
+                    symbology: ['','','']
                 }
             }
         });
@@ -342,7 +376,8 @@ test.describe('Add short link permalink @requests @write', () => {
                 permalink: {
                     bbox:["3.764613","43.570735","3.989626","43.675979"],
                     layers:["single_wms_points","single_wms_lines","single_wms_baselayer"],
-                    opacities:[1,1,1]
+                    opacities:[1,1,1],
+                    symbology: ['','','']
                 }
             }
         });
@@ -365,12 +400,85 @@ test.describe('Add short link permalink @requests @write', () => {
                     bbox:["3.764613","43.570735","3.989626","43.675979"],
                     layers:["single_wms_points","single_wms_lines","single_wms_baselayer"],
                     styles:[''],
-                    opacities:[1,1,1]
+                    opacities:[1,1,1],
+                    symbology: ['','','']
                 }
             }
         });
 
         const body = await checkJson(response);
         expect(body).toHaveProperty('error', ['Wrong parameters given']);
+    });
+
+    test('Error: malformed symbology parameter, no keys', async({ request }) => {
+        let params = new URLSearchParams({
+            o: 'add',
+            repository: 'testsrepository',
+            project: 'short_link_permalink',
+        });
+
+        let url = `/index.php/lizmap/permalink?${params}`;
+        let response = await request.post(url, {
+            data: {
+                permalink: {
+                    bbox:["3.764613","43.570735","3.989626","43.675979"],
+                    layers:["single_wms_points","single_wms_lines","single_wms_baselayer"],
+                    styles:['default','deafult','default'],
+                    opacities:[1,1,1],
+                    symbology: [{},'','']
+                }
+            }
+        });
+
+        const body = await checkJson(response);
+        expect(body).toHaveProperty('error', ['Wrong parameters given']);
+    });
+
+    test('Error: malformed symbology parameter, invalid keys', async({ request }) => {
+        let params = new URLSearchParams({
+            o: 'add',
+            repository: 'testsrepository',
+            project: 'short_link_permalink',
+        });
+
+        let url = `/index.php/lizmap/permalink?${params}`;
+        let response = await request.post(url, {
+            data: {
+                permalink: {
+                    bbox:["3.764613","43.570735","3.989626","43.675979"],
+                    layers:["single_wms_points","single_wms_lines","single_wms_baselayer"],
+                    styles:['default','deafult','default'],
+                    opacities:[1,1,1],
+                    symbology: [{LEGEND_ON:"single_wms_points:1,3"},'','']
+                }
+            }
+        });
+
+        const body = await checkJson(response);
+        expect(body).toHaveProperty('error', ['Wrong parameters given']);
+    });
+
+    test('Insert permalink with correct symbology parameter, invalid keys', async({ request }) => {
+        let params = new URLSearchParams({
+            o: 'add',
+            repository: 'testsrepository',
+            project: 'short_link_permalink',
+        });
+
+        let url = `/index.php/lizmap/permalink?${params}`;
+        let response = await request.post(url, {
+            data: {
+                permalink: {
+                    bbox:["3.764613","43.570735","3.989626","43.675979"],
+                    layers:["single_wms_points","single_wms_lines","single_wms_baselayer"],
+                    styles:['default','deafult','default'],
+                    opacities:[1,1,1],
+                    symbology: [{LEGEND_ON:"single_wms_points:1,3", LEGEND_OFF:"single_wms_points:0,2"},'','']
+                }
+            }
+        });
+
+        const body = await checkJson(response);
+        expect(body).toHaveProperty('permalink', 'lPLl5gwgpEZW');
     });
 });

@@ -670,6 +670,18 @@ export class MapLayerState extends MapItemState {
     }
 
     /**
+     * Symbology initialization parameters.
+     * @type {object}
+     */
+    get symbologyInitParameters(){
+        if (!this._layerItemState.groupAsLayer) {
+            return this._layerItemState.symbologyInitParameters;
+        }
+
+        return {};
+    }
+
+    /**
      * Parameters for OGC WMS Request
      * @type {object}
      */
