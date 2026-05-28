@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.10.0-rc.1 - 2026-05-28
+
 ### Funders
 
 * **[Klein und Leber GbR](https://www.gisgeometer.de/)** with @meyerlor
