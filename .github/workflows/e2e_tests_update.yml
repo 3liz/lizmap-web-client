@@ -111,10 +111,9 @@ jobs:
         run: |
           npm ci
 
-      - name: Reset rights before checkout
-        working-directory: ./
+      - name: Make stop
         run: |
-          chmod 664 -R tests/qgis-projects/
+          make stop
 
       # checkout
       - name: Checkout
