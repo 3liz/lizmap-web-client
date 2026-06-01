@@ -73,13 +73,6 @@ jobs:
           git status
           git diff qgis-projects/tests/
 
-      - name: Install QGIS server plugins
-        run: make build-plugins
-
-      - name: Show QGIS server environment
-        run: |
-          make show-qgis-server-versions
-
       - name: Run docker compose
         run: |
           make env
@@ -114,6 +107,13 @@ jobs:
       # checkout
       - name: Checkout
         uses: actions/checkout@v6
+
+      - name: Install QGIS server plugins
+        run: make build-plugins
+
+      - name: Show QGIS server environment
+        run: |
+          make show-qgis-server-versions
 
       - name: Make install
         run: |
