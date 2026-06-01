@@ -114,6 +114,8 @@ jobs:
       # checkout
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          clean: false
 
       - name: Make install
         run: |
