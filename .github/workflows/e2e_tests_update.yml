@@ -46,7 +46,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
         with:
-          ref: '3.9.18'
+          ref: '3.9.6'
 
       - name: Make environment and show Lizmap versions
         env:
