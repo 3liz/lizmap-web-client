@@ -16,7 +16,7 @@ env:
 
 jobs:
   end2end:
-    name: "E2E Update QGIS ${{ env.QGIS_SERVER_VERSION }} PG ${{ env.PG_POSTGIS_VERSION }} PHP ${{ env.PHP_VERSION }}"
+    # name: "E2E Update QGIS ${{ env.QGIS_SERVER_VERSION }} PG ${{ env.PG_POSTGIS_VERSION }} PHP ${{ env.PHP_VERSION }}"
     permissions:
       issues: write
       pull-requests: write
