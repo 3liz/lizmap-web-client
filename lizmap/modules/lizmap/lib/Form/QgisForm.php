@@ -717,6 +717,52 @@ class QgisForm implements QgisFormControlsInterface
     }
 
     /**
+     * Re-evaluate dynamic default expressions server-side and inject them before save.
+     *
+     * Read-only controls are skipped by jForms::initFromRequest(), so a value
+     * filled client-side is dropped. Recompute it here, like QGIS at commit time.
+     * Fill policy: insert fills empty fields only; update only applyOnUpdate ones.
+     *
+     * Must run after jForms::initFromRequest().
+     *
+     * @return string[] field references whose value was set (to persist on update)
+     */
+    public function applyDynamicDefaultsBeforeSave()
+    {
+        if (!$this->dbFieldsInfo || !$this->dynamicDefaultExpressions) {
+            return array();
+        }
+
+        $form = $this->form;
+        // Non-empty featureId means update, like saveToDb().
+        $isUpdate = (bool) $this->featureId;
+        $evaluated = $this->evaluateDefaultExpressions($this->dynamicDefaultExpressions);
+
+        $applied = array();
+        foreach ($evaluated as $ref => $value) {
+            $applyOnUpdate = isset($this->defaultApplyOnUpdateMap[$ref])
+                && $this->defaultApplyOnUpdateMap[$ref] === true;
+
+            if ($isUpdate) {
+                if (!$applyOnUpdate) {
+                    continue;
+                }
+            } else {
+                // Don't overwrite a value the user entered.
+                $cur = $form->getData($ref);
+                if (!($cur === '' || $cur === array())) {
+                    continue;
+                }
+            }
+
+            $form->setData($ref, $value);
+            $applied[] = $ref;
+        }
+
+        return $applied;
+    }
+
+    /**
      * Set the form controls data from the database value.
      *
      * @param mixed $feature

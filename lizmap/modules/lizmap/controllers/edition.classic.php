@@ -830,13 +830,25 @@ class editionCtrl extends jController
         // And get returned primary key values
         $pkvals = null;
         if ($check) {
+            // Recompute dynamic defaults server-side: read-only controls don't
+            // receive their value from the request, so persist it here.
+            $appliedDefaults = $qgisForm->applyDynamicDefaultsBeforeSave();
+
             // Check if featureId is null to get all controls or only modified controls
             if ($this->featureId == null) {
                 // Save to database with all controls
                 $pkvals = $qgisForm->saveToDb($feature, $form->getControls());
             } else {
                 // Save to database with modified controls
-                $pkvals = $qgisForm->saveToDb($feature, $form->getModifiedControls());
+                $modifiedControls = $form->getModifiedControls();
+                // Persist applied defaults even if the user didn't touch them.
+                foreach ($appliedDefaults as $appliedRef) {
+                    $appliedCtrl = $form->getControl($appliedRef);
+                    if ($appliedCtrl !== null) {
+                        $modifiedControls[$appliedRef] = $appliedCtrl;
+                    }
+                }
+                $pkvals = $qgisForm->saveToDb($feature, $modifiedControls);
             }
         }
 
