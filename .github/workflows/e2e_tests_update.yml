@@ -1,4 +1,4 @@
-name: "🎳 End2end"
+name: "🎳 End2end with update"
 on:
   pull_request:
     branches:
