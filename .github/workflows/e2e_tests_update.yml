@@ -46,7 +46,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
         with:
-          ref: '3.9.0'
+          ref: '3.9.18'
 
       - name: Make environment and show Lizmap versions
         env:
@@ -83,6 +83,13 @@ jobs:
           docker compose up -d --quiet-pull
           docker compose ps
 
+      - name: Install QGIS server plugins
+        run: make build-plugins
+
+      - name: Show QGIS server environment
+        run: |
+          make show-qgis-server-versions
+
       - name: Load SQL data
         run: |
           cd qgis-projects/tests
@@ -107,13 +114,6 @@ jobs:
       # checkout
       - name: Checkout
         uses: actions/checkout@v6
-
-      - name: Install QGIS server plugins
-        run: make build-plugins
-
-      - name: Show QGIS server environment
-        run: |
-          make show-qgis-server-versions
 
       - name: Make install
         run: |
