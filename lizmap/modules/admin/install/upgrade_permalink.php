@@ -3,9 +3,10 @@
 class adminModuleUpgrader_permalink extends jInstallerModule
 {
     public $targetVersions = array(
-        '3.10',
+        '3.10.0-rc.1',
+        '3.10.0',
     );
-    public $date = '2026-05-13'; // original:'2023-01-06'
+    public $date = '2026-05-13';
 
     public function install()
     {
