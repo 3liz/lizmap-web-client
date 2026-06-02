@@ -109,12 +109,6 @@ jobs:
           cache: 'npm'
           cache-dependency-path: ${{ github.workspace }}/package.json
 
-      - name: Install dependencies
-        working-directory: ./
-        run: |
-          rm -rf node_modules/*
-          npm ci
-
       # checkout HEAD
       - name: Checkout HEAD
         uses: actions/checkout@v6
