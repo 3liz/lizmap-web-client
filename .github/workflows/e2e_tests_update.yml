@@ -112,6 +112,7 @@ jobs:
       - name: Install dependencies
         working-directory: ./
         run: |
+          rm -rf node_modules/*
           npm ci
 
       # checkout HEAD
@@ -158,6 +159,7 @@ jobs:
       - name: Npm run build
         working-directory: ./
         run: |
+          rm -rf node_modules/*
           npm ci
           npm run build
 
