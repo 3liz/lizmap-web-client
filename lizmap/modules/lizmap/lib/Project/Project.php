@@ -649,6 +649,20 @@ class Project
         return $this->cfg->getBooleanOption($name);
     }
 
+    /**
+     * Check if the Panoramax tool is enabled and correctly configured.
+     *
+     * The tool is enabled when the `panoramax` option is true and the
+     * `panoramaxLocation` option is one of the supported dock locations.
+     *
+     * @return bool true if the Panoramax tool must be displayed
+     */
+    public function hasPanoramaxEnabled()
+    {
+        return $this->getBooleanOption('panoramax')
+            && in_array($this->getOption('panoramaxLocation'), array('dock', 'bottom-dock', 'mini-dock', 'right-dock'), true);
+    }
+
     public function getLayers()
     {
         return $this->cfg->getLayers();
@@ -2358,6 +2372,15 @@ class Project
             );
         }
 
+        if ($this->hasPanoramaxEnabled() && $this->getOption('panoramaxLocation') === 'dock') {
+            $dockable[] = new \lizmapMapDockItem(
+                'panoramax',
+                'Panoramax',
+                '<lizmap-panoramax></lizmap-panoramax>',
+                11
+            );
+        }
+
         return $dockable;
     }
 
@@ -2544,6 +2567,15 @@ class Project
             }
         }
 
+        if ($this->hasPanoramaxEnabled() && $this->getOption('panoramaxLocation') === 'mini-dock') {
+            $dockable[] = new \lizmapMapDockItem(
+                'panoramax',
+                'Panoramax',
+                '<lizmap-panoramax></lizmap-panoramax>',
+                11
+            );
+        }
+
         return $dockable;
     }
 
@@ -2571,6 +2603,15 @@ class Project
             );
         }
 
+        if ($this->hasPanoramaxEnabled() && $this->getOption('panoramaxLocation') === 'bottom-dock') {
+            $dockable[] = new \lizmapMapDockItem(
+                'panoramax',
+                'Panoramax',
+                '<lizmap-panoramax></lizmap-panoramax>',
+                11
+            );
+        }
+
         return $dockable;
     }
 
@@ -2589,6 +2630,15 @@ class Project
                 'Popup',
                 '<div class="menu-content"><div class="lizmapPopupContent"><h4>'.$this->appContext->getLocale('view~dictionnary.popup.msg.start').'</h4></div></div>',
                 0
+            );
+        }
+
+        if ($this->hasPanoramaxEnabled() && $this->getOption('panoramaxLocation') === 'right-dock') {
+            $dockable[] = new \lizmapMapDockItem(
+                'panoramax',
+                'Panoramax',
+                '<lizmap-panoramax></lizmap-panoramax>',
+                11
             );
         }
 

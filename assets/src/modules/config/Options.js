@@ -43,6 +43,9 @@ const optionalProperties = {
     'exclude_basemaps_from_single_wms' : { type:'boolean', default: false },
     'group_popup_by_layer' : { type:'boolean', default: false },
     'short_link_permalink' : { type:'boolean', default: false },
+    'panoramax' : { type:'boolean', default: false },
+    'panoramaxLocation' : { type:'string', nullable: true, default: null },
+    'panoramaxUrl' : { type:'string', nullable: true, default: null },
 };
 
 /**
@@ -84,6 +87,9 @@ export class OptionsConfig  extends BaseObjectConfig {
      * @param {boolean}  [cfg.exclude_basemaps_from_single_wms]   - are basemaps excluded from single WMS request ?
      * @param {boolean}  [cfg.group_popup_by_layer]               - are popups grouped by layer ?
      * @param {boolean}  [cfg.short_link_permalink]               - is permalink managed via short link ?
+     * @param {boolean}  [cfg.panoramax]                          - is the Panoramax tool enabled ?
+     * @param {string}   [cfg.panoramaxLocation]                  - the Panoramax viewer location in the UI: dock, bottom-dock, right-dock, mini-dock
+     * @param {string}   [cfg.panoramaxUrl]                       - the Panoramax instance STAC API base URL
      */
     constructor(cfg) {
         if (!cfg || typeof cfg !== "object") {
@@ -197,6 +203,32 @@ export class OptionsConfig  extends BaseObjectConfig {
      */
     get datavizLocation() {
         return this._datavizLocation;
+    }
+
+    /**
+     * The Panoramax tool is enabled
+     * @type {boolean}
+     */
+    get panoramax() {
+        return this._panoramax;
+    }
+
+    /**
+     * The Panoramax viewer location in the User interface
+     * dock, bottom-dock, right-dock, mini-dock
+     * @type {string}
+     */
+    get panoramaxLocation() {
+        return this._panoramaxLocation;
+    }
+
+    /**
+     * The Panoramax instance STAC API base URL
+     * The MVT tiles are derived from it: `${panoramaxUrl}/map/{z}/{x}/{y}.mvt`
+     * @type {string}
+     */
+    get panoramaxUrl() {
+        return this._panoramaxUrl;
     }
 
     /**

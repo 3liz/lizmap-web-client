@@ -29,6 +29,7 @@ import Search from './Search.js';
 import Tooltip from './Tooltip.js';
 import LocateByLayer from './LocateByLayer.js';
 import GroupPopupByLayer from './GroupPopupByLayer.js';
+import Panoramax from './Panoramax.js';
 
 import WMSCapabilities from 'ol/format/WMSCapabilities.js';
 import WFSCapabilities from 'ol-wfs-capabilities';
@@ -190,6 +191,9 @@ export default class Lizmap {
                         this._lizmap3
                     );
                     this.groupPopupByLayers = new GroupPopupByLayer(this.initialConfig);
+                    if (this.initialConfig.options.panoramax) {
+                        this.panoramax = new Panoramax(this.map, this.initialConfig.options, this.lizmap3);
+                    }
                     /**
                      * Modules initialized.
                      * @event ModulesInitialized
