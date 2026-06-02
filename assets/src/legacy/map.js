@@ -2672,7 +2672,7 @@ window.lizMap = function() {
         // Create menu icon for activating dock
         var dockli = '';
         dockli+='<li class="'+dname+' nav-'+dtype+'">';
-        dockli+='   <a id="button-'+dname+'" data-bs-toggle="tooltip" data-bs-title="'+dlabel+'" data-placement="right" data-dockid="'+dname+'" href="#'+dname+'" data-container="#content">';
+        dockli+='   <a id="button-'+dname+'" data-bs-toggle="tooltip" data-bs-title="'+dlabel+'" data-placement="right" data-dockid="'+dname+'" href="#" data-container="#content">';
         dockli += '       <span class="icon"><i class="' + dicon + ' icon-white"></i></span><span class="menu-title">' + dname +'</span>';
         dockli+='   </a>';
         dockli+='</li>';
@@ -2685,7 +2685,9 @@ window.lizMap = function() {
         $('#mapmenu .nav-list > li.'+dname+' > a .icon >i ').css('margin-left', '4px');
 
         // Add tooltip
-        $('#mapmenu .nav-list > li.'+dname+' > a').tooltip();
+        new bootstrap.Tooltip(document.querySelector('#mapmenu .nav-list > li.'+dname+' > a'), {
+            trigger: 'hover'
+        });
 
         // Create dock tab content
         var docktab = '';
