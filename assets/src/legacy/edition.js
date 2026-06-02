@@ -919,7 +919,8 @@ var lizEdition = function() {
                 }
             });
 
-            $('#edition-draw').click(async function(){
+            $('#edition-draw').click(async function(ev){
+                ev.preventDefault();
                 // Do nothing if not enabled
                 if ( $(this).hasClass('disabled') )
                     return false;
