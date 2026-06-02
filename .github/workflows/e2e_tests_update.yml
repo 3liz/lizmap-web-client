@@ -80,7 +80,10 @@ jobs:
           echo "Building image"
           docker compose build --quiet
           echo "Starting docker stack - wait for healthy states"
-          docker compose up -d --quiet-pull
+          docker compose up pgsql -d --quiet-pull
+          docker compose up redis -d --quiet-pull
+          docker compose up map -d --quiet-pull
+          docker compose up lizmap -d --quiet-pull
           docker compose ps
 
       - name: Install QGIS server plugins
@@ -111,19 +114,33 @@ jobs:
         run: |
           npm ci
 
-      - name: Make stop
-        run: |
-          make stop
-
       # checkout
       - name: Checkout
         uses: actions/checkout@v6
         with:
           clean: false
 
-      - name: Make install
+      - name: Run docker compose
         run: |
-          make install
+          make env
+          docker compose version
+          echo "Building image"
+          docker compose build --quiet
+          echo "Starting docker stack - wait for healthy states"
+          docker compose up -d --quiet-pull
+          docker compose ps
+
+      - name: Install QGIS server plugins
+        run: make build-plugins
+
+      - name: Show QGIS server environment
+        run: |
+          make show-qgis-server-versions
+
+      - name: Load SQL data
+        run: |
+          cd qgis-projects/tests
+          ./load_sql.sh
 
       - name: Npm run build
         working-directory: ./
