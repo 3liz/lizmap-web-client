@@ -15,9 +15,15 @@ import Feature from 'ol/Feature.js';
 import Point from 'ol/geom/Point.js';
 import Style from 'ol/style/Style.js';
 import Icon from 'ol/style/Icon.js';
+import CircleStyle from 'ol/style/Circle.js';
+import Stroke from 'ol/style/Stroke.js';
+import Fill from 'ol/style/Fill.js';
 
 /** Default Panoramax instance used when `panoramaxUrl` is not set in the config */
 const DEFAULT_PANORAMAX_URL = 'https://panoramax.openstreetmap.fr/api';
+
+/** Panoramax brand color used for the coverage layer */
+const PNX_COLOR = '#e2007a';
 
 /**
  * Arrow icon pointing to the North (heading 0). Rotated clockwise to match the
@@ -25,7 +31,7 @@ const DEFAULT_PANORAMAX_URL = 'https://panoramax.openstreetmap.fr/api';
  */
 const ARROW_SVG = 'data:image/svg+xml,'
     + "%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' width='48' height='48'%3E"
-    + "%3Cpath d='M24 3 41 43 24 33 7 43Z' fill='%23e2007a' stroke='%23ffffff' stroke-width='2.5' stroke-linejoin='round'/%3E"
+    + "%3Cpath d='M24 3 41 43 24 33 7 43Z' fill='%231700e2' stroke='%23ffffff' stroke-width='2.5' stroke-linejoin='round'/%3E"
     + '%3C/svg%3E';
 
 /**
@@ -53,9 +59,30 @@ export default class Panoramax {
         this._lizmap3 = lizmap3;
         this._active = false;
 
+        // Date-range filter state (null = no filter).
+        // - sequences layer uses the `date` field ("YYYY-MM-DD")
+        // - pictures  layer uses the `ts`   field ("YYYY-MM-DDTHH:mm:ss")
+        this._filterStart = null;
+        this._filterEnd = null;
+        // `ts` includes time, so the max comparison uses end+1 day to include
+        // all pictures taken on the end day (mirrors Panoramax's own logic).
+        this._filterEndPlusOne = null;
+
         // STAC API base URL and the derived MVT tiles URL
         this._url = (options.panoramaxUrl || DEFAULT_PANORAMAX_URL).replace(/\/+$/, '');
         const tilesUrl = this._url + '/map/{z}/{x}/{y}.mvt';
+
+        // Cached styles for the coverage layer (created once, reused every frame).
+        this._pointStyle = new Style({
+            image: new CircleStyle({
+                radius: 4,
+                fill: new Fill({ color: PNX_COLOR }),
+                stroke: new Stroke({ color: '#ffffff', width: 1 }),
+            }),
+        });
+        this._lineStyle = new Style({
+            stroke: new Stroke({ color: PNX_COLOR, width: 3 }),
+        });
 
         // Panoramax coverage layer (MVT). The tiles are served in EPSG:3857 and
         // reprojected by OpenLayers to the current map view projection if needed.
@@ -65,7 +92,27 @@ export default class Panoramax {
                 format: new MVT(),
                 projection: 'EPSG:3857',
                 url: tilesUrl,
-            })
+            }),
+            style: (feature) => {
+                const isPoint = feature.getType() === 'Point' || feature.getType() === 'MultiPoint';
+                // Apply date filter when at least one bound is set.
+                if (this._filterStart || this._filterEnd) {
+                    // sequences → `date` ("YYYY-MM-DD"), pictures → `ts` ("YYYY-MM-DDTHH:mm:ss")
+                    const dateStr = isPoint ? feature.get('ts') : feature.get('date');
+                    if (dateStr) {
+                        if (this._filterStart && dateStr < this._filterStart) {
+                            return null;
+                        }
+                        if (this._filterEnd) {
+                            const maxComp = isPoint ? this._filterEndPlusOne : this._filterEnd;
+                            if (dateStr > maxComp) {
+                                return null;
+                            }
+                        }
+                    }
+                }
+                return isPoint ? this._pointStyle : this._lineStyle;
+            },
         });
 
         // Add the layer to the layer tree through an external group. This must be
@@ -217,9 +264,14 @@ export default class Panoramax {
             picId = props.id ?? props.picture_id ?? props.pic_id ?? fid ?? null;
             seqId = props.sequence_id ?? props.seq_id ?? null;
             if (!seqId && props.sequences) {
-                seqId = Array.isArray(props.sequences)
-                    ? props.sequences[0]
-                    : String(props.sequences).split(',')[0];
+                let sequences = props.sequences;
+                // MVT RenderFeature serializes JS arrays as JSON strings (e.g. '["uuid1"]').
+                if (typeof sequences === 'string' && sequences.trimStart().startsWith('[')) {
+                    try { sequences = JSON.parse(sequences); } catch { sequences = []; }
+                }
+                seqId = Array.isArray(sequences)
+                    ? (sequences[0] ?? null)
+                    : (String(sequences) || null);
             }
         }
         // A sequence line (no precise picture id) falls through to the
@@ -241,5 +293,30 @@ export default class Panoramax {
                 lat: lonlat[1],
             });
         }
+    }
+
+    /**
+     * Filter the coverage layer to only show pictures/sequences in a date range.
+     * Either bound can be null to leave that side open.
+     * @param {string|null} startDate - ISO date string "YYYY-MM-DD", or null
+     * @param {string|null} endDate   - ISO date string "YYYY-MM-DD", or null
+     */
+    setDateFilter(startDate, endDate) {
+        this._filterStart = startDate || null;
+        this._filterEnd = endDate || null;
+
+        if (endDate) {
+            // Advance by one day so that pictures with a timestamp on `endDate`
+            // (e.g. "2024-03-15T14:30:00") are included in the result.
+            const d = new Date(endDate);
+            d.setDate(d.getDate() + 1);
+            this._filterEndPlusOne = d.toISOString().split('T')[0];
+        } else {
+            this._filterEndPlusOne = null;
+        }
+
+        // Mark the layer dirty so the style function is re-evaluated on the next
+        // render frame. The tiles themselves remain cached (no network requests).
+        this._olLayer.changed();
     }
 }

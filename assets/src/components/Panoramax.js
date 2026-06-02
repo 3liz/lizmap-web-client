@@ -68,6 +68,13 @@ export default class Panoramax extends HTMLElement {
             this._psv.goToPosition(e.lat, e.lon);
         };
         mainEventDispatcher.addListener(this._onPositionSelected, 'panoramax.position.selected');
+
+        // Date filter: read both inputs and push the new range to the module.
+        this._onDateChange = () => {
+            const start = this.querySelector('input[data-filter="start"]')?.value || null;
+            const end   = this.querySelector('input[data-filter="end"]')?.value   || null;
+            mainLizmap.panoramax?.setDateFilter(start, end);
+        };
     }
 
     disconnectedCallback() {
@@ -103,10 +110,22 @@ export default class Panoramax extends HTMLElement {
         await import(/* webpackChunkName: 'panoramax-viewer' */ '@panoramax/web-viewer');
 
         render(
-            html`<pnx-photo-viewer
-                endpoint="${endpoint}"
-                style="display:block;width:100%;height:100%;min-height:400px;"
-            ></pnx-photo-viewer>`,
+            html`
+            <div class="d-flex flex-column h-100">
+                <pnx-photo-viewer
+                    class="panoramax-viewer"
+                    endpoint="${endpoint}"
+                ></pnx-photo-viewer>
+                <div class="panoramax-date-filter d-flex align-items-center gap-2 px-2 py-1 border-top flex-shrink-0">
+                    <input type="date" class="form-control form-control-sm" data-filter="start"
+                        aria-label="Start date" title="Start date"
+                        @change=${this._onDateChange}>
+                    <span class="text-muted">→</span>
+                    <input type="date" class="form-control form-control-sm" data-filter="end"
+                        aria-label="End date" title="End date"
+                        @change=${this._onDateChange}>
+                </div>
+            </div>`,
             this
         );
         this._viewer = this.querySelector('pnx-photo-viewer');
