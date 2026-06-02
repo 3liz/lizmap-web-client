@@ -118,6 +118,8 @@ jobs:
       # checkout HEAD
       - name: Checkout HEAD
         uses: actions/checkout@v6
+        with:
+          clean: false
 
       - name: Make environment and show Lizmap versions
         env:
