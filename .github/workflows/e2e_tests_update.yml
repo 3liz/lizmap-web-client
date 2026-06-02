@@ -43,7 +43,7 @@ jobs:
           username: "3liz"
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Checkout
+      - name: Checkout 3.9.6
         uses: actions/checkout@v6
         with:
           ref: '3.9.6'
@@ -114,11 +114,25 @@ jobs:
         run: |
           npm ci
 
-      # checkout
-      - name: Checkout
+      # checkout HEAD
+      - name: Checkout HEAD
         uses: actions/checkout@v6
+
+      - name: Make environment and show Lizmap versions
+        env:
+          PHP_VERSION: ${{ env.PHP_VERSION }}
+          LZMPOSTGISVERSION: ${{ env.PG_POSTGIS_VERSION }}
+          LZMQGSRVVERSION: ${{ env.QGIS_SERVER_VERSION }}
+        run: |
+          mkdir -p ${{env.PLAYWRIGHT_JSON_OUTPUT_DIR}}
+          make env
+          cat .env
+
+      - name: Read environment file and set variables
+        uses: cosq-network/dotenv-loader@v1.0.2
         with:
-          clean: false
+          # Somehow, the working-directory is not taken into account
+          env-file: tests/.env
 
       - name: Run docker compose
         run: |
@@ -137,10 +151,9 @@ jobs:
         run: |
           make show-qgis-server-versions
 
-      - name: Load SQL data
+      - name: Make install
         run: |
-          cd qgis-projects/tests
-          ./load_sql.sh
+          make install
 
       - name: Npm run build
         working-directory: ./
