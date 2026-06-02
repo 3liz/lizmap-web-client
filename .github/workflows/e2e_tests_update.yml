@@ -148,17 +148,6 @@ jobs:
         run: |
           make show-qgis-server-versions
 
-      - name: Make install
-        run: |
-          make install
-
-      - name: Npm run build
-        working-directory: ./
-        run: |
-          rm -rf node_modules/*
-          npm ci
-          npm run build
-
       - name: Check about QGIS Server status
         id: qgis-server-status
         run: |
@@ -192,10 +181,18 @@ jobs:
           #    exit 1
           fi
 
+      - name: Npm run build
+        working-directory: ./
+        run: |
+          rm -rf node_modules/*
+          npm ci
+          npm run build
+
       - name: Run BATS tests
         working-directory: ./
         run: |
           npm run bats
+
       - name: Get Playwright version
         id: playwright-version
         run: |
