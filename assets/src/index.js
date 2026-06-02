@@ -31,6 +31,7 @@ import Tooltip from './components/Tooltip.js';
 import Message from './components/Message.js';
 import TypeAHead from './components/TypeAHead.js';
 import GroupPopupByLayer from './components/GroupPopupByLayer.js';
+import Panoramax from './components/Panoramax.js';
 
 import { mainLizmap, mainEventDispatcher } from './modules/Globals.js';
 import executeJSFromServer from './modules/ExecuteJSFromServer.js';
@@ -111,6 +112,7 @@ const definedCustomElements = () => {
     window.customElements.define('lizmap-message', Message);
     window.customElements.define('lizmap-typeahead', TypeAHead);
     window.customElements.define('lizmap-group-popup-layer', GroupPopupByLayer);
+    window.customElements.define('lizmap-panoramax', Panoramax);
 
     /**
          * At this point the user interface is fully loaded.

@@ -832,6 +832,30 @@ CSS Sprite positions calculated via http://instantsprite.com/ using 20px images 
   background-position: -350px 0;
 }
 
+/* Panoramax */
+lizmap-panoramax {
+    width: 400px;
+    height: 350px;
+    display: block;
+}
+
+/* Panoramax logo icon */
+#mapmenu .nav-list > li.panoramax .icon {
+  background-image: none;
+  background-color: white;
+  mask-image: url("../svg/panoramax.svg");
+  mask-size: 18px 18px;
+  mask-position: center center;
+  mask-repeat: no-repeat;
+}
+
+#mapmenu .nav-list > li.panoramax.active .icon,
+#mapmenu .nav-list > li.panoramax a:hover .icon {
+  background-image: none;
+  background-color: #333;
+}
+
+/* DXF export */
 #mapmenu .nav-list > li.dxfexport .icon {
   background-position: -1039px 0;
 }
