@@ -167,7 +167,7 @@ test.describe('Permalink page',()=>{
         expect(body.error).toStrictEqual(['The permalink does not exists']);
 
         // permalink table should be empty
-        await expect(permalinkProjectPage.locator('table')).toHaveCount(0);
+        await expect(permalinkProjectPage.locator('#permalink-history table')).toHaveCount(0);
         const url_to_check = new URL(permalinkProjectPage.url());
         await permalinkProjectPage.waitForTimeout(500);
         expect(url_to_check.hash).toBe("#map_status");
