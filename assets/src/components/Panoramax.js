@@ -81,12 +81,25 @@ export default class Panoramax extends HTMLElement {
             const type = this.querySelector('select[data-filter="type"]')?.value || null;
             mainLizmap.panoramax?.setTypeFilter(type);
         };
+
+        // Account filter: push the selected account UUID (or null) to the module.
+        this._onAccountChange = () => {
+            const accountId = this.querySelector('select[data-filter="account"]')?.value || null;
+            mainLizmap.panoramax?.setAccountFilter(accountId);
+        };
+
+        // Accounts list updated (new tiles loaded): refresh the select options.
+        this._onAccountsUpdated = (e) => {
+            this._updateAccountSelect(e.accounts);
+        };
+        mainEventDispatcher.addListener(this._onAccountsUpdated, 'panoramax.accounts.updated');
     }
 
     disconnectedCallback() {
         lizMap.events.off(this._dockEvents);
         mainEventDispatcher.removeListener(this._onPictureSelected, 'panoramax.picture.selected');
         mainEventDispatcher.removeListener(this._onPositionSelected, 'panoramax.position.selected');
+        mainEventDispatcher.removeListener(this._onAccountsUpdated, 'panoramax.accounts.updated');
         this._unwirePSV();
         if (this._viewer && typeof this._viewer.destroy === 'function') {
             this._viewer.destroy();
@@ -141,16 +154,57 @@ export default class Panoramax extends HTMLElement {
                             <option value="equirectangular">equirectangular</option>
                         </select>
                     </div>
+                    <div class="d-flex align-items-center gap-2 px-2 pb-1">
+                        <select class="form-select form-select-sm" data-filter="account"
+                            aria-label="Account" title="Account"
+                            @change=${this._onAccountChange} ?disabled=${true}>
+                            <option value="">—</option>
+                        </select>
+                    </div>
                 </div>
             </div>`,
             this
         );
         this._viewer = this.querySelector('pnx-photo-viewer');
 
+        // If accounts were already discovered before the dock was opened, show them.
+        const knownAccounts = mainLizmap.panoramax?.knownAccounts || [];
+        if (knownAccounts.length > 0) {
+            this._updateAccountSelect(knownAccounts);
+        }
+
         // Wire the inner Photo (Photo Sphere Viewer) events once it is ready.
         this._viewer.oncePSVReady().then(() => {
             this._wirePSV();
         });
+    }
+
+    /**
+     * Update the account select with the given list of accounts.
+     * Preserves the current selection if the selected account is still present.
+     * Enables the select once at least one account is available.
+     * @param {Array<{id: string, name: string}>} accounts - sorted by name
+     */
+    _updateAccountSelect(accounts) {
+        const select = this.querySelector('select[data-filter="account"]');
+        if (!select) {
+            return;
+        }
+        const currentValue = select.value;
+        const frag = document.createDocumentFragment();
+        const none = document.createElement('option');
+        none.value = '';
+        none.textContent = '—';
+        frag.appendChild(none);
+        for (const { id, name } of accounts) {
+            const opt = document.createElement('option');
+            opt.value = id;
+            opt.textContent = name;
+            frag.appendChild(opt);
+        }
+        select.replaceChildren(frag);
+        select.value = currentValue;
+        select.disabled = false;
     }
 
     /**
