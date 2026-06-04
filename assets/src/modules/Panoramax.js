@@ -69,6 +69,8 @@ export default class Panoramax {
         this._filterEndPlusOne = null;
         // Picture type filter ("flat" | "equirectangular" | null = no filter).
         this._filterType = null;
+        // Account filter (UUID string | null = no filter).
+        this._filterAccount = null;
 
         // STAC API base URL and the derived MVT tiles URL
         this._url = (options.panoramaxUrl || DEFAULT_PANORAMAX_URL).replace(/\/+$/, '');
@@ -119,6 +121,11 @@ export default class Panoramax {
                         return null;
                     }
                 }
+                if (this._filterAccount) {
+                    if (feature.get('account_id') !== this._filterAccount) {
+                        return null;
+                    }
+                }
                 return isPoint ? this._pointStyle : this._lineStyle;
             },
         });
@@ -130,6 +137,14 @@ export default class Panoramax {
         this._olLayerState = extGroup.addOlLayer('panoramax', this._olLayer);
         // Start hidden: the layer becomes visible when the tool is activated.
         this._olLayerState.checked = false;
+
+        // Account filter support: account_ids are discovered as tiles load. For each
+        // new id, the display name is resolved with a single API call. The component
+        // is notified via 'panoramax.accounts.updated' whenever the set changes.
+        this._allAccounts = new Map();      // accountId → resolved display name
+        this._visibleAccountIds = new Set(); // account_ids seen in loaded tiles
+        this._fetchingAccounts = new Set();  // ids currently being fetched (dedup)
+        this._olLayer.getSource().on('tileloadend', (e) => this._onTileLoaded(e.tile));
 
         // Orientation arrow, kept on a dedicated tool layer above the map.
         this._arrowPoint = new Point([0, 0]);
@@ -335,5 +350,65 @@ export default class Panoramax {
     setTypeFilter(type) {
         this._filterType = type || null;
         this._olLayer.changed();
+    }
+
+    /**
+     * Filter the coverage layer to only show features belonging to a given account.
+     * @param {string|null} accountId - account UUID, or null (no filter)
+     */
+    setAccountFilter(accountId) {
+        this._filterAccount = accountId || null;
+        this._olLayer.changed();
+    }
+
+    /**
+     * Accounts discovered in visible tiles, sorted alphabetically by name.
+     * @type {Array<{id: string, name: string}>}
+     */
+    get knownAccounts() {
+        return [...this._visibleAccountIds]
+            .map(id => ({ id, name: this._allAccounts.get(id) || id }))
+            .sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    /**
+     * Called each time a MVT tile finishes loading. For each new account_id found
+     * in the tile, kicks off an async name resolution and notifies the component.
+     * @param {object} tile - OpenLayers VectorTile
+     */
+    _onTileLoaded(tile) {
+        for (const feature of (tile.getFeatures() || [])) {
+            const id = feature.get('account_id');
+            if (!id || this._visibleAccountIds.has(id) || this._fetchingAccounts.has(id)) {
+                continue;
+            }
+            this._fetchingAccounts.add(id);
+            this._fetchAccountName(id).then((name) => {
+                this._fetchingAccounts.delete(id);
+                this._visibleAccountIds.add(id);
+                this._allAccounts.set(id, name);
+                mainEventDispatcher.dispatch({
+                    type: 'panoramax.accounts.updated',
+                    accounts: this.knownAccounts,
+                });
+            });
+        }
+    }
+
+    /**
+     * Resolve the display name of an account from the Panoramax API.
+     * Falls back to the raw UUID on network error or missing field.
+     * @param {string} accountId
+     * @returns {Promise<string>}
+     */
+    async _fetchAccountName(accountId) {
+        try {
+            const data = await fetch(`${this._url}/users/${accountId}`, {
+                headers: { Accept: 'application/json' },
+            }).then(r => r.json());
+            return data.name || data.label || accountId;
+        } catch {
+            return accountId;
+        }
     }
 }
