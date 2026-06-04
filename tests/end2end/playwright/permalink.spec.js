@@ -1793,3 +1793,58 @@ test.describe('Short link permalink, no automatic permalink', () => {
         expect(url_to_check.hash).toBe('');
     })
 })
+
+test.describe('Permalink with edition @readonly', () => {
+    test('Start edition with automatic permalink enabled',async ({page})=>{
+        await page.route('**/service/getProjectConfig*', async route => {
+            const response = await route.fetch();
+            const json = await response.json();
+            json.options['automatic_permalink'] = true;
+            await route.fulfill({ response, json });
+        });
+        const project = new ProjectPage(page, 'form_edition');
+        await project.open();
+
+        await project.zoomIn();
+        await page.waitForTimeout(500);
+        let url = new URL(page.url());
+        expect(url.hash).not.toHaveLength(0);
+        expect(url.hash).toContain('|end2end_form_edition_geom|d%C3%A9faut|1')
+        expect(url.hash).toMatch(/#3.5662\d+,43.4061\d+,4.2839\d+,43.7543\d+\|/)
+
+        await project.openEditingFormWithLayer('end2end_form_edition');
+
+        url = new URL(page.url());
+        expect(url.hash).not.toHaveLength(0);
+        expect(url.hash).toContain('|end2end_form_edition_geom|d%C3%A9faut|1')
+        expect(url.hash).toMatch(/#3.5662\d+,43.4061\d+,4.2839\d+,43.7543\d+\|/)
+
+        await page.unroute('**/service/getProjectConfig*');
+    })
+
+    test('Start edition with automatic permalink enabled and shorrt link permalink enabled',async ({page})=>{
+        await page.route('**/service/getProjectConfig*', async route => {
+            const response = await route.fetch();
+            const json = await response.json();
+            json.options['automatic_permalink'] = true;
+            json.options['short_link_permalink'] = true;
+            await route.fulfill({ response, json });
+        });
+        const project = new ProjectPage(page, 'form_edition');
+        await project.open();
+
+        await project.zoomIn();
+        await page.waitForTimeout(500);
+        let url = new URL(page.url());
+        expect(url.hash).not.toHaveLength(0);
+        expect(url.hash).toBe("#map_status")
+
+        await project.openEditingFormWithLayer('end2end_form_edition');
+
+        url = new URL(page.url());
+        expect(url.hash).not.toHaveLength(0);
+        expect(url.hash).toBe("#map_status")
+
+        await page.unroute('**/service/getProjectConfig*');
+    })
+})
