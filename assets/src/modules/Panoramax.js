@@ -67,6 +67,8 @@ export default class Panoramax {
         // `ts` includes time, so the max comparison uses end+1 day to include
         // all pictures taken on the end day (mirrors Panoramax's own logic).
         this._filterEndPlusOne = null;
+        // Picture type filter ("flat" | "equirectangular" | null = no filter).
+        this._filterType = null;
 
         // STAC API base URL and the derived MVT tiles URL
         this._url = (options.panoramaxUrl || DEFAULT_PANORAMAX_URL).replace(/\/+$/, '');
@@ -109,6 +111,12 @@ export default class Panoramax {
                                 return null;
                             }
                         }
+                    }
+                }
+                if (this._filterType) {
+                    const t = feature.get('type');
+                    if (t && t !== this._filterType) {
+                        return null;
                     }
                 }
                 return isPoint ? this._pointStyle : this._lineStyle;
@@ -317,6 +325,15 @@ export default class Panoramax {
 
         // Mark the layer dirty so the style function is re-evaluated on the next
         // render frame. The tiles themselves remain cached (no network requests).
+        this._olLayer.changed();
+    }
+
+    /**
+     * Filter the coverage layer to only show features of a given type.
+     * @param {string|null} type - "flat", "equirectangular", or null (no filter)
+     */
+    setTypeFilter(type) {
+        this._filterType = type || null;
         this._olLayer.changed();
     }
 }
