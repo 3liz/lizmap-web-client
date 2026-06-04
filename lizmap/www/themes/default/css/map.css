@@ -1116,6 +1116,12 @@ div.popup_lizmap_dd .controls {
    whitespace. */
 div.popup_lizmap_dd_relation > lizmap-features-table {
   display: block;
+
+  /* Reset to the popup default font-size. The features-table now lives
+     inside div.popup_lizmap_dd (which sets 12px) since it was relocated
+     into the relation placeholder; without this it would inherit the
+     smaller form font and shrink child rows compared to pre-3.9.8. */
+  font-size: 1rem;
 }
 
 /* Wrap the whole features-table in a visible frame.
