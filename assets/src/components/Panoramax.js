@@ -75,6 +75,12 @@ export default class Panoramax extends HTMLElement {
             const end   = this.querySelector('input[data-filter="end"]')?.value   || null;
             mainLizmap.panoramax?.setDateFilter(start, end);
         };
+
+        // Picture type filter: push the selected value (or null) to the module.
+        this._onTypeChange = () => {
+            const type = this.querySelector('select[data-filter="type"]')?.value || null;
+            mainLizmap.panoramax?.setTypeFilter(type);
+        };
     }
 
     disconnectedCallback() {
@@ -116,14 +122,25 @@ export default class Panoramax extends HTMLElement {
                     class="panoramax-viewer"
                     endpoint="${endpoint}"
                 ></pnx-photo-viewer>
-                <div class="panoramax-date-filter d-flex align-items-center gap-2 px-2 py-1 border-top flex-shrink-0">
-                    <input type="date" class="form-control form-control-sm" data-filter="start"
-                        aria-label="Start date" title="Start date"
-                        @change=${this._onDateChange}>
-                    <span class="text-muted">→</span>
-                    <input type="date" class="form-control form-control-sm" data-filter="end"
-                        aria-label="End date" title="End date"
-                        @change=${this._onDateChange}>
+                <div class="panoramax-filters border-top flex-shrink-0">
+                    <div class="d-flex align-items-center gap-2 px-2 py-1">
+                        <input type="date" class="form-control form-control-sm" data-filter="start"
+                            aria-label="Start date" title="Start date"
+                            @change=${this._onDateChange}>
+                        <span class="text-muted">→</span>
+                        <input type="date" class="form-control form-control-sm" data-filter="end"
+                            aria-label="End date" title="End date"
+                            @change=${this._onDateChange}>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 px-2 pb-1">
+                        <select class="form-select form-select-sm w-auto" data-filter="type"
+                            aria-label="Picture type" title="Picture type"
+                            @change=${this._onTypeChange}>
+                            <option value="">—</option>
+                            <option value="flat">flat</option>
+                            <option value="equirectangular">equirectangular</option>
+                        </select>
+                    </div>
                 </div>
             </div>`,
             this
