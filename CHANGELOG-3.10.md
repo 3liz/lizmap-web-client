@@ -8,6 +8,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Fixed
+
+* Edition - Persist dynamic default-value expressions on read-only fields (e.g. `$x`, `round($length, 2)`), which were evaluated but not saved
+
 ## 3.10.0-rc.1 - 2026-05-28
 
 ### Funders
