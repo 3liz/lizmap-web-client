@@ -123,6 +123,9 @@ export default class Panoramax extends HTMLElement {
         }
 
         const endpoint = mainLizmap.config.options.panoramaxUrl || DEFAULT_PANORAMAX_URL;
+        this._externalBaseUrl = new URL(endpoint).origin;
+        this._currentLon = null;
+        this._currentLat = null;
 
         // Lazy-load the Panoramax viewer bundle in its own chunk (only when used).
         // Importing the package registers the <pnx-photo-viewer> custom element.
@@ -137,6 +140,10 @@ export default class Panoramax extends HTMLElement {
                     url-parameters="false"
                 ></pnx-photo-viewer>
                 <div class="panoramax-filters border-top flex-shrink-0">
+                    <div class="d-flex justify-content-end px-2 py-1">
+                        <a class="panoramax-open-external btn btn-sm btn-link p-0 d-none"
+                           target="_blank" rel="noopener noreferrer">Open in Panoramax ↗</a>
+                    </div>
                     <div class="d-flex align-items-center gap-2 px-2 py-1">
                         <input type="date" class="form-control form-control-sm" data-filter="start"
                             aria-label="Start date" title="Start date"
@@ -234,12 +241,16 @@ export default class Panoramax extends HTMLElement {
         this._onPicture = (ev) => {
             const d = ev.detail || {};
             mainLizmap.panoramax?.updateArrow(d.lon, d.lat, d.x);
+            if (typeof d.lon === 'number') { this._currentLon = d.lon; }
+            if (typeof d.lat === 'number') { this._currentLat = d.lat; }
+            this._updateExternalLink();
         };
         // The user rotated the view: update only the arrow heading.
         // detail = { x (heading 0-360°, 0 = North), y, z }
         this._onViewRotated = (ev) => {
             const d = ev.detail || {};
             mainLizmap.panoramax?.updateHeading(d.x);
+            this._updateExternalLink();
         };
 
         this._psv.addEventListener('picture-loading', this._onPicture);
@@ -258,5 +269,40 @@ export default class Panoramax extends HTMLElement {
         this._psv.removeEventListener('picture-loaded', this._onPicture);
         this._psv.removeEventListener('view-rotated', this._onViewRotated);
         this._psv = null;
+        const link = this.querySelector('a.panoramax-open-external');
+        if (link) { link.classList.add('d-none'); }
+        this._currentLon = null;
+        this._currentLat = null;
+    }
+
+    /**
+     * Build and set the href of the "Open in Panoramax" link from the current
+     * viewer state (picture id, sequence id, position, heading/pitch/zoom).
+     */
+    _updateExternalLink() {
+        const link = this.querySelector('a.panoramax-open-external');
+        if (!link || !this._psv) { return; }
+
+        const picId = this._psv.getPictureId();
+        if (!picId || this._currentLon === null || this._currentLat === null) {
+            link.classList.add('d-none');
+            return;
+        }
+
+        const seqId = this._psv.getPictureMetadata()?.sequence?.id;
+        const { x, y, z } = this._psv.getXYZ();
+        const zoom = 17;
+        const lat = this._currentLat.toFixed(6);
+        const lon = this._currentLon.toFixed(6);
+        const xStr = x.toFixed(2);
+        const yStr = y.toFixed(2);
+        const zStr = Math.round(z || 0);
+
+        let url = `${this._externalBaseUrl}/?focus=pic&map=${zoom}/${lat}/${lon}&pic=${picId}`;
+        if (seqId) { url += `&seq=${seqId}`; }
+        url += `&xyz=${xStr}/${yStr}/${zStr}`;
+
+        link.href = url;
+        link.classList.remove('d-none');
     }
 }
