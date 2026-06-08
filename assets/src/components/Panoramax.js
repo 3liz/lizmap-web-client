@@ -140,22 +140,28 @@ export default class Panoramax extends HTMLElement {
                     url-parameters="false"
                 ></pnx-photo-viewer>
                 <div class="panoramax-filters border-top flex-shrink-0">
-                    <div class="d-flex justify-content-end px-2 py-1">
+                    <div class="d-flex align-items-center justify-content-between px-2 py-1">
+                        <span class="fw-semibold small"><i class="icon-filter"></i></span>
                         <a class="panoramax-open-external btn btn-sm btn-link p-0 d-none"
-                           target="_blank" rel="noopener noreferrer">Open in Panoramax ↗</a>
+                           target="_blank" rel="noopener noreferrer">${lizDict['panoramax.open.external']}</a>
                     </div>
                     <div class="d-flex align-items-center gap-2 px-2 py-1">
+                        <i class="icon-calendar text-muted flex-shrink-0"></i>
                         <input type="date" class="form-control form-control-sm" data-filter="start"
-                            aria-label="Start date" title="Start date"
+                            aria-label="${lizDict['panoramax.filter.date.start']}"
+                            title="${lizDict['panoramax.filter.date.start']}"
                             @change=${this._onDateChange}>
-                        <span class="text-muted">→</span>
+                        <span class="text-muted fs-4">⇨</span>
                         <input type="date" class="form-control form-control-sm" data-filter="end"
-                            aria-label="End date" title="End date"
+                            aria-label="${lizDict['panoramax.filter.date.end']}"
+                            title="${lizDict['panoramax.filter.date.end']}"
                             @change=${this._onDateChange}>
                     </div>
                     <div class="d-flex align-items-center gap-2 px-2 pb-1">
+                        <i class="icon-picture text-muted flex-shrink-0"></i>
                         <select class="form-select form-select-sm w-auto" data-filter="type"
-                            aria-label="Picture type" title="Picture type"
+                            aria-label="${lizDict['panoramax.filter.type']}"
+                            title="${lizDict['panoramax.filter.type']}"
                             @change=${this._onTypeChange}>
                             <option value="">—</option>
                             <option value="flat">flat</option>
@@ -163,8 +169,10 @@ export default class Panoramax extends HTMLElement {
                         </select>
                     </div>
                     <div class="d-flex align-items-center gap-2 px-2 pb-1">
+                        <i class="icon-user text-muted flex-shrink-0"></i>
                         <select class="form-select form-select-sm" data-filter="account"
-                            aria-label="Account" title="Account"
+                            aria-label="${lizDict['panoramax.filter.account']}"
+                            title="${lizDict['panoramax.filter.account']}"
                             @change=${this._onAccountChange} ?disabled=${true}>
                             <option value="">—</option>
                         </select>
