@@ -450,5 +450,135 @@ test.describe('Panoramax @readonly', () => {
                 expect(await page.evaluate(() => window._pnxEvents)).toHaveLength(0);
             });
         });
+
+        // ── 9. "Open in Panoramax" external link ──────────────────────────────
+
+        test.describe('Open in Panoramax link', () => {
+
+            /**
+             * Inject a mock _psv and call _updateExternalLink() directly.
+             * oncePSVReady() never resolves in the mocked API environment, so we
+             * cannot rely on _wirePSV() having run. Testing URL generation through
+             * _updateExternalLink() directly is the correct approach here.
+             * @param {{ picId?: string, seqId?: string|null, lon?: number, lat?: number, x?: number, y?: number, z?: number }} [options]
+             */
+            const simulatePictureLoaded = async (options = {}) => {
+                const {
+                    picId = 'test-pic-uuid',
+                    seqId = 'test-seq-uuid',
+                    lon = 2.360953,
+                    lat = 48.857579,
+                    x = 113.53,
+                    y = 0.00,
+                    z = 30,
+                } = options;
+                await page.evaluate(
+                    /** @param {{ picId: string, seqId: string|null, lon: number, lat: number, x: number, y: number, z: number }} args */
+                    ({ picId, seqId, lon, lat, x, y, z }) => {
+                        const comp = /** @type {any} */ (document.querySelector('lizmap-panoramax'));
+                        if (!comp._psv) { comp._psv = {}; }
+                        comp._psv.getPictureId = () => picId;
+                        comp._psv.getPictureMetadata = () => seqId ? { sequence: { id: seqId } } : null;
+                        comp._psv.getXYZ = () => ({ x, y, z });
+                        comp._currentLon = lon;
+                        comp._currentLat = lat;
+                        comp._updateExternalLink();
+                    },
+                    { picId, seqId, lon, lat, x, y, z }
+                );
+            };
+
+            test.beforeEach(async () => {
+                // Section 8's last test closes the dock — reopen it if needed.
+                const isVisible = await page.locator('pnx-photo-viewer').isVisible();
+                if (!isVisible) {
+                    await page.locator('#button-panoramax').click();
+                    await expect(page.locator('pnx-photo-viewer')).toBeVisible({ timeout: 5000 });
+                }
+            });
+
+            test.afterEach(async () => {
+                // Reset link DOM state and component position between tests.
+                await page.evaluate(() => {
+                    const link = document.querySelector('a.panoramax-open-external');
+                    if (link) {
+                        link.classList.add('d-none');
+                        link.removeAttribute('href');
+                    }
+                    const comp = /** @type {any} */ (document.querySelector('lizmap-panoramax'));
+                    if (comp) {
+                        comp._currentLon = null;
+                        comp._currentLat = null;
+                        comp._psv = null;
+                    }
+                });
+            });
+
+            test('Link is present and hidden before a picture loads', async () => {
+                const link = page.locator('a.panoramax-open-external');
+                await expect(link).toBeAttached();
+                await expect(link).toHaveClass(/d-none/);
+            });
+
+            test('Link opens in a new tab', async () => {
+                await expect(page.locator('a.panoramax-open-external'))
+                    .toHaveAttribute('target', '_blank');
+            });
+
+            test('Link appears after picture-loaded event', async () => {
+                await simulatePictureLoaded();
+                await expect(page.locator('a.panoramax-open-external')).not.toHaveClass(/d-none/);
+            });
+
+            test('Link href contains correct pic and seq ids', async () => {
+                await simulatePictureLoaded({
+                    picId: '19e66c90-003b-439a-9d8a-e64a3c9f5012',
+                    seqId: 'fb880ec0-ff78-4a8f-b000-42218c0bf7f7',
+                });
+                const href = await page.locator('a.panoramax-open-external').getAttribute('href');
+                expect(href).toContain('pic=19e66c90-003b-439a-9d8a-e64a3c9f5012');
+                expect(href).toContain('seq=fb880ec0-ff78-4a8f-b000-42218c0bf7f7');
+            });
+
+            test('Link href contains correct map position', async () => {
+                await simulatePictureLoaded({ lat: 48.857579, lon: 2.360953 });
+                const href = await page.locator('a.panoramax-open-external').getAttribute('href');
+                expect(href).toContain('focus=pic');
+                expect(href).toContain('map=17/48.857579/2.360953');
+            });
+
+            test('Link href contains correct xyz view angle', async () => {
+                await simulatePictureLoaded({ x: 113.53, y: 0.00, z: 30 });
+                const href = await page.locator('a.panoramax-open-external').getAttribute('href');
+                expect(href).toContain('xyz=113.53/0.00/30');
+            });
+
+            test('Link href updates when view rotates', async () => {
+                await simulatePictureLoaded({ x: 45.00 });
+                const href1 = await page.locator('a.panoramax-open-external').getAttribute('href');
+                expect(href1).toContain('xyz=45.00');
+
+                await page.evaluate(() => {
+                    const comp = /** @type {any} */ (document.querySelector('lizmap-panoramax'));
+                    comp._psv.getXYZ = () => ({ x: 180.00, y: 0.00, z: 30 });
+                    comp._updateExternalLink();
+                });
+                const href2 = await page.locator('a.panoramax-open-external').getAttribute('href');
+                expect(href2).toContain('xyz=180.00');
+            });
+
+            test('Link omits seq parameter when picture has no sequence', async () => {
+                await simulatePictureLoaded({ seqId: null });
+                const href = await page.locator('a.panoramax-open-external').getAttribute('href');
+                expect(href).toContain('pic=test-pic-uuid');
+                expect(href).not.toContain('seq=');
+            });
+
+            test('Link href points to the configured Panoramax instance origin', async () => {
+                await simulatePictureLoaded();
+                const href = await page.locator('a.panoramax-open-external').getAttribute('href');
+                expect(href).toMatch(/^https:\/\/panoramax\.openstreetmap\.fr\//);
+            });
+        });
     });
 });
