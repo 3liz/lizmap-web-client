@@ -191,11 +191,11 @@ export default class Panoramax {
     }
 
     /**
-     * Deactivate the tool: stop handling map clicks and hide the arrow.
-     * The coverage layer visibility is left under the user's control (layer tree).
+     * Deactivate the tool: hide the coverage layer, stop handling map clicks and hide the arrow.
      */
     deactivate() {
         this._active = false;
+        this._olLayerState.checked = false;
         this.clearArrow();
     }
 
