@@ -795,9 +795,8 @@ window.lizMap = function() {
 
         if (('geolocation' in configOptions)
       && configOptions['geolocation'] == 'True'){
-            $('#geolocation button.btn-geolocation-close').click(function () {
-                $('#button-geolocation').click();
-                return false;
+            document.querySelector('#geolocation button.btn-geolocation-close').addEventListener('click', () => {
+                document.getElementById('button-geolocation').click();
             });
         }
 
@@ -1940,8 +1939,8 @@ window.lizMap = function() {
             }
         });
 
-        $('#measure-stop').click(function(){
-            $('#button-measure').click();
+        document.getElementById('measure-stop').addEventListener('click', () => {
+            document.getElementById('button-measure').click();
         });
 
         return measureControls;
