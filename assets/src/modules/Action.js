@@ -375,7 +375,7 @@ export default class Action {
      * @param {string} wkt - An optional geometry in WKT format and project EPSG:4326
      * @returns {boolean} - If the action was successful
      */
-    async runLizmapAction(actionName, scope = this.Scopes.Feature, layerId = null, featureId = null, wkt = null) {
+    async runLizmapAction(actionName, scope = this.Scopes.Feature, layerId = null, featureId = null, wkt = null, options = null) {
         if (!this.hasActions) {
             return false;
         }
@@ -404,11 +404,16 @@ export default class Action {
         }
 
         // Set the request parameters
-        let options = {
+        let parameters = {
             "layerId": layerId,
             "featureId": featureId,
             "name": actionName,
             "wkt": wkt
+        };
+
+        // add options to parameters
+        if (options) {
+            parameters['options'] = options
         };
 
         const viewExtent = this._map.getView().calculateExtent();
@@ -416,8 +421,8 @@ export default class Action {
 
         // We add the map extent and center
         // as WKT geometries
-        options['mapExtent'] = WKTformat.writeGeometry(fromExtent(viewExtent), projOptions);
-        options['mapCenter'] = WKTformat.writeGeometry(new Point(viewCenter), projOptions);
+        parameters['mapExtent'] = WKTformat.writeGeometry(fromExtent(viewExtent), projOptions);
+        parameters['mapCenter'] = WKTformat.writeGeometry(new Point(viewCenter), projOptions);
 
         /**
          * Lizmap event to allow other scripts to process the data if needed
@@ -442,7 +447,7 @@ export default class Action {
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8'
                 },
-                body: JSON.stringify(options)
+                body: JSON.stringify(parameters)
             });
 
             // Parse the data
