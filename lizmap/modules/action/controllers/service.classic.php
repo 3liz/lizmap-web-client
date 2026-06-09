@@ -164,7 +164,6 @@ class serviceCtrl extends jController
 
         // Compute the parameters to pass to the PostgreSQL action function
         // depending on the scope and given parameters
-        $data = array();
         $action_params = array(
             'lizmap_repository' => $repository,
             'lizmap_project' => $project,
@@ -192,23 +191,58 @@ class serviceCtrl extends jController
             $action_params['feature_id'] = $featureId;
         }
 
-        // Get the additional options from the JSON config file
-        // Not for any requests parameters !!!
-        foreach ($action->options as $k => $v) {
-            $action_params[$k] = $v;
+        // Run the action
+        $i = 1;
+        $sqlParts = array();
+        $sqlValues = array();
+        foreach ($action_params as $key => $value) {
+            $caster = ($key == 'feature_id') ? 'integer' : 'text';
+            $sqlParts[] = "'{$key}', (\${$i})::{$caster}";
+            $sqlValues[] = $value;
+            ++$i;
         }
 
-        // Run the action
-        $sql = "SELECT lizmap_get_data('";
-        $sql .= json_encode($action_params);
-        $sql .= "') AS data";
+        // Get the additional options from the JSON config file
+        // We need to be cautious with this values as they are sent from the client
+        $options = $this->param('options');
+        foreach ($action->options as $key => $config_value) {
+            $sqlParts[] = "'{$key}', (\${$i})::text";
+            $sqlValues[] = $options[$key] ?: $config_value;
+            ++$i;
+        }
 
+        $sql = '
+            SELECT public.lizmap_get_data(
+                json_build_object(
+                '.implode(",\n", $sqlParts).'
+                )
+            ) AS data
+        ';
+        jLog::log(
+            "SQL =
+            {$sql}"
+        );
+
+        // Prepare returned data
+        $resultset = null;
+
+        // Start SQL transaction
+        $cnx->beginTransaction();
+
+        // Run the lizmap_get_data function with a prepared statement
+        // to avoid SQL injections
+        // $sql = "SELECT json_build_object('un', $1::text, 'deux', $2::text)";
         try {
-            $res = $cnx->query($sql);
-            foreach ($res as $r) {
-                $data = json_decode($r->data);
+            $resultset = $cnx->prepare($sql);
+            $execute = $resultset->execute($sqlValues);
+            if ($resultset && $resultset->id() === false) {
+                $errorCode = $cnx->errorCode();
+
+                throw new Exception($errorCode);
             }
+            $cnx->commit();
         } catch (Exception $e) {
+            $cnx->rollback();
             jLog::log(
                 'Error in project '.$repository.'/'.$project.', layer '.$layerId.', '.
                 'while running the action with the PostgreSQL query : '.$sql.' → '.$e->getMessage(),
@@ -220,6 +254,14 @@ class serviceCtrl extends jController
             );
 
             return $this->error($errors);
+        }
+        $data = array();
+        if ($resultset !== null) {
+            foreach ($resultset as $r) {
+                if ($r->data) {
+                    $data = json_decode($r->data);
+                }
+            }
         }
 
         // Send response
