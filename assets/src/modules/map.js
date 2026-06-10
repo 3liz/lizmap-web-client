@@ -1236,4 +1236,14 @@ export default class map extends olMap {
         });
         this.zoomToGeometryOrExtent(olGeometry, options);
     }
+
+    /**
+     * Simulate a click on the map
+    * @param {Array<number>} coordinates map coordinates
+    * @param {string} [click_type='singleclick'] OL map event type ('singleclick', 'click', 'dblclick')
+    */
+    simulateClick(coordinates, click_type = 'singleclick'){
+        const pixel = lizMap.mainLizmap.map.getPixelFromCoordinate(coordinates);
+        lizMap.mainLizmap.map.dispatchEvent({type: click_type, pixel});
+    }
 }
