@@ -20,6 +20,10 @@ export default class Geolocation extends HTMLElement {
     }
 
     connectedCallback() {
+        this._closeBtn = this.closest('.geolocation')?.querySelector('button.btn-geolocation-close');
+        this._closeHandler = () => document.getElementById('button-geolocation')?.click();
+        this._closeBtn?.addEventListener('click', this._closeHandler);
+
         // Display
         const mainTemplate = () => html`
         <div class="menu-content">
@@ -108,5 +112,6 @@ export default class Geolocation extends HTMLElement {
     }
 
     disconnectedCallback() {
+        this._closeBtn?.removeEventListener('click', this._closeHandler);
     }
 }
