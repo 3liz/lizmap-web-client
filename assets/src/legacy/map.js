@@ -793,14 +793,6 @@ window.lizMap = function() {
 
         addFeatureInfo();
 
-        if (('geolocation' in configOptions)
-      && configOptions['geolocation'] == 'True'){
-            $('#geolocation button.btn-geolocation-close').click(function () {
-                $('#button-geolocation').click();
-                return false;
-            });
-        }
-
         if ( ('measure' in configOptions)
         && configOptions['measure'] == 'True')
             addMeasureControls();
