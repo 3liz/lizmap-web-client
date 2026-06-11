@@ -84,11 +84,6 @@
   #attributeLayers-tabs > li > a {
     padding: 2px;
   }
-
-  /* Hide text for login links */
-  #headermenu.mobile #auth ul.nav a span.text {
-    display:none;
-  }
 }
 
 /* #### Retina screen (iphone4, samsung note, etc.) Portrait or Landscape #### */
@@ -151,7 +146,7 @@ only screen and (                   device-height <= 640px) {
     top:30px;
   }
 
-  #headermenu.mobile #auth ul.nav {
+  #headermenu.mobile #auth ul.navbar-nav {
     position: absolute;
     left:auto;
     right: 0;
