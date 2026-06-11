@@ -1932,8 +1932,8 @@ window.lizMap = function() {
             }
         });
 
-        $('#measure-stop').click(function(){
-            $('#button-measure').click();
+        document.getElementById('measure-stop').addEventListener('click', () => {
+            document.getElementById('button-measure').click();
         });
 
         return measureControls;
