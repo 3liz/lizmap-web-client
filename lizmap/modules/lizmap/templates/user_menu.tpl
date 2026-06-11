@@ -4,13 +4,13 @@
     <li class="nav-item dashboard-item">
         <a class="nav-link" href="{jurl 'master_admin~default:index'}">
             <span class="icon dashboard-icon"></span>
-            <span class="text hidden-phone">{@view~default.header.menuitem.admin.label@}</span>
+            <span class="d-none d-sm-inline">{@view~default.header.menuitem.admin.label@}</span>
         </a>
     </li>
     <li class="nav-item user dropdown">
         <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" id="info-user">
             <span class="icon"></span>
-            <span class="text hidden-phone">
+            <span class="d-none d-sm-inline">
                 <span id="info-user-login" title="{$user->firstname} {$user->lastname}">{$user->login|eschtml}</span>
                 <span class="hide" id="info-user-firstname">{$user->firstname}</span>
                 <span class="hide" id="info-user-lastname">{$user->lastname}</span>
@@ -33,14 +33,14 @@
         <a class="nav-link" href="{jurl 'jcommunity~login:index'}">
         {/if}
             <span class="icon"></span>
-            <span class="text hidden-phone">{@view~default.header.connect@}</span>
+            <span class="d-none d-sm-inline">{@view~default.header.connect@}</span>
         </a>
     </li>
     {if isset($allowUserAccountRequests) and $allowUserAccountRequests == '1'}
         <li class="nav-item registered">
             <a class="nav-link" href="{jurl 'jcommunity~registration:index'}">
                 <span class="icon"></span>
-                <span class="text hidden-phone">{@view~default.header.createAccount@}</span>
+                <span class="d-none d-sm-inline">{@view~default.header.createAccount@}</span>
             </a>
         </li>
     {/if}
