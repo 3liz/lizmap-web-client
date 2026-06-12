@@ -908,7 +908,12 @@ div.attribute-layer-feature-panel .lizmapPopupTable
 #map-content .lizmapPopupTable thead,
 #popupcontent .lizmapPopupTable thead,
 #liz-atlas-item-detail .lizmapPopupTable thead,
-div.attribute-layer-feature-panel .lizmapPopupTable thead
+div.attribute-layer-feature-panel .lizmapPopupTable thead,
+.lizmapPopup.olPopup .lizmapPopupTable thead th,
+#map-content .lizmapPopupTable thead th,
+#popupcontent .lizmapPopupTable thead th,
+#liz-atlas-item-detail .lizmapPopupTable thead th,
+div.attribute-layer-feature-panel .lizmapPopupTable thead th
 {
   color: var(--color-contrasted-text);
   background-color: var(--color-contrasted-elements);

@@ -26,8 +26,10 @@
         </ul>
         <div class="tab-content permalink-tab-content">
             <div id="tab-share-permalink" class="permalink-tab-pane-share tab-pane active" role="tabpanel">
-                <input id="input-share-permalink" type="text" class="form-control">
-                <a href="" target="_blank" id="permalink" title="{@view~map.permalink.share.link@}"><i class="icon-share"></i></a>
+                <div class="d-flex">
+                  <input id="input-share-permalink" type="text" class="form-control">
+                  <a href="" target="_blank" id="permalink" title="{@view~map.permalink.share.link@}"><i class="icon-share"></i></a>
+                </div>
             </div>
             <div id="tab-embed-permalink" class="permalink-tab-pane-embed tab-pane" role="tabpanel">
                 <a href="{jfullurl 'view~embed:index', array('repository'=>$repository,'project'=>$project)}" target="_blank" id="permalink-embed" style="display:none;"></a>
