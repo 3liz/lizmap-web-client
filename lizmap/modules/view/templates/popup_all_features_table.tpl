@@ -1,7 +1,7 @@
 <div class='popupAllFeaturesCompact' style="display: none;">
     <h4>{$layerTitle}</h4>
 
-    <table class='table table-condensed table-striped table-bordered lizmapPopupTable'>
+    <table class='table table-sm table-striped table-bordered lizmapPopupTable'>
         <thead>
             {foreach $allFeatureAttributes as $featureAttributes}
             <tr>

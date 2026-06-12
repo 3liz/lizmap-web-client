@@ -1,5 +1,5 @@
 <div class="modal-header">
-  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
   {if $title}
   <h3>{$title}</h3>
   {else}
@@ -18,7 +18,7 @@
       <dd>&nbsp;{$ctrl->value}</dd>
     {/foreach}
       <dt></dt>
-      <dd class="pull-right">
+      <dd class="float-end">
       {foreach $form->hidden as $ref=>$val}
         <input type="hidden" name="{$ref}" value="{$val}"/>
       {/foreach}
@@ -38,5 +38,5 @@
 
 </div>
 <div class="modal-footer">
-<a href="#" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
+<a href="#" class="btn" data-bs-dismiss="modal">Close</a>
 </div>
