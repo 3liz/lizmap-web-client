@@ -1093,6 +1093,14 @@ var lizEdition = function() {
                 editCtrls.featsplit.activate();
             });
 
+            // Bootstrap 2 handled the active state of the geometry tool buttons
+            // with `data-toggle="buttons-radio"`, removed in Bootstrap 5:
+            // toggle the active state manually
+            $('#edition-geomtool-container > button').click(function(){
+                $('#edition-geomtool-container > button').removeClass('active');
+                $(this).addClass('active');
+            });
+
             $('#edition-geomtool-container button, lizmap-reverse-geom').tooltip( {
                 placement: 'top'
             } );
@@ -1787,7 +1795,7 @@ var lizEdition = function() {
                 $('#'+form.attr('id')+'-tab-content').hide();
             } else {
                 // Activate form tabs based on QGIS drag&drop form layout mode
-                form.children('ul.nav-tabs').find('li:first a').click().blur();
+                form.children('ul.nav-tabs').find('li:first button').click().blur();
             }
             // Handle group visibilities based on QGIS drag&drop form layout mode
             handleGroupVisibilities( form );

@@ -843,7 +843,7 @@ window.lizMap = function() {
 
             // create content
             var popupReg = new RegExp('lizmapPopupTable', 'g');
-            text = text.replace( popupReg, 'table table-condensed table-striped table-bordered lizmapPopupTable');
+            text = text.replace( popupReg, 'table table-sm table-striped table-bordered lizmapPopupTable');
             var pcontent = '<div class="lizmapPopupContent">'+text+'</div>';
             var hasPopupContent = (!(!text || text == null || text == ''));
             // wrap the popups in lizmap-group-popup-layer, if the corresponding mode is enabled
@@ -1268,7 +1268,7 @@ window.lizMap = function() {
                         var hasPopupContent = (!(!popupChildData || popupChildData == null || popupChildData == ''))
                         if (hasPopupContent) {
                             var popupReg = new RegExp('lizmapPopupTable', 'g');
-                            popupChildData = popupChildData.replace(popupReg, 'table table-condensed table-striped lizmapPopupTable');
+                            popupChildData = popupChildData.replace(popupReg, 'table table-sm table-striped lizmapPopupTable');
 
                             const configLayer = rConfigLayerAll[index];
 
