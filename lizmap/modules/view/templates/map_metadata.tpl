@@ -12,7 +12,7 @@
                   loading="lazy"
           >
 
-          <dl class="dl-vertical">
+          <dl>
             {if $WMSServiceTitle}
             <dt>{@view~map.metadata.description.title@}</dt>
             <dd>{$WMSServiceTitle}&nbsp;</dd>
