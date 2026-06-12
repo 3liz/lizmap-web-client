@@ -26,8 +26,7 @@ class qgis_projectsCtrl extends jController
     {
         /** @var jResponseHtml */
         $rep = $this->getResponse('html');
-        $rep->title = 'Admin - Lizmap projects';
-
+        $rep->title = jLocale::get('admin~admin.project.page.title');
 
         // Set the HTML content
         $tpl = new jTpl();
