@@ -61,7 +61,7 @@ export default class Permalink {
                         id="permalink-clear-history"
                         @click=${()=> this._clearPermalinkHistory()}>${lizDict['permalink.history.delete.all.title']}</span>
                 </div>
-                <table class='table table-sm table-condensed'>
+                <table class='table table-sm'>
                     <tbody>
                         ${links.map((l,k) => {
                             return html`<tr data-url="${l.url}" data-share="${l.link}" class="${newEntry && k== 0 ? 'new-entry' : ''}">

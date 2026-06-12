@@ -35,9 +35,6 @@ export default function executeJSFromServer() {
             var search = $('#nominatim-search');
             if (search.length != 0) {
                 $('#mapmenu').append(search);
-                $(
-                    '#nominatim-search div.dropdown-menu'
-                ).removeClass('pull-right').addClass('pull-left');
             }
 
             //calculate dock position and size
