@@ -1536,6 +1536,10 @@ Timemanager
   color:#333;
 }
 
+#metadata dd, #sub-dock dd {
+  margin-left: 10px;
+}
+
 #menu {
   float : left;
   width : 300px;
@@ -2016,13 +2020,14 @@ lizmap-dxfexport .dxfexport-actions {
   text-align:right;
 }
 
-#print-template{max-width: 125px;}
-
 #print-parameters {
+  display: flex;
+  gap: 8px;
   margin-bottom: 10px;
 }
 
-#print-parameters td, #print-parameters td select{
+#print-parameters .print-param-col {
+  flex: 1;
   padding-left: 1px;
   padding-right: 1px;
 }
@@ -2044,7 +2049,7 @@ lizmap-print .print-rotation span {
   display: block;
 }
 
-lizmap-print .print-rotation .add-on {
+lizmap-print .print-rotation .input-group-text {
   font-weight: bold;
 }
 
@@ -2507,9 +2512,7 @@ lizmap-mouse-position .readonly-position{
 }
 
 lizmap-mouse-position > div.coords-unit > select{
-  width: 65px;
-  margin: 0;
-  padding: 0;
+  max-width: 82px;
 }
 
 /* Attribution */
@@ -2547,7 +2550,7 @@ lizmap-mouse-position > div.coords-unit > select{
 }
 
 #permalink {
-  padding:2px;
+  padding:6px;
 }
 
 #permalink-box div.permalink-tab-content {
@@ -3425,10 +3428,6 @@ input[type="color"].digitizing-color{
   width: 6em;
 }
 
-.digitizing-constraints .angle ~ .add-on{
-  font-size: x-large;
-}
-
 lizmap-digitizing details {
   padding: 5px;
   cursor: pointer;
@@ -4032,6 +4031,11 @@ table.lizmap-features-table-container tbody tr.lizmap-features-table-item {
   &:hover, &:focus, &:active, &.popup-displayed {
       background-color: var(--color-contrasted-elements);
       color: var(--color-contrasted-text);
+
+      & td, & th {
+          background-color: var(--color-contrasted-elements);
+          color: var(--color-contrasted-text);
+      }
   }
 }
 
