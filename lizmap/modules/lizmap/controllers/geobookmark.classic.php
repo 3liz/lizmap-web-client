@@ -206,6 +206,7 @@ class geobookmarkCtrl extends jController
         foreach ($gbList as $gb) {
             $gbParams = json_decode(htmlspecialchars_decode($gb->params, ENT_QUOTES));
         }
+
         /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
         $rep->data = $gbParams;
