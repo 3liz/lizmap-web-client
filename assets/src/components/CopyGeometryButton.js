@@ -22,8 +22,8 @@ export default class CopyGeometryButton extends HTMLElement {
     connectedCallback() {
         this._template = () => html`
             <button
-                class="btn btn-small ${this._active ? 'active btn-primary' : ''}"
-                data-original-title="${lizDict['digitizing.toolbar.copyGeometry'] || 'Copy existing geometry'}"
+                class="btn btn-sm ${this._active ? 'active btn-primary' : ''}"
+                data-bs-title="${lizDict['digitizing.toolbar.copyGeometry'] || 'Copy existing geometry'}"
                 ?disabled=${!this._canActivate()}
                 @click=${() => this._toggle()}>
                 <svg>

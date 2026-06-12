@@ -63,17 +63,17 @@ export default class MousePosition extends HTMLElement {
         >`;
         return html`
             <div class="mouse-position">
-                <div class="editable-position ${['dm', 'dms', 'mgrs'].includes(this._displayUnit) ? 'hide' : ''}">
+                <div class="editable-position d-flex ${['dm', 'dms', 'mgrs'].includes(this._displayUnit) ? 'd-none' : ''}">
                     ${inputLongitude}${inputLatitude}
                 </div>
-                <div class="readonly-position ${['dm', 'dms', 'mgrs'].includes(this._displayUnit) ? '' : 'hide'}">
+                <div class="readonly-position ${['dm', 'dms', 'mgrs'].includes(this._displayUnit) ? '' : 'd-none'}">
                     <span>${lon}</span>
                     <span>${lat}</span>
                 </div>
                 <button class="btn btn-sm" title="${lizDict['mouseposition.removeCenterPoint']}" @click=${() => this._removeCenterPoint()}><i class="icon-refresh"></i></button>
             </div>
             <div class="coords-unit">
-                <select class="form-select" title="${lizDict['mouseposition.select']}" @change=${(event) => { this.displayUnit = event.target.value }}>
+                <select class="form-select form-select-sm" title="${lizDict['mouseposition.select']}" @change=${(event) => { this.displayUnit = event.target.value }}>
                     ${this._qgisProjectProjectionUnits === 'm' ? html`
                     <option selected value="m">${lizDict['mouseposition.units.m']}</option>` : ''}
                     ${ ['ft', 'us-ft'].includes(this._qgisProjectProjectionUnits) ? html`

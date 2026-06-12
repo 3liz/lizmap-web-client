@@ -38,8 +38,8 @@ export default class GeolocationSurvey extends HTMLElement {
                 <div class="form-group">
                     <div><button class="btn ${mainLizmap.geolocationSurvey.distanceMode ? 'active btn-success' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleDistanceMode()}>${lizDict['geolocation.survey.distance']}</button></div>
                     <div class="controls">
-                        <div class="input-append">
-                            <input class="form-control form-control-sm" type="number" min="0" @change=${ (event) => mainLizmap.geolocationSurvey.distanceLimit = parseInt(event.target.value)}><span class="add-on">m</span>
+                        <div class="input-group input-group-sm">
+                            <input class="form-control" type="number" min="0" @change=${ (event) => mainLizmap.geolocationSurvey.distanceLimit = parseInt(event.target.value)}><span class="input-group-text">m</span>
                         </div>
                         ${mainLizmap.geolocationSurvey.distanceMode ? html`${mainLizmap.edition.lastSegmentLength}` : ''}
                     </div>
@@ -47,12 +47,12 @@ export default class GeolocationSurvey extends HTMLElement {
                 <div class="form-group">
                     <div><button class="btn ${mainLizmap.geolocationSurvey.timeMode ? 'active btn-success' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleTimeMode()}>${lizDict['geolocation.survey.time']}</button></div>
                     <div class="controls">
-                        <div class="input-append">
-                            <input class="form-control form-control-sm" type="number" min="0" @change=${ (event) => mainLizmap.geolocationSurvey.timeLimit = parseInt(event.target.value)}><span class="add-on">s</span>
+                        <div class="input-group input-group-sm">
+                            <input class="form-control" type="number" min="0" @change=${ (event) => mainLizmap.geolocationSurvey.timeLimit = parseInt(event.target.value)}><span class="input-group-text">s</span>
                         </div>
                         ${mainLizmap.geolocationSurvey.timeMode ?
-                            html`<div class="input-append">
-                                    <input class="form-control form-control-sm" type="text" disabled="disabled" value="${mainLizmap.geolocationSurvey.timeCount}">
+                            html`<div class="input-group input-group-sm">
+                                    <input class="form-control" type="text" disabled="disabled" value="${mainLizmap.geolocationSurvey.timeCount}">
                                     <button class="btn ${mainLizmap.geolocationSurvey.timePauseMode ? 'active btn-success' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleTimePauseMode()}><i class="icon-pause"></i></button>
                                 </div>` : ''}
                     </div>
@@ -60,8 +60,8 @@ export default class GeolocationSurvey extends HTMLElement {
                 <div class="form-group">
                     <div><button class="btn ${mainLizmap.geolocationSurvey.accuracyMode ? 'active btn-success' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleAccuracyMode()}>${lizDict['geolocation.survey.accuracy']}</button></div>
                     <div class="controls">
-                        <div class="input-append">
-                            <input class="form-control form-control-sm" type="number" min="0" @change=${ (event) => mainLizmap.geolocationSurvey.accuracyLimit = parseInt(event.target.value)}><span class="add-on">m</span>
+                        <div class="input-group input-group-sm">
+                            <input class="form-control" type="number" min="0" @change=${ (event) => mainLizmap.geolocationSurvey.accuracyLimit = parseInt(event.target.value)}><span class="input-group-text">m</span>
                         </div>
                         ${mainLizmap.geolocationSurvey.accuracyMode ? html`${mainLizmap.geolocation.accuracy}` : ''}
                     </div>
@@ -70,8 +70,8 @@ export default class GeolocationSurvey extends HTMLElement {
             <div class="form-group">
                 <div><button class="btn ${mainLizmap.geolocationSurvey.averageRecordMode ? 'active btn-success' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleAverageRecordMode()}>${lizDict['geolocation.survey.average']}</button></div>
                 <div class="controls">
-                    <div class="input-append">
-                        <input class="form-control form-control-sm" type="number" min="0" @change=${ (event) => mainLizmap.geolocationSurvey.averageRecordLimit = parseInt(event.target.value)}><span class="add-on">s</span>
+                    <div class="input-group input-group-sm">
+                        <input class="form-control" type="number" min="0" @change=${ (event) => mainLizmap.geolocationSurvey.averageRecordLimit = parseInt(event.target.value)}><span class="input-group-text">s</span>
                     </div>
                 </div>
             </div>

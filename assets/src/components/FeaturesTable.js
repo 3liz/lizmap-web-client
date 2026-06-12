@@ -353,7 +353,7 @@ export default class FeaturesTable extends HTMLElement {
                 // Add bootstrap classes to the popup tables
                 const popupTable = aTarget.querySelector('table.lizmapPopupTable');
                 if (popupTable) {
-                    popupTable.classList.add('table', 'table-condensed', 'table-sm', 'table-bordered', 'table-striped');
+                    popupTable.classList.add('table', 'table-sm', 'table-bordered', 'table-striped');
                 }
 
                 // Show popup and hide other children
@@ -611,7 +611,7 @@ export default class FeaturesTable extends HTMLElement {
                 <h4>${this.layerTitle}</h4>
                 ${this.features.length > 0 ? html`
                 <div class="lizmap-features-table-toolbar">
-                    <button class="btn btn-mini previous-popup"
+                    <button class="btn btn-sm previous-popup"
                         title="${lizDict['featuresTable.toolbar.previous']}"
                         @click=${() => {
                         // Click on the previous item
@@ -619,7 +619,7 @@ export default class FeaturesTable extends HTMLElement {
                         const featureDiv = this.querySelector(`tr.lizmap-features-table-item[data-line-id="${lineNumber}"]`);
                         if (featureDiv) featureDiv.click();
                     }}></button>
-                    <button class="btn btn-mini next-popup"
+                    <button class="btn btn-sm next-popup"
                         title="${lizDict['featuresTable.toolbar.next']}"
                         @click=${() => {
                         // Click on the next item
@@ -627,7 +627,7 @@ export default class FeaturesTable extends HTMLElement {
                         const featureDiv = this.querySelector(`tr.lizmap-features-table-item[data-line-id="${lineNumber}"]`);
                         if (featureDiv) featureDiv.click();
                     }}></button>
-                    <button class="btn btn-mini close-popup"
+                    <button class="btn btn-sm close-popup"
                         title="${lizDict['featuresTable.toolbar.close']}"
                         @click=${() => {
                         const checkFeatureId = (this.dataset.activeItemFeatureId) ?? "";
@@ -635,7 +635,7 @@ export default class FeaturesTable extends HTMLElement {
                         this.dataset.activeItemFeatureId = ""
                     }}></button>
                 </div>
-                <table class="table table-sm table-bordered table-condensed lizmap-features-table-container">
+                <table class="table table-sm table-bordered table-striped lizmap-features-table-container">
                     ${this.buildLabels()}
                     <tbody>
                         ${this.features.map((feature, idx) =>
