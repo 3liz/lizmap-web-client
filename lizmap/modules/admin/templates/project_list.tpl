@@ -4,7 +4,7 @@
 
 <div id="lizmap_project_list_container">
     <div id="lizmap_project_list">
-        {$projectList}
+        {zone 'admin~project_list', ["repository" => '']}
     </div>
 </div>
 
