@@ -186,37 +186,6 @@ parameters:
       path: lizmap/modules/lizmap/classes/qgisVectorLayer.class.php
 
     -
-      message: "#^Access to an undefined property jResponse\\:\\:\\$content\\.$#"
-      count: 3
-      path: lizmap/modules/lizmap/controllers/ban.classic.php
-
-    -
-      message: "#^Access to an undefined property jResponse\\:\\:\\$mimeType\\.$#"
-      count: 1
-      path: lizmap/modules/lizmap/controllers/ban.classic.php
-
-    -
-      message: "#^Access to an undefined property jResponse\\:\\:\\$outputFileName\\.$#"
-      count: 1
-      path: lizmap/modules/lizmap/controllers/ban.classic.php
-
-    -
-      message: "#^Binary operation \"\\+\" between string and \\(float\\|int\\) results in an error\\.$#"
-      count: 2
-      path: lizmap/modules/lizmap/controllers/ban.classic.php
-
-    -
-      message: "#^Binary operation \"\\-\" between string and string results in an error\\.$#"
-      count: 2
-      path: lizmap/modules/lizmap/controllers/ban.classic.php
-
-    -
-      message: "#^Method banCtrl\\:\\:search\\(\\) should return jResponseBinary but returns jResponse\\.$#"
-      count: 3
-      path: lizmap/modules/lizmap/controllers/ban.classic.php
-
-
-    -
       message: "#^Access to an undefined property jFormsControl\\:\\:\\$datasource\\.$#"
       count: 2
       path: lizmap/modules/lizmap/controllers/edition.classic.php
@@ -272,16 +241,6 @@ parameters:
       message: "#^Property editionCtrl\\:\\:\\$layerXml \\(SimpleXMLElement\\) does not accept default value of type string\\.$#"
       count: 1
       path: lizmap/modules/lizmap/controllers/edition.classic.php
-
-    -
-      message: "#^Access to an undefined property jResponse\\:\\:\\$data\\.$#"
-      count: 2
-      path: lizmap/modules/lizmap/controllers/geobookmark.classic.php
-
-    -
-      message: "#^Call to an undefined method jResponse\\:\\:addContent\\(\\)\\.$#"
-      count: 1
-      path: lizmap/modules/lizmap/controllers/geobookmark.classic.php
 
     -
       message: "#^Variable \\$params might not be defined\\.$#"
@@ -444,10 +403,6 @@ parameters:
       count: 1
       path: lizmap/modules/lizmap/lib/Form/QgisFormValueRelationDynamicDatasource.php
 
-    -
-      message: "#^Cannot access property \\$sequence_name on object\\|true\\.$#"
-      count: 1
-      path: lizmap/modules/lizmap/lib/Logger/MigratorFromSqlite.php
 
     -
       message: "#^Access to an undefined property object\\:\\:\\$id\\.$#"
@@ -534,15 +489,6 @@ parameters:
       count: 1
       path: lizmap/modules/view/classes/lizmapMapDockItem.class.php
 
-    -
-      message: "#^Inner named functions are not supported by PHPStan\\. Consider refactoring to an anonymous function, class method, or a top\\-level\\-defined function\\. See issue \\#165 \\(https\\://github\\.com/phpstan/phpstan/issues/165\\) for more details\\.$#"
-      count: 1
-      path: lizmap/modules/view/controllers/lizAjax.classic.php
-
-    -
-      message: "#^Inner named functions are not supported by PHPStan\\. Consider refactoring to an anonymous function, class method, or a top\\-level\\-defined function\\. See issue \\#165 \\(https\\://github\\.com/phpstan/phpstan/issues/165\\) for more details\\.$#"
-      count: 1
-      path: lizmap/modules/view/controllers/lizMap.classic.php
     -
       message: "#^Call to an undefined static method jLocale::getBundle\\(\\)\\.$#"
       count: 1
