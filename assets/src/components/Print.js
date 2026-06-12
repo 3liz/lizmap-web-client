@@ -126,32 +126,28 @@ export default class Print extends HTMLElement {
 
     _template() {
         return html`
-            <table id="print-parameters" class="table table-condensed">
-                <tr>
-                    <td>${lizDict['print.toolbar.layout']}</td>
-                    <td>${lizDict['print.toolbar.scale']}</td>
-                </tr>
-                <tr>
-                    <td>
-                        <select id="print-template" class="form-select" @change=${(event) => { this.printTemplate = event.target.value }}>
-                            ${this._printTemplates.map((template, index) => html`<option value=${index}>${template.title}</option>`)}
-                        </select>
-                    </td>
-                    <td>
-                        <div class="print-scale-container">
-                            ${!this._useCustomScale
-                                ? html`<select id="print-scale" class="btn-print-scales form-select" .value=${this._printScale} @change=${(event) => { this.printScale = parseInt(event.target.value) }}>
-                                        ${this._printScales.map( scale => html`<option .selected=${scale === this._printScale} value=${scale}>${scale.toLocaleString()}</option>`)}
-                                    </select>`
-                                : html`<input id="print-scale-custom" type="number" class="form-control" .value=${this._printScale} @change=${(event) => { this.printScale = parseInt(event.target.value) }} min="1">`
-                            }
-                            <button class="btn btn-sm btn-outline-secondary" title="${lizDict['print.toolbar.scale.toggle']}" @click=${() => { this._useCustomScale = !this._useCustomScale; render(this._template(), this); }}>
-                                ${this._useCustomScale ? html`<span>📋</span>` : html`<span>✏️</span>`}
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            </table>
+            <div id="print-parameters">
+                <div class="print-param-col">
+                    <div>${lizDict['print.toolbar.layout']}</div>
+                    <select id="print-template" class="form-select" @change=${(event) => { this.printTemplate = event.target.value }}>
+                        ${this._printTemplates.map((template, index) => html`<option value=${index}>${template.title}</option>`)}
+                    </select>
+                </div>
+                <div class="print-param-col">
+                    <div>${lizDict['print.toolbar.scale']}</div>
+                    <div class="print-scale-container">
+                        ${!this._useCustomScale
+                            ? html`<select id="print-scale" class="btn-print-scales form-select" .value=${this._printScale} @change=${(event) => { this.printScale = parseInt(event.target.value) }}>
+                                    ${this._printScales.map( scale => html`<option .selected=${scale === this._printScale} value=${scale}>${scale.toLocaleString()}</option>`)}
+                                </select>`
+                            : html`<input id="print-scale-custom" type="number" class="form-control" .value=${this._printScale} @change=${(event) => { this.printScale = parseInt(event.target.value) }} min="1">`
+                        }
+                        <button class="btn btn-sm btn-outline-secondary" title="${lizDict['print.toolbar.scale.toggle']}" @click=${() => { this._useCustomScale = !this._useCustomScale; render(this._template(), this); }}>
+                            ${this._useCustomScale ? html`<span>📋</span>` : html`<span>✏️</span>`}
+                        </button>
+                    </div>
+                </div>
+            </div>
             ${this._printTemplates?.[this.printTemplate]?.labels?.length
                 ? html`
                 <div class="print-labels">
@@ -175,22 +171,22 @@ export default class Print extends HTMLElement {
                 </div>`) : ''}
                 <div class='print-grid'>
                     <span>${lizDict['print.gridIntervals']}</span>
-                    <div>
-                        <div class="input-append">
-                            <input type="number" class="input-small" min="0" placeholder="X" @change=${(event) => { this._gridX = parseInt(event.target.value) }}>
-                            <span class="add-on">${this._projectionUnit}</span>
+                    <div class="d-flex gap-2">
+                        <div class="input-group input-group-sm">
+                            <input type="number" class="form-control" min="0" placeholder="X" @change=${(event) => { this._gridX = parseInt(event.target.value) }}>
+                            <span class="input-group-text">${this._projectionUnit}</span>
                         </div>
-                        <div class="input-append">
-                            <input type="number" class="input-small" min="0" placeholder="Y" @change=${(event) => { this._gridY = parseInt(event.target.value) }}>
-                            <span class="add-on">${this._projectionUnit}</span>
+                        <div class="input-group input-group-sm">
+                            <input type="number" class="form-control" min="0" placeholder="Y" @change=${(event) => { this._gridY = parseInt(event.target.value) }}>
+                            <span class="input-group-text">${this._projectionUnit}</span>
                         </div>
                     </div>
                 </div>
                 <div class='print-rotation' style="display:none;">
                     <span>${lizDict['print.rotation']}</span>
-                    <div class="input-append">
-                        <input type="number" class="input-small" @change=${(event) => { this._rotation = parseInt(event.target.value) }}>
-                        <span class="add-on">°</span>
+                    <div class="input-group input-group-sm">
+                        <input type="number" class="form-control" @change=${(event) => { this._rotation = parseInt(event.target.value) }}>
+                        <span class="input-group-text">°</span>
                     </div>
                 </div>
             </details>

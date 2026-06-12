@@ -197,7 +197,7 @@ export default class Digitizing extends HTMLElement {
                 <label for="textRotation">
                     ${lizDict['digitizing.toolbar.textRotation']}
                 </label>
-                <div class="input-append">
+                <div class="input-group">
                     <input
                         id="textRotation"
                         type="number"
@@ -207,7 +207,7 @@ export default class Digitizing extends HTMLElement {
                             event => mainLizmap.digitizing.editedFeatureTextRotation = parseInt(event.target.value)
                         }
                         >
-                    <span class="add-on">°</span>
+                    <span class="input-group-text">°</span>
                 </div>
             </div>
         `;
@@ -420,7 +420,7 @@ export default class Digitizing extends HTMLElement {
                     </summary>
                     ${lizDict['digitizing.constraint.details']}
                 </details>
-                <div class="digitizing-constraint-distance input-append">
+                <div class="digitizing-constraint-distance input-group input-group-sm mb-3">
                     <input
                         type="number"
                         placeholder="${lizDict['digitizing.constraint.distance']}"
@@ -431,9 +431,9 @@ export default class Digitizing extends HTMLElement {
                             event => mainLizmap.digitizing.distanceConstraint = event.target.value
                         }
                         >
-                    <span class="add-on">m</span>
+                    <span class="input-group-text">m</span>
                 </div>
-                <div class="digitizing-constraint-angle input-append">
+                <div class="digitizing-constraint-angle input-group input-group-sm">
                     <input
                         type="number"
                         placeholder="${lizDict['digitizing.constraint.angle']}"
@@ -443,7 +443,7 @@ export default class Digitizing extends HTMLElement {
                             event => mainLizmap.digitizing.angleConstraint = event.target.value
                         }
                         >
-                    <span class="add-on">°</span>
+                    <span class="input-group-text">°</span>
                 </div>
             </div>
             ${this.textToolsAvailable ? textToolsTemplate(

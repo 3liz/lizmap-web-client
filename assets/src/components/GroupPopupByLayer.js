@@ -27,7 +27,7 @@ export default class GroupPopupByLayer extends HTMLElement {
             <div class="lizmap-gpl-container" style="display:none;">
                 ${!this._currentFeature ? html`
                     <h4>${lizDict['groupPopupByLayer.title']}</h4>
-                    <table class="table table-sm table-condensed lizmap-gpl-table">
+                    <table class="table table-sm lizmap-gpl-table">
                         <tbody>
                         ${Object.keys(this._currentPopupsElements).map((k) => html`
                             <tr layer-id="${this._currentPopupsElements[k].layerId}" @click=${(e) =>
@@ -52,7 +52,7 @@ export default class GroupPopupByLayer extends HTMLElement {
                             </div>
                             <div class="gpl-nav-buttons">
                                 <button
-                                    class="btn btn-mini gpl-prev-popup"
+                                    class="btn btn-sm gpl-prev-popup"
                                     title="${lizDict['groupPopupByLayer.nav.prev']}"
                                     @click=${
                                         ()=> {
@@ -64,7 +64,7 @@ export default class GroupPopupByLayer extends HTMLElement {
                                         }
                                     }></button>
                                 <button
-                                    class="btn btn-mini gpl-next-popup"
+                                    class="btn btn-sm gpl-next-popup"
                                     title="${lizDict['groupPopupByLayer.nav.next']}"
                                     @click=${
                                         ()=> {
