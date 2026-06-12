@@ -1895,7 +1895,7 @@ var lizAttributeTable = function() {
                                             const options = Object.keys(keyValues)
                                                             .map((k) => {return {id:k, description:keyValues[k] ?? ''}})
                                                             .filter((o) => detail &&
-                                                                o.description.toLowerCase().includes(detail.toLowerCase()));
+                                                                o.description.toString().toLowerCase().includes(detail.toString().toLowerCase()));
                                             // set component options list
                                             typeahead.options = options;
                                         })
