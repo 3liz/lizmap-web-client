@@ -178,11 +178,9 @@ class lizAjaxCtrl extends jController
         // Get optional WMS public url list
         if ($lser->wmsPublicUrlList) {
             $publicUrlList = $lser->wmsPublicUrlList;
-            function f($x)
-            {
+            $pul = array_map(function ($x) {
                 return jUrl::getFull('lizmap~service:index', array(), 0, trim($x));
-            }
-            $pul = array_map('f', explode(',', $publicUrlList));
+            }, explode(',', $publicUrlList));
             $lizUrls['publicUrlList'] = $pul;
         }
 
