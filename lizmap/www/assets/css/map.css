@@ -1672,6 +1672,27 @@ div.modal .form-horizontal .controls {
   margin-right: 10px;
 }
 
+/* BS5 horizontal layout for the editing form: label column (left) and
+   control column (right) are BS5 grid columns (.col-4 / .col-8). The
+   .jforms-label-col / .jforms-control-col classes are only emitted by the
+   edition templates, so these rules stay scoped to editing forms (including
+   relation subforms and modals). The label keeps its .form-label class, so
+   we just tidy its spacing inside the column. */
+.form-group.row > .jforms-label-col {
+  hyphens: auto;
+  overflow-wrap: break-word;
+  padding-right: 0;
+}
+
+.form-group.row > .jforms-label-col .form-label,
+.form-group.row > .jforms-label-col label {
+  margin-bottom: 0;
+}
+
+.form-group.row > .jforms-control-col {
+  min-width: 0;
+}
+
 /* Drag-and-drop popup: flex layout for label/value rows.
    Selectors use div.container.popup_lizmap_dd (specificity 31) to
    beat any stale theme CSS with equal selectors + !important (specificity 21). */
