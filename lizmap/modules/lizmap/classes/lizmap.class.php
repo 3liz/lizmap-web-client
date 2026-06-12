@@ -132,9 +132,9 @@ class lizmap
     /**
      * Get a list of repository names.
      *
-     * @return string[] List of repositories names
+     * @return Repository[]|string[] List of repositories names
      */
-    public static function getRepositoryList()
+    public static function getRepositoryList(bool $asObject = false)
     {
         // read the lizmap configuration file
         $readConfigPath = parse_ini_file(jApp::varPath().self::$lizmapConfig, true);
@@ -145,6 +145,9 @@ class lizmap
             }
         }
         self::$repositories = $repositoryList;
+        if ($asObject) {
+            return array_map(function ($name) {return lizmap::getRepository($name); }, self::$repositories);
+        }
 
         return self::$repositories;
     }
