@@ -157,6 +157,7 @@ class project_listZone extends jZone
         $this->_tpl->assign('lizmapVersion', $lizmapInfo->version);
         $this->_tpl->assign('oldQgisVersionDiff', $oldQgisVersionDelta);
         $this->_tpl->assign('lizmapDesktopRecommended', $lizmapDesktopRecommended);
+        $this->_tpl->assign('repository', $repository);
         // Add the application base path to let the template load the CSS and JS assets
         $basePath = jApp::urlBasePath();
         $this->_tpl->assign('basePath', $basePath);
