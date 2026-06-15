@@ -1257,22 +1257,29 @@ SubDock
   background-color: #F0F0F0;
 }
 
-#attributeLayers-tabs > li > a {
-  border:none;
-  background:none;
-  color:grey;
+/* Bottom-dock tabs. In Bootstrap 5 the tab is a `button.nav-link` (or
+   `a.nav-link`) inside `li.nav-item`, and the active state is carried by the
+   `.nav-link.active` element - not by `li.active` as in Bootstrap 2. The old
+   `> li > a` / `> li.active > a` selectors no longer matched, so the active tab
+   lost its styling. Target `.nav-link` and restore a filled active tab close to
+   the Bootstrap 2 reference (used by the attribute-table "Data" tab). */
+#attributeLayers-tabs > li > .nav-link {
+  border: 1px solid transparent;
+  border-radius: 0.25rem 0.25rem 0 0;
+  background: none;
+  color: #555;
 }
 
-#bottom-dock.fullsize #attributeLayers-tabs > li > a {
+#bottom-dock.fullsize #attributeLayers-tabs > li > .nav-link {
   margin-top:10px;
 }
 
-#attributeLayers-tabs > li.active > a, #attributeLayers-tabs > li > a:hover {
-  border:none;
-  background:none;
-  color:white;
+#attributeLayers-tabs > li > .nav-link.active,
+#attributeLayers-tabs > li > .nav-link:hover {
+  border-color: #6c8aa3;
+  background-color: #6c8aa3;
+  color: #fff;
 }
-
 
 #attributeLayers table th {
   white-space: nowrap !important;
@@ -1320,6 +1327,33 @@ SubDock
 
 #attribute-summary.attribute-content.bottom-content{
   overflow:auto;
+}
+
+/* Attribute-table layer list: in Bootstrap 5 a bare `.btn` keeps the default
+   (medium) padding, which made each row taller than in Bootstrap 2 and pushed
+   the "Options" section (cascade filter checkbox) out of the visible dock.
+   Tighten the rows so the whole panel fits as it did before. */
+#attribute-layer-list-table > tbody > tr > td {
+  padding-top: 0.15rem;
+  padding-bottom: 0.15rem;
+  vertical-align: middle;
+}
+
+#attribute-layer-list-table .btn-open-attribute-layer {
+  padding: 0.1rem 0.5rem;
+}
+
+/* "Options" cascade checkbox: the label keeps the Bootstrap 2 `.checkbox`
+   class and nests the input directly before the text, but there is no BS5
+   `.form-check` wrapper, so the checkbox-to-label gap was lost. Put it back
+   and keep the option on its own line. */
+#attribute-summary label.checkbox {
+  display: block;
+  margin-top: 0.25rem;
+}
+
+#attribute-summary label.checkbox > input {
+  margin-right: 0.4em;
 }
 
 .attribute-layer-main {
@@ -1693,6 +1727,18 @@ div.modal .form-horizontal .controls {
   min-width: 0;
 }
 
+/* QGIS "checkboxes" / "radiobuttons" (value-relation, value-map) controls
+   render each option as a Bootstrap 5 `.form-check`. The default `.form-check`
+   spacing (min-height 1.5rem + margin-bottom) stretches long option lists,
+   making the editing form overflow and the group label collide with the rows.
+   Compact the per-option spacing to match the Bootstrap 2 layout. Single
+   boolean checkboxes have no `.form-check` wrapper, so they are unaffected. */
+.form-check:has(> label.checkbox),
+.form-check:has(> label.radio) {
+  min-height: auto;
+  margin-bottom: 0;
+}
+
 /* Drag-and-drop popup: flex layout for label/value rows.
    Selectors use div.container.popup_lizmap_dd (specificity 31) to
    beat any stale theme CSS with equal selectors + !important (specificity 21). */
@@ -1922,6 +1968,15 @@ transform: none !important;
 /* Space the draw button away from the layer selector above it. */
 #edition-creation #edition-draw {
   margin-top: 6px;
+}
+
+/* The left dock is a flex item that sizes to its content. When the editing
+   panel only shows the layer selector (before a feature form is loaded), a
+   short layer name would otherwise collapse the whole dock to a tiny width.
+   Give the creation area a sensible minimum so the selector keeps a usable
+   width, close to the Bootstrap 2 layout. */
+#edition-creation {
+  min-width: 13rem;
 }
 
 /* Space the DXF export button away from the options above it. */
@@ -3339,6 +3394,28 @@ lizmap-paste-stored-geom > button {
   vertical-align: text-bottom;
 }
 
+/* Selection-tool "Buffer" field. The control is a `<label>` holding the caption
+   span followed by a Bootstrap 5 `.input-group` (number input + "m" unit). In
+   BS5 `.input-group` is `display:flex; width:100%`, so it broke onto its own
+   full-width line below the caption. Lay the label out as a flex row and keep
+   the input compact so caption + input + unit sit inline, as in Bootstrap 2. */
+.selectiontool-buffer > label {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  margin-bottom: 0;
+}
+
+.selectiontool-buffer .input-group {
+  width: auto;
+  flex: 0 1 auto;
+}
+
+.selectiontool-buffer .input-group .form-control {
+  width: 4.5em;
+  flex: 0 0 auto;
+}
+
 lizmap-selection-invert svg {
   width: 14px;
   height: 14px;
@@ -3570,6 +3647,23 @@ lizmap-geolocation .geolocation-infos {
     margin-top: 5px;
 }
 
+/* Geolocation controls row. The "stay centered" group is a Bootstrap 5
+   `.input-group`, which is `display:flex; width:100%`, so it dropped onto its
+   own line below the Start/Center buttons. Lay the bar out as a flex row and
+   let the input-group take only the width it needs, so the controls sit on one
+   line as in Bootstrap 2 (wrapping only when the panel is genuinely too narrow). */
+lizmap-geolocation .button-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+lizmap-geolocation .bind-group.input-group {
+  width: auto;
+  flex: 0 1 auto;
+}
+
 lizmap-geolocation .bind-group{
   vertical-align: top;
 }
@@ -3721,6 +3815,15 @@ lizmap-feature-toolbar button:hover > [class^="icon-"],
   line-height: 25px;
   transform: scale(1.6);
   margin-right: 8px!important;
+}
+
+/* Filter unique-value checkbox options: each option is a `label.checkbox`
+   (Bootstrap 2 class) wrapping the input + label text. In Bootstrap 5
+   `.checkbox` is no longer a block, so the labels flowed inline and got
+   clipped. Force each onto its own line. */
+label.checkbox:has(.liz-filter-field-value) {
+  display: block;
+  margin-bottom: 0.1rem;
 }
 
 lizmap-fullscreen {
