@@ -42,6 +42,10 @@ class adminModuleInstaller extends jInstallerModule
             jAcl2DbManager::createRight('lizmap.tools.layer.export', 'admin~jacl2.lizmap.tools.layer.export', 'lizmap.grp');
             jAcl2DbManager::createRight('lizmap.admin.permalink.manage', 'admin~jacl2.lizmap.admin.permalink.manage', 'lizmap.admin.grp');
 
+            // Add permnalink table
+            $this->useDbProfile('jauth');
+            $this->execSQLScript('sql/lizpermalink');
+
             // Add the rights to the admins group
             jAcl2DbManager::addRight('admins', 'lizmap.admin.repositories.view');
             jAcl2DbManager::addRight('admins', 'lizmap.admin.services.view');
