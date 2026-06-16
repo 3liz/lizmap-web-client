@@ -54,6 +54,7 @@ class geobookmarkCtrl extends jController
         $messages = jMessage::getAll();
         jMessage::clearAll();
 
+        /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
         $rep->data = $messages;
 
@@ -102,6 +103,7 @@ class geobookmarkCtrl extends jController
     // Get bookmark content from templates
     public function getGeoBookmarks($repository = null, $project = null)
     {
+        /** @var jResponseHtmlFragment $rep */
         $rep = $this->getResponse('htmlfragment');
 
         $tpl = new jTpl();
@@ -204,6 +206,8 @@ class geobookmarkCtrl extends jController
         foreach ($gbList as $gb) {
             $gbParams = json_decode(htmlspecialchars_decode($gb->params, ENT_QUOTES));
         }
+
+        /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
         $rep->data = $gbParams;
 

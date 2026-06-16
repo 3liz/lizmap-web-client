@@ -247,11 +247,9 @@ class lizMapCtrl extends jController
         $lser = lizmap::getServices();
         if ($lser->wmsPublicUrlList) {
             $publicUrlList = $lser->wmsPublicUrlList;
-            function f($x)
-            {
-                return jUrl::getFull('lizmap~service:index', array(), 0, trim($x));
-            }
-            $pul = array_map('f', explode(',', $publicUrlList));
+            $pul = array_map(function ($domain) {
+                return jUrl::getFull('lizmap~service:index', array(), 0, trim($domain));
+            }, explode(',', $publicUrlList));
             $lizUrls['publicUrlList'] = $pul;
         }
 
