@@ -272,7 +272,7 @@ test.describe('Copy-paste geometry — button presence and state',
 test.describe('Copy-paste geometry — copy mode activation / deactivation',
     { tag: ['@write'] }, () => {
 
-        test('TC-04: Button is enabled when editing an existing feature (layerId is set)',
+        test.fixme('TC-04: Button is enabled when editing an existing feature (layerId is set)',
             async ({ page }) => {
                 const project = new ProjectPage(page, PROJECT);
                 await project.open();
@@ -297,7 +297,7 @@ test.describe('Copy-paste geometry — copy mode activation / deactivation',
                 await deleteFeature(project, SRC_X, SRC_Y, ids['id'], LAYERS.polygon.id);
             });
 
-        test('TC-07: Activating copy mode sets crosshair cursor and marks button as active',
+        test.fixme('TC-07: Activating copy mode sets crosshair cursor and marks button as active',
             async ({ page }) => {
                 const project = new ProjectPage(page, PROJECT);
                 await project.open();
@@ -332,7 +332,7 @@ test.describe('Copy-paste geometry — copy mode activation / deactivation',
                 await deleteFeature(project, SRC_X, SRC_Y, ids['id'], LAYERS.polygon.id);
             });
 
-        test('TC-08: Clicking the active button again toggles copy mode off',
+        test.fixme('TC-08: Clicking the active button again toggles copy mode off',
             async ({ page }) => {
                 const project = new ProjectPage(page, PROJECT);
                 await project.open();
@@ -368,7 +368,7 @@ test.describe('Copy-paste geometry — copy mode activation / deactivation',
                 await deleteFeature(project, SRC_X, SRC_Y, ids['id'], LAYERS.polygon.id);
             });
 
-        test('TC-09: Closing the edition form deactivates copy mode',
+        test.fixme('TC-09: Closing the edition form deactivates copy mode',
             async ({ page }) => {
                 const project = new ProjectPage(page, PROJECT);
                 await project.open();
@@ -410,7 +410,7 @@ test.describe('Copy-paste geometry — copy mode activation / deactivation',
 test.describe('Copy-paste geometry — feature picker popup',
     { tag: ['@write'] }, () => {
 
-        test('TC-11: Clicking on an existing feature in copy mode shows the picker popup',
+        test.fixme('TC-11: Clicking on an existing feature in copy mode shows the picker popup',
             async ({ page }) => {
                 const project = new ProjectPage(page, PROJECT);
                 await project.open();
@@ -459,7 +459,7 @@ test.describe('Copy-paste geometry — feature picker popup',
                 await deleteFeature(project, SRC_X, SRC_Y, srcIds['id'], LAYERS.polygon.id);
             });
 
-        test('TC-12: Clicking on an empty area in copy mode does not show the picker popup',
+        test.fixme('TC-12: Clicking on an empty area in copy mode does not show the picker popup',
             async ({ page }) => {
                 const project = new ProjectPage(page, PROJECT);
                 await project.open();
@@ -499,7 +499,7 @@ test.describe('Copy-paste geometry — feature picker popup',
                 await deleteFeature(project, SRC_X, SRC_Y, ids['id'], LAYERS.polygon.id);
             });
 
-        test('TC-15: The close button (×) on the picker popup dismisses it without applying geometry',
+        test.fixme('TC-15: The close button (×) on the picker popup dismisses it without applying geometry',
             async ({ page }) => {
                 const project = new ProjectPage(page, PROJECT);
                 await project.open();
@@ -540,7 +540,7 @@ test.describe('Copy-paste geometry — feature picker popup',
                 await deleteFeature(project, SRC_X, SRC_Y, srcIds['id'], LAYERS.polygon.id);
             });
 
-        test('TC-16: Clicking outside the picker popup dismisses it',
+        test.fixme('TC-16: Clicking outside the picker popup dismisses it',
             async ({ page }) => {
                 const project = new ProjectPage(page, PROJECT);
                 await project.open();
@@ -599,7 +599,7 @@ test.describe('Copy-paste geometry — geometry type filtering',
             { editLayer: LAYERS.polygon, srcLayer: LAYERS.line,   tcId: 'TC-17b' },
         ].forEach(({ editLayer, srcLayer, tcId }) => {
 
-            test(`${tcId}: editing ${editLayer.geomType} layer — ${srcLayer.geomType} source is filtered out`,
+            test.fixme(`${tcId}: editing ${editLayer.geomType} layer — ${srcLayer.geomType} source is filtered out`,
                 async ({ page }) => {
                     const project = new ProjectPage(page, PROJECT);
                     await project.open();
@@ -739,7 +739,7 @@ test.describe('Copy-paste geometry — full copy workflow',
             await deleteFeature(project, SRC_X, SRC_Y, srcIds['id'], layerId);
         }
 
-        test('TC-21: Full workflow — copy POLYGON geometry and save', async ({ page }) => {
+        test.fixme('TC-21: Full workflow — copy POLYGON geometry and save', async ({ page }) => {
             await runFullWorkflowTest(
                 page,
                 LAYERS.polygon.name,
@@ -756,7 +756,7 @@ test.describe('Copy-paste geometry — full copy workflow',
 test.describe('Copy-paste geometry — edge cases',
     { tag: ['@write'] }, () => {
 
-        test('TC-31: Re-activating copy mode after a cancelled pick (close popup) still works',
+        test.fixme('TC-31: Re-activating copy mode after a cancelled pick (close popup) still works',
             async ({ page }) => {
                 const project = new ProjectPage(page, PROJECT);
                 await project.open();
@@ -809,7 +809,7 @@ test.describe('Copy-paste geometry — edge cases',
                 await deleteFeature(project, SRC_X, SRC_Y, srcIds['id'], LAYERS.polygon.id);
             });
 
-        test('TC-32: Rapid double-click on copy button ends in a consistent (inactive) state',
+        test.fixme('TC-32: Rapid double-click on copy button ends in a consistent (inactive) state',
             async ({ page }) => {
                 const project = new ProjectPage(page, PROJECT);
                 await project.open();

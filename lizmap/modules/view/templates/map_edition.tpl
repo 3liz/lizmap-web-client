@@ -35,6 +35,12 @@
                     </div>
                 </div>
                 <div class="tab-pane" id="tabdigitization">
+                    <lizmap-digitizing
+                        context="edition"
+                        selected-tool="point"
+                        available-tools="point"
+                        measure
+                    ></lizmap-digitizing>
                     <div id="edition-geomtool-container" class="btn-group" data-toggle="buttons-radio"
                         style="display:none;">
                         <button id="edition-geomtool-nodetool" class="btn btn-sm"
@@ -57,10 +63,13 @@
                             data-bs-toggle="tooltip" data-bs-title="{@view~edition.geomtool.splitfeatures.title@}">
                             <i class="icon-none qgis_sprite mActionSplitFeatures"></i>
                         </button>
-                        <lizmap-reverse-geom class="btn btn-sm"
-                            data-bs-toggle="tooltip" data-bs-title="{@view~edition.geomtool.reversegeom.title@}">
-                        </lizmap-reverse-geom>
                     </div>
+                    {* lizmap-reverse-geom lives outside the legacy
+                       #edition-geomtool-container so it stays visible after the
+                       OL10 migration hides the legacy buttons. *}
+                    <lizmap-reverse-geom class="btn btn-sm"
+                        data-bs-toggle="tooltip" data-bs-title="{@view~edition.geomtool.reversegeom.title@}">
+                    </lizmap-reverse-geom>
                     <button id="edition-geomtool-restart-drawing" class="btn btn-sm"
                         data-bs-toggle="tooltip" data-bs-title="{@view~edition.geomtool.restartdrawing.title@}">
                         <i class="icon-refresh"></i>
