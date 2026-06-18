@@ -25,16 +25,16 @@
 {else}
     {formcontrols $fieldNames}
     <div class="form-group row mb-2 align-items-center">
-        <div class="col-4 jforms-label-col text-end">{ctrl_label}</div>
-        <div class="col-8 jforms-control-col">{ctrl_control}</div>
+        <div class="col-3 jforms-label-col text-end">{ctrl_label}</div>
+        <div class="col-9 jforms-control-col">{ctrl_control}</div>
     </div>
     {/formcontrols}
 {/if}
 
 
     <div class="form-group row mb-2 align-items-center">
-        <div class="col-4 jforms-label-col text-end">{ctrl_label "liz_future_action"}</div>
-        <div class="col-8 jforms-control-col">{ctrl_control "liz_future_action"}</div>
+        <div class="col-3 jforms-label-col text-end">{ctrl_label "liz_future_action"}</div>
+        <div class="col-9 jforms-control-col">{ctrl_control "liz_future_action"}</div>
     </div>
     <div class="jforms-submit-buttons form-actions">{formreset}{formsubmit}</div>
 {/form}

@@ -12,8 +12,8 @@
         </div>
     {else}
         <div class="form-group row mb-2 align-items-center">
-            <div class="col-4 jforms-label-col text-end">{ctrl_label $child->getCtrlRef()}</div>
-            <div class="col-8 jforms-control-col">{ctrl_control $child->getCtrlRef()}</div>
+            <div class="col-3 jforms-label-col text-end">{ctrl_label $child->getCtrlRef()}</div>
+            <div class="col-9 jforms-control-col">{ctrl_control $child->getCtrlRef()}</div>
         </div>
     {/if}
 {/foreach}
@@ -48,8 +48,8 @@
         <div id="{$child->getHtmlId()}" class="lizmap-form-relation" data-relation-id="{$child->getName()}" data-relation-referencedLayer="" data-relation-referencingLayer="d"></div>
     {else}
         <div class="form-group row mb-2 align-items-center">
-            <div class="col-4 jforms-label-col text-end">{ctrl_label $child->getCtrlRef()}</div>
-            <div class="col-8 jforms-control-col">{ctrl_control $child->getCtrlRef()}</div>
+            <div class="col-3 jforms-label-col text-end">{ctrl_label $child->getCtrlRef()}</div>
+            <div class="col-9 jforms-control-col">{ctrl_control $child->getCtrlRef()}</div>
         </div>
     {/if}
 {/foreach}

@@ -18,11 +18,9 @@ class checkboxes_htmlbootstrapFormWidget extends checkboxes_htmlFormWidget
 
     protected function outputLabelAsTitle($label, $attr)
     {
-        echo '<div class="col-3">';
         echo '<label class="',$attr['class'],'"',$attr['idLabel'],$attr['hint'],'>';
         echo htmlspecialchars($label, ENT_COMPAT | ENT_SUBSTITUTE), $attr['reqHtml'];
         echo "</label>\n";
-        echo '</div>';
     }
 
     public function outputControl()
@@ -49,9 +47,7 @@ class checkboxes_htmlbootstrapFormWidget extends checkboxes_htmlFormWidget
         } else {
             $value = (string) $value;
         }
-        echo '<div class="col-9">';
         $this->showRadioCheck($attr, $value, $span);
-        echo '</div>';
         $this->outputJs($this->ctrl->ref.'[]');
     }
 
