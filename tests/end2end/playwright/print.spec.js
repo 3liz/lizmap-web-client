@@ -98,6 +98,24 @@ test.describe('Print', () => {
         const customInput = page.locator('#print-scale-custom');
         await customInput.fill('33333');
 
+        // Mock file, because we test the request, not the file
+        await page.route('**/service*', async route => {
+            const request = await route.request();
+            if (request.postData()?.includes('GetPrint')) {
+                await route.fulfill({
+                    headers: {
+                        "Content-Description": "File Transfert",
+                        "Content-Disposition": "attachment; filename=\"print_print_labels.pdf\"",
+                        "Content-Transfer-Encoding": "binary",
+                        "Content-Type": "application/pdf",
+                    },
+                    path: playwrightTestFile('mock', 'print', 'print_print_labels-33333.pdf')
+                })
+                return;
+            }
+            await route.continue();
+        });
+
         // Wait for print request and launch it
         const getPrintPromise = printPage.waitForGetPrintRequest();
 
@@ -105,14 +123,70 @@ test.describe('Print', () => {
         await printPage.launchPrint();
 
         const getPrintRequest = await getPrintPromise;
-        const responseData = getPrintRequest.postData() ?? '';
-
         // Verify the custom scale value is used in the print request
-        expect(responseData).toContain('map0%3ASCALE=33333');
+        const expectedParameters = {
+            'SERVICE': 'WMS',
+            'REQUEST': 'GetPrint',
+            'VERSION': '1.3.0',
+            'FORMAT': 'pdf',
+            'TRANSPARENT': 'true',
+            'CRS': 'EPSG:2154',
+            'DPI': '100',
+            'TEMPLATE': 'print_labels',
+            'map0:SCALE': '33333',
+        };
+        requestExpect(getPrintRequest).toContainParametersInPostData(expectedParameters);
+
+        responseExpect(await getPrintRequest.response()).toBePdf();
+
+        // Stop listening to WMS requests
+        await page.unroute('**/service*');
     });
 
     test('Print requests', async ({ page }) => {
         const printPage = new PrintPage(page, 'print');
+
+        // Mock file, because we test the request, not the file
+        await page.route('**/service*', async route => {
+            const request = await route.request();
+            const searchParams = new URLSearchParams(request.postData() ?? '');
+            if (searchParams.get('SERVICE') !== 'WMS' ||
+                !searchParams.has('REQUEST') ||
+                searchParams.get('REQUEST') !== 'GetPrint') {
+                // Continue the request for non GetPrint requests
+                await route.continue();
+                return;
+            }
+            const format = searchParams.get('FORMAT') ?? '';
+            const template = searchParams.get('TEMPLATE') ?? 'print_labels';
+            const scale = searchParams.get('map0:SCALE') ?? 100000;
+            if (format.toLowerCase().includes('pdf')) {
+                await route.fulfill({
+                    headers: {
+                        "Content-Description": "File Transfert",
+                        "Content-Disposition": `attachment; filename="print_${template}.pdf"`,
+                        "Content-Transfer-Encoding": "binary",
+                        "Content-Type": "application/pdf",
+                    },
+                    path: playwrightTestFile('mock', 'print', `print_${template}-${scale}.pdf`)
+                })
+                return;
+            }
+            if (format.toLowerCase().includes('jpeg')) {
+                await route.fulfill({
+                    headers: {
+                        "Content-Description": "File Transfert",
+                        "Content-Disposition": `attachment; filename="print_${template}.jpg"`,
+                        "Content-Transfer-Encoding": "binary",
+                        "Content-Type": "image/jpeg",
+                    },
+                    path: playwrightTestFile('mock', 'print', `print_${template}-${scale}.jpg`)
+                })
+                return;
+            }
+            await route.continue();
+        });
+
         // Required GetPrint parameters
         const expectedParameters = {
             'SERVICE': 'WMS',
@@ -148,6 +222,9 @@ test.describe('Print', () => {
         let getPrintParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
         expect(getPrintParams.size).toBe(expectedLength);
 
+        // Get the mock response
+        responseExpect(await getPrintRequest.response()).toBePdf();
+
         // Test `print_overview` template
         await page.locator('#print-template').selectOption('1');
 
@@ -173,6 +250,9 @@ test.describe('Print', () => {
         getPrintParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
         expect(getPrintParams.size).toBe(expectedLength);
 
+        // Get the mock response
+        responseExpect(await getPrintRequest.response()).toBePdf();
+
         // Test `print_map` template
         await page.locator('#print-template').selectOption('2');
 
@@ -196,6 +276,9 @@ test.describe('Print', () => {
         requestExpect(getPrintRequest).toContainParametersInPostData(expectedParameters2);
         getPrintParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
         expect(getPrintParams.size).toBe(expectedLength);
+
+        // Get the mock response
+        responseExpect(await getPrintRequest.response()).toBeImageJpeg();
 
         // Redlining with circle
         await page.locator('#button-draw').click();
@@ -265,16 +348,60 @@ test.describe('Print', () => {
         requestExpect(getPrintRequest).toContainParametersInPostData(expectedParameters4);
         getPrintParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
         expect(getPrintParams.size).toBe(expectedLength);
+
+        // Get the mock response
+        responseExpect(await getPrintRequest.response()).toBePdf();
+
+        // Stop listening to WMS requests
+        await page.unroute('**/service*');
     });
 
     test('Print requests with selection', async ({ page }) => {
         const printPage = new PrintPage(page, 'print');
+
+        // Mock file, because we test the request, not the file
+        await page.route('**/service*', async route => {
+            const request = await route.request();
+            if (request.postData()?.includes('GetPrint')) {
+                await route.fulfill({
+                    headers: {
+                        "Content-Description": "File Transfert",
+                        "Content-Disposition": "attachment; filename=\"print_print_labels.pdf\"",
+                        "Content-Transfer-Encoding": "binary",
+                        "Content-Type": "application/pdf",
+                    },
+                    path: playwrightTestFile('mock', 'print', 'print_print_labels-25000.pdf')
+                })
+                return;
+            }
+            await route.continue();
+        });
+
         // Select a feature
         await page.locator('#button-attributeLayers').click();
         await page.getByRole('button', { name: 'Detail' }).click();
+        // click on select Button
+        let getSelectionTokenRequestPromise = printPage.waitForGetSelectionTokenRequest();
         await page.locator(
             'lizmap-feature-toolbar:nth-child(1) > div:nth-child(1) > button:nth-child(1)').first().click();
         await page.locator('#bottom-dock-window-buttons .btn-bottomdock-clear').click();
+
+        let getSelectionTokenRequest = await getSelectionTokenRequestPromise;
+
+        // Check GetSelectionToken request
+        const getSelectionTokenParameters = {
+            'service': 'WMS',
+            'request': 'GETSELECTIONTOKEN',
+            'typename': 'quartiers',
+            'ids': '1',
+        }
+        requestExpect(getSelectionTokenRequest).toContainParametersInPostData(getSelectionTokenParameters);
+
+        // Verify the selection token response
+        let getSelectionTokenResponse = await getSelectionTokenRequest.response();
+        responseExpect(getSelectionTokenResponse).toBeJson();
+        let jsonSelectionTokenResponse = await getSelectionTokenResponse?.json();
+        expect(jsonSelectionTokenResponse).toHaveProperty('token');
 
         const getPrintPromise = printPage.waitForGetPrintRequest();
         // Launch print
@@ -300,22 +427,64 @@ test.describe('Print', () => {
             'simple_label': 'simple label',
             // Enable after manually update project with QGIS 3.34 to keep label with HTML rendering
             'multiline_label': 'Multiline label',
-            'SELECTIONTOKEN': /[a-z\d]+/,
+            'SELECTIONTOKEN': /^[a-zA-Z0-9]{32}$/,
         }
         const expectedLength = 17;
         requestExpect(getPrintRequest).toContainParametersInPostData(expectedParameters);
         const getPrintParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
         expect(getPrintParams.size).toBe(expectedLength);
+        expect(getPrintParams.get('SELECTIONTOKEN')).toBe(jsonSelectionTokenResponse.token);
 
+        // Stop listening to WMS requests
+        await page.unroute('**/service*');
     });
 
     test('Print requests with filter', async ({ page }) => {
         const printPage = new PrintPage(page, 'print');
+
+        // Mock file, because we test the request, not the file
+        await page.route('**/service*', async route => {
+            const request = await route.request();
+            if (request.postData()?.includes('GetPrint')) {
+                await route.fulfill({
+                    headers: {
+                        "Content-Description": "File Transfert",
+                        "Content-Disposition": "attachment; filename=\"print_print_labels.pdf\"",
+                        "Content-Transfer-Encoding": "binary",
+                        "Content-Type": "application/pdf",
+                    },
+                    path: playwrightTestFile('mock', 'print', 'print_print_labels-25000.pdf')
+                })
+                return;
+            }
+            await route.continue();
+        });
+
         // Select a feature
         await page.locator('#button-attributeLayers').click();
         await page.getByRole('button', { name: 'Detail' }).click();
-        await page.locator('lizmap-feature-toolbar:nth-child(1) > div:nth-child(1) > button:nth-child(1)').first().click();
+        // click on select Button
+        let getSelectionTokenRequestPromise = printPage.waitForGetSelectionTokenRequest();
+        await page.locator(
+            'lizmap-feature-toolbar:nth-child(1) > div:nth-child(1) > button:nth-child(1)').first().click();
         await page.locator('#bottom-dock-window-buttons .btn-bottomdock-clear').click();
+
+        let getSelectionTokenRequest = await getSelectionTokenRequestPromise;
+
+        // Check GetSelectionToken request
+        const getSelectionTokenParameters = {
+            'service': 'WMS',
+            'request': 'GETSELECTIONTOKEN',
+            'typename': 'quartiers',
+            'ids': '1',
+        }
+        requestExpect(getSelectionTokenRequest).toContainParametersInPostData(getSelectionTokenParameters);
+
+        // Verify the selection token response
+        let getSelectionTokenResponse = await getSelectionTokenRequest.response();
+        responseExpect(getSelectionTokenResponse).toBeJson();
+        let jsonSelectionTokenResponse = await getSelectionTokenResponse?.json();
+        expect(jsonSelectionTokenResponse).toHaveProperty('token');
 
         // Filter selected feature
         await page.locator('#button-attributeLayers').click();
@@ -359,7 +528,10 @@ test.describe('Print', () => {
         requestExpect(getPrintRequest).toContainParametersInPostData(expectedParameters);
         const getPrintParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
         expect(getPrintParams.size).toBe(expectedLength);
-        expect(getPrintParams.get('FILTERTOKEN')).toBe(jsonFilterTokenResponse.token)
+        expect(getPrintParams.get('FILTERTOKEN')).toBe(jsonFilterTokenResponse.token);
+
+        // Stop listening to WMS requests
+        await page.unroute('**/service*');
     });
 });
 
@@ -1150,14 +1322,15 @@ test.describe('Error while printing', () => {
         await printPage.setPrintScale('100000');
 
         await page.route('**/service*', async route => {
-            if (route.request()?.postData()?.includes('GetPrint'))
+            if (route.request()?.postData()?.includes('GetPrint')) {
                 await route.fulfill({
                     status: 404,
                     contentType: 'text/plain',
                     body: 'Not Found!'
                 });
-            else
-                await route.continue();
+                return;
+            }
+            await route.continue();
         });
 
         await page.locator('#print-launch').click();
@@ -1190,14 +1363,15 @@ test.describe('Error while printing', () => {
         );
 
         await page.route('**/service*', async route => {
-            if (route.request()?.postData()?.includes('GetPrint'))
+            if (route.request()?.postData()?.includes('GetPrint')) {
                 await route.fulfill({
                     status: 404,
                     contentType: 'text/plain',
                     body: 'Not Found!'
                 });
-            else
-                await route.continue();
+                return;
+            }
+            await route.continue();
         });
 
         await featureAtlasQuartiers.locator('button').click();
