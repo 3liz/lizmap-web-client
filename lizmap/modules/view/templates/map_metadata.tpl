@@ -6,13 +6,13 @@
           <img
                   src="{jurl 'view~media:illustration', array('repository'=>$repository,'project'=>$project)}"
                   alt="project image"
-                  class="img-polaroid liz-project-img"
+                  class="img-thumbnail liz-project-img"
                   width="200"
                   height="200"
                   loading="lazy"
           >
 
-          <dl class="dl-vertical">
+          <dl>
             {if $WMSServiceTitle}
             <dt>{@view~map.metadata.description.title@}</dt>
             <dd>{$WMSServiceTitle}&nbsp;</dd>

@@ -10,8 +10,8 @@
 
   </div>
 
-  <ul id="dataviz-tabs" class="nav nav-tabs">
-    <li id="nav-tab-dataviz-main" class="active"><a href="#dataviz-main" data-toggle="tab">{@dataviz~dataviz.dock.title@}</a></li>
+  <ul id="dataviz-tabs" class="nav nav-tabs" role="tablist">
+    <li id="nav-tab-dataviz-main" class="nav-item" role="presentation"><a class="nav-link active" href="#dataviz-main" data-bs-toggle="tab" role="tab">{@dataviz~dataviz.dock.title@}</a></li>
   </ul>
 
 </div>

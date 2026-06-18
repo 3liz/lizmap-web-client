@@ -57,7 +57,7 @@
         </div>
     {/if}
   <footer class="footer">
-    <p class="pull-right">
+    <p class="float-end">
       <img src="{$j_themepath.'css/img/logo_footer.png'}" alt=""/>
     </p>
   </footer>

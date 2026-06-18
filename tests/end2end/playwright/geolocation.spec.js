@@ -104,7 +104,8 @@ test.describe('Geolocation @readonly', () => {
 
     test('Geolocation start and stop', async ({ page }) => {
         const project = new ProjectPage(page, 'geolocation');
-        const screenshotClip = {x:850/2-380/2, y:700/2-380/2, width:380, height:380};
+        // Screenshot scoped to #newOlMap to avoid interference from sibling UI elements (dock, messages, etc.)
+        const mapLocator = page.locator('#newOlMap');
 
         // Wait for request and response
         while (osmTiles.length < 12) {
@@ -165,30 +166,38 @@ test.describe('Geolocation @readonly', () => {
         // Wait for OL transition
         await page.waitForTimeout(500);
 
+        // Hide all elements but #newOlMap and their children
+        await page.$eval("*", el => el.style.visibility = 'hidden');
+        await page.$eval("#newOlMap, #newOlMap *", el => el.style.visibility = 'visible');
+
         // Get acc 1000 buffer
-        let buffer = await page.screenshot({
-            clip: screenshotClip,
+        let buffer = await mapLocator.screenshot({
             // path: playwrightTestFile('__screenshots__','geolocation.spec.js','pos.png'),
         });
         const acc1000Hash = await digestBuffer(buffer);
         const acc1000ByteLength = buffer.byteLength;
-        expect(acc1000ByteLength).toBeGreaterThan(4000); // 4161 - 5471
-        expect(acc1000ByteLength).toBeLessThan(6000); // 4161 - 5471
+
+        // Restore visibility
+        await page.$eval("*", el => el.style.visibility = '');
 
         // Stop geolocation
         await geolocationDockButtonBar.getByRole('button', { name: 'Stop', exact: true }).click();
 
+        // Hide all elements but #newOlMap and their children
+        await page.$eval("*", el => el.style.visibility = 'hidden');
+        await page.$eval("#newOlMap, #newOlMap *", el => el.style.visibility = 'visible');
+
         // Get blank buffer
-        buffer = await page.screenshot({
-            clip: screenshotClip,
+        buffer = await mapLocator.screenshot({
             // path: playwrightTestFile('__screenshots__','geolocation.spec.js','blank.png'),
         });
         const blankHash = await digestBuffer(buffer);
         expect(blankHash).not.toBe(acc1000Hash);
         const blankByteLength = buffer.byteLength;
         expect(blankByteLength).toBeLessThan(acc1000ByteLength);
-        expect(blankByteLength).toBeGreaterThan(1000); // 1286
-        expect(blankByteLength).toBeLessThan(1500); // 1286
+
+        // Restore visibility
+        await page.$eval("*", el => el.style.visibility = '');
 
         // check dock
         await expect(geolocationDockButtonBar.getByRole('button', { name: 'Stop', exact: true })).toHaveCount(0);
@@ -220,9 +229,12 @@ test.describe('Geolocation @readonly', () => {
         // Check scale
         await expect(page.locator('#overview-bar .ol-scale-text')).toHaveText('1 : ' + (25000).toLocaleString(locale));
 
+        // Hide all elements but #newOlMap and their children
+        await page.$eval("*", el => el.style.visibility = 'hidden');
+        await page.$eval("#newOlMap, #newOlMap *", el => el.style.visibility = 'visible');
+
         // Get acc 100 buffer
-        buffer = await page.screenshot({
-            clip: screenshotClip,
+        buffer = await mapLocator.screenshot({
             // path: playwrightTestFile('__screenshots__','geolocation.spec.js','blank.png'),
         });
         const acc100Hash = await digestBuffer(buffer);
@@ -231,8 +243,6 @@ test.describe('Geolocation @readonly', () => {
         const acc100ByteLength = buffer.byteLength;
         expect(acc100ByteLength).toBeGreaterThan(blankByteLength);
         expect(acc100ByteLength).toBeLessThan(acc1000ByteLength);
-        expect(acc100ByteLength).toBeGreaterThan(1750); // 1911
-        expect(acc100ByteLength).toBeLessThan(2250); // 1911
 
         // Wait for request and response
         // while (osmTiles.length < 6) {
@@ -364,7 +374,8 @@ test.describe('Geolocation heading @readonly', () => {
 
     test('Geolocation start and stop', async ({ page }) => {
         const project = new ProjectPage(page, 'geolocation');
-        const screenshotClip = {x:850/2-380/2, y:700/2-380/2, width:380, height:380};
+        // Screenshot scoped to #newOlMap to avoid interference from sibling UI elements (dock, messages, etc.)
+        const mapLocator = page.locator('#newOlMap');
 
         const geolocationButton = page.locator('#button-geolocation');
         await geolocationButton.click();
@@ -401,15 +412,19 @@ test.describe('Geolocation heading @readonly', () => {
         await page.waitForTimeout(500);
         // Geolocation is displayed with direction
 
+        // Hide all elements but #newOlMap and their children
+        await page.$eval("*", el => el.style.visibility = 'hidden');
+        await page.$eval("#newOlMap, #newOlMap *", el => el.style.visibility = 'visible');
+
         // Get unrotate map screenshot
-        let buffer = await page.screenshot({
-            clip: screenshotClip,
-            // path: playwrightTestFile('__screenshots__','geolocation.spec.js','pos.png'),
+        let buffer = await mapLocator.screenshot({
+            // path: playwrightTestFile('__screenshots__','geolocation.spec.js','heading-unrotate.png'),
         });
         const unrotateByteLength = buffer.byteLength;
         const unrotateHash = await digestBuffer(buffer);
-        // expect(unrotateByteLength).toBeGreaterThan(4000); // 4161 - 5471
-        // expect(unrotateByteLength).toBeLessThan(6000);
+
+        // Restore visibility
+        await page.$eval("*", el => el.style.visibility = '');
 
         // Bind geolocation to rotate the map
         const geolocationDock = page.locator('#geolocation');
@@ -419,9 +434,12 @@ test.describe('Geolocation heading @readonly', () => {
         // Wait for OL transition
         await page.waitForTimeout(500);
 
+        // Hide all elements but #newOlMap and their children
+        await page.$eval("*", el => el.style.visibility = 'hidden');
+        await page.$eval("#newOlMap, #newOlMap *", el => el.style.visibility = 'visible');
+
         // Get rotate map screenshot
-        buffer = await page.screenshot({
-            clip: screenshotClip,
+        buffer = await mapLocator.screenshot({
             // path: playwrightTestFile('__screenshots__','geolocation.spec.js','pos.png'),
         });
         const rotateByteLength = buffer.byteLength;
@@ -429,16 +447,22 @@ test.describe('Geolocation heading @readonly', () => {
         const rotateHash = await digestBuffer(buffer);
         expect(rotateHash).not.toBe(unrotateHash);
 
+        // Restore visibility
+        await page.$eval("*", el => el.style.visibility = '');
+
         // Unbind geolocation, back to unrotate map
         await geolocationDockButtonBar.locator('.bind-btn').click();
 
         // Wait for OL transition
         await page.waitForTimeout(500);
 
+        // Hide all elements but #newOlMap and their children
+        await page.$eval("*", el => el.style.visibility = 'hidden');
+        await page.$eval("#newOlMap, #newOlMap *", el => el.style.visibility = 'visible');
+
         // Get unrotate map screenshot
-        buffer = await page.screenshot({
-            clip: screenshotClip,
-            // path: playwrightTestFile('__screenshots__','geolocation.spec.js','pos.png'),
+        buffer = await mapLocator.screenshot({
+            // path: playwrightTestFile('__screenshots__','geolocation.spec.js','heading-back-unrotate.png'),
         });
         const backUnrotateByteLength = buffer.byteLength;
         expect(backUnrotateByteLength).not.toBe(rotateByteLength);

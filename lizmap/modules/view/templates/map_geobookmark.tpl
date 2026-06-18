@@ -6,7 +6,7 @@
       <div>
         {if $gbCount > 0 }
 
-        <table class="table table-condensed table-stipped">
+        <table class="table table-sm table-striped">
           {foreach $gbList as $gb}
           <tr>
             <td>{$gb->name}</td>

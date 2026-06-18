@@ -23,7 +23,7 @@ to view the hidden columns data and when there is no data for these columns -->
 <span id="lizmap_project_list_no_data_label" style="display: none;">{@admin.project.list.no.hidden.column.content@}</span>
 
 <!-- The table contains the projects data. Datatables is used to improve the UX -->
-<table class="lizmap_project_list table table-condensed table-bordered {$tableClass}" style="width:100%">
+<table class="lizmap_project_list table table-sm table-bordered {$tableClass}" style="width:100%">
     <thead>
         <tr>
             <th></th>

@@ -35,7 +35,7 @@
                     </div>
                 </div>
                 <div class="tab-pane" id="tabdigitization">
-                    <div id="edition-geomtool-container" class="btn-group" data-toggle="buttons-radio"
+                    <div id="edition-geomtool-container" class="btn-group"
                         style="display:none;">
                         <button id="edition-geomtool-nodetool" class="btn btn-sm"
                             data-bs-toggle="tooltip" data-bs-title="{@view~edition.geomtool.nodetool.title@}">
@@ -149,8 +149,8 @@
     <div id="edition-waiter" class="waiter">
         <h3><span class="title"><span class="icon"></span>&nbsp;<span class="text">{@view~edition.toolbar.title@}</span></span></h3>
         <div class="menu-content">
-            <div class="progress progress-bar progress-bar-striped progress-bar-animated active">
-                <div class="bar" style="width: 100%;"></div>
+            <div class="progress">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%;"></div>
             </div>
         </div>
     </div>
