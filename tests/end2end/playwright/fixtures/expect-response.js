@@ -417,6 +417,66 @@ export const expect = baseExpect.extend({
         };
     },
 
+    toContainHeaders(response, expectedHeaders) {
+        const assertionName = 'toContainHeaders';
+        let pass = true;
+
+        const headers = response?.headers() ?? {};
+        const errorMessages = [];
+        for (const header in expectedHeaders) {
+            const expectedValue = expectedHeaders[header];
+            try {
+                if (expectedValue instanceof RegExp) {
+                    expect(headers).toHaveProperty(header);
+                    expect(headers[header]).toMatch(expectedValue);
+                } else {
+                    expect(headers).toHaveProperty(header, expectedHeaders[header]);
+                }
+            } catch {
+                errorMessages.push(`Header ${header} is not correct`);
+                pass = false;
+            }
+        }
+
+        const expected = `${JSON.stringify(
+            expectedHeaders,
+            (key, value) => value instanceof RegExp ? value.toString() : value,
+            1
+        )}`;
+        const received = `${JSON.stringify(
+            headers,
+            (key, value) => value instanceof RegExp ? value.toString() : value,
+            1
+        )}`;
+
+        const theMesage = '' +
+            (errorMessages.length > 0 ? `Errors:\n${errorMessages.join('\n')}\n` : '') +
+            `Expected: ${expected}\n`+
+            `Received: ${received}`;
+
+        if (this.isNot) {
+            pass =!pass;
+        }
+
+
+        const message = pass
+            ? () => this.utils.matcherHint(assertionName, undefined, undefined, { isNot: this.isNot }) +
+                '\n\n' +
+                'The response contains the expected headers\n'+
+                theMesage
+            : () => this.utils.matcherHint(assertionName, undefined, undefined, { isNot: this.isNot }) +
+                '\n\n' +
+                'The response does not contain the expected Headers\n'+
+                theMesage;
+
+        return {
+            message,
+            pass,
+            name: assertionName,
+            expected: expectedHeaders,
+        };
+    },
+
     /**
      * Expecting the response is a GeoJSON with numberOfFeatures property to expected
      * @param {APIResponse} response the response to test
