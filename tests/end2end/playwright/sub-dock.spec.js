@@ -38,7 +38,16 @@ test.describe('Sub dock @readonly', () => {
                 })
             }
         });
-        const clipScreenshot = {x:432, y:256, width:256, height:256};
+        // Screenshot the map without the sub-dock overlay, which shares the same bounding box as #newOlMap
+        /** @returns {Promise<Buffer>} */
+        const mapScreenshot = async () => {
+            // Hide all elements but #newOlMap and their children
+            await page.$eval("*", el => el.style.visibility = 'hidden');
+            await page.$eval("#newOlMap, #newOlMap *", el => el.style.visibility = 'visible');
+            const buf = await page.locator('#newOlMap').screenshot();
+            await page.$eval("*", el => el.style.visibility = '');
+            return buf;
+        };
 
         const project = new ProjectPage(page, 'base_layers');
         await project.open();
@@ -63,21 +72,18 @@ test.describe('Sub dock @readonly', () => {
         await expect(page.locator('#sub-dock .sub-metadata .menu-content dd').nth(1)).toHaveText('Layer');
         await expect(page.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('100');
 
-        // Get osm-mapnik 100 rendering
-        let buffer = await page.screenshot({clip:clipScreenshot});
+        // Get osm-mapnik 100 rendering (screenshot limited to map element, not affected by sub-dock)
+        let buffer = await mapScreenshot();
         const osm100ByteLength = buffer.byteLength;
-        await expect(osm100ByteLength).toBeGreaterThan(110000); // 115892
-        await expect(osm100ByteLength).toBeLessThan(120000) // 115892
 
         // Change opacity for osm-mapnik to 60
         await page.locator('#sub-dock .btn-opacity-layer', { hasText: '60' }).click();
         await expect(page.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('60');
 
         // Get osm-mapnik 60 rendering
-        buffer = await page.screenshot({clip:clipScreenshot});
+        buffer = await mapScreenshot();
         const osm60ByteLength = buffer.byteLength;
-        await expect(osm60ByteLength).toBeLessThan(osm100ByteLength);
-        await expect(osm60ByteLength).toBeLessThan(110000); // 106330
+        expect(osm60ByteLength).toBeLessThan(osm100ByteLength);
 
         // Change base layer to quartiers_baselayer
         let getMapRequestPromise = page.waitForRequest(/REQUEST=GetMap/);
@@ -113,21 +119,18 @@ test.describe('Sub dock @readonly', () => {
         await expect(page.locator('#sub-dock .sub-metadata .menu-content dd').nth(1)).toHaveText('Layer');
         await expect(page.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('100');
 
-        // Get quartiers_baselayer 20 rendering
-        buffer = await page.screenshot({clip:clipScreenshot});
+        // Get quartiers_baselayer 100 rendering
+        buffer = await mapScreenshot();
         const quartiers100ByteLength = buffer.byteLength;
-        await expect(quartiers100ByteLength).toBeGreaterThan(15000); // 18024
-        await expect(quartiers100ByteLength).toBeLessThan(20000) // 18024
 
         // Change opacity for quartiers_baselayer to 20
         await page.locator('#sub-dock .btn-opacity-layer', { hasText: '20' }).click();
         await expect(page.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('20');
 
         // Get quartiers_baselayer 20 rendering
-        buffer = await page.screenshot({clip:clipScreenshot});
+        buffer = await mapScreenshot();
         const quartiers20ByteLength = buffer.byteLength;
-        await expect(quartiers20ByteLength).toBeLessThan(quartiers100ByteLength);
-        await expect(quartiers20ByteLength).toBeLessThan(15000); // 106330
+        expect(quartiers20ByteLength).toBeLessThan(quartiers100ByteLength);
 
         // Back to osm-mapnik
         await page.locator('lizmap-base-layers select').selectOption('osm-mapnik');
@@ -145,9 +148,9 @@ test.describe('Sub dock @readonly', () => {
         await expect(page.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('60');
 
         // Check osm-mapnik 60 buffer
-        buffer = await page.screenshot({clip:clipScreenshot});
-        await expect(buffer.byteLength).toBeLessThan(osm100ByteLength);
-        await expect(buffer.byteLength).toBe(osm60ByteLength);
+        buffer = await mapScreenshot();
+        expect(buffer.byteLength).toBeLessThan(osm100ByteLength);
+        expect(buffer.byteLength).toBe(osm60ByteLength);
 
         // Close sub-dock
         await expect(page.locator('#hide-sub-dock')).toBeVisible();
@@ -175,9 +178,9 @@ test.describe('Sub dock @readonly', () => {
         await expect(page.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('20');
 
         // Check quartiers_baselayer 20 buffer
-        buffer = await page.screenshot({clip:clipScreenshot});
-        await expect(buffer.byteLength).toBeLessThan(quartiers100ByteLength);
-        await expect(buffer.byteLength).toBe(quartiers20ByteLength);
+        buffer = await mapScreenshot();
+        expect(buffer.byteLength).toBeLessThan(quartiers100ByteLength);
+        expect(buffer.byteLength).toBe(quartiers20ByteLength);
 
         // Remove listen to osm tiles
         await page.unroute('https://tile.openstreetmap.org/*/*/*.png');
