@@ -110,7 +110,7 @@ var lizLayerActionButtons = function() {
             html+= '<div class="menu-content">';
 
             // Metadata
-            html+= '    <dl class="dl-vertical" style="font-size:0.8em;">';
+            html+= '    <dl style="font-size:0.8em;">';
             html+= '        <dt>'+lizDict['layer.metadata.layer.name']+'</dt>';
             html+= '        <dd>'+metadatas.title+'</dd>';
             html+= '        <dt>'+lizDict['layer.metadata.layer.type']+'</dt>';
@@ -198,7 +198,7 @@ var lizLayerActionButtons = function() {
                 // Export layer
                 if( options != '' && exportEnabled) {
                     html+= '        <dt>'+lizDict['layer.metadata.export.title']+'</dt>';
-                    html+= '<dd>';
+                    html+= '<dd class="d-flex">';
                     html+= '<select class="exportLayer form-select '+isBaselayer+'">';
                     html+= options;
                     html+= '</select>';
@@ -235,7 +235,7 @@ var lizLayerActionButtons = function() {
             // Style
             html+= '</div>';
             html+= '</div>';
-            html+= '<button id="hide-sub-dock" class="btn btn-sm pull-right" name="close" title="'+lizDict['generic.btn.close.title']+'" value="'+aName+'">'+lizDict['generic.btn.close.title']+'</button>';
+            html+= '<button id="hide-sub-dock" class="btn btn-sm float-end" name="close" title="'+lizDict['generic.btn.close.title']+'" value="'+aName+'">'+lizDict['generic.btn.close.title']+'</button>';
         }
 
         return html;

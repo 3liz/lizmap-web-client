@@ -586,7 +586,7 @@ import { getCenter } from 'ol/extent.js';
                         var popupContainerId = 'liz-atlas-item-detail';
                         // Add class to table
                         var popupReg = new RegExp('lizmapPopupTable', 'g');
-                        text = data.replace(popupReg, 'table table-condensed lizmapPopupTable');
+                        text = data.replace(popupReg, 'table table-sm lizmapPopupTable');
                         var text = '<div class="lizmapPopupContent">' + text + '</div>';
                         // Remove <h4> with layer title
                         var titleReg = new RegExp('<h4>.+</h4>');

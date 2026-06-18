@@ -161,7 +161,7 @@ var lizAttributeTable = function() {
                 var hasDiplayedAttributeTable = false;
 
                 // Add the list of layers in the summary table
-                var tHtml = '<table id="attribute-layer-list-table" class="table table-condensed table-hover table-striped" style="width:auto;">';
+                var tHtml = '<table id="attribute-layer-list-table" class="table table-sm table-hover table-striped" style="width:auto;">';
                 for( var idx in attributeLayersDic) {
                     var cleanName = idx;
 
@@ -654,7 +654,7 @@ var lizAttributeTable = function() {
                 }
                 html+= '<div class="attribute-layer-content'+alc+'">';
                 html+= '    <input type="hidden" class="attribute-table-hidden-layer" value="'+cleanName+'">';
-                const classes = 'attribute-table-table table table-hover table-condensed table-striped order-column cell-border';
+                const classes = 'attribute-table-table table table-hover table-sm table-striped order-column cell-border';
                 html+= '    <table id="attribute-layer-table-' + cleanName + '" data-layerid="' + atConfig.layerId + '" class="' + classes + '" width="100%"></table>';
 
                 html+= '</div>';  // attribute-layer-content
@@ -1240,7 +1240,7 @@ var lizAttributeTable = function() {
                             // Build Div content for tab
                             var cDiv = '<div class="tab-pane attribute-layer-child-content '+childActive+'" id="'+ tabId +'" >';
                             var tId = 'attribute-layer-table-' + lizMap.cleanName(parentLayerName) + '-' + lizMap.cleanName(childLayerName);
-                            var tClass = 'attribute-table-table table table-hover table-condensed table-striped cell-border child-of-' + lizMap.cleanName(parentLayerName);
+                            var tClass = 'attribute-table-table table table-hover table-sm table-striped cell-border child-of-' + lizMap.cleanName(parentLayerName);
                             const dataLayerId = childLayerConfig.id;
                             cDiv+= '    <input type="hidden" class="attribute-table-hidden-parent-layer" value="'+lizMap.cleanName(parentLayerName)+'">';
                             cDiv+= '    <input type="hidden" class="attribute-table-hidden-layer" value="'+lizMap.cleanName(childLayerName)+'">';
@@ -2304,13 +2304,13 @@ var lizAttributeTable = function() {
                             lizMap.getFeaturePopupContent( aName, feat, function(data){
                                 $('#attribute-table-panel-' + parentLayerCleanName ).html(data);
                                 // Add the missing Bootstrap classes
-                                $('#attribute-table-panel-' + parentLayerCleanName + ' table').addClass('table table-condensed table-striped table-bordered');
+                                $('#attribute-table-panel-' + parentLayerCleanName + ' table').addClass('table table-sm table-striped table-bordered');
 
                                 // Trigger event
                                 lizMap.events.triggerEvent('lizmappopupdisplayed_inattributetable'
                                 );
 
-                                var closeButton = '<a class="close-attribute-feature-panel pull-right" href="#"><i class="icon-remove"></i></a>'
+                                var closeButton = '<a class="close-attribute-feature-panel float-end" href="#"><i class="icon-remove"></i></a>'
                                 $('#attribute-table-panel-' + parentLayerCleanName + ' h4').append(closeButton);
 
                                 $('#attribute-table-panel-' + parentLayerCleanName + ' h4 a.close-attribute-feature-panel').click(function(){
@@ -2387,9 +2387,9 @@ var lizAttributeTable = function() {
                         }
 
                         // Display the first child table displayed
-                        if ( $(childTable).parents('.edition-children-content').children('ul.nav-tabs').children('li.active').length == 0 ) {
+                        if ( $(childTable).parents('.edition-children-content').children('ul.nav-tabs').find('li button.active').length == 0 ) {
                             var tabId = $(childTable).parents('.tab-pane.attribute-layer-child-content').attr('id');
-                            $(childTable).parents('.edition-children-content').find('ul.nav-tabs > li > a[href="#'+tabId+'"]').click();
+                            $(childTable).parents('.edition-children-content').find('ul.nav-tabs > li > button[data-bs-target="#'+tabId+'"]').click();
                         }
                         return false;
 
@@ -3754,8 +3754,8 @@ var lizAttributeTable = function() {
                             $('#edition-children-container div.tabbable ul.nav-tabs li').each(function() {
                                 $(this).attr('id', $(this).attr('id').replace(/nav-tab-attribute-child-tab-/g, 'nav-tab-edition-child-tab-'));
                             });
-                            $('#edition-children-container div.tabbable ul.nav-tabs li a').each(function() {
-                                $(this).attr('href', $(this).attr('href').replace(/attribute-child-tab-/g, 'edition-child-tab-'));
+                            $('#edition-children-container div.tabbable ul.nav-tabs li button').each(function() {
+                                $(this).attr('data-bs-target', $(this).attr('data-bs-target').replace(/attribute-child-tab-/g, 'edition-child-tab-'));
                             });
                             $('#edition-children-container div.tabbable div.tab-content div.tab-pane').each(function() {
                                 $(this).attr('id', $(this).attr('id').replace(/attribute-child-tab-/g, 'edition-child-tab-'));

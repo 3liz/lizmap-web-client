@@ -89,7 +89,7 @@ export default class FeaturePickerPopup {
         html += '<h5 style="margin: 0 0 4px 0; padding-bottom: 8px; border-bottom: 2px solid #ddd; font-size: 14px; font-weight: bold;">Select feature to copy</h5>';
         html += '<button class="close-btn" style="float:right; margin-top: -28px; border:none; background:none; cursor:pointer; font-size:20px; line-height:16px; padding:0 4px;">&times;</button>';
         html += '</div>';
-        html += '<table class="table table-condensed table-hover" style="margin:0; width:100%; font-size:12px; border-top:none;">';
+        html += '<table class="table table-sm table-hover" style="margin:0; width:100%; font-size:12px; border-top:none;">';
         html += '<tbody>';
 
         features.forEach((feature, index) => {

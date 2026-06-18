@@ -94,7 +94,7 @@ class featuresCtrl extends jController
                 $expFields = explode(',', $fields);
                 if (!empty($fields)) {
                     // Build the table
-                    $template = '<table class="lizmapPopupTable table table-condensed table-bordered table-striped">';
+                    $template = '<table class="lizmapPopupTable table table-sm table-bordered table-striped">';
 
                     // Get fields aliases
                     $aliases = $qgisLayer->getAliasFields();

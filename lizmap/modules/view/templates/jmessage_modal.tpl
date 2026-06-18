@@ -5,5 +5,5 @@
   {jmessage_bootstrap}
 </div>
 <div class="modal-footer">
-  <button class="btn" data-dismiss="modal" aria-hidden="true">OK</button>
+  <button class="btn" data-bs-dismiss="modal">OK</button>
 </div>

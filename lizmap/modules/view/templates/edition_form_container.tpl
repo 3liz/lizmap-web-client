@@ -11,9 +11,9 @@
             <span style="font-weight:bold; padding-left:5px;">{$child->getLabel()}</span>
         </div>
     {else}
-        <div class="form-group row mb-3">
-            {ctrl_label $child->getCtrlRef()}
-            {ctrl_control $child->getCtrlRef()}
+        <div class="form-group row mb-2 align-items-center">
+            <div class="col-3 jforms-label-col text-end">{ctrl_label $child->getCtrlRef()}</div>
+            <div class="col-9 jforms-control-col">{ctrl_control $child->getCtrlRef()}</div>
         </div>
     {/if}
 {/foreach}
@@ -47,9 +47,9 @@
     {elseif $child->isRelationWidget()}
         <div id="{$child->getHtmlId()}" class="lizmap-form-relation" data-relation-id="{$child->getName()}" data-relation-referencedLayer="" data-relation-referencingLayer="d"></div>
     {else}
-        <div class="form-group row mb-3">
-            {ctrl_label $child->getCtrlRef()}
-            {ctrl_control $child->getCtrlRef()}
+        <div class="form-group row mb-2 align-items-center">
+            <div class="col-3 jforms-label-col text-end">{ctrl_label $child->getCtrlRef()}</div>
+            <div class="col-9 jforms-control-col">{ctrl_control $child->getCtrlRef()}</div>
         </div>
     {/if}
 {/foreach}

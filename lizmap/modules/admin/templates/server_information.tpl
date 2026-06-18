@@ -45,7 +45,7 @@
     {if empty($modules)}
       <p>{@admin.server.information.no.module@}</p>
     {else}
-        <table class="table table-condensed table-striped table-bordered table-server-info table-lizmap-modules">
+        <table class="table table-sm table-striped table-bordered table-server-info table-lizmap-modules">
         <thead>
         <tr>
             <th>{@admin.server.information.module@}</th>
@@ -117,7 +117,7 @@
 {else}
 
     <h4>{@admin.server.information.qgis.metadata@}</h4>
-    <table class="table table-condensed table-striped table-bordered table-server-info table-qgis-server">
+    <table class="table table-sm table-striped table-bordered table-server-info table-qgis-server">
         <tr>
             <th>{@admin.server.information.qgis.version@}</th>
             <td>
@@ -176,7 +176,7 @@
     {hook 'QgisServerVersion', $data['qgis_server_info']['metadata']}
 
     <h4>{@admin.server.information.qgis.plugins@}</h4>
-    <table class="table table-condensed table-striped table-bordered table-server-info table-qgis-server-plugins">
+    <table class="table table-sm table-striped table-bordered table-server-info table-qgis-server-plugins">
         <tr>
             <th style="width:20%;">{@admin.server.information.qgis.plugin@}</th>
             <th style="width:20%;">{@admin.server.information.qgis.plugin.version@}</th>
