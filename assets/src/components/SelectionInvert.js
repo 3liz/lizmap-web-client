@@ -80,30 +80,30 @@ export default class SelectionInvert extends HTMLElement {
      */
     connectedCallback() {
 
-        const mainTemplate = (hiddenClass, isDisabled, title, clickHandler) => html`
-        <button
-            type="button"
-            class="selectiontool-invert btn btn-sm ${hiddenClass}"
-            data-bs-toggle="tooltip"
-            data-bs-title="${title}"
-            ?disabled=${isDisabled}
-            @click=${clickHandler}
-            >
-            <svg class="icon-">
-                <use href="${lizUrls.svgSprite}#mActionInvertSelection"/>
-            </svg>
-        </button>`;
+        const mainTemplate = (isDisabled, title, clickHandler) => 
+            html`<button
+                type="button"
+                class="selectiontool-invert btn btn-sm"
+                data-bs-toggle="tooltip"
+                data-bs-title="${title}"
+                ?disabled=${isDisabled}
+                @click=${clickHandler}
+                >
+                <svg class="icon-">
+                    <use href="${lizUrls.svgSprite}#mActionInvertSelection"/>
+                </svg>
+            </button>`;
 
         // render the template with the parameters
         render(
             mainTemplate(
-                this.hidden ? 'hide' : '',
                 this.disabled,
                 this.title,
                 this.click.bind(this), // bind this to the click handler to be able to use this in the handler
             ),
             this
         );
+        this.classList.toggle('d-none', this.hidden);
 
         // Add tooltip on buttons
         // TODO allow tooltip on disabled buttons : https://stackoverflow.com/a/19938049/2000654
@@ -119,13 +119,13 @@ export default class SelectionInvert extends HTMLElement {
                 // render the template with the parameters
                 render(
                     mainTemplate(
-                        this.hidden ? 'hide' : '',
                         this.disabled,
                         this.title,
                         this.click.bind(this), // bind this to the click handler to be able to use this in the handler
                     ),
                     this
                 );
+                this.classList.toggle('d-none', this.hidden);
             },
             ['selectionTool.allFeatureTypeSelected', 'selection.changed']
         );

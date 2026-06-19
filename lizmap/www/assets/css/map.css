@@ -23,7 +23,8 @@
    must hug it instead of inheriting Bootstrap 5's text-button padding and 1.5
    line-height (which made these buttons look oversized after the BS5 upgrade). */
 .btn:not(.hide):has(> [class^="icon-"]:only-child),
-.btn:not(.hide):has(> [class*=" icon-"]:only-child) {
+.btn:not(.hide):has(> [class*=" icon-"]:only-child),
+.btn:not(.hide):has(> svg:only-child) {
   --bs-btn-line-height: 1;
   --bs-btn-padding-y: 0.25rem;
   --bs-btn-padding-x: 0.25rem;
@@ -1276,9 +1277,9 @@ SubDock
 
 #attributeLayers-tabs > li > .nav-link.active,
 #attributeLayers-tabs > li > .nav-link:hover {
-  border-color: #6c8aa3;
-  background-color: #6c8aa3;
-  color: #fff;
+  border-radius: 5px;
+  background-color: var(--color-contrasted-elements);
+  color: var(--color-contrasted-text);
 }
 
 #attributeLayers table th {
@@ -1384,6 +1385,11 @@ SubDock
     padding: 2px 6px;
 }
 
+.attribute-layer-action-bar > button,
+.attribute-layer-action-bar > lizmap-selection-invert {
+    margin-right: 4px;
+}
+
 .btn-filterbyextent-attributeTable svg {
     height: 14px;
     width: 14px;
@@ -1486,19 +1492,7 @@ table.attribute-table-table tr td {
 
     /* NOT SURE WE SHOULD NOT REMOVE THIS NOWRAP */
     padding: 1px 5px;
-}
-
-/* Override bootstrap td alignment to use datatable className column property */
-td.text-right {
-    text-align: right !important;
-}
-
-td.text-left {
-    text-align: left !important;
-}
-
-td.text-center {
-    text-align: center !important;
+    vertical-align: middle;
 }
 
 /*
