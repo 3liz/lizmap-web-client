@@ -737,7 +737,18 @@ class serviceCtrl extends jController
 
         /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
-        $fileName = $this->project->getKey().'_'.preg_replace('#[\W]+#', '_', $this->params['template']).'.'.$this->params['format'];
+
+        $ext = strtolower($this->params['format']);
+        if ($ext === 'application/pdf') {
+            $ext = 'pdf';
+        } elseif ($ext === 'image/png') {
+            $ext = 'png';
+        } elseif ($ext === 'image/jpeg' || $ext === 'jpeg') {
+            $ext = 'jpg';
+        } elseif ($ext === 'image/svg' || $ext === 'image/svg+xml') {
+            $ext = 'svg';
+        }
+        $fileName = $this->project->getKey().'_'.preg_replace('#[\W]+#', '_', $this->params['template']).'.'.$ext;
         $this->setupBinaryResponse($rep, $result, $fileName);
         $rep->doDownload = true;
 
