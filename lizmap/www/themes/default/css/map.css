@@ -656,13 +656,13 @@ lizmap-treeview .icon-info-sign {
 }
 
 /* ATTRIBUTE DOCK TABS (AT THE TOP) */
-#attributeLayers-tabs > li > a {
+#attributeLayers-tabs > li > button {
   padding: 5px;
   margin: 5px;
 }
 
-#attributeLayers-tabs > li.active > a,
-#attributeLayers-tabs > li > a:hover {
+#attributeLayers-tabs > li.active > button,
+#attributeLayers-tabs > li > button:hover {
   border: 1px solid transparent;
   border-radius: 5px;
   background-color: var(--color-contrasted-elements);
@@ -724,7 +724,7 @@ lizmap-treeview .icon-info-sign {
 }
 
 /* Child attribute tables tabs buttons */
-.tabbable.attribute-layer-child-content ul li a {
+.attribute-layer-child-content ul li button.nav-link {
   cursor: pointer;
   padding: 5px;
   margin: 5px;
@@ -738,8 +738,8 @@ lizmap-treeview .icon-info-sign {
   text-shadow: none;
 }
 
-.tabbable.attribute-layer-child-content ul li a:hover,
-.tabbable.attribute-layer-child-content ul li.active a {
+.attribute-layer-child-content ul li button.nav-link:hover,
+.attribute-layer-child-content ul li button.nav-link.active {
   background-color: var(--color-contrasted-elements);
   color: var(--color-contrasted-text);
 }

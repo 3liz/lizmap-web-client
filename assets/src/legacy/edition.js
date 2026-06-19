@@ -462,8 +462,8 @@ var lizEdition = function() {
         if ( $('#edition-point-coord-geolocation').is(':checked') )
             $('#edition-point-coord-geolocation').click();
         $('#edition-point-coord-add').hide();
-        $('#edition-segment-length').parents('.form-group').addClass('hidden');
-        $('#edition-segment-angle').parents('.form-group').addClass('hidden');
+        $('#edition-segment-length').parents('.form-group').addClass('d-none');
+        $('#edition-segment-angle').parents('.form-group').addClass('d-none');
 
         lizMap.events.triggerEvent("lizmapeditiondrawfeaturedeactivated",
             {
@@ -1178,7 +1178,7 @@ var lizEdition = function() {
      * @param showTotal
      */
     function displaySegmentsLength(components, projection, showTotal){
-        $('#edition-segment-length').parents('.form-group').removeClass('hidden');
+        $('#edition-segment-length').parents('.form-group').removeClass('d-none');
 
         const componentsCount = components.length;
         const lastSegmentLength = (new OpenLayers.Geometry.LineString([components[componentsCount - 2], components[componentsCount - 1]])).getGeodesicLength(projection);
@@ -1217,7 +1217,7 @@ var lizEdition = function() {
      * @param C
      */
     function displayAngleBetweenThreePoints(A, B, C){
-        $('#edition-segment-angle').parents('.form-group').removeClass('hidden');
+        $('#edition-segment-angle').parents('.form-group').removeClass('d-none');
 
         const AB = Math.sqrt(Math.pow(B.x - A.x, 2) + Math.pow(B.y - A.y, 2));
         const BC = Math.sqrt(Math.pow(B.x - C.x, 2) + Math.pow(B.y - C.y, 2));
