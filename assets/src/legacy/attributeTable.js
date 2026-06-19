@@ -161,7 +161,7 @@ var lizAttributeTable = function() {
                 var hasDiplayedAttributeTable = false;
 
                 // Add the list of layers in the summary table
-                var tHtml = '<table id="attribute-layer-list-table" class="table table-sm table-hover table-striped" style="width:auto;">';
+                var tHtml = '<table id="attribute-layer-list-table" class="table table-sm table-hover table-striped w-auto">';
                 for( var idx in attributeLayersDic) {
                     var cleanName = idx;
 
@@ -483,7 +483,7 @@ var lizAttributeTable = function() {
 
                 var selClass= '';
                 if( config.layers[lname]['selectedFeatures'].length == 0 )
-                    selClass= ' hidden';
+                    selClass= ' d-none';
                 var filClass= '';
                 if( config.layers[lname]['filteredFeatures'].length > 0 )
                     filClass= ' active';
@@ -505,8 +505,8 @@ var lizAttributeTable = function() {
                 html+= '<button class="btn-unselect-attributeTable btn btn-sm' + selClass + '" value="' + cleanName + '" title="'+lizDict['attributeLayers.toolbar.btn.data.unselect.title']+'"><i class="icon-star-empty"></i></button>';
 
                 // 'Move selected to top' button
-                html+= `
-                <button
+                html+= 
+                `<button
                     class="btn-moveselectedtotop-attributeTable btn btn-sm ${selClass}"
                     data-layerid="${config.layers[lname].id}"
                     data-bs-toggle="button" value="${cleanName}"
@@ -521,8 +521,8 @@ var lizAttributeTable = function() {
                 }
 
                 // Filter data by extent button
-                html+= `
-                <button class="btn-filterbyextent-attributeTable btn btn-sm" data-layerid="${config.layers[lname].id}" data-bs-toggle="button" value="${cleanName}" title="${lizDict['attributeLayers.toolbar.btn.filterByExtent.title']}">
+                html+= 
+                `<button class="btn-filterbyextent-attributeTable btn btn-sm" data-layerid="${config.layers[lname].id}" data-bs-toggle="button" value="${cleanName}" title="${lizDict['attributeLayers.toolbar.btn.filterByExtent.title']}">
                     <svg>
                         <use href="${lizUrls.svgSprite}#filter-square"/>
                     </svg>
@@ -654,7 +654,7 @@ var lizAttributeTable = function() {
                 }
                 html+= '<div class="attribute-layer-content'+alc+'">';
                 html+= '    <input type="hidden" class="attribute-table-hidden-layer" value="'+cleanName+'">';
-                const classes = 'attribute-table-table table table-hover table-sm table-striped order-column cell-border';
+                const classes = 'attribute-table-table table table-hover table-sm table-striped table-bordered';
                 html+= '    <table id="attribute-layer-table-' + cleanName + '" data-layerid="' + atConfig.layerId + '" class="' + classes + '" width="100%"></table>';
 
                 html+= '</div>';  // attribute-layer-content
@@ -1240,7 +1240,7 @@ var lizAttributeTable = function() {
                             // Build Div content for tab
                             var cDiv = '<div class="tab-pane attribute-layer-child-content '+childActive+'" id="'+ tabId +'" >';
                             var tId = 'attribute-layer-table-' + lizMap.cleanName(parentLayerName) + '-' + lizMap.cleanName(childLayerName);
-                            var tClass = 'attribute-table-table table table-hover table-sm table-striped cell-border child-of-' + lizMap.cleanName(parentLayerName);
+                            var tClass = 'attribute-table-table table table-hover table-sm table-striped table-bordered child-of-' + lizMap.cleanName(parentLayerName);
                             const dataLayerId = childLayerConfig.id;
                             cDiv+= '    <input type="hidden" class="attribute-table-hidden-parent-layer" value="'+lizMap.cleanName(parentLayerName)+'">';
                             cDiv+= '    <input type="hidden" class="attribute-table-hidden-layer" value="'+lizMap.cleanName(childLayerName)+'">';
@@ -2103,7 +2103,7 @@ var lizAttributeTable = function() {
                         case 'unsignedLong':
                         case 'decimal':
                         case 'double':
-                            colConf['className'] = 'text-right';
+                            colConf['className'] = 'text-end';
                             break;
                         case 'date':
                             colConf['className'] = 'text-center';
@@ -3325,18 +3325,18 @@ var lizAttributeTable = function() {
                 var cleanName = lizMap.cleanName(featureType);
                 // UnSelection button and move selection to top
                 if( selIds && selIds.length > 0 ){
-                    $('button.btn-unselect-attributeTable[value="'+cleanName+'"]').removeClass('hidden');
-                    $('button.btn-moveselectedtotop-attributeTable[value="'+cleanName+'"]').removeClass('hidden');
+                    $('button.btn-unselect-attributeTable[value="'+cleanName+'"]').removeClass('d-none');
+                    $('button.btn-moveselectedtotop-attributeTable[value="'+cleanName+'"]').removeClass('d-none');
                 }
                 else{
-                    $('button.btn-unselect-attributeTable[value="'+cleanName+'"]').addClass('hidden');
-                    $('button.btn-moveselectedtotop-attributeTable[value="'+cleanName+'"]').addClass('hidden');
+                    $('button.btn-unselect-attributeTable[value="'+cleanName+'"]').addClass('d-none');
+                    $('button.btn-moveselectedtotop-attributeTable[value="'+cleanName+'"]').addClass('d-none');
                 }
 
                 // Filter button
 
                 // Hide it first and remove `active` classe
-                $('button.btn-filter-attributeTable[value="'+cleanName+'"]').addClass('hidden').removeClass('active');
+                $('button.btn-filter-attributeTable[value="'+cleanName+'"]').addClass('d-none').removeClass('active');
 
                 // Then display it only if:
                 // * no other features is active and selected items exists for this layer
@@ -3344,7 +3344,7 @@ var lizAttributeTable = function() {
                 if( ( !lizMap.lizmapLayerFilterActive && selIds && selIds.length > 0)
                     || lizMap.lizmapLayerFilterActive == featureType
                 ){
-                    $('button.btn-filter-attributeTable[value="'+cleanName+'"]').removeClass('hidden');
+                    $('button.btn-filter-attributeTable[value="'+cleanName+'"]').removeClass('d-none');
 
                     // Show button as activated if some filter exists
                     if( filIds && filIds.length > 0 )
