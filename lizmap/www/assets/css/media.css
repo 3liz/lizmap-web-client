@@ -81,7 +81,7 @@
 }
 
 @media screen and (device-width <= 640px){
-  #attributeLayers-tabs > li > a {
+  #attributeLayers-tabs > li > button {
     padding: 2px;
   }
 }
