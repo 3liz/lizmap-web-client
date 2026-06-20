@@ -72,6 +72,23 @@ export default class Search {
     }
 
     /**
+     * Returns an auto-search handler that clears results below min length,
+     * otherwise delegates to performFn
+     * @param {Function} performFn - search function to call when input is long enough
+     * @returns {Function}
+     */
+    _buildAutoSearch(performFn) {
+        return () => {
+            if ($('#search-query').val().length < AUTOCOMPLETE_MIN_LENGTH) {
+                $('#lizmap-search .items').html('');
+                $('#lizmap-search, #lizmap-search-close').removeClass('open');
+                return;
+            }
+            performFn();
+        };
+    }
+
+    /**
      * Start the external search
      */
     _startExternalSearch() {
@@ -175,14 +192,7 @@ export default class Search {
         var extent = new OpenLayers.Bounds(this._lizmap3.map.maxExtent.toArray());
         extent.transform(this._map.getView().getProjection().getCode(), wgs84);
 
-        const autoSearch = () => {
-            if ($('#search-query').val().length < AUTOCOMPLETE_MIN_LENGTH) {
-                $('#lizmap-search .items').html('');
-                $('#lizmap-search, #lizmap-search-close').removeClass('open');
-                return;
-            }
-            this._performFtsSearch(searchConfig, extent);
-        };
+        const autoSearch = this._buildAutoSearch(() => this._performFtsSearch(searchConfig, extent));
 
         $('#nominatim-search').submit(() => {
             this._performFtsSearch(searchConfig, extent);
@@ -240,7 +250,7 @@ export default class Search {
                     }, 'json');
                 break;
             case 'ign': {
-                if (searchQuery.length < 3 || searchQuery.length > 200) {
+                if (searchQuery.length < AUTOCOMPLETE_MIN_LENGTH || searchQuery.length > 200) {
                     lizMap.addMessage(lizDict['externalsearch.ignlimit'], 'warning', true);
                     break;
                 }
@@ -364,14 +374,7 @@ export default class Search {
             return false;
         }
 
-        const autoSearch = () => {
-            if ($('#search-query').val().length < AUTOCOMPLETE_MIN_LENGTH) {
-                $('#lizmap-search .items').html('');
-                $('#lizmap-search, #lizmap-search-close').removeClass('open');
-                return;
-            }
-            this._performExternalSearch(searchConfig, service, extent);
-        };
+        const autoSearch = this._buildAutoSearch(() => this._performExternalSearch(searchConfig, service, extent));
 
         $('#nominatim-search').submit(() => {
             this._performExternalSearch(searchConfig, service, extent);
