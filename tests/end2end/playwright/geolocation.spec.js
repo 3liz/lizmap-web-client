@@ -377,8 +377,15 @@ test.describe('Geolocation heading @readonly', () => {
         // Screenshot scoped to #newOlMap to avoid interference from sibling UI elements (dock, messages, etc.)
         const mapLocator = page.locator('#newOlMap');
 
+        // Wait for request and response
+        while (osmTiles.length < 12) {
+            await page.waitForResponse('https://tile.openstreetmap.org/*/*/*.png', { timeout: 10000 });
+        }
+
         const geolocationButton = page.locator('#button-geolocation');
         await geolocationButton.click();
+
+        osmTiles = [];
 
         const getMediaPromise = project.waitForGetMediaRequest();
         await page.evaluate(`
@@ -408,6 +415,7 @@ test.describe('Geolocation heading @readonly', () => {
         `);
         const getMediaRequest = await getMediaPromise;
         responseExpect(await getMediaRequest.response()).toBeJson();
+
         // Wait for OL transition
         await page.waitForTimeout(500);
         // Geolocation is displayed with direction
@@ -470,5 +478,136 @@ test.describe('Geolocation heading @readonly', () => {
         const backUnrotateHash = await digestBuffer(buffer);
         expect(backUnrotateHash).not.toBe(rotateHash);
         expect(backUnrotateHash).toBe(unrotateHash);
+    });
+
+
+    test('Geolocation move', async ({ page }) => {
+        const project = new ProjectPage(page, 'geolocation');
+        // Screenshot scoped to #newOlMap to avoid interference from sibling UI elements (dock, messages, etc.)
+        const mapLocator = page.locator('#newOlMap');
+
+        // Wait for request and response
+        while (osmTiles.length < 12) {
+            await page.waitForResponse('https://tile.openstreetmap.org/*/*/*.png', { timeout: 10000 });
+        }
+
+        const geolocationButton = page.locator('#button-geolocation');
+        await geolocationButton.click();
+
+        osmTiles = [];
+
+        const getMediaPromise = project.waitForGetMediaRequest();
+        await page.evaluate(`
+            lizMap.mainLizmap.utils.fetchJSON(
+                lizUrls.media+'?repository='+lizUrls.params.repository+'&project='+lizUrls.params.project+'&path=media/geolocation-orientation.json'
+            ).then((data) => {
+                const move = (position) => {
+                    const coords = position.coords;
+                    lizMap.mainLizmap.geolocation._geolocation.set('accuracy', coords.accuracy);
+                    lizMap.mainLizmap.geolocation._geolocation.set('heading', (coords.heading * Math.PI * 2) / 360);
+                    const transform = lizMap.ol.proj.getTransform('EPSG:4326', 'EPSG:3857');
+                    const projectedPosition = transform(
+                        [coords.longitude, coords.latitude]
+                    );
+                    lizMap.mainLizmap.geolocation._geolocation.set('position', projectedPosition);
+                    lizMap.mainLizmap.geolocation._geolocation.set(
+                        'accuracyGeometry',
+                        new lizMap.ol.geom.Circle(projectedPosition, coords.accuracy),
+                    );
+                    lizMap.mainLizmap.geolocation._geolocation.set('speed', coords.speed);
+                    lizMap.mainLizmap.geolocation._geolocation.changed();
+                }
+                const position = data.data[0];
+                move(position);
+
+                // Override modules/Geolocation.js isTracking
+                Object.defineProperty(lizMap.mainLizmap.geolocation, 'isTracking', {get: () => {return true}, set: () => {return false}});
+                // Dispatch event to update UI
+                lizMap.mainEventDispatcher.dispatch('geolocation.isTracking');
+
+                const nb_position = data.data.length;
+                let step = 0;
+                const interval = setInterval(() => {
+                    step++;
+                    if (step >= nb_position) {
+                       clearInterval(interval);
+                       return;
+                    }
+                   move(data.data[step]);
+                }, 1000);
+
+            });
+        `);
+        const getMediaRequest = await getMediaPromise;
+        responseExpect(await getMediaRequest.response()).toBeJson();
+        // Wait for OL transition
+        await page.waitForTimeout(500);
+        // Geolocation is displayed with direction
+
+        // Hide all elements but #newOlMap and their children
+        await page.$eval("*", el => el.style.visibility = 'hidden');
+        await page.$eval("#newOlMap, #newOlMap *", el => el.style.visibility = 'visible');
+
+        // Get unrotate map screenshot
+        let buffer = await mapLocator.screenshot({
+            // path: playwrightTestFile('__screenshots__','geolocation.spec.js','heading-unrotate.png'),
+        });
+        const unrotateByteLength = buffer.byteLength;
+        const unrotateHash = await digestBuffer(buffer);
+
+        // Restore visibility
+        await page.$eval("*", el => el.style.visibility = '');
+
+        // Bind geolocation to rotate the map
+        const geolocationDock = page.locator('#geolocation');
+        const geolocationDockButtonBar = geolocationDock.locator('.button-bar');
+        await geolocationDockButtonBar.locator('.bind-btn').click();
+        await geolocationDockButtonBar.locator('.bind-control').fill('1');
+
+        // Wait for OL transition
+        await page.waitForTimeout(500);
+
+        // Hide all elements but #newOlMap and their children
+        await page.$eval("*", el => el.style.visibility = 'hidden');
+        await page.$eval("#newOlMap, #newOlMap *", el => el.style.visibility = 'visible');
+
+        // Get rotate map screenshot
+        buffer = await mapLocator.screenshot({
+            // path: playwrightTestFile('__screenshots__','geolocation.spec.js','pos.png'),
+        });
+        const rotateByteLength = buffer.byteLength;
+        expect(rotateByteLength).not.toBe(unrotateByteLength);
+        const rotateHash = await digestBuffer(buffer);
+        expect(rotateHash).not.toBe(unrotateHash);
+
+        // Wait for moving
+        await page.waitForTimeout(1000);
+
+        // Get move map screenshot
+        buffer = await mapLocator.screenshot({
+            // path: playwrightTestFile('__screenshots__','geolocation.spec.js','move1.png'),
+        });
+        const move1ByteLength = buffer.byteLength;
+        expect(move1ByteLength).not.toBe(rotateByteLength);
+        expect(move1ByteLength).not.toBe(unrotateByteLength);
+        const move1Hash = await digestBuffer(buffer);
+        expect(move1Hash).not.toBe(rotateHash);
+        expect(move1Hash).not.toBe(unrotateHash);
+
+        // Wait for moving
+        await page.waitForTimeout(1000);
+
+        // Get move map screenshot
+        buffer = await mapLocator.screenshot({
+            // path: playwrightTestFile('__screenshots__','geolocation.spec.js','move2.png'),
+        });
+        const move2ByteLength = buffer.byteLength;
+        expect(move2ByteLength).not.toBe(rotateByteLength);
+        expect(move2ByteLength).not.toBe(unrotateByteLength);
+        expect(move2ByteLength).not.toBe(move1ByteLength);
+        const move2Hash = await digestBuffer(buffer);
+        expect(move2Hash).not.toBe(rotateHash);
+        expect(move2Hash).not.toBe(unrotateHash);
+        expect(move2Hash).not.toBe(move1Hash);
     });
 });
