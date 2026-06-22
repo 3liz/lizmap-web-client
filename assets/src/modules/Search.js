@@ -5,6 +5,8 @@
  * @license MPL-2.0
  */
 
+import { Utils } from './Utils.js';
+
 const AUTOCOMPLETE_MIN_LENGTH = 3;
 
 /**
@@ -79,9 +81,9 @@ export default class Search {
      */
     _buildAutoSearch(performFn) {
         return () => {
-            if ($('#search-query').val().length < AUTOCOMPLETE_MIN_LENGTH) {
-                $('#lizmap-search .items').html('');
-                $('#lizmap-search, #lizmap-search-close').removeClass('open');
+            if (document.getElementById('search-query').value.length < AUTOCOMPLETE_MIN_LENGTH) {
+                document.querySelector('#lizmap-search .items').innerHTML = '';
+                document.querySelectorAll('#lizmap-search, #lizmap-search-close').forEach(el => el.classList.remove('open'));
                 return;
             }
             performFn();
@@ -134,44 +136,42 @@ export default class Search {
     _performFtsSearch(searchConfig, extent) {
         this._startExternalSearch();
 
-        var labrex = this._getHighlightRegEx();
-        $.get(searchConfig.url
-            , {
-                "repository": globalThis['lizUrls'].params.repository,
-                "project": globalThis['lizUrls'].params.project,
-                "query": $('#search-query').val(),
-            }
-            , (results) => {
-                var text = '';
-                var count = 0;
+        const labrex = this._getHighlightRegEx();
+        const url = new URL(searchConfig.url, location.href);
+        url.searchParams.set('repository', globalThis['lizUrls'].params.repository);
+        url.searchParams.set('project', globalThis['lizUrls'].params.project);
+        url.searchParams.set('query', document.getElementById('search-query').value);
 
-                for (var ftsId in results) {
-                    var ftsLayerResult = results[ftsId];
-                    text += '<li><strong>' + ftsLayerResult.search_name + '</strong>';
-                    text += '<ul>';
-                    for (var i = 0, len = ftsLayerResult.features.length; i < len; i++) {
-                        var ftsFeat = ftsLayerResult.features[i];
-                        var ftsGeometry = OpenLayers.Geometry.fromWKT(ftsFeat.geometry);
-                        if (ftsLayerResult.srid != 'EPSG:4326') {
-                            ftsGeometry.transform(ftsLayerResult.srid, 'EPSG:4326');
-                        }
-                        var bbox = ftsGeometry.getBounds();
-                        if (extent.intersectsBounds(bbox)) {
-                            var lab = ftsFeat.label.replace(labrex, '<strong class="highlight">$1</strong>');
-                            text += '<li><a href="#' + bbox.toBBOX() + '" data-wkt="' + ftsGeometry.toString() + '">' + lab + '</a></li>';
-                            count++;
-                        }
+        Utils.fetchJSON(url.toString()).then(results => {
+            var text = '';
+            var count = 0;
+
+            for (var ftsId in results) {
+                var ftsLayerResult = results[ftsId];
+                text += '<li><strong>' + ftsLayerResult.search_name + '</strong>';
+                text += '<ul>';
+                for (var i = 0, len = ftsLayerResult.features.length; i < len; i++) {
+                    var ftsFeat = ftsLayerResult.features[i];
+                    var ftsGeometry = OpenLayers.Geometry.fromWKT(ftsFeat.geometry);
+                    if (ftsLayerResult.srid != 'EPSG:4326') {
+                        ftsGeometry.transform(ftsLayerResult.srid, 'EPSG:4326');
                     }
-                    text += '</ul></li>';
+                    var bbox = ftsGeometry.getBounds();
+                    if (extent.intersectsBounds(bbox)) {
+                        var lab = ftsFeat.label.replace(labrex, '<strong class="highlight">$1</strong>');
+                        text += '<li><a href="#' + bbox.toBBOX() + '" data-wkt="' + ftsGeometry.toString() + '">' + lab + '</a></li>';
+                        count++;
+                    }
                 }
+                text += '</ul></li>';
+            }
 
-                if (count != 0 && text != '') {
-                    this._updateExternalSearch(text);
-                }
-                else {
-                    this._updateExternalSearch('<li><strong>' + lizDict['externalsearch.mapdata'] + '</strong><ul><li>' + lizDict['externalsearch.notfound'] + '</li></ul></li>');
-                }
-            }, 'json');
+            if (count != 0 && text != '') {
+                this._updateExternalSearch(text);
+            } else {
+                this._updateExternalSearch('<li><strong>' + lizDict['externalsearch.mapdata'] + '</strong><ul><li>' + lizDict['externalsearch.notfound'] + '</li></ul></li>');
+            }
+        });
     }
 
     /**
@@ -194,12 +194,12 @@ export default class Search {
 
         const autoSearch = this._buildAutoSearch(() => this._performFtsSearch(searchConfig, extent));
 
-        $('#nominatim-search').submit(() => {
+        document.getElementById('nominatim-search').addEventListener('submit', evt => {
+            evt.preventDefault();
             this._performFtsSearch(searchConfig, extent);
-            return false;
         });
 
-        $('#search-query').on('input', this._debounce(autoSearch, 100));
+        document.getElementById('search-query').addEventListener('input', this._debounce(autoSearch, 100));
 
         return true;
     }
@@ -216,69 +216,69 @@ export default class Search {
         var labrex = this._getHighlightRegEx();
         const searchQuery = document.getElementById('search-query').value;
         switch (searchConfig.service) {
-            case 'nominatim':
-                $.get(service
-                    , { "query": searchQuery, "bbox": extent.toBBOX() }
-                    , data => {
-                        var text = '';
-                        var count = 0;
-                        for (const address of data) {
-                            if (count > 9) {
-                                return false;
-                            }
-                            if (!address.boundingbox) {
-                                return true;
-                            }
+            case 'nominatim': {
+                const nominatimUrl = new URL(service);
+                nominatimUrl.searchParams.set('query', searchQuery);
+                nominatimUrl.searchParams.set('bbox', extent.toBBOX());
+                Utils.fetchJSON(nominatimUrl.toString()).then(data => {
+                    var text = '';
+                    var count = 0;
+                    for (const address of data) {
+                        if (count > 9) {
+                            return false;
+                        }
+                        if (!address.boundingbox) {
+                            return true;
+                        }
 
-                            var bbox = [
-                                address.boundingbox[2],
-                                address.boundingbox[0],
-                                address.boundingbox[3],
-                                address.boundingbox[1]
-                            ];
-                            bbox = new OpenLayers.Bounds(bbox);
-                            if (extent.intersectsBounds(bbox)) {
-                                var lab = address.display_name.replace(labrex, '<strong class="highlight">$1</strong>');
-                                text += `<li><a href="#${bbox.toBBOX()}" data-wkt="POINT(${address.lon} ${address.lat})">${lab}</a></li>`;
-                                count++;
-                            }
+                        var bbox = [
+                            address.boundingbox[2],
+                            address.boundingbox[0],
+                            address.boundingbox[3],
+                            address.boundingbox[1]
+                        ];
+                        bbox = new OpenLayers.Bounds(bbox);
+                        if (extent.intersectsBounds(bbox)) {
+                            var lab = address.display_name.replace(labrex, '<strong class="highlight">$1</strong>');
+                            text += `<li><a href="#${bbox.toBBOX()}" data-wkt="POINT(${address.lon} ${address.lat})">${lab}</a></li>`;
+                            count++;
                         }
-                        if (count == 0 || text == '') {
-                            text = '<li>' + lizDict['externalsearch.notfound'] + '</li>';
-                        }
-                        this._updateExternalSearch('<li><strong>OpenStreetMap</strong><ul>' + text + '</ul></li>');
-                    }, 'json');
+                    }
+                    if (count == 0 || text == '') {
+                        text = '<li>' + lizDict['externalsearch.notfound'] + '</li>';
+                    }
+                    this._updateExternalSearch('<li><strong>OpenStreetMap</strong><ul>' + text + '</ul></li>');
+                });
                 break;
+            }
             case 'ign': {
                 if (searchQuery.length < AUTOCOMPLETE_MIN_LENGTH || searchQuery.length > 200) {
                     lizMap.addMessage(lizDict['externalsearch.ignlimit'], 'warning', true);
                     break;
                 }
-                $.get(service
-                    , {
-                        "text": searchQuery,
-                        "type": 'StreetAddress',
-                        "maximumResponses": 10,
-                        "bbox": extent.toBBOX()
-                    }
-                    , data => {
-                        let text = '';
-                        let count = 0;
-                        for (const result of data.results) {
-                            var lab = result.fulltext.replace(labrex, '<strong class="highlight">$1</strong>');
-                            text += `
+                const ignUrl = new URL(service);
+                ignUrl.searchParams.set('text', searchQuery);
+                ignUrl.searchParams.set('type', 'StreetAddress');
+                ignUrl.searchParams.set('maximumResponses', 10);
+                ignUrl.searchParams.set('bbox', extent.toBBOX());
+                Utils.fetchJSON(ignUrl.toString()).then(data => {
+                    let text = '';
+                    let count = 0;
+                    for (const result of data.results) {
+                        var lab = result.fulltext.replace(labrex, '<strong class="highlight">$1</strong>');
+                        text += `
                             <li>
                                 <a href="#${result.x},${result.y},${result.x},${result.y}" data-wkt="POINT(${result.x} ${result.y})">
                                     ${lab}
                                 </a>
                             </li>`;
-                            count++;
-                        }
-                        if (count == 0 || text == '') {
-                            text = '<li>' + lizDict['externalsearch.notfound'] + '</li>';
-                        }
-                        this._updateExternalSearch('<li><strong>IGN</strong><ul>' + text + '</ul></li>');
-                    }, 'json');
+                        count++;
+                    }
+                    if (count == 0 || text == '') {
+                        text = '<li>' + lizDict['externalsearch.notfound'] + '</li>';
+                    }
+                    this._updateExternalSearch('<li><strong>IGN</strong><ul>' + text + '</ul></li>');
+                });
                 break;
             }
             case 'google':
@@ -376,12 +376,12 @@ export default class Search {
 
         const autoSearch = this._buildAutoSearch(() => this._performExternalSearch(searchConfig, service, extent));
 
-        $('#nominatim-search').submit(() => {
+        document.getElementById('nominatim-search').addEventListener('submit', evt => {
+            evt.preventDefault();
             this._performExternalSearch(searchConfig, service, extent);
-            return false;
         });
 
-        $('#search-query').on('input', this._debounce(autoSearch, 100));
+        document.getElementById('search-query').addEventListener('input', this._debounce(autoSearch, 100));
 
         return true;
     }
