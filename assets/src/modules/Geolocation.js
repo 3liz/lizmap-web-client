@@ -18,6 +18,9 @@ import Style from 'ol/style/Style.js';
 import Icon from 'ol/style/Icon.js';
 import { OptionsConfig } from './config/Options.js';
 
+// modulo for negative values
+const mod = (n) => ((n % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+
 /**
  * @class
  * @name Geolocation
@@ -150,6 +153,11 @@ export default class Geolocation {
     center() {
         const center = this._geolocation.getPosition();
         this._map.getView().setCenter(center);
+        this._map.render();
+
+        if (this.displayDirection && this.isBind) {
+            this.rotateView()
+        }
     }
 
     toggleBind() {
@@ -158,10 +166,6 @@ export default class Geolocation {
         // Center when binding
         if (this.isBind) {
             this.center();
-
-            if (this.displayDirection) {
-                this.rotateView()
-            }
 
             this._startBindInterval();
         }else{
