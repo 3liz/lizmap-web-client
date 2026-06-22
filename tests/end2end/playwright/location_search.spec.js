@@ -261,6 +261,85 @@ test.describe('Location search - form_advanced - anonymous - @readonly', () => {
 
 });
 
+test.describe('Location search - live search (auto-trigger) @readonly', () => {
+
+    test.beforeEach(async ({ page }) => {
+        await page.route('**/service/getProjectConfig*', async route => {
+            const response = await route.fetch();
+            const json = await response.json();
+            json.options['searches'] = [
+                {
+                    "type": "Fts",
+                    "service": "lizmapFts",
+                    "url": "/index.php/lizmap/searchFts/get"
+                }
+            ];
+            await route.fulfill({ response, json });
+        });
+    });
+
+    test('Auto-fires FTS search after 3 chars without pressing Enter', async ({ page }) => {
+        const project = new ProjectPage(page, 'location_search');
+        project.waitForGetLegendGraphicDuringLoad = false;
+        await project.open();
+        await page.unroute('**/service/getProjectConfig*');
+
+        const searchLocator = page.getByPlaceholder('Search');
+
+        const searchPromise = page.waitForRequest(/searchFts/);
+        await searchLocator.fill('mos');
+        await searchPromise;
+
+        await expect(page.getByText('Quartier', { exact: true })).toHaveCount(1);
+        await expect(page.locator('#lizmap-search')).toHaveClass(/\bopen\b/);
+    });
+
+    test('No auto-fire below 3 chars', async ({ page }) => {
+        const project = new ProjectPage(page, 'location_search');
+        project.waitForGetLegendGraphicDuringLoad = false;
+        await project.open();
+        await page.unroute('**/service/getProjectConfig*');
+
+        const searchLocator = page.getByPlaceholder('Search');
+
+        let requestFired = false;
+        await page.route('**/searchFts*', async route => {
+            requestFired = true;
+            await route.continue();
+        });
+
+        await searchLocator.fill('mo');
+        await page.waitForTimeout(300);
+
+        expect(requestFired).toBe(false);
+        await expect(page.locator('#lizmap-search')).not.toHaveClass(/\bopen\b/);
+    });
+
+    test('Results cleared when input drops below 3 chars', async ({ page }) => {
+        const project = new ProjectPage(page, 'location_search');
+        project.waitForGetLegendGraphicDuringLoad = false;
+        await project.open();
+        await page.unroute('**/service/getProjectConfig*');
+
+        const searchLocator = page.getByPlaceholder('Search');
+
+        const searchPromise = page.waitForRequest(/searchFts/);
+        await searchLocator.fill('mosson');
+        await searchPromise;
+
+        await expect(page.locator('#lizmap-search')).toHaveClass(/\bopen\b/);
+        await expect(page.getByText('Quartier', { exact: true })).toHaveCount(1);
+
+        // Drop back below minimum — results should clear
+        await searchLocator.fill('mo');
+        await page.waitForTimeout(200);
+
+        await expect(page.locator('#lizmap-search')).not.toHaveClass(/\bopen\b/);
+        await expect(page.getByText('Quartier', { exact: true })).toHaveCount(0);
+    });
+
+});
+
 test.describe('Location search - form_advanced - admin - @readonly', () => {
     test.use({ storageState: getAuthStorageStatePath('admin') });
 
