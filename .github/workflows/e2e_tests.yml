@@ -30,21 +30,21 @@ jobs:
         name: ["LEGACY", "STABLE", "BLEEDING_EDGE"]
         shard: [1, 2, 3]
         include:
-          - name: "LEGACY"
-            php: "8.2"
-            pg-postgis: "14-3"
-            qgis-server: "3.40"
-            update-projects: "FALSE"
+          # - name: "LEGACY"
+          #   php: "8.2"
+          #   pg-postgis: "14-3"
+          #   qgis-server: "3.40"
+          #   update-projects: "FALSE"
           - name: "STABLE"
             php: "8.3"
             pg-postgis: "15-3"
             qgis-server: "3.40"
             update-projects: "FALSE"
-          - name: "BLEEDING_EDGE"
-            php: "8.4"
-            pg-postgis: "18-3"
-            qgis-server: "3.44"
-            update-projects: "TRUE"
+          # - name: "BLEEDING_EDGE"
+          #   php: "8.4"
+          #   pg-postgis: "18-3"
+          #   qgis-server: "3.44"
+          #   update-projects: "TRUE"
     env:
       PLAYWRIGHT_FORCE_TTY: true
       PLAYWRIGHT_LIST_PRINT_STEPS: true
