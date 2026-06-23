@@ -48,7 +48,7 @@ class osmCtrl extends jController
 
         $url .= http_build_query($params);
         list($content, $mime, $code) = Proxy::getRemoteData($url, array(
-            'method' => 'get',
+            'method' => 'GET',
             'referer' => jUrl::getFull('view~default:index'),
         ));
 
