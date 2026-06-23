@@ -275,7 +275,9 @@ const initLizmapApp = () => {
         }
 
         // end waiting, does not depend on ongoing asynchronous actions
-        lizMap.waitEnd(startupConfigurations?.getFeatureInfo);
+        // startupFeatures is passed so highlights are re-applied after displayGetFeatureInfo clears them,
+        // even when the call is deferred until popup is initialized
+        lizMap.waitEnd(startupConfigurations?.getFeatureInfo, startupConfigurations?.startupFeatures);
 
         return;
     }, 'lizmap.class.loaded');
