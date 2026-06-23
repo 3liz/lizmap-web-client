@@ -264,11 +264,11 @@ class Proxy
             // support of deprecated parameters
             if ($options !== null) {
                 $options = array(
-                    'method' => $method,
+                    'method' => strtoupper($method),
                     'proxyHttpBackend' => $options,
                 );
             } else {
-                $options = array('method' => $method);
+                $options = array('method' => strtoupper($method));
             }
             if ($debug !== null) {
                 $options['debug'] = $debug;
@@ -277,7 +277,7 @@ class Proxy
 
         $services = self::getServices();
         $options = array_merge(array(
-            'method' => 'get',
+            'method' => 'GET',
             'referer' => '',
             'headers' => array(),
             'proxyHttpBackend' => $services->proxyHttpBackend,
@@ -285,7 +285,7 @@ class Proxy
             'body' => '',
         ), $options);
 
-        $options['method'] = strtolower($options['method']);
+        $options['method'] = strtoupper($options['method']);
 
         return $options;
     }
@@ -316,7 +316,10 @@ class Proxy
      */
     protected static function buildHeaders($url, $options)
     {
-        if ($options['method'] == 'post' || $options['method'] == 'put') {
+        if ($options['method']) {
+            $options['method'] = strtoupper($options['method']);
+        }
+        if (in_array($options['method'], array('POST', 'PUT'))) {
             if ($options['body'] == '') {
                 $options['headers']['Content-type'] = 'application/x-www-form-urlencoded';
                 $content = explode('?', $url);
@@ -425,7 +428,7 @@ class Proxy
 
         // Create request
         $request = new Request(
-            $options['method'],
+            strtoupper($options['method']),
             $url,
             $options['headers'],
             $options['body'],
@@ -507,7 +510,7 @@ class Proxy
      *
      * @return array{0: string, 1: string, 2: int, 3: array} Array containing data (0: string), mime type (1: string), HTTP code (2: int) and headers
      */
-    public static function getRemoteData($url, $options = null, $debug = null, $method = 'get')
+    public static function getRemoteData($url, $options = null, $debug = null, $method = 'GET')
     {
         $options = self::buildOptions($options, $method, $debug);
         $response = self::sendRequest($url, $options);
@@ -537,7 +540,7 @@ class Proxy
      */
     public static function getRemoteDataAsStream($url, $options = null)
     {
-        $options = self::buildOptions($options, 'get', null);
+        $options = self::buildOptions($options, 'GET', null);
         $options['stream'] = true;
 
         $response = self::sendRequest($url, $options);

@@ -433,7 +433,7 @@ class qgisExpressionUtils
 
         // Request evaluate constraint expressions
         $url = Proxy::constructUrl($params, lizmap::getServices());
-        $options = array('method' => 'post');
+        $options = array('method' => 'POST');
         list($data, $mime, $code) = Proxy::getRemoteData($url, $options);
 
         // Check data from request
@@ -494,7 +494,7 @@ class qgisExpressionUtils
         }
         $url = Proxy::constructUrl($merged_params, lizmap::getServices());
         // Use POST method as the expressions can be heavy (polygon filter)
-        $options = array('method' => 'post');
+        $options = array('method' => 'POST');
         list($data, $mime, $code) = Proxy::getRemoteData($url, $options);
 
         // Check data from request
