@@ -1,5 +1,7 @@
 <?php
 
+use Lizmap\App\SqlTools;
+
 /**
  * Manage and give access to lizmap configuration.
  *
@@ -25,20 +27,6 @@ class filterDatasource
     private $lproj;
     private $config;
     private $data;
-
-    protected $blockSqlWords = array(
-        ';',
-        'select',
-        'delete',
-        'insert',
-        'update',
-        'drop',
-        'alter',
-        '--',
-        'truncate',
-        'vacuum',
-        'create',
-    );
 
     public function __construct($repository, $project, $layerId)
     {
@@ -87,9 +75,9 @@ class filterDatasource
         if ($this->provider != 'postgres') {
             $filter = str_replace(' ILIKE ', ' LIKE ', $filter);
         }
-        $block_items = array();
 
-        if (preg_match('#'.implode('|', $this->blockSqlWords).'#i', $filter, $block_items)) {
+        [$validFilter, $block_items] = SqlTools::validateExpressionFilter($filter);
+        if (!$validFilter) {
             jLog::log('The EXP_FILTER param contains dangerous chars : '.implode(', ', $block_items), 'lizmapadmin');
 
             return null;
