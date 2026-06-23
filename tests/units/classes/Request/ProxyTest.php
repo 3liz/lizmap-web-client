@@ -156,7 +156,7 @@ class ProxyTest extends TestCase
             'referer' => 'referer',
         );
         $expectedStr = array(
-            'method' => 'post',
+            'method' => 'POST',
             'referer' => '',
             'headers' => array(),
             'proxyHttpBackend' => 'proxyHttp',
@@ -164,7 +164,7 @@ class ProxyTest extends TestCase
             'body' => '',
         );
         $expectedNull = array(
-            'method' => 'post',
+            'method' => 'POST',
             'referer' => '',
             'headers' => array(),
             'proxyHttpBackend' => 'proxy',
@@ -172,7 +172,7 @@ class ProxyTest extends TestCase
             'body' => '',
         );
         $expectedArray = array(
-            'method' => 'post',
+            'method' => 'POST',
             'referer' => 'referer',
             'headers' => array(),
             'proxyHttpBackend' => 'proxy',
