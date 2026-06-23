@@ -1330,7 +1330,7 @@ class WMSRequest extends OGCRequest
         }
 
         // Get data from the map server: use POST to avoid too long URLS
-        $options = array('method' => 'post');
+        $options = array('method' => 'POST');
         list($data, $mime, $code) = Proxy::getRemoteData(
             Proxy::constructUrl($params, $this->services),
             $options
