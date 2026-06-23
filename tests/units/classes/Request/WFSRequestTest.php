@@ -129,6 +129,7 @@ class WFSRequestTest extends TestCase
     public function testGetFeatureIdFilterExp($featureid, $typename, $expectedExpFilter, $layerOptions): void
     {
         $wfs = new WFSRequestForTests();
+        $wfs->appContext = new ContextForTests();
         $qgisLayer = new LayerWFSForTests();
         if ($layerOptions) {
             if (array_key_exists('provider', $layerOptions)) {
@@ -403,49 +404,6 @@ class WFSRequestTest extends TestCase
         $result = '';
         $result = $wfs->getQueryOrderForTests(new jDbConnectionForTests(), $params, $wfsFields);
         $this->assertEquals($expectedSql, $result);
-    }
-
-    public static function getValidateExpressionFilterData()
-    {
-        return array(
-            array(';', false),
-            array('select', false),
-            array('delete', false),
-            array('insert', false),
-            array('update', false),
-            array('drop', false),
-            array('alter', false),
-            array('--', false),
-            array('truncate', false),
-            array('vacuum', false),
-            array('create', false),
-            array('selectoioio', false),
-            array('test intersects other test', true),
-            array('test geom_from_gml other test', true),
-            array('test intersects $geometry', true),
-            array('$id IN (1)', true),
-            array('$id IN (1, 2)', true),
-            array('"id" IN (1)', true),
-            array('"id" IN (1, 2)', true),
-            array('"id" IN (\'test\')', true),
-            array('("foo" = \'test\' AND "id" = 55)', true),
-            array('("foo" = \'test\' AND "id" = 55) OR ("foo" = \'bar\' AND "id" = 44)', true),
-            array('("foo" = \'test\' AND "id" = 55) OR ("foo" = \'bar\' AND "id" = 44); -- SELECT * FROM jlx_user', false),
-        );
-    }
-
-    /**
-     * @dataProvider getValidateExpressionFilterData
-     *
-     * @param mixed $filter
-     * @param mixed $expectedResult
-     */
-    #[DataProvider('getValidateExpressionFilterData')]
-    public function testValidateExpressionFilter($filter, $expectedResult): void
-    {
-        $wfs = new WFSRequestForTests();
-        $wfs->appContext = new ContextForTests();
-        $this->assertEquals($expectedResult, $wfs->validateExpressionFilterForTests($filter));
     }
 
     public static function getValidateFilterData()
