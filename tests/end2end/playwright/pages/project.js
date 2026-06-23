@@ -601,6 +601,16 @@ export class ProjectPage extends BasePage {
     }
 
     /**
+     * Returns first level popup single features
+     * @param {boolean} groupPopupByLayer
+     * @returns {Promise<Locator>}
+     */
+    async getPopupSingleFeatures(groupPopupByLayer = false){
+        const singleFeaturesSelector = `${groupPopupByLayer ? 'lizmap-group-popup-layer div[slot="popup"]':'.lizmapPopupContent'} > .lizmapPopupSingleFeature`;
+        return this.page.locator(singleFeaturesSelector);
+    }
+
+    /**
      * Close left dock
      */
     async closeLeftDock() {
