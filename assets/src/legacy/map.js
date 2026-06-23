@@ -3273,6 +3273,7 @@ window.lizMap = function() {
             // Get feature info if defined in URL
             let getFeatureInfoRequest;
             let getFeatureInfo;
+            let startupFeaturesData;
 
             const urlParameters = (new URL(document.location)).searchParams;
 
@@ -3330,7 +3331,7 @@ window.lizMap = function() {
                 const wmsCapaData = responses[2].value;
                 const wmtsCapaData = responses[3].value;
                 const wfsCapaData = responses[4].value;
-                const startupFeaturesData = responses[5].value;
+                startupFeaturesData = responses[5].value;
                 let featuresExtent;
                 if (startupFeaturesData) {
                     const startupFeatures = (new GeoJSON()).readFeatures(startupFeaturesData);
@@ -3698,11 +3699,23 @@ window.lizMap = function() {
 
                     // Display getFeatureInfo if requested
                     if(getFeatureInfo){
-                        displayGetFeatureInfo(getFeatureInfo,
-                            {
-                                x: map.size.w / 2,
-                                y: map.size.h / 2
-                            });
+                        const showGetFeatureInfo = () => {
+                            displayGetFeatureInfo(getFeatureInfo,
+                                {
+                                    x: map.size.w / 2,
+                                    y: map.size.h / 2
+                                });
+                            // Re-apply startup highlights cleared by popup display
+                            if (startupFeaturesData) {
+                                lizMap.mainLizmap.map.setHighlightFeatures(startupFeaturesData, "geojson");
+                            }
+                        };
+                        // popup is initialized after layers load — defer if not ready yet
+                        if (lizMap.mainLizmap?.popup) {
+                            showGetFeatureInfo();
+                        } else {
+                            lizMap.mainEventDispatcher.addListener(showGetFeatureInfo, 'lizmap.modules.initialized');
+                        }
                     }
                 });
         }
