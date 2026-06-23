@@ -299,7 +299,7 @@ abstract class OGCRequest
         $options = array();
         if ($this->requestXml !== null) {
             $options = array(
-                'method' => 'post',
+                'method' => 'POST',
                 'body' => $this->requestXml,
             );
             $headers = array_merge(
@@ -307,7 +307,7 @@ abstract class OGCRequest
                 $headers,
             );
         } elseif ($post) {
-            $options = array('method' => 'post');
+            $options = array('method' => 'POST');
         }
         $options['headers'] = $headers;
 
