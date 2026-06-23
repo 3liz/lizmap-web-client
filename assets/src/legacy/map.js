@@ -3645,19 +3645,32 @@ window.lizMap = function() {
          * Wait end leads to interface modifications
          * Removes waiter and display getFeatureInfo, if requested
          * @param {Object} getFeatureInfo
+         * @param {Object} [startupFeatures] - GeoJSON startup features to re-highlight after popup display
          * @returns {void}
          */
-        waitEnd: (getFeatureInfo)=>{
+        waitEnd: (getFeatureInfo, startupFeatures)=>{
             $('body').css('cursor', 'auto');
             $('#loading').dialog('close');
 
             // Display getFeatureInfo if requested
             if(getFeatureInfo){
-                displayGetFeatureInfo(getFeatureInfo,
-                    {
-                        x: map.size.w / 2,
-                        y: map.size.h / 2
-                    });
+                const showGetFeatureInfo = () => {
+                    displayGetFeatureInfo(getFeatureInfo,
+                        {
+                            x: map.size.w / 2,
+                            y: map.size.h / 2
+                        });
+                    // Re-apply startup highlights cleared by popup display
+                    if (startupFeatures) {
+                        lizMap.mainLizmap.map.setHighlightFeatures(startupFeatures, "geojson");
+                    }
+                };
+                // popup is initialized after layers load — defer if not ready yet
+                if (lizMap.mainLizmap?.popup) {
+                    showGetFeatureInfo();
+                } else {
+                    lizMap.mainEventDispatcher.subscribe(showGetFeatureInfo, 'lizmap.modules.initialized');
+                }
             }
         },
         /**
