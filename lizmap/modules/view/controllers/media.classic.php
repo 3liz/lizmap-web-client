@@ -230,7 +230,6 @@ class mediaCtrl extends jController
             return $this->error403(jLocale::get('view~default.repository.access.denied'));
         }
 
-        $finalPath = null;
         $isWebDavResource = false;
         $path = $this->param('path');
 
@@ -298,12 +297,6 @@ class mediaCtrl extends jController
         // Prepare the file to return
         $rep->doDownload = false;
         $rep->fileName = $finalPath;
-        // For HEAD request, we need to set the content length
-        $fileSize = filesize($finalPath);
-        $rep->addHttpHeader('Content-Length', $fileSize);
-        if (!$isWebDavResource) {
-            $rep->addHttpHeader('Accept-Ranges', 'bytes');
-        }
 
         // Get the name of the file
         $path_parts = pathinfo($finalPath);
@@ -321,7 +314,10 @@ class mediaCtrl extends jController
             array_shift($nameEx);
             $name = implode('-', $nameEx);
             $rep->outputFileName = $name;
+        } else {
+            $rep->addHttpHeader('Accept-Ranges', 'bytes');
         }
+
         // Get the mime type
         $mime = File::getMimeType($finalPath);
         if ($mime == 'text/plain' || $mime == ''
@@ -340,16 +336,6 @@ class mediaCtrl extends jController
         }
 
         $rep->mimeType = $mime;
-
-        $mimeTextArray = array('text/html', 'text/text');
-        if (in_array($mime, $mimeTextArray)) {
-            $content = jFile::read($finalPath);
-            $rep->fileName = '';
-            $rep->content = $content;
-        }
-        // For HEAD request, we need to set the content length
-        $fileSize = filesize($finalPath);
-        $rep->addHttpHeader('Content-Length', $fileSize);
 
         if ($isWebDavResource) {
             $rep->setExpires('+1 days');
@@ -374,6 +360,8 @@ class mediaCtrl extends jController
             // Parse the range header && check the if-range header.
             if ($range !== '' && preg_match('/bytes=(\d*)?-(\d*)?/', $range, $matches)
                && ($ifRange === '' || $ifRange === $etag)) {
+
+                $fileSize = filesize($finalPath);
                 // Get the end byte.
                 $endByte = $matches[2] !== '' ? intval($matches[2]) : $fileSize - 1;
                 // Get the start byte.
@@ -409,9 +397,11 @@ class mediaCtrl extends jController
 
                 $rep->setContentCallback(function () use ($finalPath, $startByte, $contentLength) {
                     $fh = fopen($finalPath, 'rb');
+                    $output = fopen('php://output', 'wb');
                     fseek($fh, $startByte);
-                    echo fread($fh, $contentLength);
+                    stream_copy_to_stream($fh, $output, $contentLength);
                     fclose($fh);
+                    fclose($output);
                 });
 
                 return $rep;
