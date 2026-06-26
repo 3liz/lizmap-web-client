@@ -299,7 +299,7 @@ window.lizMap = function() {
 
             // Hide switcher
             if( $('#button-switcher').parent().hasClass('active') )
-                $('#button-switcher').click();
+                document.getElementById('button-switcher').click();
 
             if( $('#menu').is(':visible'))
                 $('#menu').hide();
@@ -322,7 +322,7 @@ window.lizMap = function() {
 
             // Show switcher
             if( !( $('#button-switcher').parent().hasClass('active') ) )
-                $('#button-switcher').click();
+                document.getElementById('button-switcher').click();
 
             if( !$('#menu').is(':visible'))
                 $('#content span.ui-icon-open-menu').click();
@@ -3711,7 +3711,7 @@ lizMap.events.on({
         // Update legend if mobile
         if( lizMap.checkMobile() ){
             if( $('#button-switcher').parent().hasClass('active') )
-                $('#button-switcher').click();
+                document.getElementById('button-switcher').click();
         }
 
         // Connect dock close button
