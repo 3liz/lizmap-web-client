@@ -20,11 +20,13 @@ jobs:
           - php-version: "8.1"
             php-unit: "10.5.63"
           - php-version: "8.2"
-            php-unit: "11.5.50"
+            php-unit: "11.5.55"
           - php-version: "8.3"
-            php-unit: "12.5.8"
+            php-unit: "12.5.30"
           - php-version: "8.4"
-            php-unit: "12.5.8"
+            php-unit: "12.5.30"
+          - php-version: "8.5"
+            php-unit: "13.2.1"
     steps:
 
       - name: Check out repository
