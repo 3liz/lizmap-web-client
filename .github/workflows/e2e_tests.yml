@@ -41,7 +41,7 @@ jobs:
             qgis-server: "3.40"
             update-projects: "FALSE"
           - name: "BLEEDING_EDGE"
-            php: "8.4"
+            php: "8.5"
             pg-postgis: "18-3"
             qgis-server: "3.44"
             update-projects: "TRUE"
