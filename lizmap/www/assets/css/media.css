@@ -274,13 +274,15 @@ only screen and (                   device-height <= 640px) {
     margin: 0 7px;
     width: 100%;
     background-color: #F0F0F0;
+    flex-direction: column;
+    padding-left: 15px;
+    padding-right: 15px;
   }
 
   #mapmenu > div > ul li{
     background: #444;
     border-radius: 6px;
     margin-top: 10px;
-    padding-left: 15px;
   }
 
   #mapmenu > div > ul li.active{
