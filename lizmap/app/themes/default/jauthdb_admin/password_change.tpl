@@ -5,7 +5,7 @@
 {/if}
 <div class="container">
 {form $form, 'jauthdb_admin~password:update', array('j_user_login'=>$id), 'htmlbootstrap', $formOptions}
-    <fieldset><legend>{@jauthdb_admin~crud.form.new.password@}</legend>
+    <fieldset><legend class="float-none">{@jauthdb_admin~crud.form.new.password@}</legend>
     {formcontrols}
     <p>{ctrl_label}
         {ctrl_control}

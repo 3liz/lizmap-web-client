@@ -1697,6 +1697,8 @@ div.modal div.menu-content,
 #dock form,
 div.modal form {
   margin: auto;
+  padding: 0;
+  max-width: 100%;
 }
 
 #dock legend,

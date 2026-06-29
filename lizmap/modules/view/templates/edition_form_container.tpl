@@ -1,7 +1,7 @@
 {foreach $container->getChildrenBeforeTab() as $child}
     {if $child->isGroupBox()}
         <fieldset id="{$child->getHtmlId()}"{if !$groupVisibilities[$child->getHtmlId()]} style="display:none;"{/if}>
-        <legend style="font-weight:bold;">{$child->getName()}</legend>
+        <legend class="float-none" style="font-weight:bold;">{$child->getName()}</legend>
             <div class="jforms-table-group" id="{$child->getHtmlId()}-group">
             {fetchtpl 'view~edition_form_container',array('container'=>$child, 'groupVisibilities'=>$groupVisibilities)}
             </div>
@@ -39,7 +39,7 @@
 {foreach $container->getChildrenAfterTab() as $child}
     {if $child->isGroupBox()}
         <fieldset id="{$child->getHtmlId()}"{if !$groupVisibilities[$child->getHtmlId()]} style="display:none;"{/if}>
-            <legend style="font-weight:bold;">{$child->getName()}</legend>
+            <legend class="float-none" style="font-weight:bold;">{$child->getName()}</legend>
             <div class="jforms-table-group" id="{$child->getHtmlId()}-group">
                 {fetchtpl 'view~edition_form_container',array('container'=>$child, 'groupVisibilities'=>$groupVisibilities)}
             </div>

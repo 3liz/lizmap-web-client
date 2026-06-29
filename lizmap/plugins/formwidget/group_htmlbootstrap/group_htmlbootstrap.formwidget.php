@@ -35,9 +35,9 @@ class group_htmlbootstrapFormWidget extends group_htmlFormWidget
     protected function displayStartGroup($groupId, $label, $checkBoxAttr = array())
     {
         if (count($checkBoxAttr) == 0) {
-            echo '<fieldset id="',$groupId,'" class="jforms-ctrl-group"><legend>',htmlspecialchars($label),"</legend>\n";
+            echo '<fieldset id="',$groupId,'" class="jforms-ctrl-group"><legend class="float-none">',htmlspecialchars($label),"</legend>\n";
         } else {
-            echo '<fieldset id="',$groupId,'" class="jforms-ctrl-group"><legend>',
+            echo '<fieldset id="',$groupId,'" class="jforms-ctrl-group"><legend class="float-none">',
             '<input ';
             $this->_outputAttr($checkBoxAttr);
             echo '> <label for="'.$checkBoxAttr['id'].'">',htmlspecialchars($label),"</label></legend>\n";
@@ -78,7 +78,7 @@ class group_htmlbootstrapFormWidget extends group_htmlFormWidget
             return;
         }
 
-        echo '<fieldset id="',$attr['id'],'"><legend>',htmlspecialchars($this->ctrl->label),"</legend>\n";
+        echo '<fieldset id="',$attr['id'],'"><legend class="float-none">',htmlspecialchars($this->ctrl->label),"</legend>\n";
         echo '<table class="table">',"\n";
         foreach ($this->ctrl->getChildControls() as $ctrlref => $c) {
             if ($c->type == 'submit' || $c->type == 'reset' || $c->type == 'hidden') {
