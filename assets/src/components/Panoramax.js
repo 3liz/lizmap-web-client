@@ -28,6 +28,11 @@ export default class Panoramax extends HTMLElement {
     }
 
     connectedCallback() {
+        // Cached suggestions from the last account search (used for UUID lookup).
+        this._accounts = [];
+        this._searchDebounce = null;
+        this._searchAbort = null;
+
         // Toggle the tool when its dock (whatever its location) is opened/closed.
         this._dockHandler = (e) => {
             if (e.id !== 'panoramax') {
@@ -82,24 +87,69 @@ export default class Panoramax extends HTMLElement {
             mainLizmap.panoramax?.setTypeFilter(type);
         };
 
-        // Account filter: push the selected account UUID (or null) to the module.
-        this._onAccountChange = () => {
-            const accountId = this.querySelector('select[data-filter="account"]')?.value || null;
-            mainLizmap.panoramax?.setAccountFilter(accountId);
-        };
+        // Account filter: apply immediately from cache if exact match, then debounce
+        // a search request against the Panoramax API to refresh the datalist.
+        this._onAccountInput = () => {
+            const input = this.querySelector('input[data-filter="account"]');
+            const val = (input?.value || '').trim();
 
-        // Accounts list updated (new tiles loaded): refresh the select options.
-        this._onAccountsUpdated = (e) => {
-            this._updateAccountSelect(e.accounts);
+            if (this._searchAbort) {
+                this._searchAbort.abort();
+                this._searchAbort = null;
+            }
+            clearTimeout(this._searchDebounce);
+
+            if (!val) {
+                this._accounts = [];
+                const datalist = this.querySelector('#pnx-accounts-list');
+                if (datalist) { datalist.replaceChildren(); }
+                mainLizmap.panoramax?.setAccountFilter(null);
+                return;
+            }
+
+            // Exact match in the current suggestions (e.g. the user picked a value
+            // from the datalist): apply the filter and skip any further API request.
+            const cached = this._accounts.find(a => a.name === val);
+            if (cached) {
+                mainLizmap.panoramax?.setAccountFilter(cached.id);
+                return;
+            }
+            mainLizmap.panoramax?.setAccountFilter(null);
+
+            // Debounced API search to refresh the datalist.
+            this._searchDebounce = setTimeout(async () => {
+                const abort = new AbortController();
+                this._searchAbort = abort;
+                const accounts = await mainLizmap.panoramax?.searchAccounts(val, abort.signal) || [];
+                if (abort.signal.aborted) { return; }
+                this._searchAbort = null;
+                this._accounts = accounts;
+
+                const datalist = this.querySelector('#pnx-accounts-list');
+                if (!datalist) { return; }
+                const frag = document.createDocumentFragment();
+                for (const { name } of accounts) {
+                    const opt = document.createElement('option');
+                    opt.value = name;
+                    frag.appendChild(opt);
+                }
+                datalist.replaceChildren(frag);
+
+                // Re-check for exact match now that the list is updated.
+                const currentInput = this.querySelector('input[data-filter="account"]');
+                const currentVal = (currentInput?.value || '').trim();
+                const exact = accounts.find(a => a.name === currentVal);
+                mainLizmap.panoramax?.setAccountFilter(exact ? exact.id : null);
+            }, 300);
         };
-        mainEventDispatcher.addListener(this._onAccountsUpdated, 'panoramax.accounts.updated');
     }
 
     disconnectedCallback() {
         lizMap.events.off(this._dockEvents);
         mainEventDispatcher.removeListener(this._onPictureSelected, 'panoramax.picture.selected');
         mainEventDispatcher.removeListener(this._onPositionSelected, 'panoramax.position.selected');
-        mainEventDispatcher.removeListener(this._onAccountsUpdated, 'panoramax.accounts.updated');
+        clearTimeout(this._searchDebounce);
+        if (this._searchAbort) { this._searchAbort.abort(); }
         this._unwirePSV();
         if (this._viewer && typeof this._viewer.destroy === 'function') {
             this._viewer.destroy();
@@ -164,18 +214,19 @@ export default class Panoramax extends HTMLElement {
                             title="${lizDict['panoramax.filter.type']}"
                             @change=${this._onTypeChange}>
                             <option value="">—</option>
-                            <option value="flat">flat</option>
-                            <option value="equirectangular">equirectangular</option>
+                            <option value="flat">${lizDict['panoramax.filter.type.flat']}</option>
+                            <option value="equirectangular">360°</option>
                         </select>
                     </div>
                     <div class="d-flex align-items-center gap-2 px-2 pb-1">
                         <i class="icon-user text-muted flex-shrink-0"></i>
-                        <select class="form-select form-select-sm" data-filter="account"
+                        <input type="text" class="form-control form-control-sm" data-filter="account"
                             aria-label="${lizDict['panoramax.filter.account']}"
                             title="${lizDict['panoramax.filter.account']}"
-                            @change=${this._onAccountChange} ?disabled=${true}>
-                            <option value="">—</option>
-                        </select>
+                            list="pnx-accounts-list"
+                            autocomplete="off"
+                            @input=${this._onAccountInput}>
+                        <datalist id="pnx-accounts-list"></datalist>
                     </div>
                 </div>
             </div>`,
@@ -183,44 +234,10 @@ export default class Panoramax extends HTMLElement {
         );
         this._viewer = this.querySelector('pnx-photo-viewer');
 
-        // If accounts were already discovered before the dock was opened, show them.
-        const knownAccounts = mainLizmap.panoramax?.knownAccounts || [];
-        if (knownAccounts.length > 0) {
-            this._updateAccountSelect(knownAccounts);
-        }
-
         // Wire the inner Photo (Photo Sphere Viewer) events once it is ready.
         this._viewer.oncePSVReady().then(() => {
             this._wirePSV();
         });
-    }
-
-    /**
-     * Update the account select with the given list of accounts.
-     * Preserves the current selection if the selected account is still present.
-     * Enables the select once at least one account is available.
-     * @param {Array<{id: string, name: string}>} accounts - sorted by name
-     */
-    _updateAccountSelect(accounts) {
-        const select = this.querySelector('select[data-filter="account"]');
-        if (!select) {
-            return;
-        }
-        const currentValue = select.value;
-        const frag = document.createDocumentFragment();
-        const none = document.createElement('option');
-        none.value = '';
-        none.textContent = '—';
-        frag.appendChild(none);
-        for (const { id, name } of accounts) {
-            const opt = document.createElement('option');
-            opt.value = id;
-            opt.textContent = name;
-            frag.appendChild(opt);
-        }
-        select.replaceChildren(frag);
-        select.value = currentValue;
-        select.disabled = false;
     }
 
     /**

@@ -138,14 +138,6 @@ export default class Panoramax {
         // Start hidden: the layer becomes visible when the tool is activated.
         this._olLayerState.checked = false;
 
-        // Account filter support: account_ids are discovered as tiles load. For each
-        // new id, the display name is resolved with a single API call. The component
-        // is notified via 'panoramax.accounts.updated' whenever the set changes.
-        this._allAccounts = new Map();      // accountId → resolved display name
-        this._visibleAccountIds = new Set(); // account_ids seen in loaded tiles
-        this._fetchingAccounts = new Set();  // ids currently being fetched (dedup)
-        this._olLayer.getSource().on('tileloadend', (e) => this._onTileLoaded(e.tile));
-
         // Orientation arrow, kept on a dedicated tool layer above the map.
         this._arrowPoint = new Point([0, 0]);
         this._arrowFeature = new Feature({ geometry: this._arrowPoint });
@@ -362,53 +354,24 @@ export default class Panoramax {
     }
 
     /**
-     * Accounts discovered in visible tiles, sorted alphabetically by name.
-     * @type {Array<{id: string, name: string}>}
+     * Search for contributor accounts whose name matches the given query.
+     * Hits the Panoramax `/users/search?q=` endpoint. Returns an empty array on error
+     * or when the request is aborted.
+     * @param {string} query - search term (at least 1 character)
+     * @param {AbortSignal} [signal]
+     * @returns {Promise<Array<{id: string, name: string}>>}
      */
-    get knownAccounts() {
-        return [...this._visibleAccountIds]
-            .map(id => ({ id, name: this._allAccounts.get(id) || id }))
-            .sort((a, b) => a.name.localeCompare(b.name));
-    }
-
-    /**
-     * Called each time a MVT tile finishes loading. For each new account_id found
-     * in the tile, kicks off an async name resolution and notifies the component.
-     * @param {object} tile - OpenLayers VectorTile
-     */
-    _onTileLoaded(tile) {
-        for (const feature of (tile.getFeatures() || [])) {
-            const id = feature.get('account_id');
-            if (!id || this._visibleAccountIds.has(id) || this._fetchingAccounts.has(id)) {
-                continue;
-            }
-            this._fetchingAccounts.add(id);
-            this._fetchAccountName(id).then((name) => {
-                this._fetchingAccounts.delete(id);
-                this._visibleAccountIds.add(id);
-                this._allAccounts.set(id, name);
-                mainEventDispatcher.dispatch({
-                    type: 'panoramax.accounts.updated',
-                    accounts: this.knownAccounts,
-                });
-            });
-        }
-    }
-
-    /**
-     * Resolve the display name of an account from the Panoramax API.
-     * Falls back to the raw UUID on network error or missing field.
-     * @param {string} accountId
-     * @returns {Promise<string>}
-     */
-    async _fetchAccountName(accountId) {
+    async searchAccounts(query, signal) {
         try {
-            const data = await fetch(`${this._url}/users/${accountId}`, {
-                headers: { Accept: 'application/json' },
-            }).then(r => r.json());
-            return data.name || data.label || accountId;
+            const url = `${this._url}/users/search?q=${encodeURIComponent(query)}`;
+            const r = await fetch(url, { headers: { Accept: 'application/json' }, signal });
+            const data = await r.json();
+            const list = data.features || [];
+            return list
+                .map(u => ({ id: u.id, name: u.label || u.id }))
+                .filter(u => u.name && u.id);
         } catch {
-            return accountId;
+            return [];
         }
     }
 }
