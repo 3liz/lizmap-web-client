@@ -183,7 +183,7 @@ export default class Panoramax extends HTMLElement {
 
         render(
             html`
-            <div class="d-flex flex-column h-100">
+            <div class="d-flex flex-column">
                 <pnx-photo-viewer
                     class="panoramax-viewer"
                     endpoint="${endpoint}"
