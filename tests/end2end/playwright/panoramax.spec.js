@@ -15,9 +15,9 @@ async function initPanoramaxPage(page) {
         if (url.endsWith('.mvt')) {
             // Empty protobuf tile — no features, but the request is satisfied
             route.fulfill({ status: 200, contentType: 'application/x-protobuf', body: Buffer.alloc(0) });
-        } else if (url.includes('/users/')) {
-            // Account name resolution
-            route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ name: 'Test User' }) });
+        } else if (url.includes('/users/search')) {
+            // Account search — empty result by default (tests override with a specific route)
+            route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ features: [] }) });
         } else {
             // Any other Panoramax API call (viewer init, STAC, etc.)
             route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({}) });
@@ -236,19 +236,17 @@ test.describe('Panoramax @readonly', () => {
                 await expect(options.nth(0)).toHaveAttribute('value', '');
                 await expect(options.nth(0)).toHaveText('—');
                 await expect(options.nth(1)).toHaveAttribute('value', 'flat');
-                await expect(options.nth(1)).toHaveText('flat');
+                await expect(options.nth(1)).toHaveText('Classic');
                 await expect(options.nth(2)).toHaveAttribute('value', 'equirectangular');
-                await expect(options.nth(2)).toHaveText('equirectangular');
+                await expect(options.nth(2)).toHaveText('360°');
             });
 
-            test('Account select is disabled initially', async () => {
-                await expect(page.locator('select[data-filter="account"]')).toBeDisabled();
+            test('Account autocomplete input is enabled initially', async () => {
+                await expect(page.locator('input[data-filter="account"]')).toBeEnabled();
             });
 
-            test('Account select has a default empty option', async () => {
-                const firstOption = page.locator('select[data-filter="account"] option').first();
-                await expect(firstOption).toHaveAttribute('value', '');
-                await expect(firstOption).toHaveText('—');
+            test('Account autocomplete input starts empty', async () => {
+                await expect(page.locator('input[data-filter="account"]')).toHaveValue('');
             });
         });
 
@@ -352,48 +350,92 @@ test.describe('Panoramax @readonly', () => {
         });
 
         // ── 7. Account filter ─────────────────────────────────────────────────
-        // Tests build on each other: inject → enable → name check → select → clear
+        // Autocomplete: typing queries the Panoramax /users/search?q= endpoint.
+        // Tests are sequential: search → exact select → clear → unknown.
 
         test.describe('Account filter', () => {
 
             const TEST_ACCOUNT_ID = 'test-account-uuid-1234';
+            const TEST_ACCOUNT_NAME = 'Test User';
 
-            const injectFakeAccount = async () => {
-                await page.evaluate((accountId) => {
-                    const fakeFeature = { get: (key) => key === 'account_id' ? accountId : null };
-                    const fakeTile = { getFeatures: () => [fakeFeature] };
-                    lizMap.mainLizmap.panoramax._onTileLoaded(fakeTile);
-                }, TEST_ACCOUNT_ID);
+            test.beforeEach(async () => {
+                // Intercept the /users/search?q= search endpoint (more specific than the
+                // catch-all, so Playwright LIFO routing gives it priority).
+                await page.route('**/panoramax.openstreetmap.fr/api/users/search*', (route) => {
+                    const q = new URL(route.request().url()).searchParams.get('q') || '';
+                    const match = TEST_ACCOUNT_NAME.toLowerCase().includes(q.toLowerCase());
+                    const body = match
+                        ? JSON.stringify({ features: [{ id: TEST_ACCOUNT_ID, label: TEST_ACCOUNT_NAME }] })
+                        : JSON.stringify({ features: [] });
+                    route.fulfill({ status: 200, contentType: 'application/json', body });
+                });
+            });
+
+            test.afterEach(async () => {
+                await page.unroute('**/panoramax.openstreetmap.fr/api/users/search*');
+                await page.evaluate(() => lizMap.mainLizmap.panoramax.setAccountFilter(null));
+                const input = page.locator('input[data-filter="account"]');
+                await input.fill('');
+                await input.evaluate(el => el.dispatchEvent(new Event('input', { bubbles: true })));
+            });
+
+            test('Account input is always enabled', async () => {
+                await expect(page.locator('input[data-filter="account"]')).toBeEnabled();
+            });
+
+            test('Typing populates the datalist from the API', async () => {
+                const accountInput = page.locator('input[data-filter="account"]');
+                await accountInput.fill('Test');
+                await accountInput.evaluate(el => el.dispatchEvent(new Event('input', { bubbles: true })));
                 await page.waitForFunction(
-                    () => document.querySelector('select[data-filter="account"]')?.disabled === false
+                    () => document.querySelectorAll('#pnx-accounts-list option').length > 0
                 );
-            };
-
-            test('Account select is disabled when no accounts are known', async () => {
-                await expect(page.locator('select[data-filter="account"]')).toBeDisabled();
+                await expect(page.locator(`#pnx-accounts-list option[value="${TEST_ACCOUNT_NAME}"]`)).toBeAttached();
             });
 
-            test('Account select is enabled and populated after tile loads accounts', async () => {
-                await injectFakeAccount();
-                const accountSelect = page.locator('select[data-filter="account"]');
-                await expect(accountSelect).toBeEnabled();
-                await expect(accountSelect.locator('option')).toHaveCount(2);
-            });
+            test('Selecting an account name by exact match applies the UUID filter without an extra request', async () => {
+                // First search to populate the cache, then select the exact name.
+                const accountInput = page.locator('input[data-filter="account"]');
+                await accountInput.fill('Test');
+                await accountInput.evaluate(el => el.dispatchEvent(new Event('input', { bubbles: true })));
+                await page.waitForFunction(
+                    () => document.querySelectorAll('#pnx-accounts-list option').length > 0
+                );
 
-            test('Account name is resolved from API', async () => {
-                // Account already injected — mock returns { name: 'Test User' }
-                const accountOption = page.locator(`select[data-filter="account"] option[value="${TEST_ACCOUNT_ID}"]`);
-                await expect(accountOption).toHaveText('Test User');
-            });
+                // Count search requests fired from now on: selecting an exact match
+                // must not trigger any additional API call.
+                let searchCount = 0;
+                const countSearches = (req) => {
+                    if (req.url().includes('/users/search')) { searchCount++; }
+                };
+                page.on('request', countSearches);
 
-            test('Account filter is applied to module when selection changes', async () => {
-                await page.locator('select[data-filter="account"]').selectOption(TEST_ACCOUNT_ID);
+                await accountInput.fill(TEST_ACCOUNT_NAME);
+                await accountInput.evaluate(el => el.dispatchEvent(new Event('input', { bubbles: true })));
                 expect(await page.evaluate(() => lizMap.mainLizmap.panoramax._filterAccount)).toBe(TEST_ACCOUNT_ID);
+
+                // Wait past the debounce window to be sure no request is queued.
+                await page.waitForTimeout(500);
+                page.off('request', countSearches);
+                expect(searchCount).toBe(0);
             });
 
-            test('Selecting "—" clears account filter', async () => {
-                await page.locator('select[data-filter="account"]').selectOption('');
+            test('Clearing account input clears account filter', async () => {
+                const accountInput = page.locator('input[data-filter="account"]');
+                await accountInput.fill('');
+                await accountInput.evaluate(el => el.dispatchEvent(new Event('input', { bubbles: true })));
                 expect(await page.evaluate(() => lizMap.mainLizmap.panoramax._filterAccount)).toBeNull();
+            });
+
+            test('Typing an unknown name clears the filter', async () => {
+                const accountInput = page.locator('input[data-filter="account"]');
+                await accountInput.fill('NoSuchUser');
+                await accountInput.evaluate(el => el.dispatchEvent(new Event('input', { bubbles: true })));
+                // After debounce the search returns [] and the filter is cleared.
+                await page.waitForFunction(
+                    () => lizMap.mainLizmap.panoramax._filterAccount === null
+                );
+                await expect(page.locator('#pnx-accounts-list option')).toHaveCount(0);
             });
         });
 
