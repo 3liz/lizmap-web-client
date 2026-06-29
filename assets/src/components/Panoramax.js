@@ -5,6 +5,7 @@
  * @license MPL-2.0
  */
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
+import { PNX_DATE_PALETTE } from '../modules/Panoramax.js';
 import { html, render } from 'lit-html';
 
 const DEFAULT_PANORAMAX_URL = 'https://panoramax.openstreetmap.fr/api';
@@ -85,6 +86,14 @@ export default class Panoramax extends HTMLElement {
         this._onTypeChange = () => {
             const type = this.querySelector('select[data-filter="type"]')?.value || null;
             mainLizmap.panoramax?.setTypeFilter(type);
+        };
+
+        // Style mode selector: switch between 'classic' and 'date' rendering.
+        this._onStyleModeChange = () => {
+            const mode = this.querySelector('select[data-style="mode"]')?.value || 'classic';
+            mainLizmap.panoramax?.setStyleMode(mode);
+            const legend = this.querySelector('.panoramax-date-legend');
+            if (legend) { legend.classList.toggle('d-none', mode !== 'date'); }
         };
 
         // Account filter: apply immediately from cache if exact match, then debounce
@@ -188,6 +197,7 @@ export default class Panoramax extends HTMLElement {
                     class="panoramax-viewer"
                     endpoint="${endpoint}"
                     url-parameters="false"
+                    widgets="false"
                 ></pnx-photo-viewer>
                 <div class="panoramax-filters border-top flex-shrink-0">
                     <div class="d-flex align-items-center justify-content-between px-2 py-1">
@@ -223,10 +233,38 @@ export default class Panoramax extends HTMLElement {
                         <input type="text" class="form-control form-control-sm" data-filter="account"
                             aria-label="${lizDict['panoramax.filter.account']}"
                             title="${lizDict['panoramax.filter.account']}"
+                            placeholder="${lizDict['panoramax.filter.account.placeholder']}"
                             list="pnx-accounts-list"
                             autocomplete="off"
                             @input=${this._onAccountInput}>
                         <datalist id="pnx-accounts-list"></datalist>
+                    </div>
+                </div>
+                <div class="panoramax-map-style border-top flex-shrink-0 bg-body-tertiary px-2 py-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="icon-adjust text-muted flex-shrink-0"></i>
+                        <span class="small text-muted flex-shrink-0">${lizDict['panoramax.layer.style']}</span>
+                        <select class="form-select form-select-sm w-auto" data-style="mode"
+                            aria-label="${lizDict['panoramax.layer.style']}"
+                            @change=${this._onStyleModeChange}>
+                            <option value="classic">${lizDict['panoramax.layer.style.classic']}</option>
+                            <option value="date">${lizDict['panoramax.layer.style.date']}</option>
+                        </select>
+                    </div>
+                    <div class="panoramax-date-legend d-none mt-2">
+                        <div class="d-flex flex-column gap-1 small">
+                            ${[
+                                { color: PNX_DATE_PALETTE[3], label: lizDict['panoramax.layer.style.age.4'] },
+                                { color: PNX_DATE_PALETTE[2], label: lizDict['panoramax.layer.style.age.3'] },
+                                { color: PNX_DATE_PALETTE[1], label: lizDict['panoramax.layer.style.age.2'] },
+                                { color: PNX_DATE_PALETTE[0], label: lizDict['panoramax.layer.style.age.1'] },
+                            ].map(({ color, label }) => html`
+                                <div class="d-flex align-items-center gap-2">
+                                    <span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:${color};border:1px solid rgba(0,0,0,.2);flex-shrink:0"></span>
+                                    <span class="text-muted">${label}</span>
+                                </div>
+                            `)}
+                        </div>
                     </div>
                 </div>
             </div>`,
@@ -269,6 +307,10 @@ export default class Panoramax extends HTMLElement {
             if (typeof d.lon === 'number') { this._currentLon = d.lon; }
             if (typeof d.lat === 'number') { this._currentLat = d.lat; }
             this._updateExternalLink();
+            if (ev.type === 'picture-loaded') {
+                const seqId = this._psv.getPictureMetadata()?.sequence?.id || null;
+                mainLizmap.panoramax?.setSelectedSequence(seqId);
+            }
         };
         // The user rotated the view: update only the arrow heading.
         // detail = { x (heading 0-360°, 0 = North), y, z }
@@ -323,9 +365,12 @@ export default class Panoramax extends HTMLElement {
         const yStr = y.toFixed(2);
         const zStr = Math.round(z || 0);
 
+        const styleMode = this.querySelector('select[data-style="mode"]')?.value || 'classic';
+
         let url = `${this._externalBaseUrl}/?focus=pic&map=${zoom}/${lat}/${lon}&pic=${picId}`;
         if (seqId) { url += `&seq=${seqId}`; }
         url += `&xyz=${xStr}/${yStr}/${zStr}`;
+        if (styleMode === 'date') { url += '&theme=age'; }
 
         link.href = url;
         link.classList.remove('d-none');

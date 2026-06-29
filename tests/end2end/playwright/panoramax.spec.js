@@ -248,6 +248,28 @@ test.describe('Panoramax @readonly', () => {
             test('Account autocomplete input starts empty', async () => {
                 await expect(page.locator('input[data-filter="account"]')).toHaveValue('');
             });
+
+            test('Style mode select is present', async () => {
+                await expect(page.locator('select[data-style="mode"]')).toBeVisible();
+            });
+
+            test('Style mode select has correct options', async () => {
+                const styleSelect = page.locator('select[data-style="mode"]');
+                const options = styleSelect.locator('option');
+                await expect(options).toHaveCount(2);
+                await expect(options.nth(0)).toHaveAttribute('value', 'classic');
+                await expect(options.nth(0)).toHaveText('Classic');
+                await expect(options.nth(1)).toHaveAttribute('value', 'date');
+                await expect(options.nth(1)).toHaveText('Capture date');
+            });
+
+            test('Style mode select defaults to "classic"', async () => {
+                await expect(page.locator('select[data-style="mode"]')).toHaveValue('classic');
+            });
+
+            test('Date legend is hidden by default', async () => {
+                await expect(page.locator('.panoramax-date-legend')).toHaveClass(/d-none/);
+            });
         });
 
         // ── 5. Date filter ────────────────────────────────────────────────────
@@ -540,7 +562,7 @@ test.describe('Panoramax @readonly', () => {
             });
 
             test.afterEach(async () => {
-                // Reset link DOM state and component position between tests.
+                // Reset link DOM state, component position, and style mode between tests.
                 await page.evaluate(() => {
                     const link = document.querySelector('a.panoramax-open-external');
                     if (link) {
@@ -554,6 +576,7 @@ test.describe('Panoramax @readonly', () => {
                         comp._psv = null;
                     }
                 });
+                await page.locator('select[data-style="mode"]').selectOption('classic');
             });
 
             test('Link is present and hidden before a picture loads', async () => {
@@ -620,6 +643,237 @@ test.describe('Panoramax @readonly', () => {
                 await simulatePictureLoaded();
                 const href = await page.locator('a.panoramax-open-external').getAttribute('href');
                 expect(href).toMatch(/^https:\/\/panoramax\.openstreetmap\.fr\//);
+            });
+
+            test('Link href includes theme=age when style mode is date', async () => {
+                await page.locator('select[data-style="mode"]').selectOption('date');
+                await simulatePictureLoaded();
+                const href = await page.locator('a.panoramax-open-external').getAttribute('href');
+                expect(href).toContain('theme=age');
+            });
+
+            test('Link href omits theme parameter when style mode is classic', async () => {
+                await simulatePictureLoaded();
+                const href = await page.locator('a.panoramax-open-external').getAttribute('href');
+                expect(href).not.toContain('theme=');
+            });
+        });
+
+        // ── 10. Layer style mode ──────────────────────────────────────────────────
+
+        test.describe('Layer style mode', () => {
+
+            test.beforeEach(async () => {
+                const isVisible = await page.locator('pnx-photo-viewer').isVisible();
+                if (!isVisible) {
+                    await page.locator('#button-panoramax').click();
+                    await expect(page.locator('pnx-photo-viewer')).toBeVisible({ timeout: 5000 });
+                }
+            });
+
+            test.afterEach(async () => {
+                await page.locator('select[data-style="mode"]').selectOption('classic');
+            });
+
+            test('Selecting "date" sets _styleMode on module', async () => {
+                await page.locator('select[data-style="mode"]').selectOption('date');
+                expect(await page.evaluate(() => lizMap.mainLizmap.panoramax._styleMode)).toBe('date');
+            });
+
+            test('Selecting "date" shows the date legend', async () => {
+                await page.locator('select[data-style="mode"]').selectOption('date');
+                await expect(page.locator('.panoramax-date-legend')).not.toHaveClass(/d-none/);
+            });
+
+            test('Selecting "classic" resets _styleMode and hides the legend', async () => {
+                await page.locator('select[data-style="mode"]').selectOption('date');
+                await page.locator('select[data-style="mode"]').selectOption('classic');
+                expect(await page.evaluate(() => lizMap.mainLizmap.panoramax._styleMode)).toBe('classic');
+                await expect(page.locator('.panoramax-date-legend')).toHaveClass(/d-none/);
+            });
+
+            test('setStyleMode("date") computes valid ISO date boundaries in descending order', async () => {
+                await page.evaluate(() => lizMap.mainLizmap.panoramax.setStyleMode('date'));
+                const { b1m, b1y, b2y } = await page.evaluate(() => ({
+                    b1m: lizMap.mainLizmap.panoramax._dateBoundary1month,
+                    b1y: lizMap.mainLizmap.panoramax._dateBoundary1year,
+                    b2y: lizMap.mainLizmap.panoramax._dateBoundary2years,
+                }));
+                expect(b1m).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+                expect(b1y).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+                expect(b2y).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+                // 1-month boundary is more recent than 1-year, which is more recent than 2-year
+                expect(b1m > b1y).toBe(true);
+                expect(b1y > b2y).toBe(true);
+            });
+
+            test('_getDateColorIndex returns 3 for today (within last month)', async () => {
+                await page.evaluate(() => lizMap.mainLizmap.panoramax.setStyleMode('date'));
+                // Compute today's date inside the browser so the timezone matches
+                const idx = await page.evaluate(() => {
+                    const today = new Date().toISOString().slice(0, 10);
+                    return lizMap.mainLizmap.panoramax._getDateColorIndex(today);
+                });
+                expect(idx).toBe(3);
+            });
+
+            test('_getDateColorIndex returns 0 for a date more than 2 years ago', async () => {
+                await page.evaluate(() => lizMap.mainLizmap.panoramax.setStyleMode('date'));
+                // Use mid-month to avoid DST edge cases
+                const idx = await page.evaluate(
+                    () => lizMap.mainLizmap.panoramax._getDateColorIndex('2020-01-15')
+                );
+                expect(idx).toBe(0);
+            });
+
+            test('_getDateColorIndex returns 4 for a falsy date', async () => {
+                await page.evaluate(() => lizMap.mainLizmap.panoramax.setStyleMode('date'));
+                const idx = await page.evaluate(() => lizMap.mainLizmap.panoramax._getDateColorIndex(null));
+                expect(idx).toBe(4);
+            });
+        });
+
+        // ── 11. Selected sequence ─────────────────────────────────────────────────
+
+        test.describe('Selected sequence', () => {
+
+            test.beforeEach(async () => {
+                const isVisible = await page.locator('pnx-photo-viewer').isVisible();
+                if (!isVisible) {
+                    await page.locator('#button-panoramax').click();
+                    await expect(page.locator('pnx-photo-viewer')).toBeVisible({ timeout: 5000 });
+                }
+            });
+
+            test.afterEach(async () => {
+                await page.evaluate(() => {
+                    lizMap.mainLizmap.panoramax.setSelectedSequence(null);
+                    // Restore forEachFeatureAtPixel if it was replaced by a test
+                    const map = lizMap.mainLizmap.panoramax._map;
+                    if (map.__origForEach) {
+                        map.forEachFeatureAtPixel = map.__origForEach;
+                        delete map.__origForEach;
+                    }
+                });
+            });
+
+            test('_selectedSeqId is null initially', async () => {
+                expect(await page.evaluate(() => lizMap.mainLizmap.panoramax._selectedSeqId)).toBeNull();
+            });
+
+            test('setSelectedSequence sets _selectedSeqId', async () => {
+                await page.evaluate(() => lizMap.mainLizmap.panoramax.setSelectedSequence('seq-uuid-abc'));
+                expect(await page.evaluate(() => lizMap.mainLizmap.panoramax._selectedSeqId)).toBe('seq-uuid-abc');
+            });
+
+            test('setSelectedSequence(null) clears _selectedSeqId', async () => {
+                await page.evaluate(() => lizMap.mainLizmap.panoramax.setSelectedSequence('seq-uuid-abc'));
+                await page.evaluate(() => lizMap.mainLizmap.panoramax.setSelectedSequence(null));
+                expect(await page.evaluate(() => lizMap.mainLizmap.panoramax._selectedSeqId)).toBeNull();
+            });
+
+            test('deactivate() clears _selectedSeqId', async () => {
+                await page.evaluate(() => lizMap.mainLizmap.panoramax.setSelectedSequence('seq-uuid-abc'));
+                await page.evaluate(() => lizMap.mainLizmap.panoramax.deactivate());
+                expect(await page.evaluate(() => lizMap.mainLizmap.panoramax._selectedSeqId)).toBeNull();
+                // Re-activate so subsequent tests find the tool active
+                await page.evaluate(() => lizMap.mainLizmap.panoramax.activate());
+            });
+
+            test('_handleClick on a sequence line sets _selectedSeqId', async () => {
+                await page.evaluate(() => {
+                    const pnx = lizMap.mainLizmap.panoramax;
+                    const map = pnx._map;
+                    map.__origForEach = map.forEachFeatureAtPixel;
+                    const fakeFeature = {
+                        getType: () => 'LineString',
+                        getProperties: () => ({ id: 'seq-uuid-line-1' }),
+                        getId: () => 'seq-uuid-line-1',
+                        get: (key) => key === 'id' ? 'seq-uuid-line-1' : undefined,
+                    };
+                    map.forEachFeatureAtPixel = (pixel, fn) => fn(fakeFeature);
+                    pnx._handleClick({ pixel: [450, 325], coordinate: [700000, 6861000] });
+                });
+                expect(await page.evaluate(() => lizMap.mainLizmap.panoramax._selectedSeqId)).toBe('seq-uuid-line-1');
+            });
+
+            test('_handleClick on a picture point sets _selectedSeqId from sequences property', async () => {
+                await page.evaluate(() => {
+                    const pnx = lizMap.mainLizmap.panoramax;
+                    const map = pnx._map;
+                    map.__origForEach = map.forEachFeatureAtPixel;
+                    const seqsJson = JSON.stringify(['seq-uuid-from-pic-1']);
+                    const fakeFeature = {
+                        getType: () => 'Point',
+                        getProperties: () => ({ id: 'pic-uuid-1', sequences: seqsJson }),
+                        getId: () => 'pic-uuid-1',
+                        get: (key) => {
+                            if (key === 'sequences') return seqsJson;
+                            return undefined;
+                        },
+                    };
+                    map.forEachFeatureAtPixel = (pixel, fn) => fn(fakeFeature);
+                    pnx._handleClick({ pixel: [450, 325], coordinate: [700000, 6861000] });
+                });
+                expect(await page.evaluate(() => lizMap.mainLizmap.panoramax._selectedSeqId)).toBe('seq-uuid-from-pic-1');
+            });
+
+            test('_belongsToSelectedSeq returns true for a matching sequence line', async () => {
+                await page.evaluate(() => lizMap.mainLizmap.panoramax.setSelectedSequence('seq-abc'));
+                const result = await page.evaluate(() => {
+                    const pnx = lizMap.mainLizmap.panoramax;
+                    const fakeFeature = {
+                        getId: () => 'seq-abc',
+                        get: (key) => key === 'id' ? 'seq-abc' : undefined,
+                    };
+                    return pnx._belongsToSelectedSeq(fakeFeature, false);
+                });
+                expect(result).toBe(true);
+            });
+
+            test('_belongsToSelectedSeq returns false for a non-matching sequence line', async () => {
+                await page.evaluate(() => lizMap.mainLizmap.panoramax.setSelectedSequence('seq-abc'));
+                const result = await page.evaluate(() => {
+                    const pnx = lizMap.mainLizmap.panoramax;
+                    const fakeFeature = {
+                        getId: () => 'seq-other',
+                        get: (key) => key === 'id' ? 'seq-other' : undefined,
+                    };
+                    return pnx._belongsToSelectedSeq(fakeFeature, false);
+                });
+                expect(result).toBe(false);
+            });
+
+            test('_belongsToSelectedSeq returns true for a picture in the selected sequence', async () => {
+                await page.evaluate(() => lizMap.mainLizmap.panoramax.setSelectedSequence('seq-abc'));
+                const result = await page.evaluate(() => {
+                    const pnx = lizMap.mainLizmap.panoramax;
+                    const fakeFeature = {
+                        getId: () => 'pic-uuid-1',
+                        get: (key) => {
+                            if (key === 'sequences') return JSON.stringify(['seq-abc', 'seq-other']);
+                            return undefined;
+                        },
+                    };
+                    return pnx._belongsToSelectedSeq(fakeFeature, true);
+                });
+                expect(result).toBe(true);
+            });
+
+            test('_belongsToSelectedSeq returns false for a picture not in the selected sequence', async () => {
+                await page.evaluate(() => lizMap.mainLizmap.panoramax.setSelectedSequence('seq-abc'));
+                const result = await page.evaluate(() => {
+                    const pnx = lizMap.mainLizmap.panoramax;
+                    const fakeFeature = {
+                        getId: () => 'pic-uuid-1',
+                        get: (key) => {
+                            if (key === 'sequences') return JSON.stringify(['seq-other-1', 'seq-other-2']);
+                            return undefined;
+                        },
+                    };
+                    return pnx._belongsToSelectedSeq(fakeFeature, true);
+                });
+                expect(result).toBe(false);
             });
         });
     });
