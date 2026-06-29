@@ -834,15 +834,14 @@ CSS Sprite positions calculated via http://instantsprite.com/ using 20px images 
 
 /* Panoramax */
 lizmap-panoramax {
-    width: 500px;
-    height: 450px;
+    min-width: 38vw;
     display: block;
 }
 
 lizmap-panoramax .panoramax-viewer {
     display: block;
-    flex: 1;
-    min-height: 300px;
+    width: 100%;
+    aspect-ratio: 4 / 3;
 }
 
 /* Panoramax logo icon */
