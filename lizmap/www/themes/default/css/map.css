@@ -931,8 +931,9 @@ div.attribute-layer-feature-panel .lizmapPopupTable td
 {
   border-right: 1px solid var(--color-contrasted-elements);
   border-left: 1px solid var(--color-contrasted-elements);
+  border-top: 1px solid lightgray;
+  border-bottom: 1px solid lightgray;
 }
-
 
 
 /* Feature toolbar */
@@ -994,28 +995,43 @@ edition-form-container > div > h3 {
   font-size: 1.5em;
 }
 
-.edition-tabs .nav-pills > li > a {
+.edition-tabs .nav-pills > li > a,
+.edition-tabs .nav-pills > li > button {
   background-image: none;
   background-color: var(--color-contrasted-elements-light);
   color: var(--color-text-primary);
+  margin: 0 3px;
 }
 
 .edition-tabs .nav-pills > li > a:hover,
+.edition-tabs .nav-pills > li > button:hover,
+.edition-tabs .nav-pills > li > button.active,
 .edition-tabs .nav-pills > li.active > a,
 .edition-tabs .nav-pills > .active > a,
 .edition-tabs .nav-pills > .active > a:hover,
-.edition-tabs .nav-pills > .active > a:focus {
+.edition-tabs .nav-pills > .active > a:focus,
+.edition-tabs .nav-pills > .active > button,
+.edition-tabs .nav-pills > .active > button:hover,
+.edition-tabs .nav-pills > .active > button:focus {
   background-color: var(--color-contrasted-elements);
   color: var(--color-contrasted-text);
 }
 
-/* Flat style for editing forms & drag-and-drop designed popup */
+/* Flat style for
+editing forms,
+drag-and-drop designed popup,
+dataviz drag-and-drop from plugin treenode
+*/
 #edition ul.nav-tabs,
+#dataviz ul.nav-tabs,
 div.popup_lizmap_dd ul.nav-tabs {
-  border-bottom: 1px solid var(--color-contrasted-elements);
+  border-bottom: 1px solid var(--color-contrasted-elements-light);
 }
 
 #edition .nav-tabs > li > a,
+#edition .nav-tabs > li > button.nav-link,
+#dataviz .nav-tabs > li > a,
+#dataviz .nav-tabs > li > button.nav-link,
 div.popup_lizmap_dd .nav-tabs > li > a {
   color: var(--color-text-primary);
   padding: 5px;
@@ -1024,15 +1040,29 @@ div.popup_lizmap_dd .nav-tabs > li > a {
 
 #edition .nav > li > a:hover,
 #edition .nav > li > a:focus,
+#edition .nav > li > button.nav-link:hover,
+#edition .nav > li > button.nav-link:focus,
+#edition .nav > li > button.nav-link.active,
+#dataviz .nav > li > button.nav-link:hover,
+#dataviz .nav > li > button.nav-link:focus,
+#dataviz .nav > li > button.nav-link.active,
 div.popup_lizmap_dd .nav > li > a:hover,
-div.popup_lizmap_dd .nav > li > a:focus {
+div.popup_lizmap_dd .nav > li > a:focus,
+div.popup_lizmap_dd .nav > li > a.active {
   text-decoration: none;
 }
 
 #edition .nav-tabs > li > a:hover,
 #edition .nav-tabs > li > a:focus,
+#edition .nav-tabs > li > button.nav-link:hover,
+#edition .nav-tabs > li > button.nav-link:focus,
+#edition .nav-tabs > li > button.nav-link.active,
+#dataviz .nav-tabs > li > button.nav-link:hover,
+#dataviz .nav-tabs > li > button.nav-link:focus,
+#dataviz .nav-tabs > li > button.nav-link.active,
 div.popup_lizmap_dd .nav-tabs > li > a:hover,
-div.popup_lizmap_dd .nav-tabs > li > a:focus {
+div.popup_lizmap_dd .nav-tabs > li > a:focus,
+div.popup_lizmap_dd .nav-tabs > li > a.active {
   background: none;
   border: none;
   border-bottom: 3px solid var(--color-contrasted-elements);
@@ -1043,9 +1073,18 @@ div.popup_lizmap_dd .nav-tabs > li > a:focus {
 #edition .nav-tabs > li.active > a,
 #edition .nav-tabs > li.active > a:hover,
 #edition .nav-tabs > li.active > a:focus,
+#edition .nav-tabs > li.active > button.nav-link,
+#edition .nav-tabs > li.active > button.nav-link:hover,
+#edition .nav-tabs > li.active > button.nav-link:focus,
+#edition .nav-tabs > li.active > button.nav-link.active,
+#dataviz .nav-tabs > li.active > button.nav-link,
+#dataviz .nav-tabs > li.active > button.nav-link:hover,
+#dataviz .nav-tabs > li.active > button.nav-link:focus,
+#dataviz .nav-tabs > li.active > button.nav-link.active,
 div.popup_lizmap_dd .nav-tabs > li.active > a,
 div.popup_lizmap_dd .nav-tabs > li.active > a:hover,
-div.popup_lizmap_dd .nav-tabs > li.active > a:focus {
+div.popup_lizmap_dd .nav-tabs > li.active > a:focus,
+div.popup_lizmap_dd .nav-tabs > li.active > a.active {
   background: none;
   border: none;
   border-bottom: 3px solid var(--color-contrasted-elements);
@@ -1054,6 +1093,7 @@ div.popup_lizmap_dd .nav-tabs > li.active > a:focus {
 }
 
 #edition div.tab-pane,
+#dataviz div.tab-pane,
 div.popup_lizmap_dd div.tab-pane {
   padding: 5px;
   padding-bottom: 10px;
@@ -1074,6 +1114,7 @@ div.popup_lizmap_dd #tabform {
 }
 
 #edition legend,
+#dataviz legend,
 div.popup_lizmap_dd legend {
   color: var(--color-text-primary);
   border-bottom: none;
@@ -1085,6 +1126,7 @@ div.popup_lizmap_dd legend {
 
 
 #edition fieldset,
+#dataviz fieldset,
 div.popup_lizmap_dd fieldset {
   padding: 10px;
   padding-top: 0;
@@ -1097,6 +1139,8 @@ div.popup_lizmap_dd fieldset {
 /* Minor adaptation for popup compared to editing form */
 div.popup_lizmap_dd {
   font-size: 12px;
+  padding: 0;
+  max-width: 100%;
 }
 
 div.popup_lizmap_dd .control-group {
@@ -1112,6 +1156,7 @@ div.popup_lizmap_dd label {
   font-size: 12px !important;
   hyphens: auto;
   overflow-wrap: break-word;
+  font-weight: bold;
 }
 
 div.popup_lizmap_dd .controls {

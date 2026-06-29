@@ -735,7 +735,7 @@ class ProjectConfig
             } else {
                 // Group : we use fieldset
                 $html .= $prefix.'<fieldset class="'.$divClass.' level-'.$level.'">';
-                $html .= $prefix.'<legend style="font-weight:bold;">'.$name.'</legend>';
+                $html .= $prefix.'<legend class="float-none" style="font-weight:bold;">'.$name.'</legend>';
             }
 
             // Process the children only if the current node has content

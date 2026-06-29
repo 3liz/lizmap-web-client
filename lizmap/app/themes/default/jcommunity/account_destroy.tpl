@@ -2,7 +2,7 @@
     <h1>{@jcommunity~account.form.delete.account.title@}</h1>
 
     <form action="{formurl 'jcommunity~account:dodestroy', array('user'=>$username)}" method="post">
-        <fieldset><legend>{@jcommunity~account.form.delete.account.confirm.title@}</legend>
+        <fieldset><legend class="float-none">{@jcommunity~account.form.delete.account.confirm.title@}</legend>
             {formurlparam}
 
             <p>{@jcommunity~account.form.delete.account.confirm@}</p>
