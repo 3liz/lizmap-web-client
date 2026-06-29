@@ -22,8 +22,18 @@ import Fill from 'ol/style/Fill.js';
 /** Default Panoramax instance used when `panoramaxUrl` is not set in the config */
 const DEFAULT_PANORAMAX_URL = 'https://panoramax.openstreetmap.fr/api';
 
-/** Panoramax brand color used for the coverage layer */
-const PNX_COLOR = '#e2007a';
+/** Default (classic) colour for the coverage layer — matches COLORS.BASE on panoramax.openstreetmap.fr */
+const PNX_COLOR = '#FF6F00';
+
+/** Colour applied to the selected sequence — matches COLORS.SELECTED on panoramax.openstreetmap.fr */
+const PNX_SELECTED_COLOR = '#1E88E5';
+
+/**
+ * Date-based palette for the coverage layer (matches panoramax.openstreetmap.fr colours).
+ * Index: 0 = > 2 years (oldest), 1 = < 2 years, 2 = < 1 year, 3 = < 1 month (newest),
+ *        4 = no date field (BASE colour).
+ */
+export const PNX_DATE_PALETTE = ['#fecc5c', '#fd8d3c', '#f03b20', '#bd0026', '#FF6F00'];
 
 /**
  * Arrow icon pointing to the North (heading 0). Rotated clockwise to match the
@@ -88,6 +98,39 @@ export default class Panoramax {
             stroke: new Stroke({ color: PNX_COLOR, width: 3 }),
         });
 
+        // Date-based styles (one per palette entry, for points and lines).
+        this._datePointStyles = PNX_DATE_PALETTE.map(color => new Style({
+            image: new CircleStyle({
+                radius: 4,
+                fill: new Fill({ color }),
+                stroke: new Stroke({ color: '#ffffff', width: 1 }),
+            }),
+        }));
+        this._dateLineStyles = PNX_DATE_PALETTE.map(color => new Style({
+            stroke: new Stroke({ color, width: 3 }),
+        }));
+
+        // Selected sequence style (applied on top of any theme).
+        this._selectedPointStyle = new Style({
+            image: new CircleStyle({
+                radius: 4,
+                fill: new Fill({ color: PNX_SELECTED_COLOR }),
+                stroke: new Stroke({ color: '#ffffff', width: 1 }),
+            }),
+        });
+        this._selectedLineStyle = new Style({
+            stroke: new Stroke({ color: PNX_SELECTED_COLOR, width: 3 }),
+        });
+
+        // Currently selected sequence UUID (null = none).
+        this._selectedSeqId = null;
+
+        // Current style mode ('classic' | 'date') and cached ISO date boundaries.
+        this._styleMode = 'classic';
+        this._dateBoundary1month = null;
+        this._dateBoundary1year  = null;
+        this._dateBoundary2years = null;
+
         // Panoramax coverage layer (MVT). The tiles are served in EPSG:3857 and
         // reprojected by OpenLayers to the current map view projection if needed.
         this._olLayer = new VectorTileLayer({
@@ -125,6 +168,14 @@ export default class Panoramax {
                     if (feature.get('account_id') !== this._filterAccount) {
                         return null;
                     }
+                }
+                if (this._selectedSeqId && this._belongsToSelectedSeq(feature, isPoint)) {
+                    return isPoint ? this._selectedPointStyle : this._selectedLineStyle;
+                }
+                if (this._styleMode === 'date') {
+                    const dateStr = isPoint ? feature.get('ts') : feature.get('date');
+                    const idx = this._getDateColorIndex(dateStr);
+                    return isPoint ? this._datePointStyles[idx] : this._dateLineStyles[idx];
                 }
                 return isPoint ? this._pointStyle : this._lineStyle;
             },
@@ -188,6 +239,7 @@ export default class Panoramax {
     deactivate() {
         this._active = false;
         this._olLayerState.checked = false;
+        this._selectedSeqId = null;
         this.clearArrow();
     }
 
@@ -272,7 +324,7 @@ export default class Panoramax {
         const fid = feature.getId();
         const type = feature.getType();
         let picId = null;
-        let seqId = null;
+        let seqId;
 
         if (type === 'Point' || type === 'MultiPoint') {
             // A picture point: load it directly by its id
@@ -288,9 +340,17 @@ export default class Panoramax {
                     ? (sequences[0] ?? null)
                     : (String(sequences) || null);
             }
+        } else {
+            // A sequence line: its feature id is the sequence UUID.
+            seqId = fid ?? props.id ?? null;
         }
-        // A sequence line (no precise picture id) falls through to the
-        // position-based loading below.
+
+        // Highlight the clicked sequence immediately (the viewer will confirm the
+        // exact seq id via setSelectedSequence() once the picture is loaded).
+        if (seqId !== this._selectedSeqId) {
+            this._selectedSeqId = seqId;
+            this._olLayer.changed();
+        }
 
         if (picId) {
             mainEventDispatcher.dispatch({
@@ -351,6 +411,74 @@ export default class Panoramax {
     setAccountFilter(accountId) {
         this._filterAccount = accountId || null;
         this._olLayer.changed();
+    }
+
+    /**
+     * Highlight the given sequence on the coverage layer (blue, matching
+     * COLORS.SELECTED on panoramax.openstreetmap.fr).  Called by the component
+     * whenever the viewer loads a picture so the map stays in sync.
+     * @param {string|null} seqId - sequence UUID, or null to clear the selection
+     */
+    setSelectedSequence(seqId) {
+        const next = seqId || null;
+        if (next === this._selectedSeqId) { return; }
+        this._selectedSeqId = next;
+        this._olLayer.changed();
+    }
+
+    /**
+     * Return true if `feature` belongs to the currently selected sequence.
+     * Works for both sequence lines (id === seqId) and picture points (sequences
+     * array contains seqId).
+     * @param {object} feature
+     * @param {boolean} isPoint
+     * @returns {boolean}
+     */
+    _belongsToSelectedSeq(feature, isPoint) {
+        if (!this._selectedSeqId) { return false; }
+        if (!isPoint) {
+            return feature.getId() === this._selectedSeqId
+                || feature.get('id') === this._selectedSeqId;
+        }
+        let sequences = feature.get('sequences');
+        if (!sequences) { return false; }
+        if (typeof sequences === 'string') {
+            if (sequences.trimStart().startsWith('[')) {
+                try { sequences = JSON.parse(sequences); } catch { return false; }
+            } else {
+                return sequences === this._selectedSeqId;
+            }
+        }
+        return Array.isArray(sequences) && sequences.includes(this._selectedSeqId);
+    }
+
+    /**
+     * Switch the coverage layer style between 'classic' (uniform brand colour) and
+     * 'date' (colour-coded by capture date, matching panoramax.openstreetmap.fr).
+     * @param {string} mode - 'classic' or 'date'
+     */
+    setStyleMode(mode) {
+        this._styleMode = (mode === 'date') ? 'date' : 'classic';
+        if (this._styleMode === 'date') {
+            const now = Date.now();
+            this._dateBoundary1month  = new Date(now - 30  * 24 * 3600 * 1000).toISOString().slice(0, 10);
+            this._dateBoundary1year   = new Date(now - 365 * 24 * 3600 * 1000).toISOString().slice(0, 10);
+            this._dateBoundary2years  = new Date(now - 730 * 24 * 3600 * 1000).toISOString().slice(0, 10);
+        }
+        this._olLayer.changed();
+    }
+
+    /**
+     * Map a feature's date string to a PNX_DATE_PALETTE index.
+     * @param {string|undefined} dateStr - ISO date/datetime string, or falsy
+     * @returns {number} 0–4 (4 = no date)
+     */
+    _getDateColorIndex(dateStr) {
+        if (!dateStr) { return 4; }
+        if (dateStr >= this._dateBoundary1month)  { return 3; }
+        if (dateStr >= this._dateBoundary1year)   { return 2; }
+        if (dateStr >= this._dateBoundary2years)  { return 1; }
+        return 0;
     }
 
     /**
