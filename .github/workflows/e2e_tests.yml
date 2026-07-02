@@ -190,8 +190,13 @@ jobs:
         env:
           CRTF_JSON_FILE: playwright-tagged-requests.json
           PLAYWRIGHT_JSON_OUTPUT_NAME: tests-results-requests.json
+        # Run serially (--workers=1): these are fast HTTP request tests that hit
+        # QGIS Server directly. In parallel, concurrent requests to the shared
+        # QGIS Server intermittently returned short/truncated responses (e.g. WFS
+        # GetFeature with a polygon filter), which flaked. Serial execution
+        # removes the contention and costs only a few extra seconds.
         run: |
-          npx playwright test --grep "(?=.*@requests)(?=.*@readonly)" ${{ env.PLAYWRIGHT_OPTIONS }}
+          npx playwright test --grep "(?=.*@requests)(?=.*@readonly)" ${{ env.PLAYWRIGHT_OPTIONS }} --workers=1
 
       - name: Run Playwright tests tagged "@readonly"
         id: test-playwright-read-only
