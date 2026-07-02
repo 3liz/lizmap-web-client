@@ -309,7 +309,11 @@ test.describe('Location search - live search (auto-trigger) @readonly', () => {
         });
 
         await searchLocator.fill('mo');
-        await page.waitForTimeout(300);
+        // This is a negative assertion (no search must fire below 3 chars), so a
+        // bounded wait is required — there is no event signalling "nothing
+        // happened". Use a generous window so a debounced request delayed under
+        // CI load would still be caught rather than passing by luck.
+        await page.waitForTimeout(1000);
 
         expect(requestFired).toBe(false);
         await expect(page.locator('#lizmap-search')).not.toHaveClass(/\bopen\b/);
@@ -330,9 +334,10 @@ test.describe('Location search - live search (auto-trigger) @readonly', () => {
         await expect(page.locator('#lizmap-search')).toHaveClass(/\bopen\b/);
         await expect(page.getByText('Quartier', { exact: true })).toHaveCount(1);
 
-        // Drop back below minimum — results should clear
+        // Drop back below minimum — results should clear.
+        // The panel transitions from open to closed, so the auto-retrying
+        // assertions below wait for the transition; no fixed wait is needed.
         await searchLocator.fill('mo');
-        await page.waitForTimeout(200);
 
         await expect(page.locator('#lizmap-search')).not.toHaveClass(/\bopen\b/);
         await expect(page.getByText('Quartier', { exact: true })).toHaveCount(0);

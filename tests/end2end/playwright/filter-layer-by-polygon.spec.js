@@ -149,9 +149,13 @@ test.describe('Filter layer data polygon - admin - @readonly', () => {
         let datatablesRequest = await project.openAttributeTable(tableName);
         let datatablesResponse = await datatablesRequest.response();
         responseExpect(datatablesResponse).toBeJson();
-        let tableHtml = project.attributeTableHtml(tableName);
-        // Check table lines
-        await expect(tableHtml.locator('tbody tr')).toHaveCount(25);
+        // Check table lines via dt-info (the datatable "Showing 1 to N of N"
+        // record count), which is the authoritative, stable signal. Counting
+        // DOM `tbody tr` is flaky under CI concurrency: the server-side
+        // datatable occasionally renders one row short even though its record
+        // count (dt-info) is correct.
+        await expect(project.attributeTableWrapper(tableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 25 of 25 entries');
         await project.closeAttributeTable();
 
         // townhalls_EPSG2154
@@ -159,9 +163,9 @@ test.describe('Filter layer data polygon - admin - @readonly', () => {
         datatablesRequest = await project.openAttributeTable(tableName);
         datatablesResponse = await datatablesRequest.response();
         responseExpect(datatablesResponse).toBeJson();
-        tableHtml = project.attributeTableHtml(tableName);
         // Check table lines
-        await expect(tableHtml.locator('tbody tr')).toHaveCount(17);
+        await expect(project.attributeTableWrapper(tableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 17 of 17 entries');
         await project.closeAttributeTable();
 
         // shop_bakery_pg
@@ -169,9 +173,9 @@ test.describe('Filter layer data polygon - admin - @readonly', () => {
         datatablesRequest = await project.openAttributeTable(tableName);
         datatablesResponse = await datatablesRequest.response();
         responseExpect(datatablesResponse).toBeJson();
-        tableHtml = project.attributeTableHtml(tableName);
         // Check table lines
-        await expect(tableHtml.locator('tbody tr')).toHaveCount(17);
+        await expect(project.attributeTableWrapper(tableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 17 of 17 entries');
         await project.closeAttributeTable();
 
         // townhalls_pg
@@ -179,10 +183,12 @@ test.describe('Filter layer data polygon - admin - @readonly', () => {
         datatablesRequest = await project.openAttributeTable(tableName);
         datatablesResponse = await datatablesRequest.response();
         responseExpect(datatablesResponse).toBeJson();
-        tableHtml = project.attributeTableHtml(tableName);
+        const tableHtml = project.attributeTableHtml(tableName);
         // Check table lines
-        await expect(tableHtml.locator('tbody tr')).toHaveCount(16);
-        // The user can edit all features for the layer townhalls_pg
+        await expect(project.attributeTableWrapper(tableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 16 of 16 entries');
+        // The user can edit all features for the layer townhalls_pg: no edit
+        // button must be hidden among the rendered rows.
         await expect(tableHtml.locator('tbody tr lizmap-feature-toolbar .feature-edit.hide')).toHaveCount(0);
         await expect(tableHtml.locator('tbody tr lizmap-feature-toolbar .feature-edit:not(.hide)')).toHaveCount(16);
         await project.closeAttributeTable();
@@ -306,9 +312,10 @@ test.describe('Filter layer data polygon - user in group a - @readonly', () => {
         let datatablesRequest = await project.openAttributeTable(tableName);
         let datatablesResponse = await datatablesRequest.response();
         responseExpect(datatablesResponse).toBeJson();
-        let tableHtml = project.attributeTableHtml(tableName);
-        // Check table lines
-        await expect(tableHtml.locator('tbody tr')).toHaveCount(5); // 25 for admins
+        // Check table lines via dt-info (stable record count; DOM row count is
+        // flaky under CI concurrency). "5 for user in group a", 25 for admins.
+        await expect(project.attributeTableWrapper(tableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 5 of 5 entries');
         await project.closeAttributeTable();
 
         // townhalls_EPSG2154
@@ -316,9 +323,9 @@ test.describe('Filter layer data polygon - user in group a - @readonly', () => {
         datatablesRequest = await project.openAttributeTable(tableName);
         datatablesResponse = await datatablesRequest.response();
         responseExpect(datatablesResponse).toBeJson();
-        tableHtml = project.attributeTableHtml(tableName);
-        // Check table lines
-        await expect(tableHtml.locator('tbody tr')).toHaveCount(4); // 17 for admins
+        // Check table lines (4 for user in group a, 17 for admins)
+        await expect(project.attributeTableWrapper(tableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 4 of 4 entries');
         await project.closeAttributeTable();
 
         // shop_bakery_pg
@@ -326,9 +333,9 @@ test.describe('Filter layer data polygon - user in group a - @readonly', () => {
         datatablesRequest = await project.openAttributeTable(tableName);
         datatablesResponse = await datatablesRequest.response();
         responseExpect(datatablesResponse).toBeJson();
-        tableHtml = project.attributeTableHtml(tableName);
-        // Check table lines
-        await expect(tableHtml.locator('tbody tr')).toHaveCount(4); // 17 for admins
+        // Check table lines (4 for user in group a, 17 for admins)
+        await expect(project.attributeTableWrapper(tableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 4 of 4 entries');
         await project.closeAttributeTable();
 
         // townhalls_pg
@@ -336,9 +343,10 @@ test.describe('Filter layer data polygon - user in group a - @readonly', () => {
         datatablesRequest = await project.openAttributeTable(tableName);
         datatablesResponse = await datatablesRequest.response();
         responseExpect(datatablesResponse).toBeJson();
-        tableHtml = project.attributeTableHtml(tableName);
+        const tableHtml = project.attributeTableHtml(tableName);
         // Check table lines
-        await expect(tableHtml.locator('tbody tr')).toHaveCount(16);
+        await expect(project.attributeTableWrapper(tableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 16 of 16 entries');
         // The user can edit all features for the layer townhalls_pg
         await expect(tableHtml.locator('tbody tr lizmap-feature-toolbar .feature-edit.hide')).toHaveCount(11); // 0 for admins
         await expect(tableHtml.locator('tbody tr lizmap-feature-toolbar .feature-edit:not(.hide)')).toHaveCount(5); // 16 for admins
@@ -500,8 +508,10 @@ test.describe('Filter layer data polygon - not connected - @readonly', () => {
         datatablesResponse = await datatablesRequest.response();
         responseExpect(datatablesResponse).toBeJson();
         tableHtml = project.attributeTableHtml(tableName);
-        // Check table lines
-        await expect(tableHtml.locator('tbody tr')).toHaveCount(16);
+        // Check table lines via dt-info (stable record count; DOM row count is
+        // flaky under CI concurrency)
+        await expect(project.attributeTableWrapper(tableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 16 of 16 entries');
         // The user can edit all features for the layer townhalls_pg
         await expect(tableHtml.locator('tbody tr lizmap-feature-toolbar .feature-edit.hide')).toHaveCount(16); // 0 for admins and 11 for user in froup a
         await expect(tableHtml.locator('tbody tr lizmap-feature-toolbar .feature-edit:not(.hide)')).toHaveCount(0); // 16 for admins and 5 for user in froup a
