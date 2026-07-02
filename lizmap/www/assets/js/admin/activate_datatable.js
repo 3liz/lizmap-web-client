@@ -4,19 +4,21 @@ $(document).ready(function () {
     // Activate datatable for the project list table
     if ($('table.lizmap_project_list').length) {
         let has_inspection_data = false;
+        let columnDeltaForVersion = 0;
         if ($('table.lizmap_project_list').hasClass('has_inspection_data')) {
             has_inspection_data = true;
+            columnDeltaForVersion = 4;
         }
 
         // Configure the rendering of some columns
         var columnDefs = [
-            // Change lizmap plugin version display
+            // Change lizmap plugin/QGIS version display, sortable value to human readable
             {
-                "targets": 5,
+                "targets": [4+columnDeltaForVersion,5+columnDeltaForVersion],
                 "render": function (data, type, row, meta) {
                     if (type == 'display') {
-                        // 03.09.00 => 3.9
-                        return data.substr(0, 5).replace(/\.0/g, '.').replace(/^0/, '');
+                        // 03.09.00 => 3.9 (remove useless .00), 03.05.11 => 3.5.11
+                        return data.replace(/\.0/g, '.').replace(/^0/, '').replace(/\.0$/, '');
                     }
                     return data;
                 }
