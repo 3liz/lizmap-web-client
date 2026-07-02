@@ -153,8 +153,23 @@ async function CatchErrors(page, layersInTreeView = 0) {
  * @deprecated Use Project page instead and migrate the test to use proper methods
  */
 export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 0, waitForGetLegendGraphic = true) {
-    // Wait for WMS GetCapabilities promise
+    // Arm request waits BEFORE navigating: GetCapabilities and GetLegendGraphic
+    // are fired during map load, so a waitForRequest set up after page.goto()
+    // (or after awaiting GetCapabilities) can miss an early request and hang
+    // until the test times out. Arming both up-front removes that race.
     let getCapabilitiesWMSPromise = page.waitForRequest(/SERVICE=WMS&REQUEST=GetCapabilities/);
+    let getLegendGraphicPromise = (mapMustLoad && waitForGetLegendGraphic)
+        ? page.waitForRequest(
+            request => (
+                request.method() === 'POST' &&
+                request.postData() != null &&
+                request.postData()?.includes('GetLegendGraphic') === true
+            ) || (
+                request.method() === 'GET' &&
+                request.url().includes('GetLegendGraphic') === true
+            )
+        )
+        : null;
 
     await expect(async () => {
         const response = await page.goto(url);
@@ -168,20 +183,8 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
     let getCapabilitiesWMSRequest = await getCapabilitiesWMSPromise;
     await getCapabilitiesWMSRequest.response();
     if (mapMustLoad) {
-        if (waitForGetLegendGraphic) {
-            // Wait for WMS GetLegendGraphic promise
-            const getLegendGraphicPromise = page.waitForRequest(
-                request => (
-                    request.method() === 'POST' &&
-                    request.postData() != null &&
-                    request.postData()?.includes('GetLegendGraphic') === true
-                ) || (
-                    request.method() === 'GET' &&
-                    request.url().includes('GetLegendGraphic') === true
-                )
-            );
-            // Normal check about the map
-            // Wait for WMS GetLegendGraphic
+        if (getLegendGraphicPromise) {
+            // Wait for WMS GetLegendGraphic (promise armed before navigation)
             await getLegendGraphicPromise;
         }
         // No error
@@ -202,8 +205,22 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
  * @param {boolean} check If some basic checks must be done.
  */
 export async function reloadMap(page, check = true) {
-    // Wait for WMS GetCapabilities promise
+    // Arm request waits BEFORE reloading (see gotoMap): GetCapabilities and
+    // GetLegendGraphic fire during load, so waits set up afterwards can miss an
+    // early request and hang until the test times out.
     let getCapabilitiesWMSPromise = page.waitForRequest(/SERVICE=WMS&REQUEST=GetCapabilities/);
+    let getLegendGraphicPromise = check
+        ? page.waitForRequest(
+            request => (
+                request.method() === 'POST' &&
+                request.postData() != null &&
+                request.postData()?.includes('GetLegendGraphic') === true
+            ) || (
+                request.method() === 'GET' &&
+                request.url().includes('GetLegendGraphic') === true
+            )
+        )
+        : null;
 
     await expect(async () => {
         const response = await page.reload();
@@ -218,19 +235,7 @@ export async function reloadMap(page, check = true) {
     await getCapabilitiesWMSRequest.response();
 
     if (check) {
-        // Wait for WMS GetLegendGraphic promise
-        const getLegendGraphicPromise = page.waitForRequest(
-            request => (
-                request.method() === 'POST' &&
-                request.postData() != null &&
-                request.postData()?.includes('GetLegendGraphic') === true
-            ) || (
-                request.method() === 'GET' &&
-                request.url().includes('GetLegendGraphic') === true
-            )
-        );
-        // Normal check about the map
-        // Wait for WMS GetLegendGraphic
+        // Wait for WMS GetLegendGraphic (promise armed before reload)
         await getLegendGraphicPromise;
         // No error
         await NoErrors(page);
