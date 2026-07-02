@@ -425,7 +425,12 @@ test.describe('Permalink', () => {
         await expect(page.getByTestId('layer_legend_single_symbol').locator('> div input')).toBeChecked();
         await expect(page.getByTestId('layer_legend_categorized').locator('> div input')).toBeChecked();
         await expect(page.getByTestId('tramway_lines').locator('> div input')).toBeChecked();
-        await expect(page.getByTestId('legend_option_test').locator('> div input')).not.toBeChecked();
+        // legend_option_test is checked by default and must be unchecked by the
+        // permalink restore, which runs asynchronously after the reload. Wait
+        // longer than the default 5s: this assertion gates the whole block (the
+        // restore sets every item's state in one pass), so once it passes the
+        // remaining visibility assertions are stable.
+        await expect(page.getByTestId('legend_option_test').locator('> div input')).not.toBeChecked({ timeout: 15000 });
         await expect(page.getByTestId('expand_at_startup').locator('> div input')).not.toBeChecked();
         await expect(page.getByTestId('disabled').locator('> div input')).not.toBeChecked();
         await expect(page.getByTestId('hide_at_startup').locator('> div input')).not.toBeChecked();
