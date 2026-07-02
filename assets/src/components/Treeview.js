@@ -206,7 +206,8 @@ export default class Treeview extends HTMLElement {
                 'layer.load.status.changed', 'layer.visibility.changed', 'group.visibility.changed', 'layer.style.changed',
                 'layer.symbology.changed', 'layer.filter.changed', 'layer.expanded.changed', 'group.expanded.changed',
                 'layer.symbol.expanded.changed', 'ol-layer.added', 'ext-group.expanded.changed', 'ol-layer.removed', 'ext-group.removed',
-                'layer.visibility.changed', 'ol-layer.wmsTitle.changed', 'ol-layer.icon.changed', 'ext-group.wmsTitle.changed',
+                'layer.visibility.changed', 'ol-layer.visibility.changed', 'ext-group.visibility.changed',
+                'ol-layer.wmsTitle.changed', 'ol-layer.icon.changed', 'ext-group.wmsTitle.changed',
             ]
         );
 
@@ -222,6 +223,8 @@ export default class Treeview extends HTMLElement {
         mainLizmap.state.layerTree.removeListener(
             this._onChange,
             [
+                'ext-group.expanded.changed',
+                'ext-group.visibility.changed',
                 'group.expanded.changed',
                 'group.visibility.changed',
                 'layer.expanded.changed',
@@ -231,6 +234,7 @@ export default class Treeview extends HTMLElement {
                 'layer.symbol.expanded.changed',
                 'layer.symbology.changed',
                 'layer.visibility.changed',
+                'ol-layer.visibility.changed',
             ]
         );
 
