@@ -23,7 +23,7 @@ jobs:
     steps:
 
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: "Setup Node ${{ env.NODE_VERSION }}"
         uses: actions/setup-node@v6
@@ -51,7 +51,7 @@ jobs:
     steps:
 
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Change tokens about versions
         run: make version-doc
@@ -73,7 +73,7 @@ jobs:
     steps:
 
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Change tokens about versions
         run: make version-doc
@@ -91,7 +91,7 @@ jobs:
           path: docs/js/
 
       - name: Upload all docs artifacts
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: docs/
 
@@ -100,7 +100,7 @@ jobs:
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
 
 #      - name: Branch name
 #        id: branch-name
