@@ -70,10 +70,7 @@ jobs:
           cat .env
 
       - name: Read environment file and set variables
-        uses: cosq-network/dotenv-loader@v1.0.2
-        with:
-          # Somehow, the working-directory is not taken into account
-          env-file: tests/.env
+        run: cat .env >> "$GITHUB_ENV"
 
       # For testing only
       - name: Update all QGIS projects to QGIS Desktop ${{ matrix.qgis-server }} by opening them and rewriting them
