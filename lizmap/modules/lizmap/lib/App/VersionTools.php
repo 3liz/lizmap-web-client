@@ -77,6 +77,21 @@ class VersionTools
     }
 
     /**
+     * Transform a version string to an int version keeping only major and minor,
+     * ie "3.40.15" into 340, 3.5.6 to 305.
+     *
+     * @param string $version The version, for instance "3.40.15"
+     *
+     * @return int The major and minor version as int
+     */
+    public static function strVersionToMajMinInt(string $version): int
+    {
+        $explode = explode('.', $version);
+
+        return intval($explode[0].str_pad($explode[1], 2, '0', STR_PAD_LEFT));
+    }
+
+    /**
      * Transform a QGIS version with its name to a sortable int version.
      *
      * Transform "3.34.12-Prizren" into "33412"
