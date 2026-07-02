@@ -167,9 +167,9 @@ export default class Search {
             }
 
             if (count != 0 && text != '') {
-                this._updateExternalSearch(text);
+                this._updateExternalSearch(text, searchConfig.service);
             } else {
-                this._updateExternalSearch('<li><strong>' + lizDict['externalsearch.mapdata'] + '</strong><ul><li>' + lizDict['externalsearch.notfound'] + '</li></ul></li>');
+                this._updateExternalSearch('<li><strong>' + lizDict['externalsearch.mapdata'] + '</strong><ul><li>' + lizDict['externalsearch.notfound'] + '</li></ul></li>', searchConfig.service);
             }
         });
     }
@@ -247,7 +247,7 @@ export default class Search {
                     if (count == 0 || text == '') {
                         text = '<li>' + lizDict['externalsearch.notfound'] + '</li>';
                     }
-                    this._updateExternalSearch('<li><strong>OpenStreetMap</strong><ul>' + text + '</ul></li>');
+                    this._updateExternalSearch('<li><strong>OpenStreetMap</strong><ul>' + text + '</ul></li>', searchConfig.service);
                 });
                 break;
             }
@@ -277,7 +277,7 @@ export default class Search {
                     if (count == 0 || text == '') {
                         text = '<li>' + lizDict['externalsearch.notfound'] + '</li>';
                     }
-                    this._updateExternalSearch('<li><strong>IGN</strong><ul>' + text + '</ul></li>');
+                    this._updateExternalSearch('<li><strong>IGN</strong><ul>' + text + '</ul></li>', searchConfig.service);
                 });
                 break;
             }
@@ -326,9 +326,9 @@ export default class Search {
                         if (count == 0 || text == '') {
                             text = '<li>' + lizDict['externalsearch.notfound'] + '</li>';
                         }
-                        this._updateExternalSearch('<li><strong>Google</strong><ul>' + text + '</ul></li>');
+                        this._updateExternalSearch('<li><strong>Google</strong><ul>' + text + '</ul></li>', searchConfig.service);
                     } else {
-                        this._updateExternalSearch('<li><strong>Google</strong><ul><li>' + lizDict['externalsearch.notfound'] + '</li></ul></li>');
+                        this._updateExternalSearch('<li><strong>Google</strong><ul><li>' + lizDict['externalsearch.notfound'] + '</li></ul></li>', searchConfig.service);
                     }
                 });
                 break;
@@ -421,17 +421,20 @@ export default class Search {
      * Update external search
      * @param {string} aHTML HTML to update
      */
-    _updateExternalSearch(aHTML) {
+    _updateExternalSearch(aHTML, sourceKey = 'external') {
         if ($('#search-query').val().length != 0) {
             var wgs84 = new OpenLayers.Projection('EPSG:4326');
 
             $('#lizmap-search .items li > a').unbind('click');
-            if ($('#lizmap-search .items li.start').length != 0) {
-                $('#lizmap-search .items').html(aHTML);
-            }
-            else {
-                $('#lizmap-search .items').append(aHTML);
-            }
+            // Remove the "searching…" placeholder and any previous results from
+            // the same source. A source can fire twice in quick succession (the
+            // debounced input search plus the Enter submit); replacing its
+            // section instead of appending avoids duplicated results.
+            $('#lizmap-search .items li.start').remove();
+            $('#lizmap-search .items').children(`li[data-search-source="${sourceKey}"]`).remove();
+            const $results = $(aHTML);
+            $results.attr('data-search-source', sourceKey);
+            $('#lizmap-search .items').append($results);
             $('#lizmap-search, #lizmap-search-close').addClass('open');
             document.querySelectorAll('#lizmap-search .items li > a').forEach(link => {
                 link.addEventListener('click', evt => {
