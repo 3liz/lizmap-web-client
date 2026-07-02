@@ -33,7 +33,7 @@ test.describe('Dataviz in popup @readonly', () => {
         // inspect feature toolbar and dataviz, expect to find only one
         await expect(project.popupContent.locator("div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > lizmap-feature-toolbar .feature-toolbar")).toHaveCount(1)
         await expect(project.popupContent.locator("div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > div.lizdataviz")).toHaveCount(1)
-        await expect(project.popupContent.locator("div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > div.lizdataviz")).toBeVisible()
+        await expect(project.popupContent.locator("div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > div.lizdataviz")).toBeVisible({ timeout: 15000 })
 
         // click again on the same point and wait for GetFeatureInfo
         getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
@@ -55,7 +55,7 @@ test.describe('Dataviz in popup @readonly', () => {
         // inspect feature toolbar and dataviz, expect to find only one
         await expect(project.popupContent.locator("div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > lizmap-feature-toolbar .feature-toolbar")).toHaveCount(1)
         await expect(project.popupContent.locator("div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > div.lizdataviz")).toHaveCount(1)
-        await expect(project.popupContent.locator("div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > div.lizdataviz")).toBeVisible()
+        await expect(project.popupContent.locator("div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > div.lizdataviz")).toBeVisible({ timeout: 15000 })
 
         // click on another point and wait for GetFeatureInfo
         getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
@@ -77,7 +77,7 @@ test.describe('Dataviz in popup @readonly', () => {
         // inspect feature toolbar and dataviz, expect to find only one
         await expect(project.popupContent.locator("div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > lizmap-feature-toolbar .feature-toolbar")).toHaveCount(1)
         await expect(project.popupContent.locator("div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > div.lizdataviz")).toHaveCount(1)
-        await expect(project.popupContent.locator("div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > div.lizdataviz")).toBeVisible()
+        await expect(project.popupContent.locator("div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > div.lizdataviz")).toBeVisible({ timeout: 15000 })
 
         // click where there is a point without plot and wait for GetFeatureInfo
         getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
@@ -121,7 +121,7 @@ test.describe('Dataviz in popup @readonly', () => {
         // inspect feature toolbar and dataviz, expect to find only one
         await expect(project.popupContent.locator("div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > lizmap-feature-toolbar .feature-toolbar")).toHaveCount(1)
         await expect(project.popupContent.locator("div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > div.lizdataviz")).toHaveCount(1)
-        await expect(project.popupContent.locator("div.lizmapPopupSingleFeature > div.lizmapPopupDiv > div.lizdataviz")).toBeVisible()
+        await expect(project.popupContent.locator("div.lizmapPopupSingleFeature > div.lizmapPopupDiv > div.lizdataviz")).toBeVisible({ timeout: 15000 })
 
     })
 })

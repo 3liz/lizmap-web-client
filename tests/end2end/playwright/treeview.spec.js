@@ -295,11 +295,13 @@ test.describe('Treeview mocked', () => {
             // Wait for WMS GetLegendGraphic
             // At least 2 GetLegendGraphic requests on 6
             // no more timed out request because no more POST requests
+            // Budget must be generous: under CI load the legend requests trickle
+            // in and a 1s cap intermittently captured only 1 request.
             let timeCount = 0;
             let timeStep = 100;
             while (GetLegends.length < 3) {
                 timeCount += timeStep;
-                if (timeCount > 1000) {
+                if (timeCount > 10000) {
                     break;
                 }
                 await page.waitForTimeout(timeStep);

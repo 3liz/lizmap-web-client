@@ -835,6 +835,10 @@ test.describe('Print 3857', () => {
     });
 
     test('Print requests with redlining', async ({ page }) => {
+        // Drawing redlining then issuing print requests is a long interaction
+        // chain that can exceed the default 30s budget under CI contention
+        // (it passed on retry). Give this test extra headroom.
+        test.slow();
         const printPage = new PrintPage(page, 'draw');
         const drawProject = new DrawPage(page, 'draw');
         // Close left dock

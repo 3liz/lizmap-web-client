@@ -309,6 +309,9 @@ test.describe('Export data @readonly', () => {
         // EXP_FILTER='shortname:expression', which it rejects with HTTP 500.
         // The export code must strip the typename prefix as well as the QGIS
         // layer name prefix.
+        // The filter + export round-trips can exceed the default 30s budget
+        // under CI contention (it passed on retry); give it extra headroom.
+        test.slow();
         const project = new ProjectPage(page, 'attribute_table');
         await project.open();
 
@@ -466,7 +469,10 @@ test.describe('Layer export permissions ACL', () => {
                 let getFeatureRequest = await project.openAttributeTable(layerObj.layer);
                 let getFeatureResponse = await getFeatureRequest.response();
                 responseExpect(getFeatureResponse).toBeGeoJson();
-                await expect(userPage.locator('.attribute-layer-action-bar .export-formats')).toHaveCount(layerObj.onPage);
+                // Scope to the current layer's action bar: the global selector
+                // also matched a previously opened layer's action bar that had
+                // not been removed yet, making the count flaky.
+                await expect(project.attributeTableActionBar(layerObj.layer).locator('.export-formats')).toHaveCount(layerObj.onPage);
                 await project.closeAttributeTable();
             }
 
