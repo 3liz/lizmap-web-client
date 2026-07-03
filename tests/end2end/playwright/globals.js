@@ -187,7 +187,7 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
         request.url().includes('WMTS') === true &&
         request.url().includes('GetCapabilities') === true
     );
-    let getLegendGraphicPromise = (mapMustLoad && waitForGetLegendGraphic)
+    /*let getLegendGraphicPromise = (mapMustLoad && waitForGetLegendGraphic)
         ? page.waitForRequest(
             request => (
                 request.method() === 'POST' &&
@@ -199,7 +199,24 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
             ),
             { timeout: 60000 }
         )
-        : null;
+        : null;*/
+    /** @type {import('@playwright/test').Request | null}*/
+    let getLegendGraphicRequest = null;
+    await page.route('**/service*', async route => {
+        const request = route.request();
+        let searchParams;
+        if (request.method() !== 'POST') {
+            searchParams = new URLSearchParams(request.url().split('?')[1]);
+        } else {
+            searchParams = new URLSearchParams(request.postData() ?? '');
+        }
+        if (searchParams.get('SERVICE') === 'WMS' &&
+            searchParams.has('REQUEST') &&
+            searchParams.get('REQUEST') === 'GetLegendGraphic') {
+            getLegendGraphicRequest = request;
+        }
+        await route.continue();
+    });
 
     // Go to the map
     await page.goto(url);
@@ -215,15 +232,30 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
     await Promise.all(requests.map(request => request.response()));
 
     if (mapMustLoad) {
-        if (getLegendGraphicPromise) {
+        /*if (getLegendGraphicPromise) {
             // Wait for WMS GetLegendGraphic (promise armed before navigation)
             await getLegendGraphicPromise;
+        }*/
+        if (waitForGetLegendGraphic) {
+            let timeCount = 0;
+            while (getLegendGraphicRequest === null && timeCount < 60000) {
+                timeCount += 100;
+                if (timeCount > 60000) {
+                    break;
+                }
+                await page.waitForTimeout(100);
+            }
+            if (getLegendGraphicRequest !== null) {
+                await getLegendGraphicRequest.response();
+            }
         }
+        await page.unroute('**/service*');
         // No error
         await NoErrors(page, waitForGetLegendGraphic);
         // Wait to be sure the map is ready
         await page.waitForTimeout(1000)
     } else {
+        await page.unroute('**/service*');
         // Wait to be sure the map is ready
         await page.waitForTimeout(1000)
         // Error
