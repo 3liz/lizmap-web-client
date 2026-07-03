@@ -202,21 +202,23 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
         : null;*/
     /** @type {import('@playwright/test').Request | null}*/
     let getLegendGraphicRequest = null;
-    await page.route('**/service*', async route => {
-        const request = route.request();
-        let searchParams;
-        if (request.method() !== 'POST') {
-            searchParams = new URLSearchParams(request.url().split('?')[1]);
-        } else {
-            searchParams = new URLSearchParams(request.postData() ?? '');
-        }
-        if (searchParams.get('SERVICE') === 'WMS' &&
-            searchParams.has('REQUEST') &&
-            searchParams.get('REQUEST') === 'GetLegendGraphic') {
-            getLegendGraphicRequest = request;
-        }
-        await route.continue();
-    });
+    if (mapMustLoad && waitForGetLegendGraphic) {
+        await page.route('**/service*', async route => {
+            const request = route.request();
+            let searchParams;
+            if (request.method() !== 'POST') {
+                searchParams = new URLSearchParams(request.url().split('?')[1]);
+            } else {
+                searchParams = new URLSearchParams(request.postData() ?? '');
+            }
+            if (searchParams.get('SERVICE') === 'WMS' &&
+                searchParams.has('REQUEST') &&
+                searchParams.get('REQUEST') === 'GetLegendGraphic') {
+                getLegendGraphicRequest = request;
+            }
+            await route.continue();
+        });
+    }
 
     // Go to the map
     await page.goto(url);
@@ -248,14 +250,13 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
             if (getLegendGraphicRequest !== null) {
                 await getLegendGraphicRequest.response();
             }
+            await page.unroute('**/service*');
         }
-        await page.unroute('**/service*');
         // No error
         await NoErrors(page, waitForGetLegendGraphic);
         // Wait to be sure the map is ready
         await page.waitForTimeout(1000)
     } else {
-        await page.unroute('**/service*');
         // Wait to be sure the map is ready
         await page.waitForTimeout(1000)
         // Error
