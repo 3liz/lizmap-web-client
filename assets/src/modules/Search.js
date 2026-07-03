@@ -67,10 +67,12 @@ export default class Search {
      */
     _debounce(fn, delay) {
         let timer;
-        return (...args) => {
+        const debounced = (...args) => {
             clearTimeout(timer);
             timer = setTimeout(() => fn(...args), delay);
         };
+        debounced.cancel = () => clearTimeout(timer);
+        return debounced;
     }
 
     /**
@@ -193,13 +195,19 @@ export default class Search {
         extent.transform(this._map.getView().getProjection().getCode(), wgs84);
 
         const autoSearch = this._buildAutoSearch(() => this._performFtsSearch(searchConfig, extent));
+        const debouncedAutoSearch = this._debounce(autoSearch, 100);
 
         document.getElementById('nominatim-search').addEventListener('submit', evt => {
             evt.preventDefault();
+            // Cancel any pending debounced auto-search so it doesn't fire a
+            // redundant duplicate request for the same query right after this
+            // explicit submit (which could later resolve out of order and
+            // overwrite the results of a subsequent search).
+            debouncedAutoSearch.cancel();
             this._performFtsSearch(searchConfig, extent);
         });
 
-        document.getElementById('search-query').addEventListener('input', this._debounce(autoSearch, 100));
+        document.getElementById('search-query').addEventListener('input', debouncedAutoSearch);
 
         return true;
     }
@@ -375,13 +383,19 @@ export default class Search {
         }
 
         const autoSearch = this._buildAutoSearch(() => this._performExternalSearch(searchConfig, service, extent));
+        const debouncedAutoSearch = this._debounce(autoSearch, 100);
 
         document.getElementById('nominatim-search').addEventListener('submit', evt => {
             evt.preventDefault();
+            // Cancel any pending debounced auto-search so it doesn't fire a
+            // redundant duplicate request for the same query right after this
+            // explicit submit (which could later resolve out of order and
+            // overwrite the results of a subsequent search).
+            debouncedAutoSearch.cancel();
             this._performExternalSearch(searchConfig, service, extent);
         });
 
-        document.getElementById('search-query').addEventListener('input', this._debounce(autoSearch, 100));
+        document.getElementById('search-query').addEventListener('input', debouncedAutoSearch);
 
         return true;
     }
