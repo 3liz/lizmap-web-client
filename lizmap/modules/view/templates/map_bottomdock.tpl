@@ -1,7 +1,7 @@
-    <div class="tabbable tabs-below">
-      <div id="bottom-dock-content" class="tab-content">
+    <div>
+      <div id="bottom-dock-content">
       {foreach $dockable as $dock}
-        <div class="tab-pane{if $dock->order==1} active{/if}" id="{$dock->id}">
+        <div {if $dock->order!=1}class="hide"{/if} id="{$dock->id}">
           {$dock->fetchContent()}
         </div>
       {/foreach}
