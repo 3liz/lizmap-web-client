@@ -196,7 +196,8 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
             ) || (
                 request.method() === 'GET' &&
                 request.url().includes('GetLegendGraphic') === true
-            )
+            ),
+            { timeout: 60000 }
         )
         : null;
 
