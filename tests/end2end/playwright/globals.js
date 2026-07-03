@@ -238,9 +238,9 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
         }*/
         if (waitForGetLegendGraphic) {
             let timeCount = 0;
-            while (getLegendGraphicRequest === null && timeCount < 60000) {
+            while (getLegendGraphicRequest === null && timeCount < 10000) {
                 timeCount += 100;
-                if (timeCount > 60000) {
+                if (timeCount > 10000) {
                     break;
                 }
                 await page.waitForTimeout(100);
