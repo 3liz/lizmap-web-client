@@ -3592,7 +3592,9 @@ window.lizMap = function() {
                 const parentElement = linkClicked.parentElement;
                 const wasActive = parentElement.classList.contains('active');
 
-                const dockContentSelector = dockType == 'minidock' ? '#mini-dock-content > div' : `#${dockType}-content > div`;
+                const dockContentSelector = dockType == 'minidock' ? '#mini-dock-content > div'
+                    : dockType == 'bottomdock' ? '#bottom-dock-content > div'
+                    : `#${dockType}-content > div`;
                 const dockEvent = dockType == 'right-dock' ? 'rightdock' : dockType;
 
                 // Manage the active docks othe same type that is not the current target
@@ -3618,11 +3620,6 @@ window.lizMap = function() {
 
                 return false;
             });
-
-            // hide mini-dock if no tool is active
-            if ($('#mapmenu ul li.nav-minidock.active').length == 0) {
-                $('#mini-dock-content > .tab-pane.active').removeClass('active');
-            }
 
             // Toggle menu visibility
             $('#menuToggle').click(function(){
