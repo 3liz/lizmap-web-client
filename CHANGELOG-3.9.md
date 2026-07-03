@@ -8,6 +8,36 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* **[Terres d'Argentan](https://terresdargentan.fr/)**
+* **[Faunalia](https://www.faunalia.eu/fr)** with @mind84
+* **[Terre De Provence Agglomération](https://www.terredeprovence-agglo.com/)**
+
+### Fixed
+
+* Action reset ignored when called from actionResultReceived event
+* Popup: restore children features-table font-size
+* Prevent edition from removing hash information
+* Sync edition map and view map
+* GetPrint file extension based on FORMAT parameter
+* Popup true highlights
+* Optimize the getMedia controller
+* Log key for login should not contain folder
+
+### Tests
+
+* GitHub Action: Add a playwright cache to speedup end2end tests
+* Fix some flaky e2e tests
+
+### Backend
+
+* Update JS dependencies: dompurify, lit-html, mocha, stylelint, undici, ol, proj4, line-split and dotenv
+* Add simulateClick function to simulate a click on map
+* Fix PHP: Since guzzlehttp/psr7 2.11: Passing a non-uppercase HTTP method is deprecated
+* Handle ol-layer and ext-group visibility change events in Treeview
+* Disable xdebug by default
+
 ## 3.9.8 - 2026-05-21
 
 ### Funders
