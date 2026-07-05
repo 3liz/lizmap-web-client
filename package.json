@@ -59,6 +59,6 @@
     "stylelint-config-standard": "^40.0.x",
     "undici": "^8.2.x",
     "webpack-merge": "^6.0.x",
-    "xmldoc": "^2.0.3"
+    "xmldoc": "^3.0.0"
   }
 }
