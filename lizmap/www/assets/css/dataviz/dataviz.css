@@ -48,9 +48,7 @@ Toolbar buttons
 }
 
 /* Title "Dataviz" of the bottom dock */
-#nav-tab-dataviz-main > a{
-    background: none !important;
-    border: none;
+#dataviz-dock-title {
     color: var(--color-text-primary);
     margin-top: 10px;
     font-weight: 500;
@@ -132,11 +130,6 @@ TABS AND GROUPS
     border-bottom: 3px solid var(--color-contrasted-elements);
     color: var(--color-text-primary);
     cursor: auto;
-}
-
-/* In bottom-dock, do not use a thick border bottom */
-#bottom-dock #nav-tab-dataviz-main > a {
-  border: none;
 }
 
 #dataviz div.tab-pane {
