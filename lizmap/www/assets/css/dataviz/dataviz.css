@@ -47,7 +47,7 @@ Toolbar buttons
     font-size: 0.8em;
 }
 
-/* Title "Dataviz" of the bottom dock */
+/* Title "Dataviz" of the bottom-dock/right-dock panel */
 #dataviz-dock-title {
     color: var(--color-text-primary);
     margin-top: 10px;
