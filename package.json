@@ -31,7 +31,7 @@
     "@panoramax/web-viewer": "^5.1.0",
     "@playwright/test": "^1.61.x",
     "@rspack/cli": "~1.7.x",
-    "@rspack/core": "~1.7.x",
+    "@rspack/core": "~2.1.x",
     "@stylistic/eslint-plugin": "^5.10.0",
     "@turf/line-split": "^7.3.x",
     "bats": "^1.13.0",
