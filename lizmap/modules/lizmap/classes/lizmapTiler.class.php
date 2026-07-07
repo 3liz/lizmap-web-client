@@ -300,8 +300,12 @@ class lizmapTiler
 
                 $extent = array($destMinPt->x, $destMinPt->y, $destMaxPt->x, $destMaxPt->y);
 
-                preg_match('/ \+units=(?P<unit>\w+) /', $projection->proj4, $matches);
-                $unit = $matches['unit'];
+                if (preg_match('/ \+units=(?P<unit>\w+) /', $projection->proj4, $matches)) {
+                    $unit = $matches['unit'];
+                } else {
+                    trigger_error('unit not found for projection, assuming degree', E_USER_WARNING);
+                    $unit = 'dd';
+                }
 
                 // $res = 0.28E-3 * $scales[0] / $METERS_PER_INCH / $INCHES_PER_UNIT[ $unit ];
                 $res = $scales[0] / ($INCHES_PER_UNIT[$unit] * 96.0);
