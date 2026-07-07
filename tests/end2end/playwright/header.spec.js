@@ -1,6 +1,7 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 import {ProjectPage} from "./pages/project";
+import { getAuthStorageStatePath } from './globals';
 
 test.describe('Header',
     {
@@ -9,7 +10,7 @@ test.describe('Header',
     () => {
 
         test('Login info as user A on the landing page', async ({ browser }) => {
-            const userA = await browser.newContext({ storageState: 'playwright/.auth/user_in_group_a.json' });
+            const userA = await browser.newContext({ storageState: getAuthStorageStatePath('user_in_group_a') });
             const page = await userA.newPage();
             await page.goto('index.php');
 
@@ -26,7 +27,7 @@ test.describe('Header',
         });
 
         test('Login info as user A on project page', async ({ browser }) => {
-            const userA = await browser.newContext({ storageState: 'playwright/.auth/user_in_group_a.json' });
+            const userA = await browser.newContext({ storageState: getAuthStorageStatePath('user_in_group_a') });
             const userPage = await userA.newPage();
             const projectPage = new ProjectPage(userPage, 'world-3857');
             await projectPage.open();
