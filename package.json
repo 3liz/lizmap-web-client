@@ -19,6 +19,7 @@
     "js:test": "mocha --require ./tests/js-units/fixtures.js --recursive ./tests/js-units/node",
     "jsdoc": "make version-doc && make js-doc",
     "pr:open": "playwright test --config tests/end2end/playwright.config.ts --ui tests/end2end/",
+    "test:e2e": "bash tests/end2end/run-all-tests.sh",
     "pretest-fix": "eslint -c eslint.config.mjs --fix",
     "pretest": "eslint -c eslint.config.mjs",
     "style-fix": "stylelint \"**/*.css\" --fix",
