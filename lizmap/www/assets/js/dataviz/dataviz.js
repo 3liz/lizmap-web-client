@@ -383,7 +383,7 @@ let lizDataviz = function () {
             }
 
             // Build plot
-            buildPlot(target_id, dv.plots[plot_id]['cache']);
+            await buildPlot(target_id, dv.plots[plot_id]['cache']);
             $('#' + target_id).prev('.dataviz-waiter:first').hide();
 
             return true;
@@ -446,7 +446,7 @@ let lizDataviz = function () {
 
             // Build plot
             // Pass plot_id to inherit custom configurations in child charts
-            buildPlot(target_id, jsonData, plot_id);
+            await buildPlot(target_id, jsonData, plot_id);
 
             // Hide the infinite progress bar
             $('#' + target_id).prev('.dataviz-waiter:first').hide();
@@ -601,13 +601,14 @@ let lizDataviz = function () {
      * @param {object} conf The plot configuration with data and layout properties.
      * @param {int} pid The plot integer ID
      */
-    function buildPlot(targetId, conf, pid = null) {
+    async function buildPlot(targetId, conf, pid = null) {
 
         // Build plot with plotly or lizmap
         if (conf.data.length && conf.data[0]['type'] == 'html') {
             buildHtmlPlot(targetId, conf.data, pid, conf.layout);
         } else {
             let plotLocale = dv.config.locale.substring(0, 2);
+            const Plotly = await lizMap.plotlyjs.load(plotLocale);
             let plotConfig = {
                 showLink: false,
                 scrollZoom: false,

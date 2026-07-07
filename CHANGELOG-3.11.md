@@ -18,4 +18,6 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Changed
 
+* Dataviz - Plotly.js is now installed as a regular npm dependency (custom bundle: scatter, bar, box, pie, histogram, histogram2d, scatterpolar, sunburst traces) and exposed as `lizMap.plotlyjs`, instead of being vendored as a static file. It is lazy-loaded (own chunk, plus one small chunk per locale) the first time a plot is actually drawn.
+
 ### Backend
