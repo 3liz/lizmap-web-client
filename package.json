@@ -57,7 +57,7 @@
     "postcss-lit": "^1.3.x",
     "proj4rs": "^0.1.8",
     "shpjs": "^6.1.x",
-    "stylelint": "^17.6.x",
+    "stylelint": "^17.14.x",
     "stylelint-config-standard": "^40.0.x",
     "undici": "^8.2.x",
     "webpack-merge": "^6.0.x",
