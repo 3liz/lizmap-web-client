@@ -82,10 +82,8 @@ class filterDatasource
 
             return null;
         }
-        $filter = str_replace('intersects', 'ST_Intersects', $filter);
-        $filter = str_replace('geom_from_gml', 'ST_GeomFromGML', $filter);
 
-        return str_replace('$geometry', '"'.$this->datasource->geocol.'"', $filter);
+        return SqlTools::translateExpressionToPostgis($filter, $this->datasource->geocol);
     }
 
     /**

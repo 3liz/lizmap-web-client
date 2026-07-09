@@ -411,9 +411,22 @@ class WFSRequestTest extends TestCase
         return array(
             array('select', false),
             array('selectoioio', false),
-            array('test intersects other test', 'test ST_Intersects other test'),
             array('test geom_from_gml other test', 'test ST_GeomFromGML other test'),
-            array('test intersects $geometry', 'test ST_Intersects "column"'),
+            // Every geometry predicate offered by the selection tool must be
+            // translated to its PostGIS ST_* equivalent, not only "intersects".
+            array('intersects($geometry, geom_from_gml(\'g\'))', 'ST_Intersects("column", ST_GeomFromGML(\'g\'))'),
+            array('contains($geometry, geom_from_gml(\'g\'))', 'ST_Contains("column", ST_GeomFromGML(\'g\'))'),
+            array('within($geometry, geom_from_gml(\'g\'))', 'ST_Within("column", ST_GeomFromGML(\'g\'))'),
+            array('crosses($geometry, geom_from_gml(\'g\'))', 'ST_Crosses("column", ST_GeomFromGML(\'g\'))'),
+            array('overlaps($geometry, geom_from_gml(\'g\'))', 'ST_Overlaps("column", ST_GeomFromGML(\'g\'))'),
+            array('touches($geometry, geom_from_gml(\'g\'))', 'ST_Touches("column", ST_GeomFromGML(\'g\'))'),
+            array('disjoint($geometry, geom_from_gml(\'g\'))', 'ST_Disjoint("column", ST_GeomFromGML(\'g\'))'),
+            // Operators are matched case-insensitively and tolerate whitespace before "(".
+            array('INTERSECTS ($geometry, geom_from_gml(\'g\'))', 'ST_Intersects("column", ST_GeomFromGML(\'g\'))'),
+            // A predicate combined with another expression must keep both parts.
+            array('"field" > 3 AND within($geometry, geom_from_gml(\'g\'))', '"field" > 3 AND ST_Within("column", ST_GeomFromGML(\'g\'))'),
+            // A bare word that is not a function call must be left untouched.
+            array('"name" = \'it intersects here\'', '"name" = \'it intersects here\''),
         );
     }
 
