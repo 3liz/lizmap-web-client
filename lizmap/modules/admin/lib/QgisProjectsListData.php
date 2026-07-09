@@ -24,13 +24,13 @@ use Lizmap\Server\Server;
 class QgisProjectsListData
 {
     // Thresholds used to colour the cells (warning/error).
-    const WARNING_LAYER_COUNT = 100;
-    const ERROR_LAYER_COUNT = 200;
-    const WARNING_LOADING_TIME = 30.0;
-    const ERROR_LOADING_TIME = 60.0;
-    const WARNING_MEMORY = 100;
-    const ERROR_MEMORY = 250;
-    const OLD_QGIS_VERSION_DELTA = 6;
+    public const WARNING_LAYER_COUNT = 100;
+    public const ERROR_LAYER_COUNT = 200;
+    public const WARNING_LOADING_TIME = 30.0;
+    public const ERROR_LOADING_TIME = 60.0;
+    public const WARNING_MEMORY = 100;
+    public const ERROR_MEMORY = 250;
+    public const OLD_QGIS_VERSION_DELTA = 6;
 
     /**
      * Context shared by the page shell (help modal, server status banner)
@@ -120,10 +120,10 @@ class QgisProjectsListData
      * Build the full payload consumed by DataTables through the JSON endpoint.
      *
      * @return array {
-     *                data: array of row objects,
-     *                hasInspectionData: bool,
-     *                hasSomeProjectsNotDisplayed: bool
-     *                }
+     *               data: array of row objects,
+     *               hasInspectionData: bool,
+     *               hasSomeProjectsNotDisplayed: bool
+     *               }
      */
     public function getData()
     {
@@ -589,7 +589,7 @@ class QgisProjectsListData
             $inspectionData['invalid_layers_count'] = $inspection->bad_layers_count;
             if ($inspection->bad_layers_count > 0) {
                 $invalidLayers = array();
-                foreach ($inspection->layers as $id => $properties) {
+                foreach ($inspection->layers as $properties) {
                     if (!$properties->valid) {
                         $invalidLayers[] = (array) $properties;
                     }
