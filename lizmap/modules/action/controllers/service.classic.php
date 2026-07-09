@@ -1,5 +1,6 @@
 <?php
 
+use Lizmap\ActionQuery\ActionQuery;
 use Lizmap\App\WktTools;
 use Lizmap\Project\UnknownLizmapProjectException;
 
@@ -162,58 +163,29 @@ class serviceCtrl extends jController
             }
         }
 
-        // Compute the parameters to pass to the PostgreSQL action function
-        // depending on the scope and given parameters
-        $data = array();
-        $action_params = array(
-            'lizmap_repository' => $repository,
-            'lizmap_project' => $project,
-            'action_name' => $actionName,
-            'action_scope' => $scope,
-            'layer_name' => null,
-            'layer_schema' => null,
-            'layer_table' => null,
-            'feature_id' => null,
-            'map_center' => $mapCenter,
-            'map_extent' => $mapExtent,
-            'wkt' => $wkt,
+        // Build and run the action query
+        $actionQuery = new ActionQuery($cnx, $repository, $project, $layerId, lizmap::getAppContext());
+
+        $action_params = $actionQuery->buildParams(
+            $actionName,
+            $scope,
+            $qgisLayer,
+            $featureId,
+            $wkt,
+            $mapCenter,
+            $mapExtent
         );
 
-        // Add the user login
-        $action_params['user_login'] = (jAuth::isConnected()) ? jAuth::getUserSession()->login : 'anonymous';
-
-        // If the scope is layer or feature, add the layer parameters
-        if ($qgisLayer && in_array($scope, array('layer', 'feature'))) {
-            $layerName = $qgisLayer->getName();
-            $layerDatasource = $qgisLayer->getDatasourceParameters();
-            $action_params['layer_name'] = str_replace("'", "''", $layerName);
-            $action_params['layer_schema'] = $layerDatasource->schema;
-            $action_params['layer_table'] = $layerDatasource->tablename;
-            $action_params['feature_id'] = $featureId;
-        }
-
         // Get the additional options from the JSON config file
-        // Not for any requests parameters !!!
-        foreach ($action->options as $k => $v) {
-            $action_params[$k] = $v;
-        }
+        // We need to be cautious with these values as they are sent from the client
+        $options = $this->param('options') ?? array();
+        list($sql, $sqlValues) = $actionQuery->buildSql($action_params, $action, $options);
 
-        // Run the action
-        $sql = "SELECT lizmap_get_data('";
-        $sql .= json_encode($action_params);
-        $sql .= "') AS data";
+        jLog::log("SQL =\n{$sql}");
 
         try {
-            $res = $cnx->query($sql);
-            foreach ($res as $r) {
-                $data = json_decode($r->data);
-            }
+            $data = $actionQuery->execute($sql, $sqlValues);
         } catch (Exception $e) {
-            jLog::log(
-                'Error in project '.$repository.'/'.$project.', layer '.$layerId.', '.
-                'while running the action with the PostgreSQL query : '.$sql.' → '.$e->getMessage(),
-                'lizmapadmin'
-            );
             $errors = array(
                 'title' => 'An error occurred while processing the request',
                 'detail' => 'Please contact the GIS administrator to look to the administrator logs.',
