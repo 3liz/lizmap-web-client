@@ -13,6 +13,8 @@
 
 namespace Lizmap\Request;
 
+use Lizmap\App\SqlTools;
+
 /**
  * @see https://en.wikipedia.org/wiki/Web_Feature_Service.
  */
@@ -45,23 +47,6 @@ class WFSRequest extends OGCRequest
      * @var string[] the fields to select
      */
     protected $selectFields = array();
-
-    /**
-     * @var string[] words blocked in SQL queries
-     */
-    protected $blockSqlWords = array(
-        ';',
-        'select',
-        'delete',
-        'insert',
-        'update',
-        'drop',
-        'alter',
-        '--',
-        'truncate',
-        'vacuum',
-        'create',
-    );
 
     /**
      * @var array<string, string> Generic GetFeature request parameters
@@ -654,11 +639,20 @@ class WFSRequest extends OGCRequest
             $expFilter = '$id IN ('.implode(', ', $pks).')';
         }
 
-        if ($expFilter && $this->validateExpressionFilter($expFilter)) {
-            return $expFilter;
+        if (!$expFilter) {
+            return '';
+        }
+        [$validFilter, $block_items] = SqlTools::validateExpressionFilter($expFilter);
+        if (!$validFilter) {
+            $this->appContext->logMessage(
+                'The EXP_FILTER param contains dangerous chars : '.implode(', ', $block_items),
+                'lizmapadmin'
+            );
+
+            return '';
         }
 
-        return '';
+        return $expFilter;
     }
 
     /**
@@ -1145,25 +1139,6 @@ class WFSRequest extends OGCRequest
     }
 
     /**
-     * Validate an expression filter.
-     *
-     * @param string $filter The expression filter to validate
-     *
-     * @return bool returns if the expression does not contains dangerous chars
-     */
-    protected function validateExpressionFilter(string $filter): bool
-    {
-        $block_items = array();
-        if (preg_match('#'.implode('|', $this->blockSqlWords).'#i', $filter, $block_items)) {
-            $this->appContext->logMessage('The EXP_FILTER param contains dangerous chars : '.implode(', ', $block_items), 'lizmadmin');
-
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
      * Parses and validate a filter for postgresql.
      *
      * @param string $filter The filter to parse
@@ -1172,7 +1147,13 @@ class WFSRequest extends OGCRequest
      */
     protected function validateFilter(string $filter): false|string
     {
-        if (!$this->validateExpressionFilter($filter)) {
+        [$validFilter, $block_items] = SqlTools::validateExpressionFilter($filter);
+        if (!$validFilter) {
+            $this->appContext->logMessage(
+                'The EXP_FILTER param contains dangerous chars : '.implode(', ', $block_items),
+                'lizmapadmin'
+            );
+
             return false;
         }
         $vfilter = str_replace('intersects', 'ST_Intersects', $filter);
