@@ -41,7 +41,7 @@ test.describe('Connected from context, as an admin',
             const json = await checkJson(response);
 
             // Check number of repositories
-            expect(json).toHaveLength(5);
+            expect(json).toHaveLength(6);
 
             // Check first repository has expected
             expect(json[0].key).toBeDefined();
