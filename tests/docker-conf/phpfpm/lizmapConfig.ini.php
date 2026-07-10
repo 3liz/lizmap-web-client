@@ -74,3 +74,10 @@ allowUserDefinedThemes=1
 label="Repository with bad path"
 path="/srv/lzm/tests/qgis-projects/bad/"
 allowUserDefinedThemes=0
+
+[repository:mockinspection]
+label="Mock inspection"
+path="/srv/lzm/tests/qgis-projects/mock_inspection/"
+allowUserDefinedThemes=0
+accessControlAllowOrigin=
+iframeEmbedAllowOrigin=
