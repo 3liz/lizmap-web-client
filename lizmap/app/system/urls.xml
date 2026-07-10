@@ -13,7 +13,7 @@ DANS LE FICHIER var/config/localurls.xml
     <entrypoint name="index" default="true">
         <url pathinfo="/" module="view" action="default:index"/>
         <url pathinfo="/jelix" module="jelix" include="urls.xml"/>
-        <url pathinfo="/lizmap" module="lizmap"/>
+        <url pathinfo="/lizmap" module="lizmap" include="urls.xml"/>
         <url pathinfo="/view" module="view"/>
         <url module="filter"/>
         <url module="action"/>

@@ -1,25 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suburls xmlns="http://jelix.org/ns/suburls/1.0">
     <url pathinfo="/"       action="default:index"/>
+    <url pathinfo="/edition"       controller="edition"/>
+    <url pathinfo="/features"       controller="features"/>
+    <url pathinfo="/geobookmark"       controller="geobookmark"/>
+    <url pathinfo="/osm"       controller="osm"/>
+    <url pathinfo="/project"       controller="project"/>
+    <url pathinfo="/repository"       controller="repository"/>
+    <url pathinfo="/search"       controller="search"/>
+    <url pathinfo="/searchFts"       controller="searchFts"/>
+    <url pathinfo="/wmts"       controller="wmts"/>
 
+    <url pathinfo="/service/getProjectConfig" action="service:getProjectConfig" optionalTrailingSlash="true"/>
+    <url pathinfo="/service/getKeyValueConfig" action="service:getKeyValueConfig" optionalTrailingSlash="true"/>
+    <!-- url for WMS/WMTS/etc service compatible with specification, to not have repository and project query parameters -->
+    <url pathinfo="/service/:repository/:project" action="service:index" optionalTrailingSlash="true" />
 
-    <url pathinfo="/edition/:repository/:project/:layerId/feature/:featureId/create"       action="edition:createFeature"/>
-    <url pathinfo="/edition/:repository/:project/:layerId/feature/:featureId/modify"       action="edition:modifyFeature"/>
-    <url pathinfo="/edition/:repository/:project/:layerId/feature/:featureId/edit"       action="edition:editFeature"/>
-    <url pathinfo="/edition/:repository/:project/:layerId/feature/:featureId/save"       action="edition:saveFeature"/>
-    <url pathinfo="/edition/:repository/:project/:layerId/feature/:featureId/validate"       action="edition:validateFeature"/>
-    <url pathinfo="/edition/:repository/:project/:layerId/feature/:featureId/delete"       action="edition:deleteFeature"/>
-    <url pathinfo="/edition/:repository/:project/:pivot/link"       action="edition:linkFeatures"/>
-    <url pathinfo="/edition/:repository/:project/:lid/unkink"       action="edition:unlinkChild"/>
-
-
-    <url pathinfo="/geobookmark"       action="geobookmark:index"/> <!-- /:repository/:project/ -->
-
-    <url pathinfo="/ign"       action="ign:address"/> <!-- /:repository/:project/ -->
-    <url pathinfo="/osm"       action="osm:nominatim"/>
-    <url pathinfo="/repo/:repository/:project/search"       action="search:get"/>
-    <url pathinfo="/repo/:repository/:project/service"       action="service:index"/>
-    <url pathinfo="/repo/:repository/:project/config"       action="service:getProjectConfig"/>
-
+    <!-- declaration to keep compatibility with the old url of service:index -->
+    <url pathinfo="/service" action="service:oldindex" optionalTrailingSlash="true"/>
 
 </suburls>

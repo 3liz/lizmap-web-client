@@ -162,6 +162,16 @@ class serviceCtrl extends jController
     }
 
     /**
+     * Action for the old url of service having repository and action as parameters.
+     *
+     * We need this new action to map /service/ URL
+     */
+    public function oldindex()
+    {
+        return $this->index();
+    }
+
+    /**
      * construct the response to a CORS preflights request.
      *
      * This kind of requests are made by browsers before fetching a resource

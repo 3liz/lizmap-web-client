@@ -92,6 +92,9 @@ upgrade-projects:
 up: env
 	docker compose up  -V --force-recreate -d
 
+up-tail: env
+	docker compose up  -V --force-recreate
+
 # Alias for 'up'
 run: up
 

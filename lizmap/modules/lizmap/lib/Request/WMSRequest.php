@@ -159,10 +159,15 @@ class WMSRequest extends OGCRequest
 
             $sUrl = \jUrl::getFull(
                 'lizmap~service:index',
-                array('repository' => $this->repository->getKey(), 'project' => $this->project->getKey())
+                array(
+                    'repository' => $this->repository->getKey(),
+                    'project' => $this->project->getKey(),
+                    'SERVICE' => 'WMS',
+                    'VERSION' => '1.3.0',
+                    'REQUEST' => 'GetSchemaExtension',
+                )
             );
-            $sUrl = str_replace('&', '&amp;', $sUrl).'&amp;';
-            $schemaLocation .= ' '.$sUrl.'SERVICE=WMS&amp;VERSION=1.3.0&amp;REQUEST=GetSchemaExtension';
+            $schemaLocation .= ' '.str_replace('&', '&amp;', $sUrl);
 
             $data = preg_replace('@xsi:schemaLocation=".*?"@si', 'xsi:schemaLocation="'.$schemaLocation.'"', $data);
             if (!preg_match('@xmlns:qgs@i', $data)) {
@@ -203,9 +208,9 @@ class WMSRequest extends OGCRequest
             'lizmap~service:index',
             array('repository' => $this->repository->getKey(), 'project' => $this->project->getKey())
         );
-        $sUrl = str_replace('&', '&amp;', $sUrl).'&amp;';
+        $sUrl = str_replace('&', '&amp;', $sUrl);
         $data = $response->data;
-        $data = preg_replace('/xlink\:href=".*"/', 'xlink:href="'.$sUrl.'&amp;"', $data);
+        $data = preg_replace('/xlink\:href=".*"/', 'xlink:href="'.$sUrl.'"', $data);
 
         return new OGCResponse($response->code, $response->mime, $data, $response->cached);
     }

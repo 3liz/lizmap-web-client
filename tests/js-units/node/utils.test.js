@@ -97,6 +97,44 @@ describe('Utils', function () {
         });
     });
 
+    it('fetch new url', async function () {
+        client
+            .intercept({
+                path: /\/index.php\/lizmap\/service\/test\/test/,
+                method: 'GET',
+            })
+            .reply(200, replyGet);
+
+        let data = await Utils.fetch('http://localhost:8130/index.php/lizmap/service/test/test').then((res) => res.json());
+        expect(data).to.deep.eq({
+            method: 'GET',
+            origin: 'http://localhost:8130',
+            params: {},
+            pathname: '/index.php/lizmap/service/test/test',
+        });
+
+        client
+            .intercept({
+                path: /\/index.php\/lizmap\/service\/test\/test/,
+                method: 'POST',
+            })
+            .reply(200, replyPost);
+
+        data = await Utils.fetch('http://localhost:8130/index.php/lizmap/service/test/test', {
+            method: 'POST',
+            body: 'foo=bar',
+        }).then((res) => res.json());
+        expect(data).to.deep.eq({
+            body: {
+                foo: 'bar',
+            },
+            method: 'POST',
+            origin: 'http://localhost:8130',
+            params: {},
+            pathname: '/index.php/lizmap/service/test/test',
+        });
+    });
+
     it('fetch error', async function () {
         // 500 error
         client
