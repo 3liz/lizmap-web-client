@@ -42,4 +42,20 @@ test.describe('QGIS Projects page', () => {
         expect(projects.locator('table tbody tr td')).toHaveClass('dataTables_empty');
 
     });
+
+    test('Check project with inspection', async ({ page }) => {
+        const adminPage = new AdminPage(page);
+        await adminPage.open();
+        await adminPage.openPage('QGIS projects');
+        const projects = adminPage.page.locator('#lizmap_project_list');
+        const columnLocator = 'table tbody tr:first-child td';
+        const projectAdminColCount = 11;
+        const inspectionDelta = 7;
+        expect(await projects.locator(columnLocator).count()).toBe(projectAdminColCount+inspectionDelta);
+        // select testsrepository (no inpection)
+        await page.locator('#repository-selector').selectOption('testsrepository');
+        await page.waitForURL(/repository=testsrepository/);
+        expect(await projects.locator(columnLocator).count()).toBe(projectAdminColCount);
+
+    });
 });
