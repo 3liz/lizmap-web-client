@@ -102,6 +102,8 @@ tests/units/composer.lock
 tests/units/.phpunit.result.cache
 tests/qgis-projects/*
 !tests/qgis-projects/tests
+!tests/qgis-projects/mock_inspection/
+!tests/qgis-projects/mock_inspection/*.log
 !tests/qgis-projects/webdav
 tests/qgis-projects/webdav/test/*
 !tests/qgis-projects/webdav/test/logo.png
