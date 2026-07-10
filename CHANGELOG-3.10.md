@@ -8,9 +8,47 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* **[Terres d'Argentan](https://terresdargentan.fr/)**
+* **[Faunalia](https://www.faunalia.eu/)** with @mind84
+* **[Terre De Provence Agglomération](https://www.terredeprovence-agglo.com/)**
+
+### Added
+
+* Improve FTS search: ordering, result limits and 2-column display
+* FTS search: live search while typing, debounced at 100ms
+* Add panoramax photo-viewer
+* Actions - Add the ability to send dynamic parameters from JavaScript
+
 ### Fixed
 
+* Popup: restore children features-table font-size
+* Prevent edition from removing hash information
 * Edition - Persist dynamic default-value expressions on read-only fields (e.g. `$x`, `round($length, 2)`), which were evaluated but not saved
+* Attribute table - Searchbuilder: key-value description to string
+* UI: Prevent tooltip added via addDock function to be persistent
+* Sync edition map and view map
+* Add upgrade script for short link permalink
+* UI: Migration from BS2 to BS5
+* Geolocation bind heading and rotate map
+* GetPrint file extension based on FORMAT parameter
+* Popup true highlights
+* Optimize the getMedia controller
+* Log key for login should not contain folder
+
+### Tests
+
+* Fix permalink server management test
+
+### Backend
+
+* Update JS dependencies: dompurify, lit-html, mocha, stylelint, undici, ol, proj4, line-split and dotenv
+* Fix phpstan errors
+* Add simulateClick function to simulate a click on map
+* Fix PHP: Since guzzlehttp/psr7 2.11: Passing a non-uppercase HTTP method is deprecated
+* Handle ol-layer and ext-group visibility change events in Treeview
+* Disable xdebug by default
 
 ## 3.10.0-rc.1 - 2026-05-28
 
