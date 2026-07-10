@@ -191,7 +191,7 @@ class defaultCtrl extends jController
             'map' => jUrl::get('view~map:index'),
             'config' => jUrl::get('lizmap~service:getProjectConfig'),
             'keyValueConfig' => jUrl::get('lizmap~service:getKeyValueConfig'),
-            'ogcService' => jUrl::get('lizmap~service:index'),
+            'ogcService' => jUrl::get('lizmap~service:oldindex'),
         );
         $rep->addJsVariable('lizUrls', $lizUrls);
 
