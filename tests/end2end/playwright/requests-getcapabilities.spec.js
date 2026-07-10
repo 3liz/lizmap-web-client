@@ -8,13 +8,11 @@ test.describe('GetCapabilities Requests - anonymous - @requests @readonly', () =
 
     test('WMS 1.3.0 GetCapabilities', async({ request }) => {
         let params = new URLSearchParams({
-            repository: 'testsrepository',
-            project: 'selection',
             SERVICE: 'WMS',
             VERSION: '1.3.0',
             REQUEST: 'GetCapabilities',
         });
-        let url = `/index.php/lizmap/service?${params}`;
+        let url = `/index.php/lizmap/service/testsrepository/selection?${params}`;
         let response = await request.get(url, {});
         // check response
         responseExpect(response).toBeXml();
@@ -31,13 +29,13 @@ test.describe('GetCapabilities Requests - anonymous - @requests @readonly', () =
         expect(xmlBody.attr).toHaveProperty('version', '1.3.0');
         expect(xmlBody.attr).toHaveProperty('xsi:schemaLocation');
         expect(xmlBody.attr['xsi:schemaLocation']).toContain(
-            '/index.php/lizmap/service?repository=testsrepository&project=selection&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetSchemaExtension'
+            '/index.php/lizmap/service/testsrepository/selection?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetSchemaExtension'
         );
 
         expect(xmlBody.childNamed('Service')?.childNamed('Name')?.val).toBe('WMS');
         expect(xmlBody.childNamed('Service')?.childNamed('OnlineResource')?.attr).toHaveProperty('xlink:href');
         expect(xmlBody.childNamed('Service')?.childNamed('OnlineResource')?.attr['xlink:href']).toContain(
-            '/index.php/lizmap/service?repository=testsrepository&project=selection'
+            '/index.php/lizmap/service/testsrepository/selection'
         );
         expect(xmlBody.childNamed('Capability')).not.toBeUndefined();
         const capabilityElem = xmlBody.childNamed('Capability');
@@ -49,7 +47,7 @@ test.describe('GetCapabilities Requests - anonymous - @requests @readonly', () =
                 for(const onlineResource of requestElem.descendantsNamed('OnlineResource')) {
                     expect.soft(onlineResource.attr).toHaveProperty('xlink:href');
                     expect.soft(onlineResource.attr['xlink:href']).toContain(
-                        '/index.php/lizmap/service?repository=testsrepository&project=selection&'
+                        '/index.php/lizmap/service/testsrepository/selection?'
                     );
                 }
             }
@@ -65,8 +63,7 @@ test.describe('GetCapabilities Requests - anonymous - @requests @readonly', () =
         expect(response.status()).toBe(304);
 
         // Project with config.options.hideProject: "True"
-        params.set('project', 'hide_project');
-        url = `/index.php/lizmap/service?${params}`;
+        url = `/index.php/lizmap/service/testsrepository/hide_project?${params}`;
         response = await request.get(url, {});
         // check response
         responseExpect(response).toBeXml();
@@ -77,13 +74,11 @@ test.describe('GetCapabilities Requests - anonymous - @requests @readonly', () =
 
     test('WMS 1.1.1 GetCapabilities', async({ request }) => {
         let params = new URLSearchParams({
-            repository: 'testsrepository',
-            project: 'selection',
             SERVICE: 'WMS',
             VERSION: '1.1.1',
             REQUEST: 'GetCapabilities',
         });
-        let url = `/index.php/lizmap/service?${params}`;
+        let url = `/index.php/lizmap/service/testsrepository/selection?${params}`;
         let response = await request.get(url, {});
         // check response
         responseExpect(response).toBeXml();
@@ -103,7 +98,7 @@ test.describe('GetCapabilities Requests - anonymous - @requests @readonly', () =
         expect(xmlBody.childNamed('Service')?.childNamed('Name')?.val).toBe('WMS');
         expect(xmlBody.childNamed('Service')?.childNamed('OnlineResource')?.attr).toHaveProperty('xlink:href');
         expect(xmlBody.childNamed('Service')?.childNamed('OnlineResource')?.attr['xlink:href']).toContain(
-            '/index.php/lizmap/service?repository=testsrepository&project=selection'
+            '/index.php/lizmap/service/testsrepository/selection'
         );
         expect(xmlBody.childNamed('Capability')).not.toBeUndefined();
         const capabilityElem = xmlBody.childNamed('Capability');
@@ -115,7 +110,7 @@ test.describe('GetCapabilities Requests - anonymous - @requests @readonly', () =
                 for(const onlineResource of requestElem.descendantsNamed('OnlineResource')) {
                     expect.soft(onlineResource.attr).toHaveProperty('xlink:href');
                     expect.soft(onlineResource.attr['xlink:href']).toContain(
-                        '/index.php/lizmap/service?repository=testsrepository&project=selection&'
+                        '/index.php/lizmap/service/testsrepository/selection?'
                     );
                 }
             }
@@ -131,8 +126,7 @@ test.describe('GetCapabilities Requests - anonymous - @requests @readonly', () =
         expect(response.status()).toBe(304);
 
         // Project with config.options.hideProject: "True"
-        params.set('project', 'hide_project');
-        url = `/index.php/lizmap/service?${params}`;
+        url = `/index.php/lizmap/service/testsrepository/hide_project?${params}`;
         response = await request.get(url, {});
         // check response
         responseExpect(response).toBeXml();
@@ -165,13 +159,13 @@ test.describe('GetCapabilities Requests - anonymous - @requests @readonly', () =
         expect(xmlBody.attr).toHaveProperty('version', '1.3.0');
         expect(xmlBody.attr).toHaveProperty('xsi:schemaLocation');
         expect(xmlBody.attr['xsi:schemaLocation']).toContain(
-            '/index.php/lizmap/service?repository=testsrepository&project=selection&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetSchemaExtension'
+            '/index.php/lizmap/service/testsrepository/selection?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetSchemaExtension'
         );
 
         expect(xmlBody.childNamed('Service')?.childNamed('Name')?.val).toBe('WMS');
         expect(xmlBody.childNamed('Service')?.childNamed('OnlineResource')?.attr).toHaveProperty('xlink:href');
         expect(xmlBody.childNamed('Service')?.childNamed('OnlineResource')?.attr['xlink:href']).toContain(
-            '/index.php/lizmap/service?repository=testsrepository&project=selection'
+            '/index.php/lizmap/service/testsrepository/selection'
         );
         expect(xmlBody.childNamed('Capability')).not.toBeUndefined();
         const capabilityElem = xmlBody.childNamed('Capability');
@@ -183,7 +177,7 @@ test.describe('GetCapabilities Requests - anonymous - @requests @readonly', () =
                 for(const onlineResource of requestElem.descendantsNamed('OnlineResource')) {
                     expect.soft(onlineResource.attr).toHaveProperty('xlink:href');
                     expect.soft(onlineResource.attr['xlink:href']).toContain(
-                        '/index.php/lizmap/service?repository=testsrepository&project=selection&'
+                        '/index.php/lizmap/service/testsrepository/selection?'
                     );
                 }
             }
@@ -234,7 +228,7 @@ test.describe('GetCapabilities Requests - anonymous - @requests @readonly', () =
         expect(xmlBody.attr).toHaveProperty('version', '1.0.0');
         expect(xmlBody.attr).toHaveProperty('xsi:schemaLocation');
         expect(xmlBody.attr['xsi:schemaLocation']).not.toContain(
-            '/index.php/lizmap/service?repository=testsrepository&project=selection&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetSchemaExtension'
+            '/index.php/lizmap/service/testsrepository/selection?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetSchemaExtension'
         );
 
         expect(xmlBody.childNamed('ows:ServiceIdentification')?.childNamed('ows:ServiceType')?.val).toBe('OGC WMTS');
@@ -249,7 +243,7 @@ test.describe('GetCapabilities Requests - anonymous - @requests @readonly', () =
                 const getElem = operationElem.descendantsNamed('ows:Get')[0];
                 expect(getElem.attr).toHaveProperty('xlink:href');
                 expect(getElem.attr['xlink:href']).toContain(
-                    '/index.php/lizmap/service?repository=testsrepository&project=cache&'
+                    '/index.php/lizmap/service/testsrepository/cache'
                 );
             }
         }
@@ -321,7 +315,7 @@ test.describe('GetCapabilities Requests - anonymous - @requests @readonly', () =
         expect(xmlBody.attr).toHaveProperty('version', '1.0.0');
         expect(xmlBody.attr).toHaveProperty('xsi:schemaLocation');
         expect(xmlBody.attr['xsi:schemaLocation']).not.toContain(
-            '/index.php/lizmap/service?repository=testsrepository&project=selection&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetSchemaExtension'
+            '/index.php/lizmap/service/testsrepository/selection?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetSchemaExtension'
         );
 
         expect(xmlBody.childNamed('ows:ServiceIdentification')?.childNamed('ows:ServiceType')?.val).toBe('OGC WMTS');
@@ -336,7 +330,7 @@ test.describe('GetCapabilities Requests - anonymous - @requests @readonly', () =
                 const getElem = operationElem.descendantsNamed('ows:Get')[0];
                 expect(getElem.attr).toHaveProperty('xlink:href');
                 expect(getElem.attr['xlink:href']).toContain(
-                    '/index.php/lizmap/service?repository=testsrepository&project=cache&'
+                    '/index.php/lizmap/service/testsrepository/cache'
                 );
             }
         }
@@ -409,7 +403,7 @@ test.describe('GetCapabilities Requests - anonymous - @requests @readonly', () =
         expect(xmlBody.attr).toHaveProperty('version', '1.0.0');
         expect(xmlBody.attr).toHaveProperty('xsi:schemaLocation');
         expect(xmlBody.attr['xsi:schemaLocation']).not.toContain(
-            '/index.php/lizmap/service?repository=testsrepository&project=selection&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetSchemaExtension'
+            '/index.php/lizmap/service/testsrepository/selection?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetSchemaExtension'
         );
 
         expect(xmlBody.childNamed('Service')?.childNamed('Name')?.val).toBe('WFS');
@@ -423,14 +417,14 @@ test.describe('GetCapabilities Requests - anonymous - @requests @readonly', () =
                 for(const getElem of requestElem.descendantsNamed('Get')) {
                     expect.soft(getElem.attr).toHaveProperty('onlineResource');
                     expect.soft(getElem.attr['onlineResource']).toContain(
-                        '/index.php/lizmap/service?repository=testsrepository&project=selection'
+                        '/index.php/lizmap/service/testsrepository/selection'
                     );
                 }
                 expect(requestElem.descendantsNamed('Post')).toHaveLength(4);
                 for(const postElem of requestElem.descendantsNamed('Post')) {
                     expect.soft(postElem.attr).toHaveProperty('onlineResource');
                     expect.soft(postElem.attr['onlineResource']).toContain(
-                        '/index.php/lizmap/service?repository=testsrepository&project=selection'
+                        '/index.php/lizmap/service/testsrepository/selection'
                     );
                 }
             }
@@ -487,7 +481,7 @@ test.describe('GetCapabilities Requests - anonymous - @requests @readonly', () =
         expect(xmlBody.attr).toHaveProperty('version', '1.1.0');
         expect(xmlBody.attr).toHaveProperty('xsi:schemaLocation');
         expect(xmlBody.attr['xsi:schemaLocation']).not.toContain(
-            '/index.php/lizmap/service?repository=testsrepository&project=selection&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetSchemaExtension'
+            '/index.php/lizmap/service/testsrepository/selection?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetSchemaExtension'
         );
 
         expect(xmlBody.childNamed('ows:ServiceIdentification')?.childNamed('ows:ServiceType')?.val).toBe('WFS');
@@ -502,13 +496,13 @@ test.describe('GetCapabilities Requests - anonymous - @requests @readonly', () =
                 const getElem = operationElem.descendantsNamed('ows:Get')[0];
                 expect(getElem.attr).toHaveProperty('xlink:href');
                 expect(getElem.attr['xlink:href']).toContain(
-                    '/index.php/lizmap/service?repository=testsrepository&project=selection'
+                    '/index.php/lizmap/service/testsrepository/selection'
                 );
                 expect(operationElem.descendantsNamed('ows:Post')).toHaveLength(1);
                 const postElem = operationElem.descendantsNamed('ows:Get')[0];
                 expect(postElem.attr).toHaveProperty('xlink:href');
                 expect(postElem.attr['xlink:href']).toContain(
-                    '/index.php/lizmap/service?repository=testsrepository&project=selection'
+                    '/index.php/lizmap/service/testsrepository/selection'
                 );
             }
         }
@@ -563,7 +557,7 @@ test.describe('GetCapabilities Requests - anonymous - @requests @readonly', () =
         expect(xmlBody.attr).toHaveProperty('version', '1.0.0');
         expect(xmlBody.attr).toHaveProperty('xsi:schemaLocation');
         expect(xmlBody.attr['xsi:schemaLocation']).not.toContain(
-            '/index.php/lizmap/service?repository=testsrepository&project=selection&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetSchemaExtension'
+            '/index.php/lizmap/service/testsrepository/selection?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetSchemaExtension'
         );
 
         expect(xmlBody.childNamed('Service')?.childNamed('Name')?.val).toBe('WFS');
@@ -577,14 +571,14 @@ test.describe('GetCapabilities Requests - anonymous - @requests @readonly', () =
                 for(const getElem of requestElem.descendantsNamed('Get')) {
                     expect.soft(getElem.attr).toHaveProperty('onlineResource');
                     expect.soft(getElem.attr['onlineResource']).toContain(
-                        '/index.php/lizmap/service?repository=testsrepository&project=selection'
+                        '/index.php/lizmap/service/testsrepository/selection'
                     );
                 }
                 expect(requestElem.descendantsNamed('Post')).toHaveLength(4);
                 for(const postElem of requestElem.descendantsNamed('Post')) {
                     expect.soft(postElem.attr).toHaveProperty('onlineResource');
                     expect.soft(postElem.attr['onlineResource']).toContain(
-                        '/index.php/lizmap/service?repository=testsrepository&project=selection'
+                        '/index.php/lizmap/service/testsrepository/selection'
                     );
                 }
             }
@@ -744,13 +738,13 @@ test.describe('GetCapabilities Requests - user_in_group_a - @requests @readonly'
         expect(xmlBody.attr).toHaveProperty('version', '1.3.0');
         expect(xmlBody.attr).toHaveProperty('xsi:schemaLocation');
         expect(xmlBody.attr['xsi:schemaLocation']).toContain(
-            '/index.php/lizmap/service?repository=testsrepository&project=selection&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetSchemaExtension'
+            '/index.php/lizmap/service/testsrepository/selection?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetSchemaExtension'
         );
 
         expect(xmlBody.childNamed('Service')?.childNamed('Name')?.val).toBe('WMS');
         expect(xmlBody.childNamed('Service')?.childNamed('OnlineResource')?.attr).toHaveProperty('xlink:href');
         expect(xmlBody.childNamed('Service')?.childNamed('OnlineResource')?.attr['xlink:href']).toContain(
-            '/index.php/lizmap/service?repository=testsrepository&project=selection'
+            '/index.php/lizmap/service/testsrepository/selection'
         );
         expect(xmlBody.childNamed('Capability')).not.toBeUndefined();
         const capabilityElem = xmlBody.childNamed('Capability');
@@ -762,7 +756,7 @@ test.describe('GetCapabilities Requests - user_in_group_a - @requests @readonly'
                 for(const onlineResource of requestElem.descendantsNamed('OnlineResource')) {
                     expect.soft(onlineResource.attr).toHaveProperty('xlink:href');
                     expect.soft(onlineResource.attr['xlink:href']).toContain(
-                        '/index.php/lizmap/service?repository=testsrepository&project=selection&'
+                        '/index.php/lizmap/service/testsrepository/selection?'
                     );
                 }
             }
@@ -812,7 +806,7 @@ test.describe('GetCapabilities Requests - user_in_group_a - @requests @readonly'
         expect(xmlBody.attr).toHaveProperty('version', '1.0.0');
         expect(xmlBody.attr).toHaveProperty('xsi:schemaLocation');
         expect(xmlBody.attr['xsi:schemaLocation']).not.toContain(
-            '/index.php/lizmap/service?repository=testsrepository&project=selection&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetSchemaExtension'
+            '/index.php/lizmap/service/testsrepository/selection?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetSchemaExtension'
         );
 
         expect(xmlBody.childNamed('Service')?.childNamed('Name')?.val).toBe('WFS');
@@ -826,14 +820,14 @@ test.describe('GetCapabilities Requests - user_in_group_a - @requests @readonly'
                 for(const getElem of requestElem.descendantsNamed('Get')) {
                     expect.soft(getElem.attr).toHaveProperty('onlineResource');
                     expect.soft(getElem.attr['onlineResource']).toContain(
-                        '/index.php/lizmap/service?repository=testsrepository&project=selection'
+                        '/index.php/lizmap/service/testsrepository/selection'
                     );
                 }
                 expect(requestElem.descendantsNamed('Post')).toHaveLength(4);
                 for(const postElem of requestElem.descendantsNamed('Post')) {
                     expect.soft(postElem.attr).toHaveProperty('onlineResource');
                     expect.soft(postElem.attr['onlineResource']).toContain(
-                        '/index.php/lizmap/service?repository=testsrepository&project=selection'
+                        '/index.php/lizmap/service/testsrepository/selection'
                     );
                 }
             }
@@ -895,13 +889,13 @@ test.describe('GetCapabilities Requests - admin - @requests @readonly', () => {
         expect(xmlBody.attr).toHaveProperty('version', '1.3.0');
         expect(xmlBody.attr).toHaveProperty('xsi:schemaLocation');
         expect(xmlBody.attr['xsi:schemaLocation']).toContain(
-            '/index.php/lizmap/service?repository=testsrepository&project=selection&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetSchemaExtension'
+            '/index.php/lizmap/service/testsrepository/selection?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetSchemaExtension'
         );
 
         expect(xmlBody.childNamed('Service')?.childNamed('Name')?.val).toBe('WMS');
         expect(xmlBody.childNamed('Service')?.childNamed('OnlineResource')?.attr).toHaveProperty('xlink:href');
         expect(xmlBody.childNamed('Service')?.childNamed('OnlineResource')?.attr['xlink:href']).toContain(
-            '/index.php/lizmap/service?repository=testsrepository&project=selection'
+            '/index.php/lizmap/service/testsrepository/selection'
         );
         expect(xmlBody.childNamed('Capability')).not.toBeUndefined();
         const capabilityElem = xmlBody.childNamed('Capability');
@@ -913,7 +907,7 @@ test.describe('GetCapabilities Requests - admin - @requests @readonly', () => {
                 for(const onlineResource of requestElem.descendantsNamed('OnlineResource')) {
                     expect.soft(onlineResource.attr).toHaveProperty('xlink:href');
                     expect.soft(onlineResource.attr['xlink:href']).toContain(
-                        '/index.php/lizmap/service?repository=testsrepository&project=selection&'
+                        '/index.php/lizmap/service/testsrepository/selection?'
                     );
                 }
             }
@@ -963,7 +957,7 @@ test.describe('GetCapabilities Requests - admin - @requests @readonly', () => {
         expect(xmlBody.attr).toHaveProperty('version', '1.0.0');
         expect(xmlBody.attr).toHaveProperty('xsi:schemaLocation');
         expect(xmlBody.attr['xsi:schemaLocation']).not.toContain(
-            '/index.php/lizmap/service?repository=testsrepository&project=selection&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetSchemaExtension'
+            '/index.php/lizmap/service/testsrepository/selection?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetSchemaExtension'
         );
 
         expect(xmlBody.childNamed('Service')?.childNamed('Name')?.val).toBe('WFS');
@@ -977,14 +971,14 @@ test.describe('GetCapabilities Requests - admin - @requests @readonly', () => {
                 for(const getElem of requestElem.descendantsNamed('Get')) {
                     expect.soft(getElem.attr).toHaveProperty('onlineResource');
                     expect.soft(getElem.attr['onlineResource']).toContain(
-                        '/index.php/lizmap/service?repository=testsrepository&project=selection'
+                        '/index.php/lizmap/service/testsrepository/selection'
                     );
                 }
                 expect(requestElem.descendantsNamed('Post')).toHaveLength(4);
                 for(const postElem of requestElem.descendantsNamed('Post')) {
                     expect.soft(postElem.attr).toHaveProperty('onlineResource');
                     expect.soft(postElem.attr['onlineResource']).toContain(
-                        '/index.php/lizmap/service?repository=testsrepository&project=selection'
+                        '/index.php/lizmap/service/testsrepository/selection'
                     );
                 }
             }

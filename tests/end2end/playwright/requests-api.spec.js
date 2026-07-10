@@ -117,10 +117,8 @@ test.describe('Connected via Basic auth',
             const wmsGetCapabilitiesUrl = new URL(json.wmsGetCapabilitiesUrl);
             expect(wmsGetCapabilitiesUrl.protocol).toBe('http:');
             expect(wmsGetCapabilitiesUrl.host).toBe('localhost:8130');
-            expect(wmsGetCapabilitiesUrl.pathname).toBe('/index.php/lizmap/service');
+            expect(wmsGetCapabilitiesUrl.pathname).toBe('/index.php/lizmap/service/testsrepository/attribute_table');
             const wmsGetCapabilitiesParams = {
-                'repository': 'testsrepository',
-                'project': 'attribute_table',
                 'SERVICE': 'WMS',
                 'VERSION': '1.3.0',
                 'REQUEST': 'GetCapabilities',
@@ -130,10 +128,8 @@ test.describe('Connected via Basic auth',
             const wmtsGetCapabilitiesUrl = new URL(json.wmtsGetCapabilitiesUrl);
             expect(wmtsGetCapabilitiesUrl.protocol).toBe('http:');
             expect(wmtsGetCapabilitiesUrl.host).toBe('localhost:8130');
-            expect(wmtsGetCapabilitiesUrl.pathname).toBe('/index.php/lizmap/service');
+            expect(wmtsGetCapabilitiesUrl.pathname).toBe('/index.php/lizmap/service/testsrepository/attribute_table');
             const wmtsGetCapabilitiesParams = {
-                'repository': 'testsrepository',
-                'project': 'attribute_table',
                 'SERVICE': 'WMTS',
                 'VERSION': '1.0.0',
                 'REQUEST': 'GetCapabilities',

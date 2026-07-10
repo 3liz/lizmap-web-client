@@ -22,7 +22,7 @@ test.describe('WMTS', () => {
         // Catch GetTile request;
         /** @type {string[]} */
         let GetTiles = [];
-        await page.route('**/service*', (route) => {
+        await page.route('**/wmts_test*', (route) => {
             const request = route.request();
             if (request.url().includes('GetTile')) {
                 GetTiles.push(request.url());

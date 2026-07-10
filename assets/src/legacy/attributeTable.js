@@ -1094,7 +1094,7 @@ var lizAttributeTable = function() {
                             );
                         }
                     } else {
-                        const datatablesUrl = globalThis['lizUrls'].wms.replace('service', 'datatables/filteredFeaturesExtent');
+                        const datatablesUrl = globalThis['lizUrls'].dataTablesFilteredFeaturesExtent;
                         const params = {...globalThis['lizUrls'].params};
                         params['layerId'] = config.attributeLayers[cleanName].layerId;
 
@@ -1574,7 +1574,7 @@ var lizAttributeTable = function() {
                 lConfig['alias'] = cAliases;
                 // Datatable configuration
                 if ( !DataTable.isDataTable( aTable ) ) {
-                    const datatablesUrl = globalThis['lizUrls'].wms.replace('service', 'datatables');
+                    const datatablesUrl = globalThis['lizUrls'].dataTables;
                     const params = {...globalThis['lizUrls'].params};
                     params['layerId'] = lConfig.id;
 
@@ -2503,7 +2503,7 @@ var lizAttributeTable = function() {
                     if(recordsDisplay > 1000) confirmSelection = confirm(lizDict['attributeLayers.toolbar.btn.select.searched.warn']);
                     if(!confirmSelection) return;
                     // call server
-                    const datatablesUrl = globalThis['lizUrls'].wms.replace('service', 'datatables/selectFilteredFeatures');
+                    const datatablesUrl = globalThis['lizUrls'].dataTablesSelectFilteredFeatures;
                     const params = {...globalThis['lizUrls'].params};
                     params['layerId'] = config.attributeLayers[featureType].layerId;
 
@@ -3887,4 +3887,5 @@ var lizAttributeTable = function() {
 
         } // uicreated
     });
+    return null;
 }();
