@@ -39,7 +39,7 @@
     "chai": "^6.2.x",
     "dompurify": "^3.3.x",
     "dotenv": "^17.2.3",
-    "eslint-plugin-jsdoc": "^62.9.x",
+    "eslint-plugin-jsdoc": "^63.0.x",
     "flatgeobuf": "~4.4.x",
     "jsts": "^2.11.x",
     "lit-html": "^3.3.x",
@@ -55,6 +55,6 @@
     "stylelint-config-standard": "^40.0.x",
     "undici": "^8.2.x",
     "webpack-merge": "^6.0.x",
-    "xmldoc": "^2.0.3"
+    "xmldoc": "^3.0.0"
   }
 }
