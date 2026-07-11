@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.10.0-rc.2 - 2026-07-11
+
 ### Funders
 
 * **[Terres d'Argentan](https://terresdargentan.fr/)**
