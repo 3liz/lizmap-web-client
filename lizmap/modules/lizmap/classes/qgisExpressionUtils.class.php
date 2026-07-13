@@ -1,5 +1,6 @@
 <?php
 
+use Lizmap\App\WktTools;
 use Lizmap\Project\Project;
 use Lizmap\Request\Proxy;
 
@@ -390,8 +391,8 @@ class qgisExpressionUtils
             if ($ref == $form->getData('liz_geometryColumn')) {
                 // from wkt to geom
                 $wkt = trim($form->getData($ref));
-                if ($wkt && lizmapWkt::check($wkt)) {
-                    $geom = lizmapWkt::parse($wkt);
+                if ($wkt && WktTools::check($wkt)) {
+                    $geom = WktTools::parse($wkt);
                     if ($geom === null) {
                         jLog::log('Parsing WKT failed! '.$wkt, 'error');
                     }
