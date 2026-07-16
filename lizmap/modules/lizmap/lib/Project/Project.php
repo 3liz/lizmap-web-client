@@ -2086,14 +2086,30 @@ class Project
                                 && !array_key_exists('crs', $layerDatasource)) {
                                 $layerDatasource['crs'] = 'EPSG:3857';
                             }
-                            // Set externalWmsToggle for:
-                            // 1. WMS layers (no 'type' field or type='wms')
-                            // 2. xyz/wmts layers with EPSG:3857 CRS (preserves original functionality)
-                            if ((!array_key_exists('type', $layerDatasource) || $layerDatasource['type'] == 'wms')
-                                || (array_key_exists('type', $layerDatasource) && $layerDatasource['crs'] == 'EPSG:3857')) {
-                                $obj->externalWmsToggle = 'True';
+                            // Flag every WMS layer so the client renders its legend as a PNG
+                            // image: a JSON GetLegendGraphic returns empty icons for WMS layers
+                            // (see #5934). This is independent of the direct-access option below.
+                            $obj->wmsLayer = true;
+                            // Honor the project configuration for direct WMS access.
+                            // The Lizmap plugin writes externalWmsToggle in the CFG when the
+                            // user enables "get images directly from the WMS server" for a
+                            // layer. Only expose the datasource for direct client access when
+                            // that option is enabled; otherwise the layer keeps cascading
+                            // through QGIS Server (required e.g. to reproject a WMS server that
+                            // only serves its native CRS). Forcing it on for every raster WMS
+                            // layer overrode the user's choice (regression, see #5934 fix).
+                            $directAccessRequested = property_exists($obj, 'externalWmsToggle')
+                                && filter_var($obj->externalWmsToggle, FILTER_VALIDATE_BOOLEAN);
+                            // Preserve original behavior for xyz/WMTS tile layers in EPSG:3857:
+                            // these have no plugin toggle but must be fetched by the client.
+                            $isEpsg3857Tiles = array_key_exists('type', $layerDatasource)
+                                && (($layerDatasource['crs'] ?? '') == 'EPSG:3857');
+                            if ($directAccessRequested || $isEpsg3857Tiles) {
+                                if ($isEpsg3857Tiles) {
+                                    $obj->externalWmsToggle = 'True';
+                                }
+                                $obj->externalAccess = $layerDatasource;
                             }
-                            $obj->externalAccess = $layerDatasource;
                         }
                     }
                 }
