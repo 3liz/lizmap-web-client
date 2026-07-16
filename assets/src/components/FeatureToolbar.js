@@ -661,7 +661,7 @@ export default class FeatureToolbar extends HTMLElement {
             cPkeyVal = " '" + cPkeyVal + "' ";
         }
 
-        fetch(globalThis['lizUrls'].edition.replace('getFeature', 'unlinkChild'), {
+        fetch(globalThis['lizUrls'].unlinkChild, {
             method: "POST",
             body: new URLSearchParams({
                 repository: globalThis['lizUrls'].params.repository,

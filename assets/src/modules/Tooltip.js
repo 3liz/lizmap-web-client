@@ -99,7 +99,7 @@ export default class Tooltip {
         if (tooltipLayer) {
             this._activeTooltipLayer = tooltipLayer;
         } else {
-            const url = `${lizUrls.service.replace('service?','features/tooltips?')}&layerId=${layerTooltipCfg.id}`;
+            const url = `${lizUrls.featuresTooltips}&layerId=${layerTooltipCfg.id}`;
 
             const vectorStyle = new Style({
                 image: new Circle({

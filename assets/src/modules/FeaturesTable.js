@@ -43,7 +43,7 @@ export default class FeaturesTable {
     getFeatures(layerId, filter = null, withGeometry = false, fields = 'null', additionalFields = [], limit = 1000, sortingField = null, sortingOrder = null) {
 
         // Build URL
-        const url = `${lizUrls.service.replace('service?','features/displayExpression?')}&`;
+        const url = `${lizUrls.featuresDisplayExpression}&`;
 
         // Build parameters
         let formData = new FormData();
