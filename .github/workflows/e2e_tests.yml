@@ -113,6 +113,7 @@ jobs:
             --user 'admin:admin' \
             --retry 30 \
             --retry-delay 5 \
+            --retry-all-errors \
             -N \
             "http://localhost:8130/index.php/view/app/metadata" \
             -o /tmp/test-qgis-server.json
