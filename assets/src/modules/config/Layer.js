@@ -47,6 +47,7 @@ const optionalProperties = {
     'mutuallyExclusive': {type: 'boolean', default: false},
     'externalWmsToggle': {type: 'boolean', default: false},
     'externalAccess': {type: 'object'},
+    'wmsLayer': {type: 'boolean', default: false},
 };
 
 /**
@@ -360,6 +361,15 @@ export class LayerConfig extends BaseObjectConfig {
      */
     get externalAccess() {
         return this._externalAccess;
+    }
+
+    /**
+     * The layer is served by a WMS provider: its legend must be requested as a
+     * PNG image because a JSON GetLegendGraphic returns empty icons (layer only)
+     * @type {boolean}
+     */
+    get wmsLayer() {
+        return this._wmsLayer;
     }
 }
 
