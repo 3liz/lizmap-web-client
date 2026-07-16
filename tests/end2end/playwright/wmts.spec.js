@@ -52,6 +52,6 @@ test.describe('WMTS', () => {
         expect(GetTiles[5]).toContain('TileCol=8')
 
         // Stop listening to WMS requests
-        await page.unroute('**/service*');
+        await page.unroute('**/wmts_test*');
     })
 })
