@@ -7,7 +7,7 @@
   ],
   "require": {
     "php": ">=8.2",
-    "jelix/jelix": "~1.8.24",
+    "jelix/jelix": "~1.8.25",
     "jelix/composer-module-setup": "^1.1.0",
     "jelix/jcommunity-module": "^1.4.6",
     "jelix/ldapdao-module": "~2.2.4",
