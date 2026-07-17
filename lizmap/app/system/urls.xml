@@ -13,16 +13,7 @@ DANS LE FICHIER var/config/localurls.xml
     <entrypoint name="index" default="true">
         <url pathinfo="/" module="view" action="default:index"/>
         <url pathinfo="/jelix" module="jelix" include="urls.xml"/>
-
-        <url pathinfo="/lizmap/service/getProjectConfig" module="lizmap" action="service:getProjectConfig" optionalTrailingSlash="true"/>
-        <url pathinfo="/lizmap/service/getKeyValueConfig" module="lizmap"  action="service:getKeyValueConfig" optionalTrailingSlash="true"/>
-        <!-- url for WMS/WMTS/etc service compatible with specification, to not have repository and project query parameters -->
-        <url pathinfo="/lizmap/service/:repository/:project" module="lizmap"  action="service:index" optionalTrailingSlash="true" />
-        <!-- declaration to keep compatibility with the old url of service:index -->
-        <url pathinfo="/lizmap/service" module="lizmap"  action="service:oldindex" optionalTrailingSlash="true"/>
-
-        <url pathinfo="/lizmap" module="lizmap"/>
-
+        <url pathinfo="/lizmap" module="lizmap" include="urls.xml"/>
         <url pathinfo="/view" module="view"/>
         <url module="filter"/>
         <url module="action"/>
