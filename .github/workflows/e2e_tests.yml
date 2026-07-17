@@ -214,7 +214,7 @@ jobs:
           success() ||
           steps.test-playwright-requests.outcome != 'success'
         run: |
-          npx playwright test --grep @readonly --grep-invert @requests ${{ env.PLAYWRIGHT_OPTIONS }} --workers=4 --shard=${{ matrix.shard }}/3
+          npx playwright test --grep @readonly --grep-invert @requests ${{ env.PLAYWRIGHT_OPTIONS }} --workers=2 --shard=${{ matrix.shard }}/3
 
       - name: Prepare the database diff from Playwright "@readonly" tests
         if: |
