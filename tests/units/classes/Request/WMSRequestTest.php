@@ -118,7 +118,7 @@ class WMSRequestTest extends TestCase
         $expectedResponseSimpleUrl = (object) array(
             'code' => 200,
             'mime' => 'text/xml',
-            'data' => '<whatever><location xlink:href="http://localhost?repo=test&amp;project=test&amp;&amp;"/></whatever>',
+            'data' => '<whatever><location xlink:href="http://localhost?repo=test&amp;project=test"/></whatever>',
         );
 
         $responseMultiplesUrl = new OGCResponse(
@@ -136,9 +136,9 @@ class WMSRequestTest extends TestCase
             'code' => 200,
             'mime' => 'text/xml',
             'data' => '<xml>
-            <tagtest xlink:href="http://localhost?repo=test&amp;project=test&amp;&amp;"/>
+            <tagtest xlink:href="http://localhost?repo=test&amp;project=test"/>
             <otherTagTest>
-            <just to=see if=itsworking xlink:href="http://localhost?repo=test&amp;project=test&amp;&amp;"/>
+            <just to=see if=itsworking xlink:href="http://localhost?repo=test&amp;project=test"/>
             </otherTagTest>
             </xml>',
         );

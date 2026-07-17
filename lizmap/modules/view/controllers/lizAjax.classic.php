@@ -168,10 +168,12 @@ class lizAjaxCtrl extends jController
             'params' => array('repository' => $repository, 'project' => $project),
             'config' => jUrl::getFull('lizmap~service:getProjectConfig'),
             'keyValueConfig' => jUrl::getFull('lizmap~service:getKeyValueConfig'),
-            'wms' => jUrl::getFull('lizmap~service:index'),
+            'wms' => jUrl::getFull('lizmap~service:oldindex'),
             'media' => jUrl::getFull('view~media:getMedia'),
             'nominatim' => jUrl::getFull('lizmap~osm:nominatim'),
             'edition' => jUrl::getFull('lizmap~edition:getFeature'),
+            'editableFeatures' => jUrl::get('lizmap~edition:editableFeatures'),
+            'unlinkChild' => jUrl::get('lizmap~edition:unlinkChild'),
             'permalink' => jUrl::getFull('view~map:index'),
         );
 

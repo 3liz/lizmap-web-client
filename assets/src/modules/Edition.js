@@ -99,7 +99,7 @@ export default class Edition {
             for (const layerId of layerIds) {
                 // take layer name from requests, not from response, since response could be an empty array
                 layersNames.push(this._lizmap3.getLayerConfigById(layerId)[0]);
-                fetchers.push(fetch(globalThis['lizUrls'].edition.replace('getFeature', 'editableFeatures'),{
+                fetchers.push(fetch(globalThis['lizUrls'].editableFeatures,{
                     "method": "POST",
                     "body": new URLSearchParams({
                         repository: globalThis['lizUrls'].params.repository,

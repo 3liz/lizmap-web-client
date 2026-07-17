@@ -74,7 +74,6 @@ class WMTSRequest extends OGCRequest
             'lizmap~service:index',
             array('repository' => $this->repository->getKey(), 'project' => $this->project->getKey())
         );
-        $sUrl .= '&';
 
         $tpl = $this->appContext->getTpl();
         $tpl->assign('url', $sUrl);

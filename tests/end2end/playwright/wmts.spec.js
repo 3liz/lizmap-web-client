@@ -22,7 +22,7 @@ test.describe('WMTS', () => {
         // Catch GetTile request;
         /** @type {string[]} */
         let GetTiles = [];
-        await page.route('**/service*', (route) => {
+        await page.route('**/wmts_test*', (route) => {
             const request = route.request();
             if (request.url().includes('GetTile')) {
                 GetTiles.push(request.url());
@@ -52,6 +52,6 @@ test.describe('WMTS', () => {
         expect(GetTiles[5]).toContain('TileCol=8')
 
         // Stop listening to WMS requests
-        await page.unroute('**/service*');
+        await page.unroute('**/wmts_test*');
     })
 })
