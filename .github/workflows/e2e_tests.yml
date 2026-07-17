@@ -266,7 +266,7 @@ jobs:
           steps.test-playwright-requests.outcome != 'success' ||
           steps.test-playwright-read-only.outcome != 'success' )
         run: |
-          npx playwright test --workers 1 --grep-invert "(?=.*@write|.*@readonly)" ${{ env.PLAYWRIGHT_OPTIONS }}
+          npx playwright test --workers 4 --grep-invert "(?=.*@write|.*@readonly)" ${{ env.PLAYWRIGHT_OPTIONS }}
 
       - name: Run Playwright tests tagged "@write"
         id: test-playwright-write
