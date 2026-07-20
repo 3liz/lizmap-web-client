@@ -36,7 +36,7 @@ jobs:
             pg-postgis: "14-3"
             qgis-server: "3.34"
             update-projects: "FALSE"
-          - name: "LTR"
+          - name: "STABLE"
             php: "8.2"
             pg-postgis: "15-3"
             qgis-server: "3.40"
