@@ -12,7 +12,7 @@ env:
 
 jobs:
   end2end:
-    name: "E2E QGIS ${{ matrix.qgis-server }} PG ${{ matrix.pg-postgis }} PHP ${{ matrix.php }}"
+    name: "E2E ${{ matrix.name }} shard ${{ matrix.shard }}/3 (QGIS ${{ matrix.qgis-server }} PG ${{ matrix.pg-postgis }} PHP ${{ matrix.php }})"
     permissions:
       issues: write
       pull-requests: write
@@ -23,6 +23,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # Each (name x shard) pair is an independent job with its own isolated
+        # docker stack (own PostgreSQL), so sharding the @write / no-tag tests
+        # across shards is race-free. The per-config fields (php, pg, qgis...)
+        # are attached to every shard of a given name via the include entries.
+        name: ["LEGACY", "STABLE", "BLEEDING_EDGE"]
+        shard: [1, 2, 3]
         include:
           - name: "LEGACY"
             php: "8.2"
@@ -154,6 +160,8 @@ jobs:
           npm ci
 
       - name: Run BATS tests
+        # BATS tests are shard-independent; run them once per config (first shard).
+        if: matrix.shard == 1
         working-directory: ./
         run: |
           npm run bats
@@ -194,7 +202,7 @@ jobs:
         # GetFeature with a polygon filter), which flaked. Serial execution
         # removes the contention and costs only a few extra seconds.
         run: |
-          npx playwright test --grep "(?=.*@requests)(?=.*@readonly)" ${{ env.PLAYWRIGHT_OPTIONS }} --workers=1
+          npx playwright test --grep "(?=.*@requests)(?=.*@readonly)" ${{ env.PLAYWRIGHT_OPTIONS }} --workers=1 --shard=${{ matrix.shard }}/3
 
       - name: Run Playwright tests tagged "@readonly"
         id: test-playwright-read-only
@@ -206,7 +214,7 @@ jobs:
           success() ||
           steps.test-playwright-requests.outcome != 'success'
         run: |
-          npx playwright test --grep @readonly --grep-invert @requests ${{ env.PLAYWRIGHT_OPTIONS }}
+          npx playwright test --grep @readonly --grep-invert @requests ${{ env.PLAYWRIGHT_OPTIONS }} --workers=2 --shard=${{ matrix.shard }}/3
 
       - name: Prepare the database diff from Playwright "@readonly" tests
         if: |
@@ -235,7 +243,7 @@ jobs:
           steps.test-playwright-read-only.outcome != 'success'
         uses: actions/upload-artifact@master
         with:
-          name: ${{ matrix.name }}-DB-diff-read-only
+          name: ${{ matrix.name }}-shard${{ matrix.shard }}-DB-diff-read-only
           if-no-files-found: 'ignore'
           path: |
             ${{ github.workspace }}/tests/qgis-projects/tests/tests_dataset.patch
@@ -266,7 +274,7 @@ jobs:
           steps.test-playwright-requests.outcome != 'success' ||
           steps.test-playwright-read-only.outcome != 'success' )
         run: |
-          npx playwright test --workers 1 --grep-invert "(?=.*@write|.*@readonly)" ${{ env.PLAYWRIGHT_OPTIONS }}
+          npx playwright test --config playwright.serial.config.ts --workers 1 --grep-invert "(?=.*@write|.*@readonly)" ${{ env.PLAYWRIGHT_OPTIONS }} --shard=${{ matrix.shard }}/3
 
       - name: Run Playwright tests tagged "@write"
         id: test-playwright-write
@@ -281,7 +289,7 @@ jobs:
           steps.test-playwright-read-only.outcome != 'success' ||
           steps.test-playwright-no-tag.outcome != 'success' )
         run: |
-          npx playwright test --workers 1 --grep @write ${{ env.PLAYWRIGHT_OPTIONS }}
+          npx playwright test --config playwright.serial.config.ts --workers 1 --grep @write ${{ env.PLAYWRIGHT_OPTIONS }} --shard=${{ matrix.shard }}/3
 
       - name: Debug
         if: always()
@@ -303,7 +311,7 @@ jobs:
           steps.test-playwright-write.outcome != 'success' )
         uses: actions/upload-artifact@master
         with:
-          name: ${{ matrix.name }}-screenshots-readonly
+          name: ${{ matrix.name }}-shard${{ matrix.shard }}-screenshots-readonly
           if-no-files-found: 'ignore'
           path: |
             ${{ github.workspace }}/tests/end2end/test-results/
@@ -328,11 +336,13 @@ jobs:
           title: All Playwright tests ${{ matrix.NAME }}
           failed-report: true
           # pull-request-report: true
-          pull-request: true
+          # With sharding there are 9 jobs; keep the per-job summary but do not
+          # post one PR comment per shard (too noisy).
+          pull-request: false
           # annotate: false
           update-comment: true
           overwrite-comment: false
-          comment-tag: '${{ github.workflow }}-${{ github.job }}'
+          comment-tag: '${{ github.workflow }}-${{ github.job }}-${{ matrix.name }}-shard${{ matrix.shard }}'
 
       - name: Upload test results
         if: |
@@ -344,7 +354,7 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           if-no-files-found: 'ignore'
-          name: ${{ matrix.name }}-playwright-report
+          name: ${{ matrix.name }}-shard${{ matrix.shard }}-playwright-report
           path: ${{ github.workspace }}/tests/end2end/playwright-report
 
       - name: Export some logs to files
@@ -361,7 +371,7 @@ jobs:
         uses: actions/upload-artifact@master
         if: always()
         with:
-          name: ${{ matrix.name }}-E2E-all-logs
+          name: ${{ matrix.name }}-shard${{ matrix.shard }}-E2E-all-logs
           path: |
             /tmp/e2e/
 
