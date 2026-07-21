@@ -1697,6 +1697,8 @@ div.modal div.menu-content,
 #dock form,
 div.modal form {
   margin: auto;
+  padding: 0;
+  max-width: 100%;
 }
 
 #dock legend,
@@ -3060,6 +3062,11 @@ lizmap-mouse-position > div.coords-unit > select{
 #dock .controls input.jforms-ctrl-datetime[size="4"],
 #edition-modal .controls input.jforms-ctrl-datetime[size="4"] {
   max-width:35px;
+}
+
+/* Avoid date-picker icon to be distorded */
+img.ui-datepicker-trigger {
+  min-width: 30px;
 }
 
 #edition .edition {

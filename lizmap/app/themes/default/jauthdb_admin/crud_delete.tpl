@@ -2,7 +2,7 @@
 <div class="container">
 <form action="{formurl 'default:delete', array('j_user_login'=>$id)}" method="post">
   <fieldset>
-    <legend>{@jauthdb_admin~crud.confirmation@}</legend>
+    <legend class="float-none">{@jauthdb_admin~crud.confirmation@}</legend>
     {formurlparam 'default:delete', array('j_user_login'=>$id)}
     <div class="form-group row mb-3">
     {@jauthdb_admin~crud.confirm.deletion@}
