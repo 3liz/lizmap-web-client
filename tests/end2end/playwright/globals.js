@@ -192,7 +192,7 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
     await expect(async () => {
         const response = await page.goto(
             url,
-            {waitUntil: 'domcontentloaded'}
+            {waitUntil: 'commit'}
         );
         expect(response?.status()).toBeLessThan(400);
     }).toPass({
@@ -200,17 +200,21 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
         timeout: 30_000
     });
 
-    const loadPromise = page.waitForEvent('load');
     let getLegendGraphicPromise = (mapMustLoad && waitForGetLegendGraphic)
         ? page.waitForRequest(
-            request => (
-                request.method() === 'POST' &&
-                request.postData() != null &&
-                request.postData()?.includes('GetLegendGraphic') === true
-            ) || (
-                request.method() === 'GET' &&
-                request.url().includes('GetLegendGraphic') === true
-            ),
+            request => {
+                let searchParams;
+                if (request.method() !== 'POST') {
+                    searchParams = new URLSearchParams(request.url().split('?')[1]);
+                } else {
+                    searchParams = new URLSearchParams(request.postData() ?? '');
+                }
+                return (
+                    searchParams.get('SERVICE') === 'WMS' &&
+                    searchParams.has('REQUEST') &&
+                    searchParams.get('REQUEST') === 'GetLegendGraphic'
+                )
+            },
             { timeout: 10000 }
         )
         : null;
@@ -233,7 +237,6 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
     //         await route.continue();
     //     });
     // }
-    await loadPromise;
 
     // Wait for WMS, WFS, WMTS GetCapabilities
     const requests = await Promise.all([
