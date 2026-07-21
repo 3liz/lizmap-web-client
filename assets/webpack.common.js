@@ -1,9 +1,16 @@
 import {resolve, dirname} from 'path';
 import { fileURLToPath } from 'url';
+import { IgnorePlugin } from '@rspack/core';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default {
+    plugins: [
+        // Our Plotly custom bundle (assets/src/dependencies/plotly.js) never registers
+        // the 'map' (maplibre) subplot, but plotly.js unconditionally requires this CSS
+        // from its trace registry, which rspack can't parse as JS.
+        new IgnorePlugin({ resourceRegExp: /maplibre-gl\/dist\/maplibre-gl\.css$/ }),
+    ],
     resolve: {
         alias: {
             // Use the Panoramax viewer's self-contained pre-built bundle: CSS is

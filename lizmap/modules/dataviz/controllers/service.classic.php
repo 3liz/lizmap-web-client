@@ -351,15 +351,6 @@ class serviceCtrl extends jController
             'layout' => $dplot->getLayout(),
         );
 
-        // We also add the URL to access the Plotly JavaScript file
-        // to let the client use the same one
-        $basePath = jApp::config()->urlengine['basePath'];
-        $locale = substr(jApp::config()->locale, 0, 2);
-        $plot['plotly'] = array(
-            'script' => $basePath.'assets/js/dataviz/plotly-custom.min.js',
-            'locale' => $basePath.'assets/js/dataviz/plotly-locale-'.$locale.'.js',
-        );
-
         $rep->data = $plot;
 
         return $rep;
