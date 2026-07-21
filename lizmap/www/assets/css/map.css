@@ -3064,6 +3064,11 @@ lizmap-mouse-position > div.coords-unit > select{
   max-width:35px;
 }
 
+/* Avoid date-picker icon to be distorded */
+img.ui-datepicker-trigger {
+  min-width: 30px;
+}
+
 #edition .edition {
   position: relative;
 }
