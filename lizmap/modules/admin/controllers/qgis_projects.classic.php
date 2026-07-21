@@ -1,5 +1,7 @@
 <?php
 
+use LizmapAdmin\QgisProjectsListData;
+
 /**
  * Lizmap administration : List of QGIS projects.
  *
@@ -18,7 +20,10 @@ class qgis_projectsCtrl extends jController
     );
 
     /**
-     * Get the information from QGIS Server and display them.
+     * Display the QGIS projects list page.
+     *
+     * The page ships an empty table shell; the rows are loaded as JSON by
+     * DataTables from the `data` action below.
      *
      * @return jResponseHtml
      */
@@ -28,17 +33,39 @@ class qgis_projectsCtrl extends jController
         $rep = $this->getResponse('html');
         $rep->title = 'Admin - Lizmap projects';
 
-        // Get the project list from the zone
-        $projectList = jZone::get('project_list', array('repository' => ''));
+        // Context needed to render the legend modal and the server status banner
+        // (server versions, thresholds, required versions).
+        $listData = new QgisProjectsListData();
 
         // Set the HTML content
         $tpl = new jTpl();
-        $assign = array(
-            'projectList' => $projectList,
+        $tpl->assign($listData->getContext());
+        $tpl->assign('dataUrl', jUrl::get('admin~qgis_projects:data'));
+        $tpl->assign(
+            'notDisplayedMessage',
+            jLocale::get(
+                'admin~admin.project.error.some.projects.not.displayed',
+                array(jLocale::get('admin~admin.project.modal.title'))
+            )
         );
-        $tpl->assign($assign);
         $rep->body->assign('MAIN', $tpl->fetch('project_list'));
         $rep->body->assign('selectedMenuItem', 'lizmap_project_list');
+
+        return $rep;
+    }
+
+    /**
+     * Return the QGIS projects list as JSON, consumed by DataTables.
+     *
+     * @return jResponseJson
+     */
+    public function data()
+    {
+        /** @var jResponseJson $rep */
+        $rep = $this->getResponse('json');
+
+        $listData = new QgisProjectsListData();
+        $rep->data = $listData->getData();
 
         return $rep;
     }
