@@ -26,17 +26,18 @@ class qgis_projectsCtrl extends jController
     {
         /** @var jResponseHtml */
         $rep = $this->getResponse('html');
-        $rep->title = 'Admin - Lizmap projects';
-
-        // Get the project list from the zone
-        $projectList = jZone::get('project_list', array('repository' => ''));
+        $rep->title = jLocale::get('admin~admin.project.page.title');
 
         // Set the HTML content
         $tpl = new jTpl();
-        $assign = array(
-            'projectList' => $projectList,
-        );
-        $tpl->assign($assign);
+        $repoName = $this->param('repository');
+        // bad repo name, set to null
+        if (is_null(lizmap::getRepository($repoName ?? ''))) {
+            $repoName = null;
+        }
+        $tpl->assign('repository', $repoName);
+        $tpl->assign('repositoriesList', lizmap::getRepositoryList(true));
+        $tpl->assign('baseurl', jUrl::get('qgis_projects:index'));
         $rep->body->assign('MAIN', $tpl->fetch('project_list'));
         $rep->body->assign('selectedMenuItem', 'lizmap_project_list');
 

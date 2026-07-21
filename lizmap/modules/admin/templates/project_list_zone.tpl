@@ -21,10 +21,24 @@
 <!-- Sentence displayed when the user clicks on a line of the projects table
 to view the hidden columns data and when there is no data for these columns -->
 <span id="lizmap_project_list_no_data_label" style="display: none;">{@admin.project.list.no.hidden.column.content@}</span>
-
+{assign $colspanFromFilter = 9}
+{if $hasInspectionData}
+    {assign $colspanFromFilter = 16}
+{/if}
 <!-- The table contains the projects data. Datatables is used to improve the UX -->
 <table class="lizmap_project_list table table-sm table-bordered {$tableClass}" style="width:100%">
     <thead>
+        <tr>
+            <th></th>
+            <th> 
+            <select id='repository-selector' class='form-select form-select-sm'>
+            <option value="">All</option>
+            {foreach $repositoriesList as $repo}
+            <option {if $repository == $repo->getKey() } selected {/if} value="{$repo->getKey()}" >{$repo->getLabel()}</option>
+            {/foreach}
+            </select></th>
+            <th colspan="{$colspanFromFilter}"></th>
+       </tr>
         <tr>
             <th></th>
             <th>{@admin.project.list.column.repository.label@}</th>

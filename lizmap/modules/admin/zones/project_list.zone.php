@@ -120,11 +120,8 @@ class project_listZone extends jZone
             // QGIS server
             $qgisServerVersion = $data['qgis_server_info']['metadata']['version'];
             $serverVersions['qgis_server_version'] = $qgisServerVersion;
-            $explode = explode('.', $qgisServerVersion);
-            // Keep only major and minor version
-            // Like 3.40
-            // Fixme, to move in VersionTools
-            $qgisServerVersionInt = intval($explode[0].str_pad($explode[1], 2, '0', STR_PAD_LEFT));
+            // Keep only major and minor version as int like 3.40.13 => 340
+            $qgisServerVersionInt = VersionTools::strVersionToMajMinInt($qgisServerVersion);
             $serverVersions['qgis_server_version_int'] = $qgisServerVersionInt;
             $serverVersions['qgis_server_version_human_readable'] = VersionTools::qgisMajMinHumanVersion($qgisServerVersionInt);
             $serverVersions['qgis_server_version_old'] = VersionTools::qgisMajMinHumanVersion($qgisServerVersionInt - $oldQgisVersionDelta - 2);
@@ -157,6 +154,7 @@ class project_listZone extends jZone
         $this->_tpl->assign('lizmapVersion', $lizmapInfo->version);
         $this->_tpl->assign('oldQgisVersionDiff', $oldQgisVersionDelta);
         $this->_tpl->assign('lizmapDesktopRecommended', $lizmapDesktopRecommended);
+        $this->_tpl->assign('repository', $repository);
         // Add the application base path to let the template load the CSS and JS assets
         $basePath = jApp::urlBasePath();
         $this->_tpl->assign('basePath', $basePath);
@@ -209,13 +207,8 @@ class project_listZone extends jZone
 
         // Get QGIS project version
         $qgisVersionInt = $projectMetadata->getQgisProjectVersion();
-        // Create a human readable version, but suitable for string ordering
-        // Ex: 3.06.02 instead of 3.6.2
-        // Fixme, to move in VersionTools
-        $qgisVersion = substr($qgisVersionInt, 0, 1);
-        $qgisVersion .= '.'.ltrim(substr($qgisVersionInt, 1, 2), '');
-        $qgisVersion .= '.'.ltrim(substr($qgisVersionInt, 3, 2), '');
-        $projectItem['qgis_version'] = $qgisVersion;
+        // Create a human readable version, but suitable for string ordering (by js)
+        $projectItem['qgis_version'] = VersionTools::intVersionToSortableString($qgisVersionInt);
         // Integer version: keep only major and minor versions. Ex: 322 for 3.22.04
         $projectItem['qgis_version_int'] = (int) substr($qgisVersionInt, 0, 3);
 
