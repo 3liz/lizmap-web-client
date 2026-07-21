@@ -124,7 +124,13 @@ class DataTables
                 break;
         }
 
-        return trim("{$column} {$qgisOperator} {$value}");
+        // Enclose the column name in double quotes so that identifiers with
+        // uppercase letters or special characters are resolved correctly both
+        // as a QGIS Server expression and as raw PostgreSQL SQL (unquoted
+        // mixed-case identifiers are folded to lower case by PostgreSQL).
+        $quotedColumn = '"'.str_replace('"', '""', $column).'"';
+
+        return trim("{$quotedColumn} {$qgisOperator} {$value}");
     }
 
     /**
