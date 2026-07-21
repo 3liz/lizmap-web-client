@@ -5,23 +5,31 @@ updates:
     schedule:
       interval: "cron"
       cronjob: "0 6 5 */3 *"
+    cooldown:
+      default-days: 7
 
   - package-ecosystem: "composer"
     directory: "/lizmap"
     schedule:
       interval: "cron"
       cronjob: "0 6 5 */3 *"
+    cooldown:
+      default-days: 7
 
   - package-ecosystem: "composer"
     directory: "/tests/units"
     schedule:
       interval: "cron"
       cronjob: "0 6 5 */3 *"
+    cooldown:
+      default-days: 7
 
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "cron"
       cronjob: "0 6 5 */3 *"
+    cooldown:
+      default-days: 7
 #    assignees:
 #      - "nboisteault"
