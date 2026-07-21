@@ -121,9 +121,22 @@ export default class Permalink {
             }, ['map.state.changed']
         );
 
+        // Refresh hash parameters when the selected base layer changes
+        mainLizmap.state.baseLayers.addListener(
+            () => this._updatePermalinkParameters(),
+            ['baselayers.selection.changed']
+        );
+
         mainLizmap.state.rootMapGroup.addListener(
             () => this._writeURLFragment(),
-            ['layer.visibility.changed', 'group.visibility.changed', 'layer.style.changed', 'group.style.changed', 'layer.opacity.changed', 'group.opacity.changed']
+            [
+                'layer.visibility.changed',
+                'group.visibility.changed',
+                'layer.style.changed',
+                'group.style.changed',
+                'layer.opacity.changed',
+                'group.opacity.changed',
+            ]
         );
     }
 
@@ -180,7 +193,17 @@ export default class Permalink {
             mainLizmap.state.layersAndGroupsCollection.groups.reverse() // reverse groups array to get from leaf to root
         );
 
-        const [extent4326, itemsInURL, stylesInURL, opacitiesInURL] = window.location.hash.substring(1).split('|').map(part => part.split(','));
+        const [extent4326, itemsInURL, stylesInURL, opacitiesInURL, baseLayerInURL] = window.location.hash.substring(1)
+            .split('|').map(part => part.split(','));
+
+        // Restore the selected base layer, if any is stored in the permalink
+        if (baseLayerInURL) {
+            const baseLayerName = decodeURIComponent(baseLayerInURL);
+            const baseLayersState = mainLizmap.state.baseLayers;
+            if (baseLayersState.baseLayerNames.includes(baseLayerName)) {
+                baseLayersState.selectedBaseLayerName = baseLayerName;
+            }
+        }
 
         if (setExtent
             && extent4326.length === 4
@@ -304,16 +327,30 @@ export default class Permalink {
             }
         }
 
-        if (itemsVisibility.length) {
-            hash += '|' + itemsVisibility.join();
-        }
+        // Currently selected base layer (may be null when no base layer is defined)
+        const selectedBaseLayerName = mainLizmap.state.baseLayers.selectedBaseLayerName;
 
-        if (itemsStyle.length) {
-            hash += '|' + itemsStyle.join();
-        }
+        if (selectedBaseLayerName) {
+            // The base layer is stored as the last (5th) segment of the hash.
+            // Always emit the layers/styles/opacities segments (even when empty)
+            // so the base layer keeps a fixed position and stays readable when
+            // no overlay layer is visible.
+            hash += '|' + itemsVisibility.join()
+                 +  '|' + itemsStyle.join()
+                 +  '|' + itemsOpacity.join()
+                 +  '|' + encodeURIComponent(selectedBaseLayerName);
+        } else {
+            if (itemsVisibility.length) {
+                hash += '|' + itemsVisibility.join();
+            }
 
-        if (itemsOpacity.length) {
-            hash += '|' + itemsOpacity.join();
+            if (itemsStyle.length) {
+                hash += '|' + itemsStyle.join();
+            }
+
+            if (itemsOpacity.length) {
+                hash += '|' + itemsOpacity.join();
+            }
         }
 
         // Saved new hash
