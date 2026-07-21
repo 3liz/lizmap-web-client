@@ -57,6 +57,15 @@ pre-commit install
 ```
 and that's it ! Hooks will run automatically.
 
+If you can't install it at system-wide, you can use pipx
+
+```bash
+sudo apt install pipx
+pipx ensurepath # to make sure path is setup correctly.
+pipx install pre-commit
+pre-commit install
+```
+
 ### Commits
 
 You should create commits in a new branch based on the `master` branch.
