@@ -154,13 +154,13 @@ async function CatchErrors(page, layersInTreeView = 0) {
  */
 export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 0, waitForGetLegendGraphic = true) {
     // Test the page to be sure it will open
-    await expect(async () => {
+    /*await expect(async () => {
         const response = await page.request.get(url);
         expect(response?.status()).toBeLessThan(400);
     }).toPass({
         intervals: [1_000, 2_000, 10_000],
         timeout: 60_000
-    });
+    });*/
 
     // Arm request waits BEFORE navigating: getProjectConifg, GetCapabilities and GetLegendGraphic
     // are fired during map load, so a waitForRequest set up after page.goto()
@@ -187,7 +187,21 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
         request.url().includes('WMTS') === true &&
         request.url().includes('GetCapabilities') === true
     );
-    /*let getLegendGraphicPromise = (mapMustLoad && waitForGetLegendGraphic)
+
+    // Go to the map
+    await expect(async () => {
+        const response = await page.goto(
+            url,
+            {waitUntil: 'domcontentloaded'}
+        );
+        expect(response?.status()).toBeLessThan(400);
+    }).toPass({
+        intervals: [1_000, 2_000, 10_000],
+        timeout: 30_000
+    });
+
+    const loadPromise = page.waitForEvent('load');
+    let getLegendGraphicPromise = (mapMustLoad && waitForGetLegendGraphic)
         ? page.waitForRequest(
             request => (
                 request.method() === 'POST' &&
@@ -197,31 +211,29 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
                 request.method() === 'GET' &&
                 request.url().includes('GetLegendGraphic') === true
             ),
-            { timeout: 60000 }
+            { timeout: 10000 }
         )
-        : null;*/
-    /** @type {import('@playwright/test').Request | null}*/
-    let getLegendGraphicRequest = null;
-    if (mapMustLoad && waitForGetLegendGraphic) {
-        await page.route('**/service*', async route => {
-            const request = route.request();
-            let searchParams;
-            if (request.method() !== 'POST') {
-                searchParams = new URLSearchParams(request.url().split('?')[1]);
-            } else {
-                searchParams = new URLSearchParams(request.postData() ?? '');
-            }
-            if (searchParams.get('SERVICE') === 'WMS' &&
-                searchParams.has('REQUEST') &&
-                searchParams.get('REQUEST') === 'GetLegendGraphic') {
-                getLegendGraphicRequest = request;
-            }
-            await route.continue();
-        });
-    }
-
-    // Go to the map
-    await page.goto(url);
+        : null;
+    // /** @type {import('@playwright/test').Request | null}*/
+    // let getLegendGraphicRequest = null;
+    // if (mapMustLoad && waitForGetLegendGraphic) {
+    //     await page.route('**/service*', async route => {
+    //         const request = route.request();
+    //         let searchParams;
+    //         if (request.method() !== 'POST') {
+    //             searchParams = new URLSearchParams(request.url().split('?')[1]);
+    //         } else {
+    //             searchParams = new URLSearchParams(request.postData() ?? '');
+    //         }
+    //         if (searchParams.get('SERVICE') === 'WMS' &&
+    //             searchParams.has('REQUEST') &&
+    //             searchParams.get('REQUEST') === 'GetLegendGraphic') {
+    //             getLegendGraphicRequest = request;
+    //         }
+    //         await route.continue();
+    //     });
+    // }
+    await loadPromise;
 
     // Wait for WMS, WFS, WMTS GetCapabilities
     const requests = await Promise.all([
@@ -234,24 +246,24 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
     await Promise.all(requests.map(request => request.response()));
 
     if (mapMustLoad) {
-        /*if (getLegendGraphicPromise) {
+        if (getLegendGraphicPromise) {
             // Wait for WMS GetLegendGraphic (promise armed before navigation)
             await getLegendGraphicPromise;
-        }*/
-        if (waitForGetLegendGraphic) {
-            let timeCount = 0;
-            while (getLegendGraphicRequest === null && timeCount < 10000) {
-                timeCount += 100;
-                if (timeCount > 10000) {
-                    break;
-                }
-                await page.waitForTimeout(100);
-            }
-            if (getLegendGraphicRequest !== null) {
-                await getLegendGraphicRequest.response();
-            }
-            await page.unroute('**/service*');
         }
+        // if (waitForGetLegendGraphic) {
+        //     let timeCount = 0;
+        //     while (getLegendGraphicRequest === null && timeCount < 10000) {
+        //         timeCount += 100;
+        //         if (timeCount > 10000) {
+        //             break;
+        //         }
+        //         await page.waitForTimeout(100);
+        //     }
+        //     if (getLegendGraphicRequest !== null) {
+        //         await getLegendGraphicRequest.response();
+        //     }
+        //     await page.unroute('**/service*');
+        // }
         // No error
         await NoErrors(page, waitForGetLegendGraphic);
         // Wait to be sure the map is ready
