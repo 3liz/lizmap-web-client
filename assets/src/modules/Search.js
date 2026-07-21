@@ -225,7 +225,7 @@ export default class Search {
         const searchQuery = document.getElementById('search-query').value;
         switch (searchConfig.service) {
             case 'nominatim': {
-                const nominatimUrl = new URL(service);
+                const nominatimUrl = new URL(service, window.location.href);
                 nominatimUrl.searchParams.set('query', searchQuery);
                 nominatimUrl.searchParams.set('bbox', extent.toBBOX());
                 Utils.fetchJSON(nominatimUrl.toString()).then(data => {
