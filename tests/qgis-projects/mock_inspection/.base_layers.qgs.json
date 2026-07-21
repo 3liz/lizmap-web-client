@@ -1,0 +1,17 @@
+{
+    "inspection_timestamp": 1783687903,
+    "has_inspection_data": true,
+    "loading_infos": {
+        "loading_time_ms": 552,
+        "memory_footprint": 5550
+    },
+    "bad_layers_count": 3,
+    "layers": [
+        {
+            "valid": false,
+            "source" : "source",
+            "name" : "name"
+        }
+    ],
+    "qgis_log": "Lorem ipsm"
+}

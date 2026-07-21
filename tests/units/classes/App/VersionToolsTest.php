@@ -25,6 +25,24 @@ class VersionToolsTest extends TestCase
         $this->assertEquals('1.40', VersionTools::qgisMajMinHumanVersion('1040')); // Fixme when QGIS 10 is released :)
     }
 
+    public static function strVersionToMajMinIntProvider() {
+        return [
+            '3.40.15' => ['3.40.15', 340],
+            '3.34.10' => ['3.34.10', 334],
+            '4.0.0' => ['4.0.0', 400],
+            '10.4.2' => ['10.4.2', 1004],
+        ];
+    }
+
+    /**
+     * @dataProvider strVersionToMajMinIntProvider
+     */
+    #[DataProvider('strVersionToMajMinIntProvider')]
+    public function teststrVersionToMajMinInt(string $version, int $expected): void
+    {
+        $this->assertEquals($expected, VersionTools::strVersionToMajMinInt($version));
+    }
+
     public function testQgisVersionWithNameToInt(): void
     {
         $this->assertEquals(33410, VersionTools::qgisVersionWithNameToInt('3.34.10-Bratislava'));
