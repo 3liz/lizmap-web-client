@@ -47,6 +47,7 @@ const optionalProperties = {
     'mutuallyExclusive': {type: 'boolean', default: false},
     'externalWmsToggle': {type: 'boolean', default: false},
     'externalAccess': {type: 'object'},
+    'excludeFromSingleWMS': {type: 'boolean', default: false},
 };
 
 /**
@@ -91,6 +92,7 @@ export class LayerConfig extends BaseObjectConfig {
      * @param {boolean}  [cfg.mutuallyExclusive]   - the layer mutuallyExclusive (only group type)
      * @param {boolean}  [cfg.externalWmsToggle]   - the layer provides parameters for external access
      * @param {object}   [cfg.externalAccess]      - the layer external access
+     * @param {boolean}  [cfg.excludeFromSingleWMS] - exclude this layer from the project-level single WMS request bundle (no effect when single WMS is not enabled at project level)
      */
     constructor(cfg) {
         super(cfg, requiredProperties, optionalProperties)
@@ -360,6 +362,15 @@ export class LayerConfig extends BaseObjectConfig {
      */
     get externalAccess() {
         return this._externalAccess;
+    }
+
+    /**
+     * Exclude the layer from the project-level single WMS request bundle.
+     * No effect when the project-level "single WMS layer" option is disabled.
+     * @type {boolean}
+     */
+    get excludeFromSingleWMS() {
+        return this._excludeFromSingleWMS;
     }
 }
 

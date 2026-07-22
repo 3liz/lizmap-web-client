@@ -59,6 +59,7 @@ describe('LayerConfig', function () {
         expect(group.cached).to.be.false
         expect(group.clientCacheExpiration).to.be.eq(300)
         expect(group.mutuallyExclusive).to.be.true
+        expect(group.excludeFromSingleWMS).to.be.false
 
         const layer1 = new LayerConfig({
             "id": "null_island20200414115730489",
@@ -128,6 +129,7 @@ describe('LayerConfig', function () {
         expect(layer1.cached).to.be.false
         expect(layer1.clientCacheExpiration).to.be.eq(300)
         expect(layer1.mutuallyExclusive).to.be.false
+        expect(layer1.excludeFromSingleWMS).to.be.false
 
         const layer2 = new LayerConfig({
             "abstract": "",
@@ -196,6 +198,33 @@ describe('LayerConfig', function () {
         expect(layer2.cached).to.be.false
         expect(layer2.clientCacheExpiration).to.be.eq(300)
         expect(layer2.mutuallyExclusive).to.be.false
+        expect(layer2.excludeFromSingleWMS).to.be.false
+
+        const excludedLayer = new LayerConfig({
+            "id": "excluded_wms_layer",
+            "name": "excluded_wms_layer",
+            "type": "layer",
+            "title": "Excluded layer",
+            "abstract": "",
+            "link": "",
+            "minScale": 1,
+            "maxScale": 1000000000000,
+            "toggled": "True",
+            "popup": "False",
+            "popupSource": "auto",
+            "popupTemplate": "",
+            "popupMaxFeatures": 10,
+            "popupDisplayChildren": "False",
+            "groupAsLayer": "False",
+            "baseLayer": "False",
+            "displayInLegend": "True",
+            "singleTile": "True",
+            "imageFormat": "image/png",
+            "cached": "False",
+            "clientCacheExpiration": 300,
+            "excludeFromSingleWMS": true,
+        });
+        expect(excludedLayer.excludeFromSingleWMS).to.be.true
     })
 
     it('ValidationError', function () {
