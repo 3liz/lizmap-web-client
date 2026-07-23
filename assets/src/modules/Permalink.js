@@ -138,6 +138,12 @@ export default class Permalink {
             }, ['map.state.changed']
         );
 
+        // Refresh hash parameters when the selected base layer changes
+        mainLizmap.state.baseLayers.addListener(
+            () => this._updatePermalinkParameters(),
+            ['baselayers.selection.changed']
+        );
+
         mainLizmap.state.rootMapGroup.addListener(
             (ev) => {
                 const evtStyleChange = ev.type.indexOf("style.changed") >= 0;
@@ -659,7 +665,16 @@ export default class Permalink {
             mainLizmap.state.layersAndGroupsCollection.groups.reverse() // reverse groups array to get from leaf to root
         );
 
-        const [extent4326, itemsInURL, stylesInURL, opacitiesInURL, symbologyInUrl] = this._getPermalinkValues();
+        const [extent4326, itemsInURL, stylesInURL, opacitiesInURL, symbologyInUrl, baseLayerInURL] = this._getPermalinkValues();
+
+        // Restore the selected base layer, if any is stored in the permalink
+        if (baseLayerInURL) {
+            const baseLayerName = decodeURIComponent(baseLayerInURL);
+            const baseLayersState = mainLizmap.state.baseLayers;
+            if (baseLayersState.baseLayerNames.includes(baseLayerName)) {
+                baseLayersState.selectedBaseLayerName = baseLayerName;
+            }
+        }
 
         if (setExtent
             && extent4326
@@ -707,7 +722,7 @@ export default class Permalink {
      */
     _getPermalinkValues(){
         if (this._shortLinkPermalink) {
-            let permalinkValues = Array(4);
+            let permalinkValues = Array(6);
             try {
                 let currentPermalink = this.currentPermalinkProperties;
                 if (currentPermalink) {
@@ -717,6 +732,7 @@ export default class Permalink {
                         currentPermalink.styles ?? null,
                         currentPermalink.opacities ?? null,
                         currentPermalink.symbology ?? null,
+                        currentPermalink.baselayer ?? null,
                     ]
                 }
             } catch(e){
@@ -725,7 +741,11 @@ export default class Permalink {
 
             return permalinkValues;
         } else {
-            return window.location.hash.substring(1).split('|').map(part => part.split(','));
+            // Classic hash format: bbox|layers|styles|opacities|baselayer
+            // (symbology is only used with short link permalinks)
+            const parts = window.location.hash.substring(1).split('|').map(part => part.split(','));
+            const baseLayer = (parts[4] && parts[4][0]) ? parts[4][0] : null;
+            return [parts[0], parts[1] ?? null, parts[2] ?? null, parts[3] ?? null, null, baseLayer];
         }
     }
 
@@ -838,16 +858,30 @@ export default class Permalink {
             }
         }
 
-        if (itemsVisibility.length) {
-            hash += '|' + itemsVisibility.join();
-        }
+        // Currently selected base layer (may be null when no base layer is defined)
+        const selectedBaseLayerName = mainLizmap.state.baseLayers.selectedBaseLayerName;
 
-        if (itemsStyle.length) {
-            hash += '|' + itemsStyle.join();
-        }
+        if (selectedBaseLayerName) {
+            // The base layer is stored as the last (5th) segment of the hash.
+            // Always emit the layers/styles/opacities segments (even when empty)
+            // so the base layer keeps a fixed position and stays readable when
+            // no overlay layer is visible.
+            hash += '|' + itemsVisibility.join()
+                 +  '|' + itemsStyle.join()
+                 +  '|' + itemsOpacity.join()
+                 +  '|' + encodeURIComponent(selectedBaseLayerName);
+        } else {
+            if (itemsVisibility.length) {
+                hash += '|' + itemsVisibility.join();
+            }
 
-        if (itemsOpacity.length) {
-            hash += '|' + itemsOpacity.join();
+            if (itemsStyle.length) {
+                hash += '|' + itemsStyle.join();
+            }
+
+            if (itemsOpacity.length) {
+                hash += '|' + itemsOpacity.join();
+            }
         }
 
         // Saved new hash
@@ -861,6 +895,7 @@ export default class Permalink {
             if (itemsStyle.length) hashParams.styles = itemsStyle;
             if (itemsOpacity.length) hashParams.opacities = itemsOpacity;
             if (itemsSymbology.length) hashParams.symbology = itemsSymbology;
+            if (selectedBaseLayerName) hashParams.baselayer = encodeURIComponent(selectedBaseLayerName);
 
             this.currentPermalinkProperties = {repository: repository, project: project, plink: hashParams};
         }
