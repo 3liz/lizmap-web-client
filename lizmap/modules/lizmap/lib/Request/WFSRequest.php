@@ -1156,10 +1156,8 @@ class WFSRequest extends OGCRequest
 
             return false;
         }
-        $vfilter = str_replace('intersects', 'ST_Intersects', $filter);
-        $vfilter = str_replace('geom_from_gml', 'ST_GeomFromGML', $vfilter);
 
-        return str_replace('$geometry', '"'.$this->datasource->geocol.'"', $vfilter);
+        return SqlTools::translateExpressionToPostgis($filter, $this->datasource->geocol);
     }
 
     /**
