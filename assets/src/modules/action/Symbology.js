@@ -32,8 +32,11 @@ export async function updateLayerTreeLayersSymbology(treeLayers, method=HttpRequ
 
     if (method.toUpperCase() == HttpRequestMethods.GET) {
         for (const treeLayer of treeLayers) {
-            // Check if this is an external WMS layer using the backend flag
-            const isExternalWMS = treeLayer.layerConfig?.externalWmsToggle;
+            // Check if this is a WMS layer using the backend flag: WMS layers
+            // need a PNG legend because a JSON GetLegendGraphic returns empty
+            // icons. This is independent of the direct-access (externalWmsToggle)
+            // option, so cascaded WMS layers still get a proper legend.
+            const isExternalWMS = treeLayer.layerConfig?.wmsLayer;
 
             if (isExternalWMS) {
                 // For external WMS layers, use GetLegendGraphic URL directly as DOM element src

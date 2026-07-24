@@ -106,8 +106,9 @@ test.describe('External WMTS layer — getProjectConfig @requests @readonly', ()
         expect(wmsGroupedLayer, 'Layer "WMS grouped external" must exist in config').toBeDefined();
         // This WMS layer's URL has no 'wmts' token in host/path/service param, so
         // the PHP detection must NOT set externalAccess.type = 'wmts'.
-        // (Note: PHP sets externalWmsToggle = 'True' for all external WMS layers —
-        // the plugin's 'False' value in the .cfg is overridden at runtime.)
+        // (The per-layer externalWmsToggle is now honored: a WMS layer whose
+        // plugin toggle is off gets no externalAccess and cascades through QGIS
+        // Server. See external_wms_toggle.spec.js for that behavior.)
         if (wmsGroupedLayer.externalAccess) {
             expect(wmsGroupedLayer.externalAccess.type).not.toBe('wmts');
         }
