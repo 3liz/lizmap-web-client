@@ -187,6 +187,8 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
         request.url().includes('WMTS') === true &&
         request.url().includes('GetCapabilities') === true
     );
+    // Wait for wasm module
+    let wasmModulePromise = page.waitForRequest('**.module.wasm');
 
     // Go to the map
     await expect(async () => {
@@ -243,7 +245,8 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
         getProjectConfigPromise,
         getCapabilitiesWMSPromise,
         getCapabilitiesWFSPromise,
-        getCapabilitiesWMTSPromise
+        getCapabilitiesWMTSPromise,
+        wasmModulePromise,
     ]);
     // Wait for responses
     await Promise.all(requests.map(request => request.response()));
