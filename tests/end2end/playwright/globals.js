@@ -188,7 +188,17 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
         request.url().includes('GetCapabilities') === true
     );
     // Wait for wasm module
-    let wasmModulePromise = page.waitForRequest('**.module.wasm');
+    let wasmModuleLoaded = false;
+    page.context().route('**/*.module.wasm', async (route) => {
+        const request = route.request();
+        const url = new URL(request.url());
+        const pathFile = path.join(testsDirectory, '..', 'lizmap', 'www', url.pathname);
+        // fulfill route's request with the content of the file
+        wasmModuleLoaded = true;
+        await route.fulfill({
+            path: pathFile
+        })
+    });
 
     // Go to the map
     await expect(async () => {
@@ -246,10 +256,18 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
         getCapabilitiesWMSPromise,
         getCapabilitiesWFSPromise,
         getCapabilitiesWMTSPromise,
-        wasmModulePromise,
     ]);
     // Wait for responses
     await Promise.all(requests.map(request => request.response()));
+
+    let timeout = 0;
+    while(!wasmModuleLoaded && timeout < 10000) {
+        await page.waitForTimeout(100);
+        timeout += 100;
+        if (timeout > 10000) {
+            break;
+        }
+    }
 
     if (mapMustLoad) {
         if (getLegendGraphicPromise) {
