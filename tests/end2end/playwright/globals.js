@@ -157,7 +157,37 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
     // are fired during map load, so a waitForRequest set up after page.goto()
     // (or after awaiting GetCapabilities) can miss an early request and hang
     // until the test times out. Arming both up-front removes that race.
-    let getCapabilitiesWMSPromise = page.waitForRequest(/SERVICE=WMS&REQUEST=GetCapabilities/);
+
+    // Wait for GetProjectConfig promise once page opened
+    let getProjectConfigPromise = page.waitForRequest('**/service/getProjectConfig*');
+    // Wait for WMS GetCapabilities promise once page opened
+    let getCapabilitiesWMSPromise = page.waitForRequest(
+        request => request.method() === 'GET' &&
+        request.url().includes('WMS') === true &&
+        request.url().includes('GetCapabilities') === true
+    );
+    // Wait for WFS GetCapabilities promise once page opened
+    let getCapabilitiesWFSPromise = page.waitForRequest(
+        request => request.method() === 'GET' &&
+        request.url().includes('WFS') === true &&
+        request.url().includes('GetCapabilities') === true
+    );
+    // Wait for WMTS GetCapabilities promise once page opened
+    let getCapabilitiesWMTSPromise = page.waitForRequest(
+        request => request.method() === 'GET' &&
+        request.url().includes('WMTS') === true &&
+        request.url().includes('GetCapabilities') === true
+    );
+
+    await expect(async () => {
+        const response = await page.goto(url);
+        expect(response?.status()).toBeLessThan(400);
+    }).toPass({
+        intervals: [1_000, 2_000, 10_000],
+        timeout: 30_000
+    });
+
+    // Wait for GetLegendGraphic promise once GetCapalities loaded
     let getLegendGraphicPromise = (mapMustLoad && waitForGetLegendGraphic)
         ? page.waitForRequest(
             request => (
@@ -171,17 +201,17 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
         )
         : null;
 
-    await expect(async () => {
-        const response = await page.goto(url);
-        expect(response?.status()).toBeLessThan(400);
-    }).toPass({
-        intervals: [1_000, 2_000, 10_000],
-        timeout: 60_000
-    });
 
-    // Wait for WMS GetCapabilities
-    let getCapabilitiesWMSRequest = await getCapabilitiesWMSPromise;
-    await getCapabilitiesWMSRequest.response();
+    // Wait for WMS, WFS, WMTS GetCapabilities
+    const requests = await Promise.all([
+        getProjectConfigPromise,
+        getCapabilitiesWMSPromise,
+        getCapabilitiesWFSPromise,
+        getCapabilitiesWMTSPromise,
+    ]);
+    // Wait for responses
+    await Promise.all(requests.map(request => request.response()));
+
     if (mapMustLoad) {
         if (getLegendGraphicPromise) {
             // Wait for WMS GetLegendGraphic (promise armed before navigation)
