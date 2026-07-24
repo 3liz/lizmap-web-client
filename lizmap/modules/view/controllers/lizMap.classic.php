@@ -246,9 +246,48 @@ class lizMapCtrl extends jController
             'fetch',
             'application/json',
         );
-        $rep->addPreloadLink($lproj->getWMSGetCapabilitiesUrl(), 'fetch', 'application/xml');
-        $rep->addPreloadLink($lproj->getWFSGetCapabilitiesUrl(), 'fetch', 'application/xml');
-        $rep->addPreloadLink($lproj->getWMTSGetCapabilitiesUrl(), 'fetch', 'application/xml');
+        $rep->addPreloadLink(
+            jUrl::get(
+                'lizmap~service:oldindex',
+                array(
+                    'repository' => $repository,
+                    'project' => $project,
+                    'SERVICE' => 'WMS',
+                    'REQUEST' => 'GetCapabilities',
+                    'VERSION' => '1.3.0',
+                ),
+            ),
+            'fetch',
+            'application/xml'
+        );
+        $rep->addPreloadLink(
+            jUrl::get(
+                'lizmap~service:oldindex',
+                array(
+                    'repository' => $repository,
+                    'project' => $project,
+                    'SERVICE' => 'WFS',
+                    'REQUEST' => 'GetCapabilities',
+                    'VERSION' => '1.0.0',
+                ),
+            ),
+            'fetch',
+            'application/xml'
+        );
+        $rep->addPreloadLink(
+            jUrl::get(
+                'lizmap~service:oldindex',
+                array(
+                    'repository' => $repository,
+                    'project' => $project,
+                    'SERVICE' => 'WMTS',
+                    'REQUEST' => 'GetCapabilities',
+                    'VERSION' => '1.0.0',
+                ),
+            ),
+            'fetch',
+            'application/xml'
+        );
 
         // Get optional WMS public url list
         $lser = lizmap::getServices();
