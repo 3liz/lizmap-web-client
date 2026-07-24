@@ -14,6 +14,7 @@ repos:
       - id: check-merge-conflict
       - id: mixed-line-ending
       - id: check-added-large-files
+        exclude: ^lizmap/www/assets/css/bootstrap.min.css.map
 
   - repo: https://github.com/thibaudcolas/pre-commit-stylelint
     rev: v16.25.0
