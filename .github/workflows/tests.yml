@@ -9,6 +9,7 @@ on:
     branches:
       - master
       - release_3_*
+  workflow_dispatch:
 
 jobs:
   php-tests:
