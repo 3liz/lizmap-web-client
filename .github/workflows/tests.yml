@@ -9,6 +9,7 @@ on:
     branches:
       - master
       - release_3_*
+  workflow_dispatch:
 
 env:
   PHP_VERSION: "8.1"
@@ -26,6 +27,8 @@ jobs:
           - php-version: "8.3"
             php-unit: "12.5.8"
           - php-version: "8.4"
+            php-unit: "12.5.8"
+          - php-version: "8.5"
             php-unit: "12.5.8"
     steps:
 

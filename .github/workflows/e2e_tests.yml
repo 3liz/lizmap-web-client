@@ -41,7 +41,7 @@ jobs:
             qgis-server: "3.40"
             update-projects: "FALSE"
           - name: "BLEEDING_EDGE"
-            php: "8.4"
+            php: "8.5"
             pg-postgis: "18-3"
             qgis-server: "3.44"
             update-projects: "TRUE"
@@ -51,10 +51,11 @@ jobs:
       PLAYWRIGHT_JSON_OUTPUT_DIR: ${{ github.workspace }}/tests/end2end/playwright-report
       PLAYWRIGHT_OPTIONS: --project=end2end
       FORCE_COLOR: true
+      DOCKERHUB_TOKEN_SET: ${{ secrets.DOCKERHUB_TOKEN != '' }}
     steps:
 
       - name: Login to Docker Hub
-        if: ${{ github.secret_source == 'Actions' }}
+        if: ${{ github.secret_source == 'Actions' && env.DOCKERHUB_TOKEN_SET == 'true' }}
         uses: docker/login-action@v4
         env:
           ACTIONS_STEP_DEBUG: true
