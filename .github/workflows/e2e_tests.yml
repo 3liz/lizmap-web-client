@@ -7,9 +7,6 @@ on:
   # allow to run manually
   workflow_dispatch:
 
-env:
-  NODE_VERSION: "22"
-
 jobs:
   end2end:
     name: "E2E ${{ matrix.name }} shard ${{ matrix.shard }}/3 (QGIS ${{ matrix.qgis-server }} PG ${{ matrix.pg-postgis }} PHP ${{ matrix.php }})"
@@ -101,7 +98,7 @@ jobs:
           echo "Building image"
           docker compose build --quiet
           echo "Starting docker stack - wait for healthy states"
-          docker compose up -d --quiet-pull
+          docker compose up -d --quiet-pull --wait --wait-timeout 300
           docker compose ps
 
       - name: Check about QGIS Server status
@@ -147,10 +144,10 @@ jobs:
         run: |
             sudo echo "127.0.0.1 othersite.local" | sudo tee -a /etc/hosts
 
-      - name: "Setup Node ${{ env.NODE_VERSION }}"
+      - name: "Setup Node.js (from .nvmrc)"
         uses: actions/setup-node@v6
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: '.nvmrc'
           cache: 'npm'
           cache-dependency-path: ${{ github.workspace }}/package.json
 
