@@ -174,10 +174,20 @@ function launch() {
         cd "$ROOTDIR/";
         su $APP_USER -c "npm install"
       )
+      rc=$?
+      if [ $rc -ne 0 ]; then
+        echo "[ERROR] npm install failed (exit $rc), aborting"
+        return 1
+      fi
     fi
 
     cd "$ROOTDIR/";
     su $APP_USER -c "npm run build"
+    rc=$?
+    if [ $rc -ne 0 ]; then
+      echo "[ERROR] npm run build failed (exit $rc), aborting"
+      return 1
+    fi
 
     if [ ! -d $APPDIR/lizmap-modules/lizmapdemo ]; then
         su $APP_USER -c "$APPDIR/install/demo.sh install --no-installer"
