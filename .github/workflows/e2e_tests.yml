@@ -51,10 +51,11 @@ jobs:
       PLAYWRIGHT_JSON_OUTPUT_DIR: ${{ github.workspace }}/tests/end2end/playwright-report
       PLAYWRIGHT_OPTIONS: --project=end2end
       FORCE_COLOR: true
+      DOCKERHUB_TOKEN_SET: ${{ secrets.DOCKERHUB_TOKEN != '' }}
     steps:
 
       - name: Login to Docker Hub
-        if: ${{ github.secret_source == 'Actions' && secrets.DOCKERHUB_TOKEN != '' }}
+        if: ${{ github.secret_source == 'Actions' && env.DOCKERHUB_TOKEN_SET == 'true' }}
         uses: docker/login-action@v4
         env:
           ACTIONS_STEP_DEBUG: true
