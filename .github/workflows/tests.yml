@@ -13,7 +13,6 @@ on:
 
 env:
   PHP_VERSION: "8.1"
-  NODE_VERSION: "22"
 
 jobs:
   php-tests:
@@ -60,10 +59,10 @@ jobs:
 #        working-directory: tests/units
         run: composer require --working-dir=tests/units/ phpunit/phpunit:${{ matrix.php-unit }}
 
-      - name: "Setup Node ${{ env.NODE_VERSION }}"
+      - name: "Setup Node.js (from .nvmrc)"
         uses: actions/setup-node@v6
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: '.nvmrc'
           cache: 'npm'
           cache-dependency-path: ${{ github.workspace }}/package.json
 
@@ -78,10 +77,10 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
 
-      - name: "Setup Node ${{ env.NODE_VERSION }}"
+      - name: "Setup Node.js (from .nvmrc)"
         uses: actions/setup-node@v6
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: '.nvmrc'
           cache: 'npm'
           cache-dependency-path: ${{ github.workspace }}/package.json
 
