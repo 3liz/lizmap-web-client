@@ -4,6 +4,9 @@
   "description": "Lizmap Web Client",
   "license": "ISC",
   "author": "3Liz",
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "directories": {
     "doc": "docs",
     "test": "tests"
