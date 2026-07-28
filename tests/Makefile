@@ -27,6 +27,8 @@ LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE ?= /srv/etc/admin.conf
 DOCKER_BUILDKIT ?= 1
 SWAGGER_UI_PORT ?= 8133
 SWAGGER_YAML_FOLDER_PATH ?= ./api
+# Single source of truth for the Node.js major version is the repo-root .nvmrc.
+NODE_MAJOR := $(shell cat ../.nvmrc)
 
 env:
 	@echo "Creating environment file for Docker Compose"
@@ -46,6 +48,7 @@ env:
 	LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE=$(LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE)
 	COMPOSE_PROJECT_NAME=$(PREFIX)
 	PHP_VERSION=$(PHP_VERSION)
+	NODE_MAJOR=$(NODE_MAJOR)
 	DOCKER_BUILDKIT=$(DOCKER_BUILDKIT)
 	SWAGGER_PORT=$(SWAGGER_UI_PORT)
 	EOF
