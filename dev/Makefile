@@ -13,9 +13,13 @@ all: build image
 image:
 	$(MAKE) -C .. docker-build docker-tag docker-clean
 
+# Single source of truth for the Node.js major version is the repo-root .nvmrc.
+NODE_MAJOR := $(shell cat $(realpath ..)/.nvmrc)
+
 builder:
 	docker build --rm \
 		--build-arg="php_version=$(PHP_VERSION)" \
+		--build-arg="node_major=$(NODE_MAJOR)" \
 		-t $(NAME):$(VERSION_TAG) \
 		.
 

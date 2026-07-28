@@ -3,6 +3,7 @@ ARG php_version=8.1
 FROM 3liz/liz-php-cli:${php_version}
 
 ARG php_version
+ARG node_major=22
 ARG DEBIAN_FRONTEND=noninteractive
 ENV PHP_VERSION=${php_version}
 
@@ -14,10 +15,12 @@ RUN export DEBIAN_FRONTEND=noninteractive \
         zip \
     && apt-get clean
 
-# Install nodejs and npm to build js files
+# Install nodejs and npm to build js files.
+# node_major is passed in as a build-arg from dev/Makefile's `builder`
+# target, which reads it from the repo-root .nvmrc (single source of truth).
 RUN apt-get install -y ca-certificates curl gnupg \
     && mkdir -p /etc/apt/keyrings \
     && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
-    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_21.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list \
+    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${node_major}.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list \
     && apt-get update \
     && apt-get install nodejs -y
