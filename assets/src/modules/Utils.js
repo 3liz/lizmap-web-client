@@ -145,6 +145,12 @@ export class FileDownloader {
  */
 
 /**
+ * Sanitize HTML hook added to DOMPurify
+ * @param boolean
+ */
+let SANITIZE_HTML_HOOK_ADDED = false;
+
+/**
  * The main utils methods
  * @class
  * @name Utils
@@ -328,13 +334,22 @@ export class Utils {
      * @returns {string} The sanitized content
      */
     static sanitizeGFIContent(content) {
-        DOMPurify.addHook('afterSanitizeAttributes', node => {
-            // Sandbox all iframes except those from the same origin
-            if (node.nodeName === 'IFRAME' &&
-                !node.attributes['src'].textContent.startsWith(document.location.origin)) {
-                node.setAttribute('sandbox','allow-scripts allow-forms');
-            }
-        });
+        // Register the iframe-sandboxing hook only once. DOMPurify is a singleton, so
+        // re-adding the hook on every call would stack duplicate hooks indefinitely.
+        if (!SANITIZE_HTML_HOOK_ADDED) {
+            DOMPurify.addHook('afterSanitizeAttributes', node => {
+                // Sandbox all iframes except those from the same origin.
+                // Use getAttribute() (not node.attributes['src'].textContent) so a
+                // src-less iframe (e.g. srcdoc) does not throw and is sandboxed by default.
+                if (node.nodeName === 'IFRAME') {
+                    const src = node.getAttribute('src') || '';
+                    if (!src.startsWith(document.location.origin)) {
+                        node.setAttribute('sandbox', 'allow-scripts allow-forms');
+                    }
+                }
+            });
+            SANITIZE_HTML_HOOK_ADDED = true;
+        }
         return DOMPurify.sanitize(content, {
             ADD_TAGS: ['iframe'],
             ADD_ATTR: ['target'],
