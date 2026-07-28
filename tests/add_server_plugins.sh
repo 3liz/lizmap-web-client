@@ -18,7 +18,11 @@ fi
 echo "QGIS Server Lizmap and WfsOutputExtension plugins"
 echo "Loading from $(cat $QGIS_PLUGIN_MANAGER_SOURCES_FILE)"
 qgis-plugin-manager update
-qgis-plugin-manager install -f "Lizmap server"
+# Pinned to 2.14.1: releases 2.15.0/2.15.1 (2026-07-27) throw a server error (HTTP 500) on the
+# GetFeatureInfo(FILTER=..., with_maptip=true) request used to fetch embedded relation children,
+# breaking the popup children display (see e2e embedded-relation.spec.js).
+# Unpin once https://github.com/3liz/qgis-lizmap-server-plugin ships a fix for this regression.
+qgis-plugin-manager install -f "Lizmap server"==2.14.1
 qgis-plugin-manager install -f wfsOutputExtension
 qgis-plugin-manager install -f atlasprint
 
