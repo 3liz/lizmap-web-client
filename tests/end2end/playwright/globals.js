@@ -153,15 +153,6 @@ async function CatchErrors(page, layersInTreeView = 0) {
  * @deprecated Use Project page instead and migrate the test to use proper methods
  */
 export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 0, waitForGetLegendGraphic = true) {
-    // Test the page to be sure it will open
-    await expect(async () => {
-        const response = await page.request.get(url);
-        expect(response?.status()).toBeLessThan(400);
-    }).toPass({
-        intervals: [1_000, 2_000, 10_000],
-        timeout: 60_000
-    });
-
     // Arm request waits BEFORE navigating: getProjectConifg, GetCapabilities and GetLegendGraphic
     // are fired during map load, so a waitForRequest set up after page.goto()
     // (or after awaiting GetCapabilities) can miss an early request and hang
@@ -187,6 +178,8 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
         request.url().includes('WMTS') === true &&
         request.url().includes('GetCapabilities') === true
     );
+
+    // Wait for GetLegendGraphic promise once GetCapalities loaded
     let getLegendGraphicPromise = (mapMustLoad && waitForGetLegendGraphic)
         ? page.waitForRequest(
             request => (
@@ -200,15 +193,21 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
         )
         : null;
 
-    // Go to the map
-    await page.goto(url);
+    await expect(async () => {
+        const response = await page.goto(url);
+        expect(response?.status()).toBeLessThan(400);
+    }).toPass({
+        intervals: [1_000, 2_000, 10_000],
+        timeout: 30_000
+    });
+
 
     // Wait for WMS, WFS, WMTS GetCapabilities
     const requests = await Promise.all([
         getProjectConfigPromise,
         getCapabilitiesWMSPromise,
         getCapabilitiesWFSPromise,
-        getCapabilitiesWMTSPromise
+        getCapabilitiesWMTSPromise,
     ]);
     // Wait for responses
     await Promise.all(requests.map(request => request.response()));
