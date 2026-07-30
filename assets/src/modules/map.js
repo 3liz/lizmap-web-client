@@ -239,7 +239,7 @@ export default class map extends olMap {
                         });
                     }
                 } else {
-                    if(mapState.singleWMSLayer){
+                    if(mapState.singleWMSLayer && !node.layerConfig.excludeFromSingleWMS){
                         this._statesSingleWMSLayers.set(node.name,node);
                         node.singleWMSLayer = true;
                         return

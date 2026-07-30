@@ -463,6 +463,53 @@ test.describe('Single WMS layer', () => {
             await requestSecondBaseLayer.response();
         });
 
+    test('Layer with excludeFromSingleWMS is removed from the bundle and requested individually',
+        {
+            tag:['@readonly']
+        }, async ({ page }) => {
+            // Mark single_wms_lines as excluded from the single WMS request stack.
+            // It should then be requested as its own GetMap (still via QGIS Server,
+            // since no externalAccess is configured on it).
+            await page.route('**/service/getProjectConfig*', async route => {
+                const response = await route.fetch();
+                const json = await response.json();
+                json.layers['single_wms_lines']['excludeFromSingleWMS'] = true;
+                await route.fulfill({ response, json });
+            });
+
+            const project = new ProjectPage(page, 'single_wms_image');
+            const requestBundlePromise = project.waitForSingleWMSGetMapRequest();
+            const requestExcludedPromise = project.waitForGetMapRequest('single_wms_lines');
+            await project.open();
+
+            // Stop intercepting once the project is loaded.
+            await page.unroute('**/service/getProjectConfig*');
+
+            const requestBundle = await requestBundlePromise;
+            const expectedBundleParameters = {
+                'SERVICE': 'WMS',
+                'VERSION': '1.3.0',
+                'REQUEST': 'GetMap',
+                'FORMAT': 'image/png',
+                // single_wms_lines is dropped from the bundle, others kept in order
+                'STYLES':'default,default,default,',
+                'LAYERS':'single_wms_points,single_wms_points_group,single_wms_lines_group,GroupAsLayer',
+            }
+            requestExpect(requestBundle).toContainParametersInUrl(expectedBundleParameters);
+            await requestBundle.response();
+
+            const requestExcluded = await requestExcludedPromise;
+            const expectedExcludedParameters = {
+                'SERVICE': 'WMS',
+                'VERSION': '1.3.0',
+                'REQUEST': 'GetMap',
+                'FORMAT': 'image/png',
+                'LAYERS': 'single_wms_lines',
+            }
+            requestExpect(requestExcluded).toContainParametersInUrl(expectedExcludedParameters);
+            await requestExcluded.response();
+        });
+
     test('Edit a layer',
         {
             tag:['@write']
