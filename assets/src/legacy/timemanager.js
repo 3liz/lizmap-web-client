@@ -287,11 +287,18 @@ var lizTimemanager = function() {
                 var startField = layerConfig.startAttribute;
                 var endField = layerConfig.endAttribute;
                 var hasEndField = endField && endField != '' && endField != startField;
-                // Always use full ISO date format for the QGIS expression filter
-                // The attributeResolution controls the slider display, not the filter format
-                // Using year-only ('1928') or month-only ('2020-06') strings fails
-                // for DATE-typed fields in QGIS Server expression evaluation
-                var filterResolution = 'days';
+                // Format the filter with the layer's configured resolution so that
+                // sub-day precision (e.g. minutes -> 'YYYY-MM-DD HH:mm:00') is kept.
+                // Clamping to a coarser resolution here truncates timestamps to
+                // midnight and returns no features for non-midnight rows (#7056).
+                // Year-only ('1928') and month-only ('2020-06') strings must still
+                // be avoided: they fail for DATE-typed fields in QGIS Server
+                // expression evaluation (#6571), so those two are clamped to 'days'.
+                var attributeResolution = layerConfig['attributeResolution'] || 'days';
+                var filterResolution = attributeResolution;
+                if (attributeResolution == 'months' || attributeResolution == 'years') {
+                    filterResolution = 'days';
+                }
 
                 if (hasEndField) {
                     // Interval overlap: feature is active during [min_val, max_val] when
