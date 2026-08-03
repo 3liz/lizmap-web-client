@@ -5,6 +5,8 @@
  * @license MPL-2.0
  */
 
+import { timeManagerDatetimeFormat, timeManagerFilterResolution } from '../modules/utils/TimeManagerFilter.js';
+
 var lizTimemanager = function() {
 
     lizMap.events.on({
@@ -287,18 +289,11 @@ var lizTimemanager = function() {
                 var startField = layerConfig.startAttribute;
                 var endField = layerConfig.endAttribute;
                 var hasEndField = endField && endField != '' && endField != startField;
-                // Format the filter with the layer's configured resolution so that
-                // sub-day precision (e.g. minutes -> 'YYYY-MM-DD HH:mm:00') is kept.
-                // Clamping to a coarser resolution here truncates timestamps to
-                // midnight and returns no features for non-midnight rows (#7056).
-                // Year-only ('1928') and month-only ('2020-06') strings must still
-                // be avoided: they fail for DATE-typed fields in QGIS Server
-                // expression evaluation (#6571), so those two are clamped to 'days'.
-                var attributeResolution = layerConfig['attributeResolution'] || 'days';
-                var filterResolution = attributeResolution;
-                if (attributeResolution == 'months' || attributeResolution == 'years') {
-                    filterResolution = 'days';
-                }
+                // Keep the filter granularity aligned with the layer's configured
+                // attribute resolution so sub-day precision (minutes, hours,
+                // seconds) is preserved instead of being truncated to date-only,
+                // which returned no features for non-midnight timestamps (#7056).
+                var filterResolution = timeManagerFilterResolution(layerConfig['attributeResolution']);
 
                 if (hasEndField) {
                     // Interval overlap: feature is active during [min_val, max_val] when
@@ -542,19 +537,7 @@ var lizTimemanager = function() {
              * @param timeResolution
              */
             function formatDatetime(mytime, timeResolution){
-                var myDate = moment(mytime);
-                var dString = null;
-                switch(timeResolution){
-                    case 'milliseconds': dString = 'YYYY-MM-DD HH:mm:ss';break;
-                    case 'seconds': dString = 'YYYY-MM-DD HH:mm:ss';break;
-                    case 'minutes': dString = 'YYYY-MM-DD HH:mm:00';break;
-                    case 'hours': dString = 'YYYY-MM-DD HH:00';break;
-                    case 'days': dString = 'YYYY-MM-DD';break;
-                    case 'weeks': dString = 'YYYY-MM-DD';break;
-                    case 'months': dString = 'YYYY-MM';break;
-                    case 'years': dString = 'YYYY';break;
-                }
-                return myDate.format(dString);
+                return moment(mytime).format(timeManagerDatetimeFormat(timeResolution));
             }
 
         }
