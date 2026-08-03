@@ -100,6 +100,7 @@ venv
 tests/units/vendor/
 tests/units/composer.lock
 tests/units/.phpunit.result.cache
+tests/tmp/node-compile-cache/
 tests/qgis-projects/*
 !tests/qgis-projects/tests
 !tests/qgis-projects/webdav
