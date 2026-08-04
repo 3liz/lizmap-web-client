@@ -1278,6 +1278,23 @@ test.describe('Form upload file widget @write',() => {
             'image_file_mandatory',
             'media/upload/form_edition_all_field_type/form_edition_upload/image_file_mandatory/random-2.jpg'
         );
+
+        // Put text_file back to empty, as the test dataset has it. It is left set
+        // otherwise, and the "@readonly" test "File preview with path as config"
+        // then counts one link too many on the next run against the same database.
+        await theEditButton.click();
+        await expect(page.locator('#jforms_view_edition')).toBeVisible();
+        await expect(page.locator('#jforms_view_edition_id')).toHaveValue('2');
+        await page.locator('#jforms_view_edition_text_file_choice_list').scrollIntoViewIfNeeded();
+        await page.locator('#jforms_view_edition_text_file_choice_list').getByLabel('Delete').click();
+        await page.locator('#jforms_view_edition__submit_submit').scrollIntoViewIfNeeded();
+        saveFeatureRequestPromise = page.waitForRequest(request => request.url().includes('saveFeature'));
+        await page.locator('#jforms_view_edition__submit_submit').click();
+        await (await saveFeatureRequestPromise).response();
+
+        response = await page.request.post(url, { form: wfsForm });
+        body = await response.json();
+        expect(body.features[0].properties.text_file ?? '').toBe('');
     });
 });
 

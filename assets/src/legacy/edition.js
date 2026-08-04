@@ -602,9 +602,31 @@ var lizEdition = function() {
                 continue;
             }
 
-            olLayer.getSource().changed();
+            redrawLayerSource(olLayer.getSource());
         }
         return redrawnLayerIds;
+    }
+
+    /**
+     * Ask an OpenLayers source to fetch its data again.
+     *
+     * `source.changed()` is not enough for the WMS sources: it drops the image
+     * OpenLayers keeps, but the new request has the very same URL, so the browser
+     * answers it from its own cache and the map still shows the feature as it was
+     * before the edition. Changing a parameter makes the URL unique, which is the
+     * only way to be sure the layer is really redrawn.
+     * @param {object} source The OpenLayers source of the layer to redraw
+     */
+    function redrawLayerSource(source) {
+        if (typeof source.updateParams === 'function') {
+            // WMS sources (ImageWMS, TileWMS): QGIS Server ignores unknown parameters
+            source.updateParams({ 'LIZMAP_REDRAW': Date.now() });
+        } else if (typeof source.refresh === 'function') {
+            // Vector sources: refresh() clears the loaded features and reloads them
+            source.refresh();
+        } else {
+            source.changed();
+        }
     }
 
     /**

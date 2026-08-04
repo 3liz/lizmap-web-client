@@ -108,16 +108,21 @@ test.describe('Display lizmap-features-table component in popup from QGIS toolti
 
         // "expression filter" attribute listening changes
         // Changing "live" the expression filter from MC to MI
+        // The previous assertion compared two unawaited `getAttribute()` promises,
+        // so it compared two Promise objects (always equal) and could never pass.
+        // The element id is set once in the constructor and does not change either:
+        // check the reload by its result, i.e. the rows now come from "MI".
         const featTable = page.locator(`lizmap-features-table`);
-        const idFeatTable = featTable.getAttribute("id");
         await featTable.evaluate(
             element => element.setAttribute('expressionfilter','quartmno = \'MI\''));
 
-        await page.waitForTimeout(200);
-
-        const newFeatTable = page.locator(`lizmap-features-table`);
-        const newIdFeatTable = newFeatTable.getAttribute("id");
-
-        await expect(idFeatTable).not.toEqual(newIdFeatTable);
+        // "MI" has 4 sub-districts, "MC" had 10
+        const reloadedItems = lizmapFeaturesTable.locator(
+            "table.lizmap-features-table-container tr.lizmap-features-table-item");
+        await expect(reloadedItems).toHaveCount(4);
+        // every remaining sub-district belongs to the "MI" district
+        await expect(reloadedItems.locator('> td:nth-child(2)')).toHaveText([
+            /^\s*MI/, /^\s*MI/, /^\s*MI/, /^\s*MI/,
+        ]);
     });
 })
