@@ -31,6 +31,11 @@ test.describe('Print in project projection @readonly', () => {
             }
         });
 
+        // Start waiting for the download before launching the print: the browser
+        // fires it as soon as the mocked response arrives, which can happen while
+        // the parameters below are being asserted. Subscribing afterwards missed
+        // the event and the test timed out waiting for it.
+        const downloadPromise = page.waitForEvent('download');
         const getPrintPromise = project.waitForGetPrintRequest();
         await project.launchPrint();
 
@@ -55,8 +60,6 @@ test.describe('Print in project projection @readonly', () => {
         const searchParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
         expect(searchParams.size).toBe(15);
 
-        // Start waiting for download before response. Note no await.
-        const downloadPromise = page.waitForEvent('download');
         responseExpect(await getPrintRequest.response()).toBePdf();
 
         // Check the suggested file name is well extracted by Lizmap from header Content-Disposition
