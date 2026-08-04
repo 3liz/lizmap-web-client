@@ -19,6 +19,8 @@ export default class Permalink {
         // Used to behave differently when hash is changed
         // programmatically or by users in URL
         this._ignoreHashChange = false;
+        // True while a permalink is being applied to the map
+        this._applyingPermalink = false;
         // Store the build or received hash
         this._hash = '';
         this._extent4326 = [0, 0, 0, 0, 0];
@@ -174,7 +176,21 @@ export default class Permalink {
         }
 
         this._hash = ''+window.location.hash;
+        // Hold the fragment while the whole permalink is applied, see
+        // _writeURLFragment()
+        this._applyingPermalink = true;
+        try {
+            this._applyPermalink(setExtent);
+        } finally {
+            this._applyingPermalink = false;
+        }
+    }
 
+    /**
+     * Applies the values of the current permalink to the map
+     * @param {boolean} setExtent - whether set the map extent or not
+     */
+    _applyPermalink(setExtent) {
         // items are layers then groups from leaf to root
         const items = mainLizmap.state.layersAndGroupsCollection.layers.concat(
             mainLizmap.state.layersAndGroupsCollection.groups.reverse() // reverse groups array to get from leaf to root
@@ -273,6 +289,13 @@ export default class Permalink {
     _writeURLFragment() {
         // Don't write initial permalink if waiting for first theme to be applied
         if (this._suspendInitialWrite) {
+            return;
+        }
+        // Don't write while a permalink is being applied: setting the extent
+        // dispatches "map.state.changed", which lands here before the layers have
+        // been restored, and the fragment would then be rewritten from a half
+        // applied state - silently replacing the permalink being opened.
+        if (this._applyingPermalink) {
             return;
         }
 
