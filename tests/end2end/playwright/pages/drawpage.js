@@ -1,4 +1,5 @@
 // @ts-check
+import { expect } from '@playwright/test';
 import { ProjectPage } from './project';
 
 /**
@@ -87,8 +88,18 @@ export class DrawPage extends ProjectPage {
      *                      Possible values 'point', 'line', 'polygon','box','circle','freehand','text'.
      */
     async selectGeometry(type) {
-        await this.drawPanel.locator('button.dropdown-toggle:nth-child(2)').click();
-        await this.drawPanel.locator(`.digitizing-${type} > svg`).click();
+        const toggle = this.drawPanel.locator('button.dropdown-toggle:nth-child(2)');
+        const geometry = this.drawPanel.locator(`.digitizing-${type} > svg`);
+        // Clicking the toggle only once is not reliable: when the draw panel has
+        // just been (re)opened the click can land while it is still being shown and
+        // the dropdown stays closed, so the geometry below never becomes visible.
+        await expect(async () => {
+            if (!await geometry.isVisible()) {
+                await toggle.click();
+            }
+            await expect(geometry).toBeVisible({ timeout: 1000 });
+        }).toPass({ timeout: 10000 });
+        await geometry.click();
     }
 
     /**
