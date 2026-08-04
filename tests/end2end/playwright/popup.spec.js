@@ -4,7 +4,29 @@ import { expect as responseExpect } from './fixtures/expect-response.js'
 import { gotoMap } from './globals';
 import { ProjectPage } from "./pages/project";
 
-test.describe('Dataviz in popup @readonly', () => {
+/**
+ * Read the traces of a getPlot response.
+ *
+ * Lizmap hides the whole `div.lizdataviz` block when the plot has no data - that
+ * is what the "point without plot" case below checks. So when a plot that should
+ * have data comes back empty, the visibility assertions fail 15s later with a
+ * misleading "element is hidden", instead of pointing at the empty response.
+ * @param {import('@playwright/test').Request} getPlotRequest The getPlot request
+ * @returns {Promise<object[]>} The traces of the plot, empty when there is no data
+ */
+async function plotTraces(getPlotRequest) {
+    const response = await getPlotRequest.response();
+    const json = await response?.json();
+    return json?.data ?? [];
+}
+
+// NOTE: no "@readonly" tag here on purpose, so that these tests run in the serial
+// partition. The plot data is fetched by Lizmap through a WFS GetFeature on QGIS
+// Server, which intermittently answers short or empty responses when several
+// workers query it at the same time (the reason why the "@requests" partition also
+// runs with --workers=1, see .github/workflows/e2e_tests.yml). An empty answer
+// makes Lizmap hide the dataviz block and the test failed randomly.
+test.describe('Dataviz in popup', () => {
     test('Check lizmap feature toolbar', async ({ page }) => {
         const project = new ProjectPage(page, 'popup_bar');
         await project.open();
@@ -28,7 +50,8 @@ test.describe('Dataviz in popup @readonly', () => {
         await expect(postData).toHaveProperty('request', 'getPlot');
         await expect(postData).toHaveProperty('plot_id', 0);
         await expect(postData).toHaveProperty('exp_filter', `"fid_point" IN ('1')`);
-        await getPlotRequest.response();
+        expect(await plotTraces(getPlotRequest),
+            'the plot must have data, Lizmap hides the block otherwise').not.toHaveLength(0);
 
         // inspect feature toolbar and dataviz, expect to find only one
         await expect(project.popupContent.locator("div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > lizmap-feature-toolbar .feature-toolbar")).toHaveCount(1)
@@ -50,7 +73,8 @@ test.describe('Dataviz in popup @readonly', () => {
         await expect(postData).toHaveProperty('request', 'getPlot');
         await expect(postData).toHaveProperty('plot_id', 0);
         await expect(postData).toHaveProperty('exp_filter', `"fid_point" IN ('1')`);
-        await getPlotRequest.response();
+        expect(await plotTraces(getPlotRequest),
+            'the plot must have data, Lizmap hides the block otherwise').not.toHaveLength(0);
 
         // inspect feature toolbar and dataviz, expect to find only one
         await expect(project.popupContent.locator("div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > lizmap-feature-toolbar .feature-toolbar")).toHaveCount(1)
@@ -72,7 +96,8 @@ test.describe('Dataviz in popup @readonly', () => {
         await expect(postData).toHaveProperty('request', 'getPlot');
         await expect(postData).toHaveProperty('plot_id', 0);
         await expect(postData).toHaveProperty('exp_filter', `"fid_point" IN ('2')`);
-        await getPlotRequest.response();
+        expect(await plotTraces(getPlotRequest),
+            'the plot must have data, Lizmap hides the block otherwise').not.toHaveLength(0);
 
         // inspect feature toolbar and dataviz, expect to find only one
         await expect(project.popupContent.locator("div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > lizmap-feature-toolbar .feature-toolbar")).toHaveCount(1)
@@ -94,7 +119,8 @@ test.describe('Dataviz in popup @readonly', () => {
         await expect(postData).toHaveProperty('request', 'getPlot');
         await expect(postData).toHaveProperty('plot_id', 0);
         await expect(postData).toHaveProperty('exp_filter', `"fid_point" IN ('3')`);
-        await getPlotRequest.response();
+        // no plot for this feature: Lizmap hides the whole dataviz block
+        expect(await plotTraces(getPlotRequest)).toHaveLength(0);
 
         // inspect feature toolbar and dataviz, expect to find one feature toolbar and no dataviz
         await expect(project.popupContent.locator("div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > lizmap-feature-toolbar .feature-toolbar")).toHaveCount(1)
@@ -116,7 +142,8 @@ test.describe('Dataviz in popup @readonly', () => {
         await expect(postData).toHaveProperty('request', 'getPlot');
         await expect(postData).toHaveProperty('plot_id', 0);
         await expect(postData).toHaveProperty('exp_filter', `"fid_point" IN ('2')`);
-        await getPlotRequest.response();
+        expect(await plotTraces(getPlotRequest),
+            'the plot must have data, Lizmap hides the block otherwise').not.toHaveLength(0);
 
         // inspect feature toolbar and dataviz, expect to find only one
         await expect(project.popupContent.locator("div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > lizmap-feature-toolbar .feature-toolbar")).toHaveCount(1)
