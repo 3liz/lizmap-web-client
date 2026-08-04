@@ -40,8 +40,20 @@ test.describe('Connected from context, as an admin',
 
             const json = await checkJson(response);
 
-            // Check number of repositories
-            expect(json).toHaveLength(6);
+            // Check the repositories of the test instance are all listed. An exact
+            // count was asserted here, which broke as soon as another repository
+            // existed: the tests below create some, and a developer instance may
+            // have its own.
+            expect(json.map(repository => repository.key)).toEqual(
+                expect.arrayContaining([
+                    'testsrepository',
+                    'private',
+                    'badrepository',
+                    'mockinspection',
+                    'montpellier',
+                    'intranet',
+                ])
+            );
 
             // Check first repository has expected
             expect(json[0].key).toBeDefined();
@@ -55,6 +67,21 @@ test.describe('Connected via Basic auth',
     {
         tag: ['@requests', '@readonly'],
     }, () => {
+
+        // The tests below create repositories. Remove them so that running the
+        // suite twice against the same instance gives the same result: the
+        // repository list is asserted above, and a leftover repository key makes
+        // the creation requests answer 409.
+        // The directories they create (`grenoble_agglo/`, `folderNancy/`) cannot be
+        // removed through HTTP; `tests/end2end/run-all-tests.sh` takes care of them.
+        test.afterAll(async ({ browser }) => {
+            const context = await browser.newContext({ storageState: getAuthStorageStatePath('admin') });
+            const page = await context.newPage();
+            for (const repository of ['grenoble', 'nancy']) {
+                await page.goto('admin.php/admin/maps/removeSection?repository=' + repository);
+            }
+            await context.close();
+        });
 
         test('GET repositories', async ({request}) => {
             const response = await requestGETWithAdminBasicAuth(request, url + "/repositories")
