@@ -366,6 +366,11 @@ test.describe('Export data @readonly', () => {
     });
 });
 
+// NOTE: do not put "@readonly" in this describe title. `--grep` matches the full
+// title, so it used to select the "@write" tests below for the parallel @readonly
+// run as well: they change the export permissions of `testsrepository` while the
+// other tests read them, which made this file (and other @readonly specs) fail
+// randomly. They now only run in the serial @write partition.
 test.describe('Layer export permissions ACL', () => {
     // single_wms_points -> export enabled for group_a users
     // single_wms_points_group -> export enabled, no groups specified, inherith export permission from repository level
@@ -445,42 +450,55 @@ test.describe('Layer export permissions ACL', () => {
             // open maps management page
             await adminPage.openPage('Maps management');
 
-            // set layer export permissions
-            await adminPage.modifyRepository('testsrepository');
-            await adminPage.uncheckAllExportPermission();
-            await adminPage.setLayerExportPermission(enabled_groups);
-            await adminPage.page.getByRole('button', { name: 'Save' }).click();
+            // The permissions are restored in the `finally` block: without it a
+            // failure in the middle of the test left `testsrepository` with the
+            // export permissions of this case, breaking every following test.
+            try {
+                // set layer export permissions
+                await adminPage.modifyRepository('testsrepository');
+                await adminPage.uncheckAllExportPermission();
+                await adminPage.setLayerExportPermission(enabled_groups);
+                await adminPage.page.getByRole('button', { name: 'Save' }).click();
 
-            // login with specific user
-            let userContext;
-            if (login !== '__anonymous') {
-                userContext = await browser.newContext({storageState: getAuthStorageStatePath(login)});
-            } else {
-                userContext = await browser.newContext();
+                // login with specific user
+                let userContext;
+                if (login !== '__anonymous') {
+                    userContext = await browser.newContext({storageState: getAuthStorageStatePath(login)});
+                } else {
+                    userContext = await browser.newContext();
+                }
+                const userPage = await userContext.newPage();
+
+                // go to project page
+                const project = new ProjectPage(userPage, 'enable_export_acl');
+                await project.open();
+
+                // check layer export capabilities for logged in user
+                for(const layerObj of expected){
+                    let getFeatureRequest = await project.openAttributeTable(layerObj.layer);
+                    let getFeatureResponse = await getFeatureRequest.response();
+                    responseExpect(getFeatureResponse).toBeGeoJson();
+                    // Scope to the current layer's action bar: the global selector
+                    // also matched a previously opened layer's action bar that had
+                    // not been removed yet, making the count flaky.
+                    await expect(project.attributeTableActionBar(layerObj.layer).locator('.export-formats')).toHaveCount(layerObj.onPage);
+                    await project.closeAttributeTable();
+                }
+            } finally {
+                // reset layer export permissions. Start from the repository list
+                // again: the test may have failed while the form was open. Errors
+                // here must not hide the failure that led us to this block.
+                try {
+                    await page.goto('admin.php');
+                    await adminPage.openPage('Maps management');
+                    await adminPage.modifyRepository('testsrepository');
+                    await adminPage.resetLayerExportPermission();
+
+                    await adminPage.page.getByRole('button', { name: 'Save' }).click();
+                } catch (resetError) {
+                    console.error('Could not restore the export permissions:', resetError);
+                }
             }
-            const userPage = await userContext.newPage();
-
-            // go to project page
-            const project = new ProjectPage(userPage, 'enable_export_acl');
-            await project.open();
-
-            // check layer export capabilities for logged in user
-            for(const layerObj of expected){
-                let getFeatureRequest = await project.openAttributeTable(layerObj.layer);
-                let getFeatureResponse = await getFeatureRequest.response();
-                responseExpect(getFeatureResponse).toBeGeoJson();
-                // Scope to the current layer's action bar: the global selector
-                // also matched a previously opened layer's action bar that had
-                // not been removed yet, making the count flaky.
-                await expect(project.attributeTableActionBar(layerObj.layer).locator('.export-formats')).toHaveCount(layerObj.onPage);
-                await project.closeAttributeTable();
-            }
-
-            // reset layer export permissions
-            await adminPage.modifyRepository('testsrepository');
-            await adminPage.resetLayerExportPermission();
-
-            await adminPage.page.getByRole('button', { name: 'Save' }).click();
         })
     })
 
