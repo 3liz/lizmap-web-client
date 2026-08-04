@@ -1539,9 +1539,13 @@ test.describe('Attribute table linking @write', () => {
         datatablesResponse = await datatablesRequest.response();
         responseExpect(datatablesResponse).toBeJson();
 
-        // Select the children_layer feature: 2
-        await expect(project.attributeTableHtml(childLayerName).locator(`tbody tr[id="1"] button.feature-select`)).toBeVisible();
-        await project.attributeTableHtml(childLayerName).locator(`tbody tr[id="1"] button.feature-select`).click();
+        // Select the children_layer feature: 2, the one unlinked above. Feature 1
+        // was selected instead, so the test linked it to parent 1 while leaving
+        // feature 2 without a parent: the test dataset was left modified and the
+        // "@readonly" tests expecting feature 1 to be a child of parent 2 (see
+        // feature-toolbar.spec.js) failed on the next run against the same database.
+        await expect(project.attributeTableHtml(childLayerName).locator(`tbody tr[id="2"] button.feature-select`)).toBeVisible();
+        await project.attributeTableHtml(childLayerName).locator(`tbody tr[id="2"] button.feature-select`).click();
 
         // back to the parent_layer attribute table
         await expect(tableHtml).toBeHidden();
