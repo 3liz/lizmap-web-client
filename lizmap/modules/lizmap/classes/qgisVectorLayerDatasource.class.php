@@ -4,41 +4,16 @@
  * Give access to qgis mapLayer configuration.
  *
  * @author    3liz
- * @copyright 2013-2019 3liz
+ * @copyright 2013-2026 3liz
  *
  * @see      http://3liz.com
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
+use Lizmap\App\SqlTools;
+
 class qgisVectorLayerDatasource
 {
-    /**
-     * @var array Regexes used to get datasource parameters
-     */
-    protected $datasourceRegexes = array(
-        'dbname' => "dbname='?([^ ']+)'?(?: |$)",
-        'service' => "service='?([^ ']+)'?(?: |$)",
-        'host' => "host='?([^ ']+)'? port=",
-        'port' => 'port=([0-9]+)(?: |$)',
-        'user' => "user='?([^ ']+)'?(?: |$)",
-        'password' => array(
-            "password='((?:\\\\\\'|[^'])*)'(?: |$)",
-            'password="((?:\\\"|[^"])*)"(?: |$)',
-            "password=([^ ']+)(?: |$)",
-        ),
-        'sslmode' => "sslmode='?([^ ']+)'?(?: |$)",
-        'authcfg' => "authcfg='?([^ ']+)'?(?: |$)",
-        'key' => "key='?([^ ']+)'?(?: |$)",
-        'estimatedmetadata' => 'estimatedmetadata=([^ ]+)(?: |$)',
-        'selectatid' => 'selectatid=([^ ]+)(?: |$)',
-        'srid' => 'srid=([0-9]+)(?: |$)',
-        'type' => 'type=([a-zA-Z]+)(?: |$)',
-        'checkPrimaryKeyUnicity' => "checkPrimaryKeyUnicity='([0-1]+)'(?: |$)",
-        'table' => 'table="(.+?)"($|\s)',
-        'geocol' => '\(([^ >]+)\)',
-        'sql' => ' sql=(.*)$',
-    );
-
     protected $provider;
 
     protected $datasource;
@@ -52,125 +27,33 @@ class qgisVectorLayerDatasource
     public function __construct($provider, $datasource)
     {
         $this->provider = $provider;
-        $this->datasource = $datasource;
+        if ($this->provider == 'ogr' && preg_match('#layername=#', $datasource)) {
+            $this->datasource = $this->parseOgrConnection($datasource);
+        } else {
+            $this->datasource = SqlTools::parseQgisConnectionString($datasource);
+        }
     }
 
     public function getDatasourceParameter($param)
     {
-        if ($this->provider == 'ogr' and preg_match('#layername=#', $this->datasource)) {
-            return $this->getDatasourceParameterOgr($param);
+        if (isset($this->datasource[$param])) {
+            return $this->datasource[$param];
         }
 
-        return $this->getDatasourceParameterSql($param);
+        return '';
     }
 
-    private function getDatasourceParameterSql($param)
+    private function parseOgrConnection($datasource)
     {
-        $value = '';
-
-        // For tablename and schema, first get table
-        // and then get table name or schema
-        if ($param == 'tablename' or $param == 'schema') {
-            $table = $this->getDatasourceParameter('table');
-            if (substr($table, 0, 1) == '"') {
-                $exp = explode('.', str_replace('"', '', $table));
-                if ($param == 'tablename') {
-                    $value = $exp[1];
-                } elseif ($param == 'schema') {
-                    $value = $exp[0];
-                }
-            } else {
-                if ($param == 'tablename') {
-                    $value = $table;
-                } elseif ($param == 'schema') {
-                    $value = '';
-                }
-            }
-
-            return trim($value);
-        }
-
-        // For other parameters, use specific parameter regex
-        $regex = $this->datasourceRegexes[$param];
-
-        // Specific preg_match for the table, which can be very complex
-        $result = array();
-        $backSlashedQuoteReplacement = null;
-        if ($param == 'table') {
-            // We need to replace the \" in the datasource to avoid issues for complex sub-queries in table=()
-            $backSlashedQuoteReplacement = '@@@LIZMAP@@@';
-            preg_match(
-                '#'.$regex.'#s',
-                str_replace('\"', $backSlashedQuoteReplacement, $this->datasource),
-                $result
-            );
-        } elseif (is_array($regex)) {
-            foreach ($regex as $r) {
-                if (preg_match(
-                    '#'.$r.'#s',
-                    $this->datasource,
-                    $result
-                )) {
-                    break;
-                }
-            }
-        } else {
-            preg_match(
-                '#'.$regex.'#s',
-                $this->datasource,
-                $result
-            );
-        }
-
-        $nb_result = count($result);
-        if ((2 <= $nb_result) and ($nb_result <= 3) and strlen($result[1])) {
-            if ($param == 'table') {
-                // We replace back the backslahsed quote replacement in the value by double-quotes
-                $value = str_replace($backSlashedQuoteReplacement, '"', $result[1]);
-            } elseif ($param == 'password') {
-                $value = str_replace(array("\\'", '\"'), array("'", '"'), $result[1]);
-            } else {
-                $value = $result[1];
-            }
-
-            // Specific parsing for complex table parameter
-            if ($param == 'table') {
-                $table = $value;
-
-                // Complex sub-query
-                if (substr($table, 0, 1) == '(' and substr($table, -1) == ')') {
-                    $table .= ' fooliz';
-                }
-                // Simple "schemaname"."table_name"
-                elseif (preg_match('#"."#', $table)) {
-                    $table = '"'.$table.'"';
-                }
-                $value = $table;
-            }
-        }
-
-        return trim($value);
-    }
-
-    private function getDatasourceParameterOgr($param)
-    {
-        $split = explode('|', $this->datasource);
-        $dbname = $split[0];
-        $table = str_replace('layername=', '', $split[1]);
+        $split = explode('|', $datasource);
+        $dbname = trim($split[0]);
+        $table = trim(str_replace('layername=', '', $split[1]));
         $sql = '';
         if (count($split) == 3) {
-            $sql = str_replace('subset=', '', $split[2]);
+            $sql = trim(str_replace('subset=', '', $split[2]));
         }
 
-        // Handle schema and tablename like getDatasourceParameterSql does
-        if ($param == 'tablename') {
-            return trim($table);
-        }
-        if ($param == 'schema') {
-            return '';
-        }
-
-        $ds = array(
+        return array(
             'dbname' => $dbname,
             'service' => '',
             'host' => '',
@@ -186,10 +69,11 @@ class qgisVectorLayerDatasource
             'type' => '',
             'checkPrimaryKeyUnicity' => '',
             'table' => $table,
+            // Handle schema and tablename like getDatasourceParameterSql does
+            'tablename' => trim($table),
+            'schema' => '',
             'geocol' => 'geom',
             'sql' => $sql,
         );
-
-        return trim($ds[$param]);
     }
 }

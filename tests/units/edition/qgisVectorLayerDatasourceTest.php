@@ -296,6 +296,34 @@ class qgisVectorLayerDatasourceTest extends TestCase
         $this->assertEquals("\"code_com\" = '010'", $element->getDatasourceParameter('sql'));
     }
 
+    public function testPostgresDatasourceTableWithoutSchemaWithSql(): void
+    {
+        $provider = 'postgres';
+        $datasource = "dbname='test_dbname' host=127.0.0.1 port=5432 user='test_user' password='test_password' sslmode=prefer key='id_lieux' srid=2154 type=MultiPolygon checkPrimaryKeyUnicity='1' table=\"lieux\" (geom) sql=\"code_com\" = '010'";
+
+        $element = new qgisVectorLayerDatasource($provider, $datasource);
+
+        $this->assertEquals('test_dbname', $element->getDatasourceParameter('dbname'));
+        $this->assertEquals('', $element->getDatasourceParameter('service'));
+        $this->assertEquals('127.0.0.1', $element->getDatasourceParameter('host'));
+        $this->assertEquals('5432', $element->getDatasourceParameter('port'));
+        $this->assertEquals('test_user', $element->getDatasourceParameter('user'));
+        $this->assertEquals('test_password', $element->getDatasourceParameter('password'));
+        $this->assertEquals('', $element->getDatasourceParameter('authcfg'));
+        $this->assertEquals('prefer', $element->getDatasourceParameter('sslmode'));
+        $this->assertEquals('id_lieux', $element->getDatasourceParameter('key'));
+        $this->assertEquals('', $element->getDatasourceParameter('estimatedmetadata'));
+        $this->assertEquals('', $element->getDatasourceParameter('selectatid'));
+        $this->assertEquals('2154', $element->getDatasourceParameter('srid'));
+        $this->assertEquals('MultiPolygon', $element->getDatasourceParameter('type'));
+        $this->assertEquals('1', $element->getDatasourceParameter('checkPrimaryKeyUnicity'));
+        $this->assertEquals('"lieux"', $element->getDatasourceParameter('table'));
+        $this->assertEquals('lieux', $element->getDatasourceParameter('tablename'));
+        $this->assertEquals('', $element->getDatasourceParameter('schema'));
+        $this->assertEquals('geom', $element->getDatasourceParameter('geocol'));
+        $this->assertEquals("\"code_com\" = '010'", $element->getDatasourceParameter('sql'));
+    }
+
     public function testPostgresqlDatasourceWithoutSql(): void
     {
         $provider = 'postgres';
@@ -366,6 +394,49 @@ WHERE fk_id_series = 2  )
         $this->assertEquals('geom', $element->getDatasourceParameter('geocol'));
         $sql = "\"observation_timestamp\" &lt; '2017-01-01T00:00:00' AND \"observation_timestamp\" &gt;= '2016-01-01T00:00:00'";
         $this->assertEquals($sql, $element->getDatasourceParameter('sql'));
+    }
+
+    public function testComplexQueryDatasourceWithoutGeomSql(): void
+    {
+        $provider = 'postgres';
+        $datasource = "service='test_service' key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=\"((             SELECT                 o.id,&#xD;
+                 so_unique_id AS spatial_object_code,&#xD;
+				 so.geom,&#xD;
+				 ob_timestamp AS observation_timestamp
+FROM gobs.observation AS o             &#xD;
+INNER JOIN gobs.spatial_object AS so                 ON so.id = o.fk_id_spatial_object             &#xD;
+WHERE fk_id_series = 2  )
+)\"";
+
+        $element = new qgisVectorLayerDatasource($provider, $datasource);
+
+        $this->assertEquals('', $element->getDatasourceParameter('dbname'));
+        $this->assertEquals('test_service', $element->getDatasourceParameter('service'));
+        $this->assertEquals('', $element->getDatasourceParameter('host'));
+        $this->assertEquals('', $element->getDatasourceParameter('port'));
+        $this->assertEquals('', $element->getDatasourceParameter('user'));
+        $this->assertEquals('', $element->getDatasourceParameter('password'));
+        $this->assertEquals('', $element->getDatasourceParameter('sslmode'));
+        $this->assertEquals('id', $element->getDatasourceParameter('key'));
+        $this->assertEquals('true', $element->getDatasourceParameter('estimatedmetadata'));
+        $this->assertEquals('', $element->getDatasourceParameter('selectatid'));
+        $this->assertEquals('', $element->getDatasourceParameter('srid'));
+        $this->assertEquals('', $element->getDatasourceParameter('type'));
+        $this->assertEquals('1', $element->getDatasourceParameter('checkPrimaryKeyUnicity'));
+        $table = '((             SELECT                 o.id,&#xD;
+                 so_unique_id AS spatial_object_code,&#xD;
+				 so.geom,&#xD;
+				 ob_timestamp AS observation_timestamp
+FROM gobs.observation AS o             &#xD;
+INNER JOIN gobs.spatial_object AS so                 ON so.id = o.fk_id_spatial_object             &#xD;
+WHERE fk_id_series = 2  )
+) fooliz';
+
+        $this->assertEquals($table, $element->getDatasourceParameter('table'));
+        $this->assertEquals($table, $element->getDatasourceParameter('tablename'));
+        $this->assertEquals('', $element->getDatasourceParameter('schema'));
+        $this->assertEquals('', $element->getDatasourceParameter('geocol'));
+        $this->assertEquals('', $element->getDatasourceParameter('sql'));
     }
 
     public function testComplexQueryDatasourceWithEscapedDoubleQuotes(): void
