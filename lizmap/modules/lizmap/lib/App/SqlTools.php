@@ -15,6 +15,18 @@ namespace Lizmap\App;
 
 class SqlTools
 {
+    public const PARSER_STATE_BETWEEN_PARAMETERS = 0;
+    public const PARSER_STATE_PARAM_NAME = 1;
+    public const PARSER_STATE_PARAM_EQUAL = 2;
+    public const PARSER_STATE_IN_VALUE = 3;
+    public const PARSER_STATE_TABLE_VALUE = 4;
+    public const PARSER_STATE_TABLE_SCHEMA = 5;
+    public const PARSER_STATE_TABLE_NAME_SEPARATOR = 6;
+    public const PARSER_STATE_TABLE_NAME_DBLQUOTE = 7;
+    public const PARSER_STATE_TABLE_NAME = 8;
+    public const PARSER_STATE_TABLE_SQL = 9;
+    public const PARSER_STATE_SQL_VALUE = 10;
+
     protected static $blockSqlWords = array(
         ';',
         'select',
@@ -89,5 +101,226 @@ class SqlTools
         $filter = str_replace('geom_from_gml', 'ST_GeomFromGML', $filter);
 
         return str_replace('$geometry', '"'.$geometryColumn.'"', $filter);
+    }
+
+    /**
+     * Parse a Qgis connection string.
+     *
+     * It supports `table` and `sql` parameters, as well as geometry tags like `(geom)`.
+     *
+     * @throws \Exception
+     */
+    public static function parseQgisConnectionString(string $connection_string): array
+    {
+        $result = array();
+
+        $tokens = preg_split('/(=| +|(?<!\\\)\'|(?<!\\\)")/', $connection_string, -1, PREG_SPLIT_DELIM_CAPTURE);
+        $state = self::PARSER_STATE_BETWEEN_PARAMETERS;
+        $currentParamName = '';
+        $currentValue = '';
+        $valueIsQuoted = '';
+        $tableSchemaName = '';
+
+        foreach ($tokens as $token) {
+            if ($token === '') {
+                continue;
+            }
+
+            switch ($state) {
+                case self::PARSER_STATE_BETWEEN_PARAMETERS:
+                    if ($token[0] == ' ') {
+                        break;
+                    }
+                    if ($token == "'" || $token == '"' || $token == '=') {
+                        throw new \Exception('syntax error, unexpected character "'.$token.'"');
+                    }
+                    if ($token[0] == '(') {
+                        $result['geocol'] = trim($token, '()');
+
+                        break;
+                    }
+
+                    $currentParamName = $token;
+                    $state = self::PARSER_STATE_PARAM_NAME;
+
+                    break;
+
+                case self::PARSER_STATE_PARAM_NAME:
+                    if ($token[0] == ' ') {
+                        break;
+                    }
+                    if ($token != '=') {
+                        throw new \Exception('syntax error, missing equal sign after parameter '.$currentParamName);
+                    }
+                    $state = self::PARSER_STATE_PARAM_EQUAL;
+
+                    break;
+
+                case self::PARSER_STATE_PARAM_EQUAL:
+                    if ($token[0] == ' ') {
+                        break;
+                    }
+                    if ($token == '=') {
+                        throw new \Exception('syntax error unexpected equal sign after parameter '.$currentParamName);
+                    }
+
+                    if ($currentParamName == 'table') {
+                        if ($token == '"') {
+                            $valueIsQuoted = $token;
+                            $currentValue = '';
+                            $state = self::PARSER_STATE_TABLE_VALUE;
+                        } else {
+                            $currentValue = $token;
+                            $state = self::PARSER_STATE_TABLE_NAME;
+                        }
+                        $tableSchemaName = '';
+
+                        break;
+                    }
+                    if ($currentParamName == 'sql') {
+                        $currentValue = $token;
+                        $state = self::PARSER_STATE_SQL_VALUE;
+
+                        break;
+                    }
+                    if ($token == "'") {
+                        $valueIsQuoted = $token;
+                    } else {
+                        $currentValue = $token;
+                    }
+                    $state = self::PARSER_STATE_IN_VALUE;
+
+                    break;
+
+                case self::PARSER_STATE_IN_VALUE:
+                    if (($valueIsQuoted && $token == $valueIsQuoted) || ($valueIsQuoted == '' && $token == ' ')) {
+
+                        if ($valueIsQuoted != '') {
+                            $currentValue = str_replace('\\'.$valueIsQuoted, $valueIsQuoted, $currentValue);
+                        }
+                        $result[$currentParamName] = $currentValue;
+                        $currentValue = '';
+                        $currentParamName = '';
+                        $state = self::PARSER_STATE_BETWEEN_PARAMETERS;
+                        $valueIsQuoted = '';
+                    } else {
+                        $currentValue .= $token;
+                    }
+
+                    break;
+
+                case self::PARSER_STATE_TABLE_VALUE:
+                    if ($token[0] == '(') {
+                        $currentValue = $token;
+                        $state = self::PARSER_STATE_TABLE_SQL;
+                    } else {
+                        $currentValue .= $token;
+                        $state = self::PARSER_STATE_TABLE_SCHEMA;
+                    }
+
+                    break;
+
+                case self::PARSER_STATE_TABLE_SCHEMA:
+                    // we take all content until the next double quote, or space if it doesn't start with double quotes
+                    if ($token == $valueIsQuoted) {
+                        $tableSchemaName = $currentValue;
+                        $currentValue = '';
+                        $state = self::PARSER_STATE_TABLE_NAME_SEPARATOR;
+                    } else {
+                        $currentValue .= $token;
+                    }
+
+                    break;
+
+                case self::PARSER_STATE_TABLE_NAME_SEPARATOR:
+                    if ($token == '.') {
+                        $state = self::PARSER_STATE_TABLE_NAME_DBLQUOTE;
+                    } elseif ($token[0] = ' ') { // no dot separator, we reach the end of the table full name
+                        $result['table'] = '"'.$tableSchemaName.'"';
+                        $result['tablename'] = $tableSchemaName;
+                        $result['schema'] = '';
+                        $state = self::PARSER_STATE_BETWEEN_PARAMETERS;
+                        $currentParamName = '';
+                        $currentValue = '';
+                    } else {
+                        throw new \Exception('table name separator is missing after '.$tableSchemaName);
+                    }
+
+                    break;
+
+                case self::PARSER_STATE_TABLE_NAME_DBLQUOTE:
+                    if ($token == '"') {
+                        $state = self::PARSER_STATE_TABLE_NAME;
+                    } else {
+                        throw new \Exception('table name is missing after the schema '.$tableSchemaName);
+                    }
+
+                    break;
+
+                case self::PARSER_STATE_TABLE_NAME:
+                    if (($valueIsQuoted && $token == '"') || ($valueIsQuoted == '' && $token[0] == ' ')) {
+                        if ($tableSchemaName) {
+                            $result['table'] = '"'.$tableSchemaName.'"."'.$currentValue.'"';
+                        } else {
+                            $result['table'] = '"'.$currentValue.'"';
+                        }
+                        $result['tablename'] = $currentValue;
+                        $result['schema'] = $tableSchemaName;
+                        $state = self::PARSER_STATE_BETWEEN_PARAMETERS;
+                        $currentParamName = '';
+                        $currentValue = '';
+                        $valueIsQuoted = '';
+                    } else {
+                        $currentValue .= $token;
+                    }
+
+                    break;
+
+                case self::PARSER_STATE_TABLE_SQL:
+                    // we take all content until the next double quote
+                    if ($valueIsQuoted && $token == $valueIsQuoted) {
+                        // fooliz is the name of the 'virtual' table
+                        $result['table'] = $result['tablename'] = trim(str_replace('\"', '"', $currentValue)).' fooliz';
+                        $result['schema'] = '';
+                        $state = self::PARSER_STATE_BETWEEN_PARAMETERS;
+                        $currentParamName = '';
+                        $currentValue = '';
+                        $valueIsQuoted = '';
+                    } else {
+                        $currentValue .= $token;
+                    }
+
+                    break;
+
+                case self::PARSER_STATE_SQL_VALUE:
+                    // we take all content until the end of string
+                    $currentValue .= $token;
+
+                    break;
+            }
+        }
+
+        if ($state == self::PARSER_STATE_SQL_VALUE) {
+            $result[$currentParamName] = trim($currentValue);
+        } elseif ($state == self::PARSER_STATE_IN_VALUE || $state == self::PARSER_STATE_TABLE_VALUE || $state == self::PARSER_STATE_TABLE_SQL) {
+            if ($valueIsQuoted) {
+                throw new \Exception('syntax error, missing ending quote for parameter='.$currentParamName);
+            }
+            $result[$currentParamName] = trim($currentValue);
+        } elseif ($state == self::PARSER_STATE_PARAM_EQUAL) {
+            $result[$currentParamName] = '';
+        } elseif ($state == self::PARSER_STATE_TABLE_NAME) {
+            if ($valueIsQuoted == '') {
+                $result['table'] = '"'.$currentValue.'"';
+                $result['tablename'] = $currentValue;
+                $result['schema'] = '';
+            } else {
+                throw new \Exception('syntax error, missing ending quote for table name');
+            }
+        } elseif ($state != self::PARSER_STATE_BETWEEN_PARAMETERS) {
+            throw new \Exception('syntax error, missing equal sign for parameter '.$currentParamName);
+        }
+
+        return $result;
     }
 }
