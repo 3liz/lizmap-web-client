@@ -115,11 +115,11 @@ class SqlTools
      *
      * @return array the list of parameters
      *
-     * @throws \Exception
+     * @throws QgisConnectionStringParserException
      */
     public static function parseQgisConnectionString(string $connection_string): array
     {
-        $result = array();
+        $parameters = array();
 
         $tokens = preg_split('/(=| +|(?<!\\\)\'|(?<!\\\)")/u', $connection_string, -1, PREG_SPLIT_DELIM_CAPTURE);
         $state = self::PARSER_STATE_BETWEEN_PARAMETERS;
@@ -139,11 +139,11 @@ class SqlTools
                         break;
                     }
                     if ($token == "'" || $token == '"' || $token == '=') {
-                        throw new \Exception('syntax error, unexpected character "'.$token.'"');
+                        throw new QgisConnectionStringParserException('syntax error, unexpected character "'.$token.'"', 1, $parameters);
                     }
                     if ($token[0] == '(') {
                         // geometry column
-                        $result['geocol'] = str_replace(array('\)', '\\\\'), array(')', '\\'), trim($token, '()'));
+                        $parameters['geocol'] = str_replace(array('\)', '\\\\'), array(')', '\\'), trim($token, '()'));
 
                         break;
                     }
@@ -158,7 +158,7 @@ class SqlTools
                         break;
                     }
                     if ($token != '=') {
-                        throw new \Exception('syntax error, missing equal sign after parameter '.$currentParamName);
+                        throw new QgisConnectionStringParserException('syntax error, missing equal sign after parameter '.$currentParamName, 2, $parameters);
                     }
                     $state = self::PARSER_STATE_PARAM_EQUAL;
 
@@ -169,7 +169,7 @@ class SqlTools
                         break;
                     }
                     if ($token == '=') {
-                        throw new \Exception('syntax error unexpected equal sign after parameter '.$currentParamName);
+                        throw new QgisConnectionStringParserException('syntax error, unexpected equal sign after parameter '.$currentParamName, 3, $parameters);
                     }
 
                     if ($currentParamName == 'table') {
@@ -213,7 +213,7 @@ class SqlTools
                                 $currentValue
                             );
                         }
-                        $result[$currentParamName] = $currentValue;
+                        $parameters[$currentParamName] = $currentValue;
                         $currentValue = '';
                         $currentParamName = '';
                         $state = self::PARSER_STATE_BETWEEN_PARAMETERS;
@@ -251,14 +251,14 @@ class SqlTools
                     if ($token == '.') {
                         $state = self::PARSER_STATE_TABLE_NAME_QUOTE;
                     } elseif ($token[0] = ' ') { // no dot separator, we reach the end of the table full name
-                        $result['table'] = '"'.$tableSchemaName.'"';
-                        $result['tablename'] = $tableSchemaName;
-                        $result['schema'] = '';
+                        $parameters['table'] = '"'.$tableSchemaName.'"';
+                        $parameters['tablename'] = $tableSchemaName;
+                        $parameters['schema'] = '';
                         $state = self::PARSER_STATE_BETWEEN_PARAMETERS;
                         $currentParamName = '';
                         $currentValue = '';
                     } else {
-                        throw new \Exception('table name separator is missing after '.$tableSchemaName);
+                        throw new QgisConnectionStringParserException('syntax error, table name separator is missing after '.$tableSchemaName, 4, $parameters);
                     }
 
                     break;
@@ -268,7 +268,7 @@ class SqlTools
                         $valueIsQuoted = $token;
                         $state = self::PARSER_STATE_TABLE_NAME;
                     } else {
-                        throw new \Exception('table name is missing after the schema '.$tableSchemaName);
+                        throw new QgisConnectionStringParserException('syntax error, table name is missing after the schema '.$tableSchemaName, 5, $parameters);
                     }
 
                     break;
@@ -276,12 +276,12 @@ class SqlTools
                 case self::PARSER_STATE_TABLE_NAME:
                     if (($valueIsQuoted && $token == $valueIsQuoted) || ($valueIsQuoted == '' && $token[0] == ' ')) {
                         if ($tableSchemaName) {
-                            $result['table'] = '"'.$tableSchemaName.'"."'.$currentValue.'"';
+                            $parameters['table'] = '"'.$tableSchemaName.'"."'.$currentValue.'"';
                         } else {
-                            $result['table'] = '"'.$currentValue.'"';
+                            $parameters['table'] = '"'.$currentValue.'"';
                         }
-                        $result['tablename'] = $currentValue;
-                        $result['schema'] = $tableSchemaName;
+                        $parameters['tablename'] = $currentValue;
+                        $parameters['schema'] = $tableSchemaName;
                         $state = self::PARSER_STATE_BETWEEN_PARAMETERS;
                         $currentParamName = '';
                         $currentValue = '';
@@ -296,8 +296,8 @@ class SqlTools
                     // we take all content until the next quote
                     if ($valueIsQuoted && $token == $valueIsQuoted) {
                         // dummy_liz_alias is a SQL alias to avoid error in Postgresql. PG does not allow `FROM (subquery)` without alias.
-                        $result['table'] = $result['tablename'] = trim(str_replace('\\'.$valueIsQuoted, $valueIsQuoted, $currentValue)).' dummy_liz_alias';
-                        $result['schema'] = '';
+                        $parameters['table'] = $parameters['tablename'] = trim(str_replace('\\'.$valueIsQuoted, $valueIsQuoted, $currentValue)).' dummy_liz_alias';
+                        $parameters['schema'] = '';
                         $state = self::PARSER_STATE_BETWEEN_PARAMETERS;
                         $currentParamName = '';
                         $currentValue = '';
@@ -317,31 +317,37 @@ class SqlTools
             }
         }
 
+        if ($state == self::PARSER_STATE_BETWEEN_PARAMETERS) {
+            return $parameters;
+        }
+
         if ($state == self::PARSER_STATE_SQL_VALUE) {
             $currentValue = trim($currentValue);
             if ($currentValue == '""' || $currentValue == "''") {
                 $currentValue = '';
             }
-            $result[$currentParamName] = $currentValue;
+            $parameters[$currentParamName] = $currentValue;
         } elseif ($state == self::PARSER_STATE_IN_VALUE || $state == self::PARSER_STATE_TABLE_VALUE || $state == self::PARSER_STATE_TABLE_SQL) {
             if ($valueIsQuoted) {
-                throw new \Exception('syntax error, missing ending quote for parameter='.$currentParamName);
+                throw new QgisConnectionStringParserException('syntax error, missing ending quote for parameter='.$currentParamName, 6, $parameters);
             }
-            $result[$currentParamName] = trim($currentValue);
+            $parameters[$currentParamName] = trim($currentValue);
         } elseif ($state == self::PARSER_STATE_PARAM_EQUAL) {
-            $result[$currentParamName] = '';
+            $parameters[$currentParamName] = '';
         } elseif ($state == self::PARSER_STATE_TABLE_NAME) {
             if ($valueIsQuoted == '') {
-                $result['table'] = '"'.$currentValue.'"';
-                $result['tablename'] = $currentValue;
-                $result['schema'] = '';
+                $parameters['table'] = '"'.$currentValue.'"';
+                $parameters['tablename'] = $currentValue;
+                $parameters['schema'] = '';
             } else {
-                throw new \Exception('syntax error, missing ending quote for table name');
+                throw new QgisConnectionStringParserException('syntax error, missing ending quote for table name', 7, $parameters);
             }
-        } elseif ($state != self::PARSER_STATE_BETWEEN_PARAMETERS) {
-            throw new \Exception('syntax error, missing equal sign for parameter '.$currentParamName);
+        } elseif ($state == self::PARSER_STATE_TABLE_NAME_QUOTE) {
+            throw new QgisConnectionStringParserException('syntax error, table name is missing after the schema '.$tableSchemaName, 5, $parameters);
+        } else {
+            throw new QgisConnectionStringParserException('syntax error, missing equal sign for parameter '.$currentParamName, 2, $parameters);
         }
 
-        return $result;
+        return $parameters;
     }
 }

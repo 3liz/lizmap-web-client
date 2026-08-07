@@ -1,5 +1,6 @@
 <?php
 
+use Lizmap\App\QgisConnectionStringParserException;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -618,5 +619,39 @@ WHERE fk_id_series = 2  )
         $this->assertEquals('', $element->getDatasourceParameter('schema'));
         $this->assertEquals('geom', $element->getDatasourceParameter('geocol'));
         $this->assertEquals('"year" > 1900', $element->getDatasourceParameter('sql'));
+    }
+
+
+    public function testBadDatasourceMissingQuote(): void
+    {
+        $provider = 'postgres';
+        // missing a quote for user
+        $datasource = "dbname='test_dbname' host=127.0.0.1 port=5432 user='test_user ";
+        $this->expectException(QgisConnectionStringParserException::class);
+        $this->expectExceptionCode(6);
+        $this->expectExceptionMessage('syntax error, missing ending quote for parameter=user');
+        $element = new qgisVectorLayerDatasource($provider, $datasource);
+    }
+
+    public function testBadDatasourceMissingEqual(): void
+    {
+        $provider = 'postgres';
+        // missing a quote for user
+        $datasource = "dbname='test_dbname' host=127.0.0.1 port=5432 foo user='test_user' ";
+        $this->expectException(QgisConnectionStringParserException::class);
+        $this->expectExceptionCode(2);
+        $this->expectExceptionMessage('syntax error, missing equal sign after parameter foo');
+        $element = new qgisVectorLayerDatasource($provider, $datasource);
+    }
+
+    public function testBadDatasourceTableMissingName(): void
+    {
+        $provider = 'postgres';
+        // missing a quote for user
+        $datasource = "dbname='test_dbname' host=127.0.0.1 port=5432 user='test_user' table=\"schem\".";
+        $this->expectException(QgisConnectionStringParserException::class);
+        $this->expectExceptionCode(5);
+        $this->expectExceptionMessage('syntax error, table name is missing after the schema schem');
+        $element = new qgisVectorLayerDatasource($provider, $datasource);
     }
 }
