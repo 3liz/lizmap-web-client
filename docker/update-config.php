@@ -66,11 +66,11 @@ function pgSqlConnect($profile)
         // we do isset instead of equality test against an empty string, to allow to specify
         // that we want to use configuration set in environment variables
         if (isset($profile['user'])) {
-            $str .= ' user=\''.$profile['user'].'\'';
+            $str .= ' user=\''.str_replace("'", "\\'", $profile['user']).'\'';
         }
 
         if (isset($profile['password'])) {
-            $str .= ' password=\''.$profile['password'].'\'';
+            $str .= ' password=\''.str_replace("'", "\\'", $profile['password']).'\'';
         }
     }
 
