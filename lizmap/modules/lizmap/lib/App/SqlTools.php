@@ -22,7 +22,7 @@ class SqlTools
     public const PARSER_STATE_TABLE_VALUE = 4;
     public const PARSER_STATE_TABLE_SCHEMA = 5;
     public const PARSER_STATE_TABLE_NAME_SEPARATOR = 6;
-    public const PARSER_STATE_TABLE_NAME_DBLQUOTE = 7;
+    public const PARSER_STATE_TABLE_NAME_QUOTE = 7;
     public const PARSER_STATE_TABLE_NAME = 8;
     public const PARSER_STATE_TABLE_SQL = 9;
     public const PARSER_STATE_SQL_VALUE = 10;
@@ -106,7 +106,14 @@ class SqlTools
     /**
      * Parse a Qgis connection string.
      *
-     * It supports `table` and `sql` parameters, as well as geometry tags like `(geom)`.
+     * It supports `table` and `sql` parameters, as well as geometry tags like `(geom)`, in addition of
+     * other database connection parameters.
+     *
+     * It is compliant with the Qgis 4.2 parser.
+     *
+     * @see https://api.qgis.org/api/4.2/qgsdatasourceuri_8cpp_source.html
+     *
+     * @return array the list of parameters
      *
      * @throws \Exception
      */
@@ -114,7 +121,7 @@ class SqlTools
     {
         $result = array();
 
-        $tokens = preg_split('/(=| +|(?<!\\\)\'|(?<!\\\)")/', $connection_string, -1, PREG_SPLIT_DELIM_CAPTURE);
+        $tokens = preg_split('/(=| +|(?<!\\\)\'|(?<!\\\)")/u', $connection_string, -1, PREG_SPLIT_DELIM_CAPTURE);
         $state = self::PARSER_STATE_BETWEEN_PARAMETERS;
         $currentParamName = '';
         $currentValue = '';
@@ -135,7 +142,8 @@ class SqlTools
                         throw new \Exception('syntax error, unexpected character "'.$token.'"');
                     }
                     if ($token[0] == '(') {
-                        $result['geocol'] = trim($token, '()');
+                        // geometry column
+                        $result['geocol'] = str_replace(array('\)', '\\\\'), array(')', '\\'), trim($token, '()'));
 
                         break;
                     }
@@ -165,7 +173,7 @@ class SqlTools
                     }
 
                     if ($currentParamName == 'table') {
-                        if ($token == '"') {
+                        if ($token == '"' || $token == "'") {
                             $valueIsQuoted = $token;
                             $currentValue = '';
                             $state = self::PARSER_STATE_TABLE_VALUE;
@@ -183,7 +191,7 @@ class SqlTools
 
                         break;
                     }
-                    if ($token == "'") {
+                    if ($token == "'" || $token == '"') {
                         $valueIsQuoted = $token;
                     } else {
                         $currentValue = $token;
@@ -193,10 +201,17 @@ class SqlTools
                     break;
 
                 case self::PARSER_STATE_IN_VALUE:
+                    // All characters until the delimiter are taken.
+                    // Escaped delimiters and escaped anti-slash must be unescaped.
+                    // When there are no delimiters, a space indicate the end of the value
                     if (($valueIsQuoted && $token == $valueIsQuoted) || ($valueIsQuoted == '' && $token == ' ')) {
 
                         if ($valueIsQuoted != '') {
-                            $currentValue = str_replace('\\'.$valueIsQuoted, $valueIsQuoted, $currentValue);
+                            $currentValue = str_replace(
+                                array('\\'.$valueIsQuoted, '\\\\'),
+                                array($valueIsQuoted, '\\'),
+                                $currentValue
+                            );
                         }
                         $result[$currentParamName] = $currentValue;
                         $currentValue = '';
@@ -234,7 +249,7 @@ class SqlTools
 
                 case self::PARSER_STATE_TABLE_NAME_SEPARATOR:
                     if ($token == '.') {
-                        $state = self::PARSER_STATE_TABLE_NAME_DBLQUOTE;
+                        $state = self::PARSER_STATE_TABLE_NAME_QUOTE;
                     } elseif ($token[0] = ' ') { // no dot separator, we reach the end of the table full name
                         $result['table'] = '"'.$tableSchemaName.'"';
                         $result['tablename'] = $tableSchemaName;
@@ -248,8 +263,9 @@ class SqlTools
 
                     break;
 
-                case self::PARSER_STATE_TABLE_NAME_DBLQUOTE:
-                    if ($token == '"') {
+                case self::PARSER_STATE_TABLE_NAME_QUOTE:
+                    if ($token == '"' || $token == "'") {
+                        $valueIsQuoted = $token;
                         $state = self::PARSER_STATE_TABLE_NAME;
                     } else {
                         throw new \Exception('table name is missing after the schema '.$tableSchemaName);
@@ -258,7 +274,7 @@ class SqlTools
                     break;
 
                 case self::PARSER_STATE_TABLE_NAME:
-                    if (($valueIsQuoted && $token == '"') || ($valueIsQuoted == '' && $token[0] == ' ')) {
+                    if (($valueIsQuoted && $token == $valueIsQuoted) || ($valueIsQuoted == '' && $token[0] == ' ')) {
                         if ($tableSchemaName) {
                             $result['table'] = '"'.$tableSchemaName.'"."'.$currentValue.'"';
                         } else {
@@ -277,15 +293,16 @@ class SqlTools
                     break;
 
                 case self::PARSER_STATE_TABLE_SQL:
-                    // we take all content until the next double quote
+                    // we take all content until the next quote
                     if ($valueIsQuoted && $token == $valueIsQuoted) {
-                        // fooliz is the name of the 'virtual' table
-                        $result['table'] = $result['tablename'] = trim(str_replace('\"', '"', $currentValue)).' fooliz';
+                        // dummy_liz_alias is a SQL alias to avoid error in Postgresql. PG does not allow `FROM (subquery)` without alias.
+                        $result['table'] = $result['tablename'] = trim(str_replace('\\'.$valueIsQuoted, $valueIsQuoted, $currentValue)).' dummy_liz_alias';
                         $result['schema'] = '';
                         $state = self::PARSER_STATE_BETWEEN_PARAMETERS;
                         $currentParamName = '';
                         $currentValue = '';
                         $valueIsQuoted = '';
+
                     } else {
                         $currentValue .= $token;
                     }
@@ -301,7 +318,11 @@ class SqlTools
         }
 
         if ($state == self::PARSER_STATE_SQL_VALUE) {
-            $result[$currentParamName] = trim($currentValue);
+            $currentValue = trim($currentValue);
+            if ($currentValue == '""' || $currentValue == "''") {
+                $currentValue = '';
+            }
+            $result[$currentParamName] = $currentValue;
         } elseif ($state == self::PARSER_STATE_IN_VALUE || $state == self::PARSER_STATE_TABLE_VALUE || $state == self::PARSER_STATE_TABLE_SQL) {
             if ($valueIsQuoted) {
                 throw new \Exception('syntax error, missing ending quote for parameter='.$currentParamName);
