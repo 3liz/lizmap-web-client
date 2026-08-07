@@ -14,6 +14,7 @@
 use GuzzleHttp\Psr7\StreamWrapper as Psr7StreamWrapper;
 use Jelix\IniFile\IniModifier;
 use JsonMachine\Items as JsonMachineItems;
+use Lizmap\App\QgisConnectionStringParserException;
 use Lizmap\Project\Project;
 use Lizmap\Request\Proxy;
 use Lizmap\Request\WFSRequest;
@@ -256,12 +257,12 @@ class qgisVectorLayer extends qgisMapLayer
                 $ds[$param] = $datasourceParser->getDatasourceParameter($param);
             }
 
-        } catch (Exception $e) {
+        } catch (QgisConnectionStringParserException $e) {
             $error = 'Project '.$this->project->getKey().' layer '.$this->name.', error in datasource: '.$e->getMessage();
             jLog::log($error, 'lizmapadmin');
 
-            // As we don't have any parameters here, probably it's better to trigger an exception instead of trying
-            // to connect to a database without any connection parameters.
+            // As we don't have parsed all parameters, probably it's better to trigger an exception instead of trying
+            // to connect to a database without any or bad connection parameters.
             throw new Exception($error);
         }
 
