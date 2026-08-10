@@ -16,20 +16,24 @@ class qgisVectorLayerDatasource
      * @var array Regexes used to get datasource parameters
      */
     protected $datasourceRegexes = array(
-        'dbname' => "dbname='?([^ ']+)'? ",
-        'service' => "service='?([^ ']+)'? ",
+        'dbname' => "dbname='?([^ ']+)'?(?: |$)",
+        'service' => "service='?([^ ']+)'?(?: |$)",
         'host' => "host='?([^ ']+)'? port=",
-        'port' => 'port=([0-9]+) ',
-        'user' => "user='?([^ ']+)'? ",
-        'password' => "password='?([^ ']+)'? ",
-        'sslmode' => "sslmode='?([^ ']+)'? ",
-        'authcfg' => "authcfg='?([^ ']+)'? ",
-        'key' => "key='?([^ ']+)'? ",
-        'estimatedmetadata' => 'estimatedmetadata=([^ ]+) ',
-        'selectatid' => 'selectatid=([^ ]+) ',
-        'srid' => 'srid=([0-9]+) ',
-        'type' => 'type=([a-zA-Z]+) ',
-        'checkPrimaryKeyUnicity' => "checkPrimaryKeyUnicity='([0-1]+)' ",
+        'port' => 'port=([0-9]+)(?: |$)',
+        'user' => "user='?([^ ']+)'?(?: |$)",
+        'password' => array(
+            "password='((?:\\\\\\'|[^'])*)'(?: |$)",
+            'password="((?:\\\"|[^"])*)"(?: |$)',
+            "password=([^ ']+)(?: |$)",
+        ),
+        'sslmode' => "sslmode='?([^ ']+)'?(?: |$)",
+        'authcfg' => "authcfg='?([^ ']+)'?(?: |$)",
+        'key' => "key='?([^ ']+)'?(?: |$)",
+        'estimatedmetadata' => 'estimatedmetadata=([^ ]+)(?: |$)',
+        'selectatid' => 'selectatid=([^ ]+)(?: |$)',
+        'srid' => 'srid=([0-9]+)(?: |$)',
+        'type' => 'type=([a-zA-Z]+)(?: |$)',
+        'checkPrimaryKeyUnicity' => "checkPrimaryKeyUnicity='([0-1]+)'(?: |$)",
         'table' => 'table="(.+?)"($|\s)',
         'geocol' => '\(([^ >]+)\)',
         'sql' => ' sql=(.*)$',
@@ -100,6 +104,16 @@ class qgisVectorLayerDatasource
                 str_replace('\"', $backSlashedQuoteReplacement, $this->datasource),
                 $result
             );
+        } elseif (is_array($regex)) {
+            foreach ($regex as $r) {
+                if (preg_match(
+                    '#'.$r.'#s',
+                    $this->datasource,
+                    $result
+                )) {
+                    break;
+                }
+            }
         } else {
             preg_match(
                 '#'.$regex.'#s',
@@ -110,10 +124,13 @@ class qgisVectorLayerDatasource
 
         $nb_result = count($result);
         if ((2 <= $nb_result) and ($nb_result <= 3) and strlen($result[1])) {
-            // We replace back the backslahsed quote replacement in the value by double-quotes
-            $value = $result[1];
             if ($param == 'table') {
+                // We replace back the backslahsed quote replacement in the value by double-quotes
                 $value = str_replace($backSlashedQuoteReplacement, '"', $result[1]);
+            } elseif ($param == 'password') {
+                $value = str_replace(array("\\'", '\"'), array("'", '"'), $result[1]);
+            } else {
+                $value = $result[1];
             }
 
             // Specific parsing for complex table parameter
