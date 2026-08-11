@@ -63,6 +63,71 @@ class qgisVectorLayerDatasourceTest extends TestCase
         $this->assertEquals('', $element->getDatasourceParameter('sql'));
     }
 
+    public function testPostgresDatasourceWithEscapedDelimiterInPassword(): void
+    {
+        $provider = 'postgres';
+        $datasource = "dbname='test_dbname' host=test_host port=5432 user='test_user' password='test_\\'password' sslmode=prefer";
+
+        $element = new qgisVectorLayerDatasource($provider, $datasource);
+
+        $this->assertEquals('test_dbname', $element->getDatasourceParameter('dbname'));
+        $this->assertEquals('', $element->getDatasourceParameter('service'));
+        $this->assertEquals('test_host', $element->getDatasourceParameter('host'));
+        $this->assertEquals('5432', $element->getDatasourceParameter('port'));
+        $this->assertEquals('test_user', $element->getDatasourceParameter('user'));
+        $this->assertEquals('test_\'password', $element->getDatasourceParameter('password'));
+        $this->assertEquals('', $element->getDatasourceParameter('authcfg'));
+        $this->assertEquals('prefer', $element->getDatasourceParameter('sslmode'));
+        $this->assertEquals('', $element->getDatasourceParameter('key'));
+        $this->assertEquals('', $element->getDatasourceParameter('estimatedmetadata'));
+        $this->assertEquals('', $element->getDatasourceParameter('selectatid'));
+        $this->assertEquals('', $element->getDatasourceParameter('srid'));
+        $this->assertEquals('', $element->getDatasourceParameter('type'));
+        $this->assertEquals('', $element->getDatasourceParameter('checkPrimaryKeyUnicity'));
+        $this->assertEquals('', $element->getDatasourceParameter('table'));
+        $this->assertEquals('', $element->getDatasourceParameter('tablename'));
+        $this->assertEquals('', $element->getDatasourceParameter('schema'));
+        $this->assertEquals('', $element->getDatasourceParameter('geocol'));
+        $this->assertEquals('', $element->getDatasourceParameter('sql'));
+
+        $provider = 'postgres';
+        $datasource = "dbname='test_dbname' host=test_host port=5432 user='test_user' password=\"test_\\\"password\" sslmode=prefer";
+
+        $element = new qgisVectorLayerDatasource($provider, $datasource);
+
+        $this->assertEquals('test_dbname', $element->getDatasourceParameter('dbname'));
+        $this->assertEquals('test_host', $element->getDatasourceParameter('host'));
+        $this->assertEquals('5432', $element->getDatasourceParameter('port'));
+        $this->assertEquals('test_user', $element->getDatasourceParameter('user'));
+        $this->assertEquals('test_"password', $element->getDatasourceParameter('password'));
+        $this->assertEquals('prefer', $element->getDatasourceParameter('sslmode'));
+
+        $provider = 'postgres';
+        $datasource = "dbname='test_dbname' host=test_host port=5432 user='test_user' password=\"test password\" sslmode=prefer";
+
+        $element = new qgisVectorLayerDatasource($provider, $datasource);
+
+        $this->assertEquals('test_dbname', $element->getDatasourceParameter('dbname'));
+        $this->assertEquals('test_host', $element->getDatasourceParameter('host'));
+        $this->assertEquals('5432', $element->getDatasourceParameter('port'));
+        $this->assertEquals('test_user', $element->getDatasourceParameter('user'));
+        $this->assertEquals('test password', $element->getDatasourceParameter('password'));
+        $this->assertEquals('prefer', $element->getDatasourceParameter('sslmode'));
+
+        $provider = 'postgres';
+        $datasource = "dbname='test_dbname' host=test_host port=5432 user='test_user' password=test password sslmode=prefer";
+
+        $element = new qgisVectorLayerDatasource($provider, $datasource);
+
+        $this->assertEquals('test_dbname', $element->getDatasourceParameter('dbname'));
+        $this->assertEquals('test_host', $element->getDatasourceParameter('host'));
+        $this->assertEquals('5432', $element->getDatasourceParameter('port'));
+        $this->assertEquals('test_user', $element->getDatasourceParameter('user'));
+        $this->assertEquals('test', $element->getDatasourceParameter('password'));
+        $this->assertEquals('prefer', $element->getDatasourceParameter('sslmode'));
+
+    }
+
     public function testPostgresDatasourceWithoutGeometry(): void
     {
         $provider = 'postgres';
