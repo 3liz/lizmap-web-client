@@ -1,16 +1,10 @@
 {ifacl2 'lizmap.admin.project.list.view'}
-{meta_html js $j_basepath.'assets/js/qgis-projects-list.js'}
-
 {meta_html assets 'datatables_responsive'}
 
 <h2>{@admin.menu.lizmap.project.list.label@}</h2>
 
 <div id="lizmap_project_list_container" data-base-url='{$baseurl}'>
     <div id="lizmap_project_list">
-        {assign $colspanFromFilter = 9}
-        {if $hasInspectionData}
-            {assign $colspanFromFilter = 16}
-        {/if}
         {if $qgisServerOk == false}
         {*The best would be to not display this table at all until QGIS server is OK.*}
         {*So we can assume later in the code we have a QGIS server int version*}
@@ -42,7 +36,7 @@
                 <option {if $repository == $repo->getKey() } selected {/if} value="{$repo->getKey()}" >{$repo->getLabel()}</option>
                 {/foreach}
                 </select></th>
-                <th colspan="{$colspanFromFilter}"></th>
+                <th colspan="16"></th>
                 </tr>
                 <tr>
                     <th></th>

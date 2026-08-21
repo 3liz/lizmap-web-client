@@ -125,13 +125,13 @@ class QgisProjectsListData
      *               hasSomeProjectsNotDisplayed: bool
      *               }
      */
-    public function getData()
+    public function getData(string $repoKey)
     {
         $context = $this->getContext();
 
         $hasInspectionData = false;
         $hasSomeProjectsNotDisplayed = false;
-        $rawItems = $this->gatherRawProjects($hasInspectionData, $hasSomeProjectsNotDisplayed);
+        $rawItems = $this->gatherRawProjects($hasInspectionData, $hasSomeProjectsNotDisplayed, $repoKey);
 
         $rows = array();
         foreach ($rawItems as $rawItem) {
@@ -154,11 +154,15 @@ class QgisProjectsListData
      *
      * @return array The list of raw project items
      */
-    private function gatherRawProjects(&$hasInspectionData, &$hasSomeProjectsNotDisplayed)
+    private function gatherRawProjects(&$hasInspectionData, &$hasSomeProjectsNotDisplayed, string $repoKey)
     {
         $rawItems = array();
 
-        $repositories = \lizmap::getRepositoryList();
+        if (empty($repoKey)) {
+            $repositories = \lizmap::getRepositoryList();
+        } else {
+            $repositories = array($repoKey);
+        }
 
         // Get Lizmap services to find the path where are stored the optional inspection data files
         $services = \lizmap::getServices();

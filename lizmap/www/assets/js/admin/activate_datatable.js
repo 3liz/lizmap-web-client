@@ -280,4 +280,17 @@ $(document).ready(function () {
         toggleHiddenCursor(project_table);
     });
 
+    // Filter the table on the repository column when the selector changes
+    const repositorySelector = document.getElementById('repository-selector');
+    if (repositorySelector) {
+        const filterByRepository = function () {
+            const repositoryKey = repositorySelector.value;
+            let params = new URLSearchParams(window.location.search );
+            params.set('repository', repositoryKey);
+            // reload page with search param, (no submit button)
+            window.location.search = "?"+params;
+        };
+        repositorySelector.addEventListener('change', filterByRepository);
+    }
+
 });

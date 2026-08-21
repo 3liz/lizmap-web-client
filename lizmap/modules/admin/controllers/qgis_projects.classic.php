@@ -40,8 +40,7 @@ class qgis_projectsCtrl extends jController
         // Set the HTML content
         $tpl = new jTpl();
         $tpl->assign($listData->getContext());
-        
-        $tpl->assign('dataUrl', jUrl::get('admin~qgis_projects:data'));
+
         $tpl->assign(
             'notDisplayedMessage',
             jLocale::get(
@@ -49,11 +48,12 @@ class qgis_projectsCtrl extends jController
                 array(jLocale::get('admin~admin.project.modal.title'))
             )
         );
-        $repoName = $this->param('repository');
+        $repoName = $this->param('repository', '');
         // bad repo name, set to null
-        if (is_null(lizmap::getRepository($repoName ?? ''))) {
-            $repoName = null;
+        if (is_null(lizmap::getRepository($repoName))) {
+            $repoName = '';
         }
+        $tpl->assign('dataUrl', jUrl::get('admin~qgis_projects:data', array('repository' => $repoName)));
         $tpl->assign('repository', $repoName);
         $tpl->assign('repositoriesList', lizmap::getRepositoryList(true));
         $tpl->assign('baseurl', jUrl::get('qgis_projects:index'));
@@ -74,7 +74,7 @@ class qgis_projectsCtrl extends jController
         $rep = $this->getResponse('json');
 
         $listData = new QgisProjectsListData();
-        $rep->data = $listData->getData();
+        $rep->data = $listData->getData($this->param('repository', ''));
 
         return $rep;
     }
