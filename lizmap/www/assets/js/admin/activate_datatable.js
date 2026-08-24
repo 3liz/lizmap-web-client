@@ -25,6 +25,11 @@ $(document).ready(function () {
             .replace(/'/g, '&#39;');
     }
 
+    function intVersionAsString(value) {
+        // 03.09.00 => 3.9 (remove useless .00), 03.05.11 => 3.5.11
+        return value.replace(/\.0/g, '.').replace(/^0/, '').replace(/\.0$/, '');
+    }
+
     // Default renderer: display the escaped value, sort/filter on the raw value.
     function renderValue(cell, type) {
         if (!cell) {
@@ -121,7 +126,7 @@ $(document).ready(function () {
         {
             data: 'qgis_version',
             render: (c, type) => (type === 'display')
-                ? esc(c.v) + (c.badge ? ' <span class="badge badge-warning">⚠</span>' : '')
+                ? intVersionAsString(esc(c.v)) + (c.badge ? ' <span class="badge badge-warning">⚠</span>' : '')
                 : c.v,
             createdCell: applyAttributes,
         },

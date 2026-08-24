@@ -13,12 +13,12 @@
         </div>
         {/if}
 
-        <!-- Help button about the colours used in the table -->
-        <button type="button" data-bs-target="#lizmap_project_list_help" role="button" class="btn btn-sm float-end" data-bs-toggle="modal">{@admin.project.modal.title@}</button>
-        <!-- The modal div code is at the bottom of this file -->
-
         <!-- Warning displayed when some projects cannot be shown in the main web interface -->
         <div id="lizmap_project_list_not_displayed" class="alert alert-warning" style="display: none;">{$notDisplayedMessage}</div>
+
+        <!-- Help button about the colours used in the table -->
+        <button type="button" data-bs-target="#lizmap_project_list_help" role="button" class="btn btn-sm" data-bs-toggle="modal">{@admin.project.modal.title@}</button>
+        <!-- The modal div code is at the bottom of this file -->
 
         <!-- Sentence displayed when the user clicks on a line of the projects table
         to view the hidden columns data and when there is no data for these columns -->
