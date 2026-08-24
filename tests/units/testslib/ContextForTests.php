@@ -246,4 +246,9 @@ class ContextForTests implements AppContextInterface
     {
         return LizmapTilerForTests::getTileCapabilities($project);
     }
+
+    public function buildMapToken()
+    {
+        return "TOKEN_FOR_TEST";
+    }
 }

@@ -318,4 +318,6 @@ interface AppContextInterface
      * @param Project $project
      */
     public function getTileCaps($project);
+
+    public function buildMapToken();
 }

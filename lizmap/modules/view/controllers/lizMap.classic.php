@@ -636,11 +636,7 @@ class lizMapCtrl extends jController
 
         $rep->body->assign($assign);
 
-        $request_headers = jApp::coord()->request->headers();
-        $_SESSION['html_map_token'] = md5(json_encode(array(
-            'Host' => $request_headers['Host'],
-            'User-Agent' => $request_headers['User-Agent'],
-        )));
+        $_SESSION['html_map_token'] = $lproj->getAppContext()->buildMapToken();
         $referer = jApp::coord()->request->header('Referer');
         if ($referer && $lrep->checkRefererEmbededIframe($referer)) {
             $sessionsParams = &jApp::config()->sessions;
