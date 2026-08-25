@@ -399,4 +399,14 @@ class JelixContext implements AppContextInterface
 
         return $_SERVER['REMOTE_ADDR'];
     }
+
+    public function buildMapToken()
+    {
+        $request_headers = $this->getCoord()->request->headers();
+
+        return md5(json_encode(array(
+            'Host' => $request_headers['Host'],
+            'User-Agent' => $request_headers['User-Agent'] ?? '',
+        )));
+    }
 }

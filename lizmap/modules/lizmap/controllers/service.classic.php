@@ -453,12 +453,8 @@ class serviceCtrl extends jController
         // Check WFS rights
         if (isset($params['service']) && strtolower($params['service']) === 'wfs'
             && !$lproj->getAppContext()->aclCheck('lizmap.tools.layer.export', $this->repository->getKey())) {
-            $request_headers = jApp::coord()->request->headers();
             if (!isset($_SESSION['html_map_token'])
-                || $_SESSION['html_map_token'] !== md5(json_encode(array(
-                    'Host' => $request_headers['Host'],
-                    'User-Agent' => $request_headers['User-Agent'],
-                )))) {
+                || $_SESSION['html_map_token'] !== $lproj->getAppContext()->buildMapToken()) {
                 jMessage::add(jLocale::get('view~default.service.access.forbidden'), 'Forbidden');
 
                 return false;
