@@ -65,5 +65,8 @@
     "undici": "^8.2.x",
     "webpack-merge": "^6.0.x",
     "xmldoc": "^3.0.0"
+  },
+  "dependencies": {
+    "node-html-parser": "^9.0.1"
   }
 }
