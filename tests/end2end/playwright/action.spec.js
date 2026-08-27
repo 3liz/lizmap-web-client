@@ -1,8 +1,9 @@
 // @ts-check
-import { test, expect } from '@playwright/test';
-// import { expect as requestExpect } from './fixtures/expect-request.js'
+import { checkJson, getAuthStorageStatePath } from './globals';
 import { expect as responseExpect } from './fixtures/expect-response.js'
 import { ProjectPage } from './pages/project';
+import { test, expect } from '@playwright/test';
+// import { expect as requestExpect } from './fixtures/expect-request.js'
 
 test.describe('Lizmap actions @readonly', () => {
 
@@ -204,5 +205,100 @@ test.describe('Lizmap actions @readonly', () => {
 
         // The action message is back to be hidden
         actionMessage.isHidden();
+    });
+});
+
+test.describe('Lizmap actions ACL - not connected @readonly', () => {
+
+    test.beforeEach(async ({ page }) => {
+        const project = new ProjectPage(page, 'feature_toolbar');
+        await project.open();
+    });
+
+    test('should not display the restricted actions', async ({ page }) => {
+        await page.locator('#button-action').click();
+        const actionSelect = page.locator('#lizmap-project-actions select.action-select');
+        const values = await actionSelect.locator('option')
+            // @ts-ignore HTMLOptionElement has value property but it is not known
+            .evaluateAll(list => list.map(opt => opt.value));
+        expect(values).toHaveLength(3);
+        expect(values).not.toContain('project_action_group_a_only');
+        expect(values).not.toContain('project_action_user_only');
+    });
+
+
+    test('should not display the layer action block', async ({ page }) => {
+        const project = new ProjectPage(page, 'feature_toolbar');
+        await project.openLayerInfo('tramway_lines');
+        await expect(page.locator('#sub-dock lizmap-action-selector')).toHaveCount(0);
+    });
+});
+
+test.describe('Lizmap actions ACL - user in group a @readonly', () => {
+    test.use({ storageState: getAuthStorageStatePath('user_in_group_a') });
+
+    test.beforeEach(async ({ page }) => {
+        const project = new ProjectPage(page, 'feature_toolbar');
+        await project.open();
+    });
+
+    test('should display the action allowed to its group', async ({ page }) => {
+        await page.locator('#button-action').click();
+        const actionSelect = page.locator('#lizmap-project-actions select.action-select');
+        const values = await actionSelect.locator('option')
+            // @ts-ignore HTMLOptionElement has value property but it is not known
+            .evaluateAll(list => list.map(opt => opt.value));
+        expect(values).toHaveLength(4);
+        expect(values).toContain('project_action_group_a_only');
+        expect(values).not.toContain('project_action_user_only');
+    });
+
+    test('should display the layer action block', async ({ page }) => {
+        const project = new ProjectPage(page, 'feature_toolbar');
+        await project.openLayerInfo('tramway_lines');
+        await expect(page.locator('#sub-dock lizmap-action-selector')).toHaveCount(1);
+
+        const values = await page.locator('#sub-dock select.action-select option')
+            // @ts-ignore HTMLOptionElement has value property but it is not known
+            .evaluateAll(list => list.map(opt => opt.value));
+        expect(values).toEqual(['', 'layer_action_group_a_only']);
+    });
+});
+
+test.describe('Lizmap actions ACL - user in group b @readonly', () => {
+    test.use({ storageState: getAuthStorageStatePath('user_in_group_b') });
+
+    test.beforeEach(async ({ page }) => {
+        const project = new ProjectPage(page, 'feature_toolbar');
+        await project.open();
+    });
+
+    test('should display the action allowed to its login', async ({ page }) => {
+        await page.locator('#button-action').click();
+        const actionSelect = page.locator('#lizmap-project-actions select.action-select');
+        const values = await actionSelect.locator('option')
+            // @ts-ignore HTMLOptionElement has value property but it is not known
+            .evaluateAll(list => list.map(opt => opt.value));
+        expect(values).toHaveLength(4);
+        expect(values).toContain('project_action_user_only');
+        expect(values).not.toContain('project_action_group_a_only');
+    });
+});
+
+test.describe('Lizmap actions ACL - service @requests @readonly', () => {
+
+    test('should refuse to run a forbidden action', async ({ request }) => {
+        const params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'feature_toolbar',
+        });
+        const url = `/index.php/action/service?${params}`;
+        const response = await request.post(url, {
+            data: { name: 'project_action_group_a_only' }
+        });
+
+        const body = await checkJson(response);
+        expect(body).toHaveProperty('errors');
+        expect(body.errors.title).toBe('Action unknown');
     });
 });
