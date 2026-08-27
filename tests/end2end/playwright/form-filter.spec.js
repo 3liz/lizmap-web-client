@@ -99,4 +99,32 @@ test.describe('Form filter', () => {
         await expect(page.locator('#ui-id-2 .ui-menu-item')).toHaveCount(1);
         await expect(page.locator('#ui-id-2 .ui-menu-item div')).toHaveText('monuments');
     });
+
+    test('Deactivate filter button shows up with the "simple" filter method', async ({ page }) => {
+        // Force the 'simple' filtering method (bypasses the attribute table code path)
+        // https://github.com/3liz/lizmap-web-client/issues/6775
+        await page.evaluate(() => { globalThis['filterConfigData'].filterMethod = 'simple'; });
+
+        const unfilterButton = page.locator('#layerActionUnfilter');
+
+        // The "Deactivate current filter" button lives in the layer switcher dock,
+        // opening it switches away from the filter dock (docks are mutually exclusive)
+        await page.locator('#button-switcher').click();
+        await expect(unfilterButton).toBeHidden();
+
+        // Re-open the filter dock to apply the filter
+        await page.locator('#button-filter').click();
+        await page.locator('#liz-filter-field-test_filter').selectOption('_uvres_d_art_et_monuments_de_l_espace_urbain');
+        await expect(page.locator('#liz-filter-item-layer-total-count')).toHaveText('1');
+
+        // Bug #6775: this button stayed hidden before the fix
+        await page.locator('#button-switcher').click();
+        await expect(unfilterButton).toBeVisible();
+
+        await unfilterButton.click();
+        await expect(unfilterButton).toBeHidden();
+
+        await page.locator('#button-filter').click();
+        await expect(page.locator('#liz-filter-item-layer-total-count')).toHaveText('4');
+    });
 });
