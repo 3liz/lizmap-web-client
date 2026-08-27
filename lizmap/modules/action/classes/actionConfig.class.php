@@ -1,5 +1,6 @@
 <?php
 
+use Lizmap\App\AppContextInterface;
 use Lizmap\Project\UnknownLizmapProjectException;
 
 /**
@@ -70,6 +71,9 @@ class actionConfig
             $this->convertOldConfig();
             $this->oldConfigConversionDone = true;
         }
+
+        // Remove actions when the current user is not allowed to see and run
+        $this->filterConfigByUser($lproj->getAppContext());
 
         // Get config
         $this->status = true;
@@ -160,5 +164,101 @@ class actionConfig
         }
 
         return $actions;
+    }
+
+    /**
+     * Filter the project actions against the current user login and groups.
+     *
+     * An action can be restricted with two optional properties:
+     * - lizmap_user_groups: the list of the allowed ACL group ids
+     * - lizmap_user: the list of the allowed user logins
+     *
+     * If none of them is set (or if they are empty), the action is visible
+     * by everybody. Otherwise the action is kept only if the user is a member
+     * of one of the given groups OR if their login is in the given logins.
+     *
+     * These properties are always removed from the configuration: they must
+     * never be sent to the web browser.
+     *
+     * @param AppContextInterface $appContext The application context
+     */
+    protected function filterConfigByUser(AppContextInterface $appContext)
+    {
+        // Get the user login and groups
+        // Same behaviour as for the print layouts Lizmap\Project\Project::getUpdatedConfig()
+        $userGroups = array('');
+        $userLogin = 'anonymous';
+        if ($appContext->userIsConnected()) {
+            $userGroups = $appContext->aclUserGroupsId();
+            $userLogin = $appContext->getUserSession()->login;
+        }
+
+        $allowedActions = array();
+        foreach ($this->config as $action) {
+            if ($this->checkActionAcl($action, $userLogin, $userGroups)) {
+                $allowedActions[] = $action;
+            }
+            // Do not expose the ACL configuration to the client
+            unset($action->lizmap_user_groups, $action->lizmap_user);
+        }
+        $this->config = $allowedActions;
+    }
+
+    /**
+     * Check the current user is allowed to see and run the given action.
+     *
+     * @param object   $action     The action configuration object
+     * @param string   $userLogin  The current user login
+     * @param string[] $userGroups The current user ACL groups
+     *
+     * @return bool True if the action must be kept
+     */
+    protected function checkActionAcl($action, $userLogin, $userGroups)
+    {
+        $allowedGroups = $this->getAclProperty($action, 'lizmap_user_groups');
+        $allowedLogins = $this->getAclProperty($action, 'lizmap_user');
+
+        // No restriction at all: the action is public
+        if (empty($allowedGroups) && empty($allowedLogins)) {
+            return true;
+        }
+
+        // The user is a member of one of the allowed groups
+        if (array_intersect($allowedGroups, $userGroups)) {
+            return true;
+        }
+
+        // The user login has been explicitly allowed
+        if (in_array($userLogin, $allowedLogins)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Read an ACL property of an action and normalize it
+     * into a trimmed list of strings.
+     *
+     * The property can be given as an array or as a comma separated string,
+     * as done for the "allowed_groups" property of the print layouts.
+     *
+     * @param object $action   The action configuration object
+     * @param string $property The property name
+     *
+     * @return string[] The normalized list, empty if the property is not set
+     */
+    protected function getAclProperty($action, $property)
+    {
+        if (!property_exists($action, $property) || empty($action->{$property})) {
+            return array();
+        }
+
+        $values = $action->{$property};
+        if (!is_array($values)) {
+            $values = explode(',', $values);
+        }
+
+        return array_values(array_filter(array_map('trim', $values)));
     }
 }
