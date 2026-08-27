@@ -882,8 +882,12 @@ class WMSRequest extends OGCRequest
 
         // Build hidden table containing all features when there are more than one
         if (count($allFeatureAttributes) > 1) {
+            list($allFeatureColumns, $allFeatureRows) = self::buildAllFeaturesTableData(
+                array_reverse($allFeatureAttributes)
+            );
             $content[] = $this->getViewTpl('view~popup_all_features_table', $layerName, $layerId, $layerTitle, array(
-                'allFeatureAttributes' => array_reverse($allFeatureAttributes),
+                'allFeatureColumns' => $allFeatureColumns,
+                'allFeatureRows' => $allFeatureRows,
                 'remoteStorageProfile' => $remoteStorageProfile,
                 'allFeatureToolbars' => array_reverse($allFeatureToolbars),
                 'checkBoxFields' => $checkBoxFields,
@@ -891,6 +895,62 @@ class WMSRequest extends OGCRequest
         }
 
         return $content;
+    }
+
+    /**
+     * Build the columns and the rows displayed by the popup compact table.
+     *
+     * A column is kept as soon as at least one feature has a non empty value for
+     * it. Every returned row then holds one entry per kept column, an empty string
+     * when that feature has no value, so all the rows have the same number of
+     * cells. Rows with a varying number of cells break the DataTables instance
+     * built on that table.
+     *
+     * @param array $allFeatureAttributes the attributes of each feature, as given by getFeatureInfo
+     *
+     * @return array the kept column names and the rows, as array($columns, $rows)
+     */
+    protected static function buildAllFeaturesTableData($allFeatureAttributes)
+    {
+        // Keep the fields order given by QGIS Server, and the fields having data
+        $columnsOrder = array();
+        $columnsWithData = array();
+        $featuresValues = array();
+
+        foreach ($allFeatureAttributes as $featureAttributes) {
+            $values = array();
+            foreach ($featureAttributes as $attribute) {
+                $name = (string) $attribute['name'];
+                if ($name === 'geometry' || $name === 'maptip') {
+                    continue;
+                }
+                $value = (string) $attribute['value'];
+                $values[$name] = $value;
+                $columnsOrder[$name] = true;
+                if ($value !== '') {
+                    $columnsWithData[$name] = true;
+                }
+            }
+            $featuresValues[] = $values;
+        }
+
+        $columns = array();
+        foreach (array_keys($columnsOrder) as $name) {
+            if (isset($columnsWithData[$name])) {
+                $columns[] = $name;
+            }
+        }
+
+        $rows = array();
+        foreach ($featuresValues as $values) {
+            $row = array();
+            foreach ($columns as $name) {
+                $row[$name] = isset($values[$name]) ? $values[$name] : '';
+            }
+            $rows[] = $row;
+        }
+
+        return array($columns, $rows);
     }
 
     /**
