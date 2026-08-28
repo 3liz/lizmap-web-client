@@ -148,5 +148,55 @@ export const expect = baseExpect.extend({
             name: assertionName,
             expected: expectedParameters,
         };
+    },
+
+    /**
+     *Expected the request url to contain parameters
+     *
+     * @param {Request|null} request The request to test
+     * @param {string|null}  contentType The content type of the request
+     * @param {{[key: string]: string|RegExp}} expectedParameters  List of expected parameters
+     *
+     * @returns {MatcherReturnType} the result
+     */
+    toContainParametersInPostFormData(request, contentType, expectedParameters) {
+        const assertionName = 'toContainParametersInPostFormData';
+        let pass = request !== null;
+
+        const boundary = contentType?.split('boundary=')[1] ?? '';
+        const postData = request?.postData() ?? '';
+        const parts = postData.split(`--${boundary}`);
+        /** @type {Record<string, string>} */
+        const acc = {}
+        parts.forEach(part => {
+            const nameMatch = part.match(/Content-Disposition: form-data; name="([^"]+)"/);
+            if (nameMatch && nameMatch.length > 1) {
+                const name = nameMatch[1];
+                const value = part.replace(`Content-Disposition: form-data; name="${name}"`,'').trim();
+                acc[name] = value;
+            }
+            return acc;
+        });
+        const searchParams = new URLSearchParams(acc);
+
+        const values = containParameters(searchParams, expectedParameters);
+        pass = (pass && values.pass);
+
+        const message = pass
+            ? () => this.utils.matcherHint(assertionName, undefined, undefined, { isNot: this.isNot }) +
+                '\n\n' +
+                'The request contains the expected parameters in POST FormData\n'+
+                values.message
+            : () => this.utils.matcherHint(assertionName, undefined, undefined, { isNot: this.isNot }) +
+                '\n\n' +
+                'The request does not contain the expected parameters in POST FormData\n'+
+                values.message;
+
+        return {
+            message,
+            pass,
+            name: assertionName,
+            expected: expectedParameters,
+        };
     }
 })
