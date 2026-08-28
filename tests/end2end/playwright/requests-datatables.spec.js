@@ -1,17 +1,25 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { checkJson } from './globals';
+import { expect as responseExpect } from './fixtures/expect-response.js'
 
 test.describe('Datables Requests @requests @readonly', () => {
+
+    const repository = 'testsrepository';
+    const project = 'attribute_table';
+    const projectHuge = 'huge_attribute_table';
+    const layerId = 'quartiers_5fe55662_2cbf_48f4_a505_498c61fe978c';
+    const layerIdHuge = 'huge_table_3a6c5511_aa6a_43fe_957e_e2c3f5b0a085';
+    const layerIdBakeries = 'bakeries_8ca232e6_df58_44f7_94df_b4c02cc7a79c';
+    const base = '/index.php/lizmap/datatables';
 
     test('Simple request', async({ request }) => {
         // Simple datatable request
         let params = new URLSearchParams({
-            repository: 'testsrepository',
-            project: 'attribute_table',
-            layerId: 'quartiers_5fe55662_2cbf_48f4_a505_498c61fe978c',
+            'repository': repository,
+            'project': project,
+            'layerId': layerId,
         });
-        let url = `/index.php/lizmap/datatables?${params}`;
+        let url = `${base}?${params}`;
         let response = await request.post(url, {
             data: {
                 start: 0,
@@ -25,7 +33,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             }
         });
 
-        const body = await checkJson(response);
+        responseExpect(response).toBeJson();
+        const body = await response.json();
         expect(body).toHaveProperty('draw');
         expect(body).toHaveProperty('recordsTotal', 7);
         expect(body).toHaveProperty('recordsFiltered', 7);
@@ -49,11 +58,11 @@ test.describe('Datables Requests @requests @readonly', () => {
     test('Bbox request', async({ request }) => {
         // Simple datatable request
         let params = new URLSearchParams({
-            repository: 'testsrepository',
-            project: 'attribute_table',
-            layerId: 'quartiers_5fe55662_2cbf_48f4_a505_498c61fe978c',
+            'repository': repository,
+            'project': project,
+            'layerId': layerId,
         });
-        let url = `/index.php/lizmap/datatables?${params}`;
+        let url = `${base}?${params}`;
         let response = await request.post(url, {
             data: {
                 start: 0,
@@ -69,7 +78,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             }
         });
 
-        const body = await checkJson(response);
+        responseExpect(response).toBeJson();
+        const body = await response.json();
         expect(body).toHaveProperty('draw');
         expect(body).toHaveProperty('recordsTotal', 7);
         expect(body).toHaveProperty('recordsFiltered', 5);
@@ -88,11 +98,11 @@ test.describe('Datables Requests @requests @readonly', () => {
     test('Order request with a shapefile layer', async({ request }) => {
         // Simple datatable request
         let params = new URLSearchParams({
-            repository: 'testsrepository',
-            project: 'attribute_table',
-            layerId: 'quartiers_5fe55662_2cbf_48f4_a505_498c61fe978c',
+            'repository': repository,
+            'project': project,
+            'layerId': layerId,
         });
-        let url = `/index.php/lizmap/datatables?${params}`;
+        let url = `${base}?${params}`;
         let response = await request.post(url, {
             data: {
                 start: 0,
@@ -106,7 +116,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             }
         });
 
-        const body = await checkJson(response);
+        responseExpect(response).toBeJson();
+        const body = await response.json();
         expect(body).toHaveProperty('draw');
         expect(body).toHaveProperty('recordsTotal', 7);
         expect(body).toHaveProperty('recordsFiltered', 7);
@@ -125,11 +136,11 @@ test.describe('Datables Requests @requests @readonly', () => {
     test('Order request with a postgresql layer', async({ request }) => {
         // Simple datatable request
         let params = new URLSearchParams({
-            repository: 'testsrepository',
-            project: 'huge_attribute_table',
-            layerId: 'huge_table_3a6c5511_aa6a_43fe_957e_e2c3f5b0a085',
+            'repository': repository,
+            'project': projectHuge,
+            'layerId': layerIdHuge,
         });
-        let url = `/index.php/lizmap/datatables?${params}`;
+        let url = `${base}?${params}`;
         let response = await request.post(url, {
             data: {
                 start: 0,
@@ -143,7 +154,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             }
         });
 
-        const body = await checkJson(response);
+        responseExpect(response).toBeJson();
+        const body = await response.json();
         expect(body).toHaveProperty('draw');
         expect(body).toHaveProperty('recordsTotal', 5000);
         expect(body).toHaveProperty('recordsFiltered', 5000);
@@ -162,11 +174,11 @@ test.describe('Datables Requests @requests @readonly', () => {
     test('Search request', async({ request }) => {
         // Simple datatable request
         let params = new URLSearchParams({
-            repository: 'testsrepository',
-            project: 'attribute_table',
-            layerId: 'quartiers_5fe55662_2cbf_48f4_a505_498c61fe978c',
+            'repository': repository,
+            'project': project,
+            'layerId': layerId,
         });
-        let url = `/index.php/lizmap/datatables?${params}`;
+        let url = `${base}?${params}`;
         let response = await request.post(url, {
             data: {
                 start: 0,
@@ -187,7 +199,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             }
         });
 
-        let body = await checkJson(response);
+        responseExpect(response).toBeJson();
+        let body = await response.json();
         expect(body).toHaveProperty('draw');
         expect(body).toHaveProperty('recordsTotal', 7);
         expect(body).toHaveProperty('recordsFiltered', 1);
@@ -225,7 +238,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             }
         });
 
-        body = await checkJson(response);
+        responseExpect(response).toBeJson();
+        body = await response.json();
         expect(body).toHaveProperty('draw');
         expect(body).toHaveProperty('recordsTotal', 7);
         expect(body).toHaveProperty('recordsFiltered', 2);
@@ -264,7 +278,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             }
         });
 
-        body = await checkJson(response);
+        responseExpect(response).toBeJson();
+        body = await response.json();
         expect(body).toHaveProperty('draw');
         expect(body).toHaveProperty('recordsTotal', 7);
         expect(body).toHaveProperty('recordsFiltered', 4);
@@ -286,11 +301,11 @@ test.describe('Datables Requests @requests @readonly', () => {
     test('Pages request', async({ request }) => {
         // Simple datatable request
         let params = new URLSearchParams({
-            repository: 'testsrepository',
-            project: 'attribute_table',
-            layerId: 'points_b288cb23_3e45_4e22_ad33_152363ef6d21',
+            'repository': repository,
+            'project': project,
+            'layerId': 'points_b288cb23_3e45_4e22_ad33_152363ef6d21',
         });
-        let url = `/index.php/lizmap/datatables?${params}`;
+        let url = `${base}?${params}`;
         let response = await request.post(url, {
             data: {
                 start: 0,
@@ -304,7 +319,8 @@ test.describe('Datables Requests @requests @readonly', () => {
                 order: [{'column': 2, 'dir': 'asc'}],
             }
         });
-        let body = await checkJson(response);
+        responseExpect(response).toBeJson();
+        let body = await response.json();
         expect(body).toHaveProperty('draw');
         expect(body).toHaveProperty('recordsTotal', 700);
         expect(body).toHaveProperty('recordsFiltered', 700);
@@ -329,7 +345,8 @@ test.describe('Datables Requests @requests @readonly', () => {
                 order: [{'column': 2, 'dir': 'asc'}],
             }
         });
-        body = await checkJson(response);
+        responseExpect(response).toBeJson();
+        body = await response.json();
         expect(body).toHaveProperty('draw');
         expect(body).toHaveProperty('recordsTotal', 700);
         expect(body).toHaveProperty('recordsFiltered', 700);
@@ -361,7 +378,8 @@ test.describe('Datables Requests @requests @readonly', () => {
                 },
             }
         });
-        body = await checkJson(response);
+        responseExpect(response).toBeJson();
+        body = await response.json();
         expect(body).toHaveProperty('draw');
         expect(body).toHaveProperty('recordsTotal', 700);
         expect(body).toHaveProperty('recordsFiltered', 100);
@@ -376,11 +394,11 @@ test.describe('Datables Requests @requests @readonly', () => {
 
     test('Filter featureIds request', async({ request }) => {
         let params = new URLSearchParams({
-            repository: 'testsrepository',
-            project: 'attribute_table',
-            layerId: 'quartiers_5fe55662_2cbf_48f4_a505_498c61fe978c',
+            'repository': repository,
+            'project': project,
+            'layerId': layerId,
         });
-        let url = `/index.php/lizmap/datatables?${params}`;
+        let url = `${base}?${params}`;
         let response = await request.post(url, {
             data: {
                 start: 0,
@@ -396,7 +414,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             }
         });
 
-        let body = await checkJson(response);
+        responseExpect(response).toBeJson();
+        let body = await response.json();
         expect(body).toHaveProperty('draw');
         expect(body).toHaveProperty('recordsTotal', 7);
         expect(body).toHaveProperty('recordsFiltered', 2);
@@ -415,11 +434,11 @@ test.describe('Datables Requests @requests @readonly', () => {
     test('Error: The parameters repository, project and layerId are mandatory.', async({ request }) => {
         // layerId is forgotten
         let params = new URLSearchParams({
-            repository: 'testsrepository',
-            project: 'attribute_table',
-            //layerId: 'quartiers_5fe55662_2cbf_48f4_a505_498c61fe978c',
+            'repository': repository,
+            'project': project,
+            //'layerId': layerId,
         });
-        let url = `/index.php/lizmap/datatables?${params}`;
+        let url = `${base}?${params}`;
         const data = {
             start: 0,
             length: 50,
@@ -434,7 +453,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             data: data,
         });
         // check response
-        let body = await checkJson(response, 400);
+        responseExpect(response).toBeJson(400);
+        let body = await response.json();
         // check response body
         expect(body).toHaveProperty('status', 400);
         expect(body).toHaveProperty('code', 'Bad Request');
@@ -442,16 +462,17 @@ test.describe('Datables Requests @requests @readonly', () => {
 
         // project is forgotten
         params = new URLSearchParams({
-            repository: 'testsrepository',
-            //project: 'attribute_table',
-            layerId: 'quartiers_5fe55662_2cbf_48f4_a505_498c61fe978c',
+            'repository': repository,
+            //'project': project,
+            'layerId': layerId,
         });
-        url = `/index.php/lizmap/datatables?${params}`;
+        url = `${base}?${params}`;
         response = await request.post(url, {
             data: data,
         });
         // check response
-        body = await checkJson(response, 400);
+        responseExpect(response).toBeJson(400);
+        body = await response.json();
         // check response body
         expect(body).toHaveProperty('status', 400);
         expect(body).toHaveProperty('code', 'Bad Request');
@@ -459,16 +480,17 @@ test.describe('Datables Requests @requests @readonly', () => {
 
         // repository is forgotten
         params = new URLSearchParams({
-            //repository: 'testsrepository',
-            project: 'attribute_table',
-            layerId: 'quartiers_5fe55662_2cbf_48f4_a505_498c61fe978c',
+            //'repository': repository,
+            'project': project,
+            'layerId': layerId,
         });
-        url = `/index.php/lizmap/datatables?${params}`;
+        url = `${base}?${params}`;
         response = await request.post(url, {
             data: data,
         });
         // check response
-        body = await checkJson(response, 400);
+        responseExpect(response).toBeJson(400);
+        body = await response.json();
         // check response body
         expect(body).toHaveProperty('status', 400);
         expect(body).toHaveProperty('code', 'Bad Request');
@@ -476,16 +498,17 @@ test.describe('Datables Requests @requests @readonly', () => {
 
         // layerId is empty
         params = new URLSearchParams({
-            repository: 'testsrepository',
-            project: 'attribute_table',
-            layerId: '', //'quartiers_5fe55662_2cbf_48f4_a505_498c61fe978c',
+            'repository': repository,
+            'project': project,
+            'layerId': '', // layerId,
         });
-        url = `/index.php/lizmap/datatables?${params}`;
+        url = `${base}?${params}`;
         response = await request.post(url, {
             data: data,
         });
         // check response
-        body = await checkJson(response, 400);
+        responseExpect(response).toBeJson(400);
+        body = await response.json();
         // check response body
         expect(body).toHaveProperty('status', 400);
         expect(body).toHaveProperty('code', 'Bad Request');
@@ -494,11 +517,11 @@ test.describe('Datables Requests @requests @readonly', () => {
 
     test('Error: The DataTables parameters start, length, order and columns are mandatory.', async({ request }) => {
         const params = new URLSearchParams({
-            repository: 'testsrepository',
-            project: 'attribute_table',
-            layerId: 'quartiers_5fe55662_2cbf_48f4_a505_498c61fe978c',
+            'repository': repository,
+            'project': project,
+            'layerId': layerId,
         });
-        const url = `/index.php/lizmap/datatables?${params}`;
+        const url = `${base}?${params}`;
         // start is forgotten
         let data = {
             //start: 0,
@@ -514,7 +537,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             data: data,
         });
         // check response
-        let body = await checkJson(response, 400);
+        responseExpect(response).toBeJson(400);
+        let body = await response.json();
         // check response body
         expect(body).toHaveProperty('status', 400);
         expect(body).toHaveProperty('code', 'Bad Request');
@@ -535,7 +559,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             data: data,
         });
         // check response
-        body = await checkJson(response, 400);
+        responseExpect(response).toBeJson(400);
+        body = await response.json();
         // check response body
         expect(body).toHaveProperty('status', 400);
         expect(body).toHaveProperty('code', 'Bad Request');
@@ -556,7 +581,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             data: data,
         });
         // check response
-        body = await checkJson(response, 400);
+        responseExpect(response).toBeJson(400);
+        body = await response.json();
         // check response body
         expect(body).toHaveProperty('status', 400);
         expect(body).toHaveProperty('code', 'Bad Request');
@@ -577,7 +603,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             data: data,
         });
         // check response
-        body = await checkJson(response, 400);
+        responseExpect(response).toBeJson(400);
+        body = await response.json();
         // check response body
         expect(body).toHaveProperty('status', 400);
         expect(body).toHaveProperty('code', 'Bad Request');
@@ -586,11 +613,11 @@ test.describe('Datables Requests @requests @readonly', () => {
 
     test('Error: The DataTables parameter order is not well formed.', async({ request }) => {
         const params = new URLSearchParams({
-            repository: 'testsrepository',
-            project: 'attribute_table',
-            layerId: 'quartiers_5fe55662_2cbf_48f4_a505_498c61fe978c',
+            'repository': repository,
+            'project': project,
+            'layerId': layerId,
         });
-        const url = `/index.php/lizmap/datatables?${params}`;
+        const url = `${base}?${params}`;
         // order is not an array
         let data = {
             start: 0,
@@ -606,7 +633,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             data: data,
         });
         // check response
-        let body = await checkJson(response, 400);
+        responseExpect(response).toBeJson(400);
+        let body = await response.json();
         // check response body
         expect(body).toHaveProperty('status', 400);
         expect(body).toHaveProperty('code', 'Bad Request');
@@ -628,7 +656,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             data: data,
         });
         // check response
-        body = await checkJson(response, 400);
+        responseExpect(response).toBeJson(400);
+        body = await response.json();
         // check response body
         expect(body).toHaveProperty('status', 400);
         expect(body).toHaveProperty('code', 'Bad Request');
@@ -650,7 +679,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             data: data,
         });
         // check response
-        body = await checkJson(response, 400);
+        responseExpect(response).toBeJson(400);
+        body = await response.json();
         // check response body
         expect(body).toHaveProperty('status', 400);
         expect(body).toHaveProperty('code', 'Bad Request');
@@ -672,7 +702,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             data: data,
         });
         // check response
-        body = await checkJson(response, 400);
+        responseExpect(response).toBeJson(400);
+        body = await response.json();
         // check response body
         expect(body).toHaveProperty('status', 400);
         expect(body).toHaveProperty('code', 'Bad Request');
@@ -694,7 +725,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             data: data,
         });
         // check response
-        body = await checkJson(response, 400);
+        responseExpect(response).toBeJson(400);
+        body = await response.json();
         // check response body
         expect(body).toHaveProperty('status', 400);
         expect(body).toHaveProperty('code', 'Bad Request');
@@ -704,11 +736,11 @@ test.describe('Datables Requests @requests @readonly', () => {
 
     test('Error: The DataTables parameter columns is not well formed.', async({ request }) => {
         const params = new URLSearchParams({
-            repository: 'testsrepository',
-            project: 'attribute_table',
-            layerId: 'quartiers_5fe55662_2cbf_48f4_a505_498c61fe978c',
+            'repository': repository,
+            'project': project,
+            'layerId': layerId,
         });
-        const url = `/index.php/lizmap/datatables?${params}`;
+        const url = `${base}?${params}`;
         // columns is not an array
         let data = {
             start: 0,
@@ -725,7 +757,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             data: data,
         });
         // check response
-        let body = await checkJson(response, 400);
+        responseExpect(response).toBeJson(400);
+        let body = await response.json();
         // check response body
         expect(body).toHaveProperty('status', 400);
         expect(body).toHaveProperty('code', 'Bad Request');
@@ -748,7 +781,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             data: data,
         });
         // check response
-        body = await checkJson(response, 400);
+        responseExpect(response).toBeJson(400);
+        body = await response.json();
         // check response body
         expect(body).toHaveProperty('status', 400);
         expect(body).toHaveProperty('code', 'Bad Request');
@@ -771,7 +805,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             data: data,
         });
         // check response
-        body = await checkJson(response, 400);
+        responseExpect(response).toBeJson(400);
+        body = await response.json();
         // check response body
         expect(body).toHaveProperty('status', 400);
         expect(body).toHaveProperty('code', 'Bad Request');
@@ -781,11 +816,11 @@ test.describe('Datables Requests @requests @readonly', () => {
 
     test('Error: The DataTables parameters order and columns are not compatible.', async({ request }) => {
         const params = new URLSearchParams({
-            repository: 'testsrepository',
-            project: 'attribute_table',
-            layerId: 'quartiers_5fe55662_2cbf_48f4_a505_498c61fe978c',
+            'repository': repository,
+            'project': project,
+            'layerId': layerId,
         });
-        const url = `/index.php/lizmap/datatables?${params}`;
+        const url = `${base}?${params}`;
         // two columns but the third is used for order
         let data = {
             start: 0,
@@ -802,7 +837,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             data: data,
         });
         // check response
-        let body = await checkJson(response, 400);
+        responseExpect(response).toBeJson(400);
+        let body = await response.json();
         // check response body
         expect(body).toHaveProperty('status', 400);
         expect(body).toHaveProperty('code', 'Bad Request');
@@ -812,11 +848,11 @@ test.describe('Datables Requests @requests @readonly', () => {
     test('Error: The bbox parameter must contain 4 numbers separated by a comma.', async({ request }) => {
         // bbox parameter with less than 4 values separated by comma
         const params = new URLSearchParams({
-            repository: 'testsrepository',
-            project: 'attribute_table',
-            layerId: 'quartiers_5fe55662_2cbf_48f4_a505_498c61fe978c',
+            'repository': repository,
+            'project': project,
+            'layerId': layerId,
         });
-        const url = `/index.php/lizmap/datatables?${params}`;
+        const url = `${base}?${params}`;
         const data = {
             start: 0,
             length: 50,
@@ -839,7 +875,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             ),
         });
         // check response
-        let body = await checkJson(response, 400);
+        responseExpect(response).toBeJson(400);
+        let body = await response.json();
         // check response body
         expect(body).toHaveProperty('status', 400);
         expect(body).toHaveProperty('code', 'Bad Request');
@@ -856,7 +893,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             ),
         });
         // check response
-        body = await checkJson(response, 400);
+        responseExpect(response).toBeJson(400);
+        body = await response.json();
         // check response body
         expect(body).toHaveProperty('status', 400);
         expect(body).toHaveProperty('code', 'Bad Request');
@@ -866,11 +904,11 @@ test.describe('Datables Requests @requests @readonly', () => {
     test('Error: The lizmap project does not exists.', async({ request }) => {
         // Unknown project in testsrepository
         let params = new URLSearchParams({
-            repository: 'testsrepository',
+            'repository': repository,
             project: 'unknown', //'attribute_table',
-            layerId: 'quartiers_5fe55662_2cbf_48f4_a505_498c61fe978c',
+            'layerId': layerId,
         });
-        let url = `/index.php/lizmap/datatables?${params}`;
+        let url = `${base}?${params}`;
         const data = {
             start: 0,
             length: 50,
@@ -885,7 +923,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             data: data,
         });
         // check response
-        let body = await checkJson(response, 404);
+        responseExpect(response).toBeJson(404);
+        let body = await response.json();
         // check response body
         expect(body).toHaveProperty('status', 404);
         expect(body).toHaveProperty('code', 'Not Found');
@@ -894,15 +933,16 @@ test.describe('Datables Requests @requests @readonly', () => {
         // Unknown repository
         params = new URLSearchParams({
             repository: 'unknown', //'testsrepository',
-            project: 'attribute_table',
-            layerId: 'quartiers_5fe55662_2cbf_48f4_a505_498c61fe978c',
+            'project': project,
+            'layerId': layerId,
         });
-        url = `/index.php/lizmap/datatables?${params}`;
+        url = `${base}?${params}`;
         response = await request.post(url, {
             data: data,
         });
         // check response
-        body = await checkJson(response, 404);
+        await responseExpect(response).toBeJson(404);
+        body = await response.json();
         // check response body
         expect(body).toHaveProperty('status', 404);
         expect(body).toHaveProperty('code', 'Not Found');
@@ -912,11 +952,11 @@ test.describe('Datables Requests @requests @readonly', () => {
     test('Error: The layerId does not exists.', async({ request }) => {
         // Unknown project in testsrepository
         let params = new URLSearchParams({
-            repository: 'testsrepository',
-            project: 'attribute_table',
-            layerId: 'unknown', //'quartiers_5fe55662_2cbf_48f4_a505_498c61fe978c',
+            'repository': repository,
+            'project': project,
+            'layerId': 'unknown', // layerId,
         });
-        let url = `/index.php/lizmap/datatables?${params}`;
+        let url = `${base}?${params}`;
         const data = {
             start: 0,
             length: 50,
@@ -931,7 +971,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             data: data,
         });
         // check response
-        let body = await checkJson(response, 404);
+        responseExpect(response).toBeJson(404);
+        let body = await response.json();
         // check response body
         expect(body).toHaveProperty('status', 404);
         expect(body).toHaveProperty('code', 'Not Found');
@@ -941,9 +982,9 @@ test.describe('Datables Requests @requests @readonly', () => {
     test('Extent request', async({ request }) => {
         // Unknown project in testsrepository
         let params = new URLSearchParams({
-            repository: 'testsrepository',
-            project: 'huge_attribute_table',
-            layerId: 'bakeries_8ca232e6_df58_44f7_94df_b4c02cc7a79c',
+            'repository': repository,
+            'project': projectHuge,
+            'layerId': layerIdBakeries,
         });
         let url = `/index.php/lizmap/datatables/filteredFeaturesExtent?${params}`;
         const data = {
@@ -968,7 +1009,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             data: data,
         });
         // check response
-        let body = await checkJson(response, 200);
+        responseExpect(response).toBeJson(200);
+        let body = await response.json();
         // check response body
         expect(body).toStrictEqual([
             3.811568,
@@ -981,9 +1023,9 @@ test.describe('Datables Requests @requests @readonly', () => {
     test('Extent request with bounding box', async({ request }) => {
         // Unknown project in testsrepository
         let params = new URLSearchParams({
-            repository: 'testsrepository',
-            project: 'huge_attribute_table',
-            layerId: 'bakeries_8ca232e6_df58_44f7_94df_b4c02cc7a79c',
+            'repository': repository,
+            'project': projectHuge,
+            'layerId': layerIdBakeries,
         });
         let url = `/index.php/lizmap/datatables/filteredFeaturesExtent?${params}`;
         const data = {
@@ -1004,7 +1046,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             data: data,
         });
         // check response
-        let body = await checkJson(response, 200);
+        responseExpect(response).toBeJson(200);
+        let body = await response.json();
         // check response body
         expect(body).toStrictEqual([
             3.766922,
@@ -1017,9 +1060,9 @@ test.describe('Datables Requests @requests @readonly', () => {
     test('Extent request with filtered features', async({ request }) => {
         // Unknown project in testsrepository
         let params = new URLSearchParams({
-            repository: 'testsrepository',
-            project: 'huge_attribute_table',
-            layerId: 'bakeries_8ca232e6_df58_44f7_94df_b4c02cc7a79c',
+            'repository': repository,
+            'project': projectHuge,
+            'layerId': layerIdBakeries,
         });
         let url = `/index.php/lizmap/datatables/filteredFeaturesExtent?${params}`;
         const data = {
@@ -1041,7 +1084,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             data: data,
         });
         // check response
-        let body = await checkJson(response, 200);
+        responseExpect(response).toBeJson(200);
+        let body = await response.json();
         // check response body
         expect(body).toStrictEqual([
             3.811568,
@@ -1054,9 +1098,9 @@ test.describe('Datables Requests @requests @readonly', () => {
     test('Extent request on a single point feature', async({ request }) => {
         // Unknown project in testsrepository
         let params = new URLSearchParams({
-            repository: 'testsrepository',
-            project: 'huge_attribute_table',
-            layerId: 'bakeries_8ca232e6_df58_44f7_94df_b4c02cc7a79c',
+            'repository': repository,
+            'project': projectHuge,
+            'layerId': layerIdBakeries,
         });
         let url = `/index.php/lizmap/datatables/filteredFeaturesExtent?${params}`;
         const data = {
@@ -1080,7 +1124,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             data: data,
         });
         // check response
-        let body = await checkJson(response, 200);
+        responseExpect(response).toBeJson(200);
+        let body = await response.json();
         // check response body
         expect(body).toStrictEqual([
             3.913073,
@@ -1093,9 +1138,9 @@ test.describe('Datables Requests @requests @readonly', () => {
     test('Empty response on extent request', async({ request }) => {
         // Unknown project in testsrepository
         let params = new URLSearchParams({
-            repository: 'testsrepository',
-            project: 'huge_attribute_table',
-            layerId: 'bakeries_8ca232e6_df58_44f7_94df_b4c02cc7a79c',
+            'repository': repository,
+            'project': projectHuge,
+            'layerId': layerIdBakeries,
         });
         let url = `/index.php/lizmap/datatables/filteredFeaturesExtent?${params}`;
         const data = {
@@ -1120,7 +1165,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             data: data,
         });
         // check response
-        let body = await checkJson(response, 200);
+        responseExpect(response).toBeJson(200);
+        let body = await response.json();
         // check response body
         expect(body).toStrictEqual([]);
     });
@@ -1128,9 +1174,9 @@ test.describe('Datables Requests @requests @readonly', () => {
     test('Error: Invalid geometry on extent request', async({ request }) => {
         // Unknown project in testsrepository
         let params = new URLSearchParams({
-            repository: 'testsrepository',
-            project: 'huge_attribute_table',
-            layerId: 'lookup_1_7c7e31d9_b595_4e70_bd13_47ed8df34896',
+            'repository': repository,
+            'project': projectHuge,
+            'layerId': 'lookup_1_7c7e31d9_b595_4e70_bd13_47ed8df34896',
         });
         let url = `/index.php/lizmap/datatables/filteredFeaturesExtent?${params}`;
         const data = {
@@ -1147,7 +1193,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             data: data,
         });
         // check response
-        let body = await checkJson(response, 404);
+        responseExpect(response).toBeJson(404);
+        let body = await response.json();
         // check response body
         expect(body).toHaveProperty('status', 404);
         expect(body).toHaveProperty('code', 'Not Found');
@@ -1157,9 +1204,9 @@ test.describe('Datables Requests @requests @readonly', () => {
     test('Select datatables filtered features request', async({ request }) => {
         // Simple datatable request
         let params = new URLSearchParams({
-            repository: 'testsrepository',
-            project: 'huge_attribute_table',
-            layerId: 'huge_table_3a6c5511_aa6a_43fe_957e_e2c3f5b0a085',
+            'repository': repository,
+            'project': projectHuge,
+            'layerId': layerIdHuge,
         });
         let url = `/index.php/lizmap/datatables/selectFilteredFeatures?${params}`;
         let response = await request.post(url, {
@@ -1182,7 +1229,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             }
         });
 
-        let body = await checkJson(response, 200);
+        responseExpect(response).toBeJson(200);
+        let body = await response.json();
         expect(body).toHaveProperty('type', 'FeatureCollection');
         expect(body).toHaveProperty('features');
         expect(body.features).toHaveLength(69);
