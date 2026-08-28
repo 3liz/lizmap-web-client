@@ -32,8 +32,8 @@
   "devDependencies": {
     "@eslint/js": "^10.0.x",
     "@playwright/test": "^1.62.x",
-    "@rspack/cli": "~2.1.x",
-    "@rspack/core": "~2.1.x",
+    "@rspack/cli": "~2.2.x",
+    "@rspack/core": "~2.2.x",
     "@stylistic/eslint-plugin": "^5.10.0",
     "@turf/line-split": "^7.3.x",
     "bats": "^1.13.0",
