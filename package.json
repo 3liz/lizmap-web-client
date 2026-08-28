@@ -32,7 +32,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.x",
     "@nieuwlandgeo/sldreader": "^1.0.0",
-    "@panoramax/web-viewer": "^5.1.0",
+    "@panoramax/web-viewer": "^5.2.0",
     "@playwright/test": "^1.62.x",
     "@rspack/cli": "~2.1.x",
     "@rspack/core": "~2.1.x",
