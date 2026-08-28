@@ -14,7 +14,9 @@
 use GuzzleHttp\Psr7\StreamWrapper as Psr7StreamWrapper;
 use GuzzleHttp\Psr7\Utils as Psr7Utils;
 use JsonMachine\Items as JsonMachineItems;
+use Lizmap\App\Checker;
 use Lizmap\DataTables\DataTables;
+use Lizmap\Project\Project;
 use Lizmap\Project\UnknownLizmapProjectException;
 use Lizmap\Request\Proxy;
 use Lizmap\Request\WFSRequest;
@@ -100,6 +102,49 @@ class datatablesCtrl extends jController
         );
 
         return $rep;
+    }
+
+    /**
+     * Get the Lizmap project. If the project does not exist, the user does not have the right to access the project
+     * or the user does not have access to WFS data, set the error response.
+     *
+     * @param jResponseJson $rep - the response object to which the error details will be assigned
+     *
+     * @return null|Project - the Lizmap project or null
+     */
+    private function getProject(jResponseJson $rep): ?Project
+    {
+        $lproj = null; // Initialize the variable outside the try-catch block
+
+        try {
+            $lproj = lizmap::getProject($this->repository.'~'.$this->project);
+            if (!$lproj) {
+                $this->setErrorResponse($rep, 404, 'The lizmap project '.$this->repository.'~'.$this->project.' does not exist.');
+            }
+        } catch (UnknownLizmapProjectException $e) {
+            $this->setErrorResponse($rep, 404, 'The lizmap project '.$this->repository.'~'.$this->project.' does not exist.');
+        }
+
+        if (!$lproj) {
+            return $lproj;
+        }
+
+        // Check rights to access this repository/project
+        if (!$lproj->checkAcl()) {
+            $this->setErrorResponse($rep, 403, 'Access forbidden');
+
+            return null;
+        }
+
+        // Datatables expose WFS data: enforce the same WFS authorization as the OGC
+        // service endpoint.
+        if (!Checker::checkWfsAccessAcl($lproj)) {
+            $this->setErrorResponse($rep, 403, 'Access forbidden');
+
+            return null;
+        }
+
+        return $lproj;
     }
 
     /**
@@ -192,13 +237,10 @@ class datatablesCtrl extends jController
         }
         $DTOrderColumnName = $this->DTColumns[$DTOrderColumnIndex]['data'];
 
-        try {
-            $lproj = lizmap::getProject($this->repository.'~'.$this->project);
-            if (!$lproj) {
-                return $this->setErrorResponse($rep, 404, 'The lizmap project '.$this->repository.'~'.$this->project.' does not exist.');
-            }
-        } catch (UnknownLizmapProjectException $e) {
-            return $this->setErrorResponse($rep, 404, 'The lizmap project '.$this->repository.'~'.$this->project.' does not exist.');
+        // Get project - The response is updated if the project is not available
+        $lproj = $this->getProject($rep);
+        if (!$lproj) {
+            return $rep;
         }
 
         /** @var null|qgisVectorLayer $layer */
@@ -337,13 +379,10 @@ class datatablesCtrl extends jController
             return $this->setErrorResponse($rep, 400, 'The bbox parameter must contain 4 numbers separated by a comma.');
         }
 
-        try {
-            $lproj = lizmap::getProject($this->repository.'~'.$this->project);
-            if (!$lproj) {
-                return $this->setErrorResponse($rep, 404, 'The lizmap project '.$this->repository.'~'.$this->project.' does not exist.');
-            }
-        } catch (UnknownLizmapProjectException $e) {
-            return $this->setErrorResponse($rep, 404, 'The lizmap project '.$this->repository.'~'.$this->project.' does not exist.');
+        // Get project - The response is updated if the project is not available
+        $lproj = $this->getProject($rep);
+        if (!$lproj) {
+            return $rep;
         }
 
         /** @var null|qgisVectorLayer $layer */
@@ -483,13 +522,10 @@ class datatablesCtrl extends jController
             return $this->setErrorResponse($rep, 400, 'The bbox parameter must contain 4 numbers separated by a comma.');
         }
 
-        try {
-            $lproj = lizmap::getProject($this->repository.'~'.$this->project);
-            if (!$lproj) {
-                return $this->setErrorResponse($rep, 404, 'The lizmap project '.$this->repository.'~'.$this->project.' does not exist.');
-            }
-        } catch (UnknownLizmapProjectException $e) {
-            return $this->setErrorResponse($rep, 404, 'The lizmap project '.$this->repository.'~'.$this->project.' does not exist.');
+        // Get project - The response is updated if the project is not available
+        $lproj = $this->getProject($rep);
+        if (!$lproj) {
+            return $rep;
         }
 
         /** @var null|qgisVectorLayer $layer */
