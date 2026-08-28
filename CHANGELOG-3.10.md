@@ -8,6 +8,42 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Fixed
+
+* Remove unnecessary div wrapper in bottom dock template
+* Remove leftover Bootstrap tab classes from dataviz dock templates
+* Restore the dataviz panel title in the right-dock
+* Services URL to be compatible with some external clients
+* Admin page listing projects: filter by repository / UI fix + inspection file tests https://github.com/3liz/lizmap-web-client/pull/6925
+* Search: resolve relative nominatim URL against the page URL https://github.com/3liz/lizmap-web-client/pull/7008
+* Quote column names in DataTables search filter expressions https://github.com/3liz/lizmap-web-client/pull/7018
+* Undefined property readOnly in checkboxes_htmlbootstrap widget https://github.com/3liz/lizmap-web-client/pull/7017
+* CSS - Improve form UI for Bootstrap 5 https://github.com/3liz/lizmap-web-client/pull/7014
+* WFS/filter selection: translate all geometry operators to PostGIS https://github.com/3liz/lizmap-web-client/pull/6994
+* PHP: preload GetCapabilities as JS done https://github.com/3liz/lizmap-web-client/pull/7031
+* Honor external wms toggle https://github.com/3liz/lizmap-web-client/pull/7010
+* Permalink basemap https://github.com/3liz/lizmap-web-client/pull/7019
+* PHP qgisVectorLayerDatasource: password may contain single quotes https://github.com/3liz/lizmap-web-client/pull/7069
+* PHP: Allow empty user agent for maptoken https://github.com/3liz/lizmap-web-client/pull/7076
+
+### Security
+
+* Harden sanitizeGFIContent (hook leak, iframe handling) https://github.com/3liz/lizmap-web-client/pull/7047
+
+### Tests
+
+* GA: Retry all curl errors when checking QGIS Server status in e2e workflow
+* GA: Speed up e2e: shard Playwright tests across isolated jobs (~27min → ~13min)
+* Prevent Node.js/dependency version drift from silently breaking CI https://github.com/3liz/lizmap-web-client/pull/7039
+* Fix/e2e flaky tests https://github.com/3liz/lizmap-web-client/pull/7062
+
+### Backend
+
+* Update JS dependencies
+* Update Jelix version
+* Update rspack to 2.1.5 https://github.com/3liz/lizmap-web-client/pull/7038
+* Update @playwright/test dependency to version 1.62.x
+
 ## 3.10.0-rc.2 - 2026-07-11
 
 ### Funders
