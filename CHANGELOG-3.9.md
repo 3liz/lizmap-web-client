@@ -8,6 +8,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Fixed
+
+* Popup - Compact table of children features: build the columns from all the displayed features, so features having more empty fields no longer produce rows with missing cells and a DataTables `Requested unknown parameter` warning
+
 ## 3.9.9 - 2026-07-03
 
 ### Funders
