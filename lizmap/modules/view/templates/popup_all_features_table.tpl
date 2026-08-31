@@ -3,27 +3,20 @@
 
     <table class='table table-sm table-striped table-bordered lizmapPopupTable'>
         <thead>
-            {foreach $allFeatureAttributes as $featureAttributes}
             <tr>
                 <th></th>
-                {foreach $featureAttributes as $attribute}
-                    {if $attribute['name'] != 'geometry' && $attribute['name'] != 'maptip' && $attribute['value'] != ''}
-                        <th>{$attribute['name']}</th>
-                    {/if}
+                {foreach $allFeatureColumns as $column}
+                    <th>{$column}</th>
                 {/foreach}
             </tr>
-            {break}
-            {/foreach}
         </thead>
 
         <tbody>
-            {foreach $allFeatureAttributes as $key=>$featureAttributes}
+            {foreach $allFeatureRows as $key=>$row}
                 <tr>
                 <td>{$allFeatureToolbars[$key]}</td>
-                {foreach $featureAttributes as $attribute}
-                    {if $attribute['name'] != 'geometry' && $attribute['name'] != 'maptip' && $attribute['value'] != ''}
-                        <td>{$attribute['name']|popupcheckbox:$attribute['value'],$repository,$project,$checkBoxFields,$remoteStorageProfile}</td>
-                    {/if}
+                {foreach $row as $name=>$value}
+                    <td>{$name|popupcheckbox:$value,$repository,$project,$checkBoxFields,$remoteStorageProfile}</td>
                 {/foreach}
                 </tr>
             {/foreach}

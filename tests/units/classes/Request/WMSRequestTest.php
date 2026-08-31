@@ -491,4 +491,84 @@ class WMSRequestTest extends TestCase
         $result = $wms->applyCheckBoxesToFormPopupForTests($html, $fields);
         $this->assertSame($expected, $result);
     }
+
+    public function testBuildAllFeaturesTableDataRowsAreRectangular(): void
+    {
+        // The features do not have the same empty fields: every row must still
+        // hold one cell per column, otherwise DataTables raises
+        // "Requested unknown parameter" on the popup compact table.
+        $allFeatureAttributes = self::featureAttributes(array(
+            array('idu' => '1', 'commune' => 'Weingarten', 'remark' => 'first', 'geometry' => 'POLYGON((0 0))'),
+            array('idu' => '2', 'commune' => 'Weingarten', 'remark' => '', 'geometry' => 'POLYGON((1 1))'),
+            array('idu' => '3', 'commune' => '', 'remark' => '', 'geometry' => 'POLYGON((2 2))'),
+        ));
+
+        list($columns, $rows) = WMSRequestForTests::buildAllFeaturesTableDataForTests($allFeatureAttributes);
+
+        $this->assertSame(array('idu', 'commune', 'remark'), $columns);
+        foreach ($rows as $row) {
+            $this->assertSame($columns, array_keys($row));
+        }
+        $this->assertSame(array('idu' => '1', 'commune' => 'Weingarten', 'remark' => 'first'), $rows[0]);
+        $this->assertSame(array('idu' => '2', 'commune' => 'Weingarten', 'remark' => ''), $rows[1]);
+        $this->assertSame(array('idu' => '3', 'commune' => '', 'remark' => ''), $rows[2]);
+    }
+
+    public function testBuildAllFeaturesTableDataColumnsComeFromAllFeatures(): void
+    {
+        // The columns used to be read from the first feature only, so a value
+        // only set on a following feature ended up in the wrong column.
+        $allFeatureAttributes = self::featureAttributes(array(
+            array('idu' => '1', 'remark' => ''),
+            array('idu' => '2', 'remark' => 'only here'),
+        ));
+
+        list($columns, $rows) = WMSRequestForTests::buildAllFeaturesTableDataForTests($allFeatureAttributes);
+
+        $this->assertSame(array('idu', 'remark'), $columns);
+        $this->assertSame(array('idu' => '1', 'remark' => ''), $rows[0]);
+        $this->assertSame(array('idu' => '2', 'remark' => 'only here'), $rows[1]);
+    }
+
+    public function testBuildAllFeaturesTableDataDiscardsEmptyAndInternalColumns(): void
+    {
+        // 'geometry' and 'maptip' are never displayed, and a field which is empty
+        // for every feature is still dropped.
+        $allFeatureAttributes = self::featureAttributes(array(
+            array('idu' => '1', 'unused' => '', 'geometry' => 'POLYGON((0 0))', 'maptip' => '<p>tip</p>'),
+            array('idu' => '2', 'unused' => '', 'geometry' => 'POLYGON((1 1))', 'maptip' => '<p>tip</p>'),
+        ));
+
+        list($columns, $rows) = WMSRequestForTests::buildAllFeaturesTableDataForTests($allFeatureAttributes);
+
+        $this->assertSame(array('idu'), $columns);
+        $this->assertSame(array(array('idu' => '1'), array('idu' => '2')), $rows);
+    }
+
+    /**
+     * Build the feature attribute lists the way getFeatureInfo provides them.
+     *
+     * @param array $features list of arrays of fieldName => value
+     *
+     * @return array one SimpleXMLElement attribute list per feature
+     */
+    private static function featureAttributes($features)
+    {
+        $xml = '<GetFeatureInfoResponse>';
+        foreach ($features as $index => $attributes) {
+            $xml .= '<Feature id="'.$index.'">';
+            foreach ($attributes as $name => $value) {
+                $xml .= '<Attribute name="'.$name.'" value="'.htmlspecialchars($value, ENT_QUOTES).'"/>';
+            }
+            $xml .= '</Feature>';
+        }
+        $xml .= '</GetFeatureInfoResponse>';
+
+        $allFeatureAttributes = array();
+        foreach (new SimpleXMLElement($xml) as $feature) {
+            $allFeatureAttributes[] = $feature->Attribute;
+        }
+
+        return $allFeatureAttributes;
+    }
 }
