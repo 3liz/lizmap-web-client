@@ -235,9 +235,14 @@ class RemoteStorageRequest
         $profile = self::getProfile('webdav');
         if ($profile) {
             $client = self::buildClient($profile);
+            $headers = array(
+                'headers' => array(
+                    'Depth' => '0',
+                ),
+            );
 
             try {
-                $response = $client->request('GET', $profile['baseUri']);
+                $response = $client->request('PROPFIND', $profile['baseUri'], $headers);
 
                 return true;
             } catch (RequestException $e) {
