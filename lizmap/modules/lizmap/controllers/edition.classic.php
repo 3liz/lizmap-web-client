@@ -679,6 +679,82 @@ class editionCtrl extends jController
     }
 
     /**
+     * Set the foreign key value sent by the parent feature edition form.
+     *
+     * The value is given by the liz_parent_fk parameter, formatted as
+     * "<referencing field>:<value>". It cannot be read from the request by the
+     * form itself: when the field is not editable in the QGIS project, the
+     * control is read-only, the browser does not submit the disabled widget and
+     * jForms skips read-only controls in initFromRequest(). The child feature
+     * would then be created with an empty foreign key, without any error.
+     *
+     * The field name is checked against the relations of the project: only a
+     * field referencing the edited layer is accepted, so that this parameter
+     * cannot be used to set an arbitrary column.
+     *
+     * @param jFormsBase $form The edition form
+     */
+    protected function setParentForeignKey($form)
+    {
+        $parentFk = $this->param('liz_parent_fk');
+        if (!$parentFk) {
+            return;
+        }
+
+        // The value may contain the separator, the field name may not
+        $parts = explode(':', $parentFk, 2);
+        if (count($parts) != 2 || $parts[0] === '' || $parts[1] === '') {
+            return;
+        }
+        $field = $parts[0];
+        $value = $parts[1];
+
+        // The field must be the referencing field of a relation
+        // for which the edited layer is the referencing (child) layer
+        $relations = $this->project->getRelations();
+        if (!is_array($relations)) {
+            return;
+        }
+        $isReferencingField = false;
+        foreach ($relations as $referencedLayerId => $referencedRelations) {
+            if ($referencedLayerId === 'pivot' || !is_array($referencedRelations)) {
+                continue;
+            }
+            foreach ($referencedRelations as $relation) {
+                if (is_array($relation)
+                    && array_key_exists('referencingLayer', $relation)
+                    && array_key_exists('referencingField', $relation)
+                    && $relation['referencingLayer'] == $this->layerId
+                    && $relation['referencingField'] === $field) {
+                    $isReferencingField = true;
+
+                    break 2;
+                }
+            }
+        }
+
+        if (!$isReferencingField) {
+            jLog::log(
+                'The field "'.$field.'" given by liz_parent_fk is not a referencing field '.
+                'of the layer '.$this->layerId.' in project '.
+                $this->repository->getKey().'/'.$this->project->getKey(),
+                'lizmapadmin'
+            );
+
+            return;
+        }
+
+        // setData() throws an exception when the control does not exist, which
+        // happens when the field is not displayed in the form
+        $controls = $form->getControls();
+        if (!array_key_exists($field, $controls)) {
+            return;
+        }
+
+        $form->setData($field, $value);
+    }
+
+    /**
      * Save the edition form (output as html fragment).
      *
      * @urlparam string $repository Lizmap Repository
@@ -737,6 +813,12 @@ class editionCtrl extends jController
 
         // Get data from the request and set the form controls data accordingly
         $form->initFromRequest();
+
+        // Set the foreign key sent by the parent feature when creating a child
+        // feature: a read-only control gets no value from the request
+        if ($this->featureId == null) {
+            $this->setParentForeignKey($form);
+        }
 
         // Check the form data and redirect if needed
         $feature = null;
