@@ -1676,6 +1676,25 @@ var lizEdition = function() {
 
                     }
                 } else {
+                    // Always send the foreign key value in a dedicated hidden input.
+                    // The control itself cannot be relied on: when the field is not
+                    // editable in the QGIS project, jForms renders a disabled select,
+                    // which the browser does not submit, and jForms ignores request
+                    // values of read-only controls anyway. The child feature would
+                    // then be created with an empty foreign key, without any error.
+                    if ( editionType == 'createFeature'
+                      && parentFeatProp !== null && parentFeatProp !== undefined ) {
+                        const hiddenFields = form[0].querySelector('div.jforms-hiddens');
+                        if ( hiddenFields ) {
+                            const parentFkInput = document.createElement('input');
+                            parentFkInput.type = 'hidden';
+                            parentFkInput.id = 'liz_parent_fk_hidden';
+                            parentFkInput.name = 'liz_parent_fk';
+                            parentFkInput.value = relationRefField + ':' + parentFeatProp;
+                            hiddenFields.appendChild(parentFkInput);
+                        }
+                    }
+
                     var select = form.find('select[name="'+relationRefField+'"]');
                     if( select.length == 1 ){
                         // select the option via jquery (and fire event with "change", will update depending controls)
