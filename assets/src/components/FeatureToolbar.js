@@ -549,9 +549,12 @@ export default class FeatureToolbar extends HTMLElement {
         const parentFeatureId = this.getAttribute('parent-feature-id');
         if (parentFeatureId && this.hasRelation){
             const parentLayerName = lizMap.getLayerConfigById(this.parentLayerId)?.[0];
+            // Force the parent feature to be fetched again (last argument): its
+            // referenced field fills the foreign key of the child feature, so it
+            // must not be served from a cache filled before the parent was edited.
             lizMap.getLayerFeature(parentLayerName, parentFeatureId, (feat) => {
                 lizMap.launchEdition(this.layerId, this.fid, { layerId: this.parentLayerId, feature: feat });
-            });
+            }, null, true);
         }else{
             lizMap.launchEdition(this.layerId, this.fid);
         }
@@ -843,7 +846,10 @@ export default class FeatureToolbar extends HTMLElement {
      */
     createChild(childItem) {
         // Get the parent feature corresponding to the popup
-        // where the create child button has been clicked
+        // where the create child button has been clicked.
+        // The last argument forces the feature to be fetched again: its referenced
+        // field fills the foreign key of the child feature, so it must not be
+        // served from a cache filled before the parent was edited.
         lizMap.getLayerFeature(this.featureType, this.fid, (parentFeature) => {
             lizMap.launchEdition(
                 // Id of the layer to edit
@@ -853,6 +859,6 @@ export default class FeatureToolbar extends HTMLElement {
                 // Parent data
                 { layerId: this.layerId, feature: parentFeature }
             );
-        });
+        }, null, true);
     }
 }
