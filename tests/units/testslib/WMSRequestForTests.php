@@ -38,4 +38,9 @@ class WMSRequestForTests extends WMSRequest
     {
         return self::matchCheckBoxState($value, $checkedExpected, $uncheckedExpected);
     }
+
+    public static function buildAllFeaturesTableDataForTests($allFeatureAttributes)
+    {
+        return self::buildAllFeaturesTableData($allFeatureAttributes);
+    }
 }
