@@ -1205,7 +1205,7 @@ def my_form_open(dialog, layer, feature):
         <field name="id" editable="0"/>
         <field name="libsquart" editable="1"/>
         <field name="quartiers_libquart" editable="1"/>
-        <field name="quartmno" editable="1"/>
+        <field name="quartmno" editable="0"/>
         <field name="squartmno" editable="1"/>
       </editable>
       <labelOnTop>
