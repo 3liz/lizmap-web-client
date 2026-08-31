@@ -371,5 +371,42 @@ test.describe('Time Manager @readonly', () => {
         responseExpect(getMapNoFilterResponse).toBeImagePng();
     });
 
+    test('Keeps the filter already set on the layer', async ({ page }) => {
+        // https://github.com/3liz/lizmap-web-client/issues/6773
+        const project = new ProjectPage(page, 'time_manager');
+        await project.open();
+
+        // Filter the layer with the form filter, keeping the features with gid <= 2
+        await page.locator('#button-filter').click();
+        let getFilterTokenRequestPromise = project.waitForGetFilterTokenRequest();
+        await page.locator('#liz-filter-field-max-numericgid').fill('2');
+        // The numeric field applies its filter on `change`, which `fill()` alone
+        // does not trigger on a number input
+        await page.locator('#liz-filter-field-max-numericgid').dispatchEvent('change');
+
+        // The form filter is applied on its own
+        let getFilterTokenRequest = await getFilterTokenRequestPromise;
+        expect(decodeURIComponent(getFilterTokenRequest.postData() ?? '')).toContain('"gid"');
+
+        // Opening the time manager applies its date filter
+        getFilterTokenRequestPromise = project.waitForGetFilterTokenRequest();
+        await page.locator('#button-timemanager').click();
+        getFilterTokenRequest = await getFilterTokenRequestPromise;
+        const timeFilter = decodeURIComponent(getFilterTokenRequest.postData() ?? '');
+
+        expect(timeFilter).toContain('"test_date"');
+        // Bug #6773: the filter already set on the layer used to be replaced,
+        // so the time manager had no visible effect on the filtered features
+        expect(timeFilter).toContain('"gid"');
+
+        // Closing the time manager restores the filter of the layer alone
+        getFilterTokenRequestPromise = project.waitForGetFilterTokenRequest();
+        await page.locator('.btn-timemanager-clear').click();
+        getFilterTokenRequest = await getFilterTokenRequestPromise;
+        const restoredFilter = decodeURIComponent(getFilterTokenRequest.postData() ?? '');
+
+        expect(restoredFilter).toContain('"gid"');
+        expect(restoredFilter).not.toContain('"test_date"');
+    });
 
 });
