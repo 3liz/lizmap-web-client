@@ -664,7 +664,7 @@ def my_form_open(dialog, layer, feature):
         <field name="libquart" editable="1"/>
         <field name="photo" editable="1"/>
         <field name="quartier" editable="0"/>
-        <field name="quartmno" editable="0"/>
+        <field name="quartmno" editable="1"/>
         <field name="url" editable="1"/>
       </editable>
       <labelOnTop>
