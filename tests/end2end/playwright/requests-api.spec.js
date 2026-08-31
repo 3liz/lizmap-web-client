@@ -1,7 +1,7 @@
 // @ts-check
 import {expect, test} from '@playwright/test';
+import { expect as responseExpect } from './fixtures/expect-response.js';
 import {
-    checkJson,
     expectParametersToContain,
     requestGETWithAdminBasicAuth,
     requestPOSTWithAdminBasicAuth,
@@ -38,7 +38,8 @@ test.describe('Connected from context, as an admin',
         test('Request metadata', async ({ request }) => {
             const response = await request.get(url + "/repositories");
 
-            const json = await checkJson(response);
+            responseExpect(response).toBeJson();
+            const json = await response.json();
 
             // Check the repositories of the test instance are all listed. An exact
             // count was asserted here, which broke as soon as another repository
@@ -85,7 +86,8 @@ test.describe('Connected via Basic auth',
         test('GET repositories', async ({request}) => {
             const response = await requestGETWithAdminBasicAuth(request, url + "/repositories")
 
-            const json = await checkJson(response);
+            responseExpect(response).toBeJson();
+            const json = await response.json();
 
             expect(json[0].key).toBeDefined();
             expect(json[0].label).toBeDefined();
@@ -101,7 +103,8 @@ test.describe('Connected via Basic auth',
         test('GET specific repository good key', async ({request}) => {
             const response = await requestGETWithAdminBasicAuth(request, url + "/repositories/testsrepository")
 
-            const json = await checkJson(response);
+            responseExpect(response).toBeJson();
+            const json = await response.json();
 
             expect(json.key).toBe("testsrepository");
             expect(json.label).toBe("Tests repository");
@@ -118,7 +121,8 @@ test.describe('Connected via Basic auth',
         test('GET all projects from a specific repository', async ({request}) => {
             const response = await requestGETWithAdminBasicAuth(request, url + "/repositories/testsrepository/projects")
 
-            const json = await checkJson(response);
+            responseExpect(response).toBeJson();
+            const json = await response.json();
 
             expect(json[0].id).toBeDefined();
             expect(json[0].title).toBeDefined();
@@ -128,7 +132,8 @@ test.describe('Connected via Basic auth',
         test('GET a specific project from a specific repository', async ({request}) => {
             const response = await requestGETWithAdminBasicAuth(request, url + "/repositories/testsrepository/projects/attribute_table")
 
-            const json = await checkJson(response);
+            responseExpect(response).toBeJson();
+            const json = await response.json();
 
             expect(json.id).toBe("attribute_table");
             expect(json.projectName).toBeDefined();
@@ -168,8 +173,9 @@ test.describe('Connected via Basic auth',
         });
 
         test('POST request to create a repository with a new folder', async ({request}) => {
-            const before = await requestGETWithAdminBasicAuth(request, url + "/repositories")
-            const listRepoBefore = await checkJson(before);
+            const before = await requestGETWithAdminBasicAuth(request, url + "/repositories");
+            responseExpect(before).toBeJson();
+            const listRepoBefore = await before.json();
             const amountRepoBefore = listRepoBefore.length;
 
             const response = await requestPOSTWithAdminBasicAuth(
@@ -182,10 +188,12 @@ test.describe('Connected via Basic auth',
                     createDirectory: "true"
                 }
             )
-            const json = await checkJson(response, 201);
+            responseExpect(response).toBeJson(201);
+            const json = await response.json();
 
             const after = await requestGETWithAdminBasicAuth(request, url + "/repositories")
-            const listRepoAfter = await checkJson(after);
+            responseExpect(after).toBeJson();
+            const listRepoAfter = await after.json();
             const amountRepoAfter = listRepoAfter.length;
 
             expect(json.newDirectoryCreated).toBeTruthy();
@@ -262,7 +270,8 @@ test.describe('Connected via Basic auth',
         test('GET all paths used for repositories', async ({request}) => {
             const response = await requestGETWithAdminBasicAuth(request, url + "/paths")
 
-            const json = await checkJson(response);
+            responseExpect(response).toBeJson();
+            const json = await response.json();
 
             expect(json["tests/"]).toEqual("Reserved");
         });
@@ -270,7 +279,8 @@ test.describe('Connected via Basic auth',
         test('GET all groups', async ({request}) => {
             const response = await requestGETWithAdminBasicAuth(request, url + "/groups")
 
-            const json = await checkJson(response);
+            responseExpect(response).toBeJson();
+            const json = await response.json();
 
             expect(json.length).toBeGreaterThan(0);
         });
@@ -278,7 +288,8 @@ test.describe('Connected via Basic auth',
         test('GET all rights', async ({request}) => {
             const response = await requestGETWithAdminBasicAuth(request, url + "/rights")
 
-            const json = await checkJson(response);
+            responseExpect(response).toBeJson();
+            const json = await response.json();
 
             expect(json).toEqual({
                 "lizmap.repositories.view": "View projects in the repository",
@@ -300,7 +311,7 @@ test.describe('Connected via Basic auth',
                     createDirectory: "true"
                 }
             )
-            await checkJson(createRepo, 201);
+            responseExpect(createRepo).toBeJson(201);
 
             const addRight = await requestPOSTWithAdminBasicAuth(
                 request,
@@ -310,10 +321,11 @@ test.describe('Connected via Basic auth',
                     right: 'lizmap.tools.edition.use'
                 }
             )
-            await checkJson(addRight);
+            responseExpect(addRight).toBeJson();
 
             let response = await requestGETWithAdminBasicAuth(request, url + "/repositories/nancy/rights")
-            let json = await checkJson(response);
+            responseExpect(response).toBeJson();
+            let json = await response.json();
 
 
             expect(json["lizmap.tools.edition.use"]).toEqual(["admins"]);
@@ -327,10 +339,11 @@ test.describe('Connected via Basic auth',
                     right: 'lizmap.tools.edition.use'
                 }
             )
-            await checkJson(deleteRight, 200);
+            responseExpect(deleteRight).toBeJson();
 
             response = await requestGETWithAdminBasicAuth(request, url + "/repositories/nancy/rights")
-            json = await checkJson(response);
+            responseExpect(response).toBeJson();
+            json = await response.json();
 
 
             expect(json["lizmap.tools.edition.use"]).toBeUndefined();
