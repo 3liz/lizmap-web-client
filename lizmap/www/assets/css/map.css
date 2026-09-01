@@ -834,7 +834,10 @@ CSS Sprite positions calculated via http://instantsprite.com/ using 20px images 
 
 /* Panoramax */
 lizmap-panoramax {
-    min-width: 38vw;
+    /* Use 38vw as a target minimum width (e.g. for the dock/mini-dock), but
+       never exceed the actual container width (e.g. the narrower right-dock),
+       otherwise it overflows and triggers an unwanted scrollbar. */
+    min-width: min(38vw, 100%);
     display: block;
 }
 
