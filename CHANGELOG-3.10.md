@@ -8,6 +8,12 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* **[Klein und Leber GbR](https://www.gisgeometer.de/)** with @meyerlor
+* **[Faunalia](https://www.faunalia.eu/)** with @mind84
+* **[Terre De Provence Agglomération](https://www.terredeprovence-agglo.com/)**
+
 ### Fixed
 
 * Remove unnecessary div wrapper in bottom dock template
@@ -25,10 +31,19 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Permalink basemap https://github.com/3liz/lizmap-web-client/pull/7019
 * PHP qgisVectorLayerDatasource: password may contain single quotes https://github.com/3liz/lizmap-web-client/pull/7069
 * PHP: Allow empty user agent for maptoken https://github.com/3liz/lizmap-web-client/pull/7076
+* PHP: add PROPFIND method to test webdav server connection https://github.com/3liz/lizmap-web-client/pull/7099
+* Popup - Compact table of children features: build the columns from all the displayed features, so features having more empty fields no longer produce rows with missing cells and a DataTables `Requested unknown parameter` warning
+* Edition: read the parent feature again when creating a child feature https://github.com/3liz/lizmap-web-client/pull/7098
+* Panoramax: update colors to 5.2.0 ones and reduce line width
+* Add max zoom level constant for Panoramax MVT tile endpoint
+* Update Panoramax min-width to prevent overflow and unwanted scrollbar
+* Add pnx-widget-player to pnx-photo-viewer
+* Edition: save the parent foreign key of a read-only child field https://github.com/3liz/lizmap-web-client/pull/7097
 
 ### Security
 
 * Harden sanitizeGFIContent (hook leak, iframe handling) https://github.com/3liz/lizmap-web-client/pull/7047
+* enforce access control on datatables endpoints https://github.com/3liz/lizmap-web-client/pull/7091
 
 ### Tests
 
@@ -36,13 +51,18 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * GA: Speed up e2e: shard Playwright tests across isolated jobs (~27min → ~13min)
 * Prevent Node.js/dependency version drift from silently breaking CI https://github.com/3liz/lizmap-web-client/pull/7039
 * Fix/e2e flaky tests https://github.com/3liz/lizmap-web-client/pull/7062
+* e2e playwright fixture expect for resquest add toContainParametersInPostFormData method https://github.com/3liz/lizmap-web-client/pull/7081
+* e2e lizmap-features-table to wait for and check displayExpression requests https://github.com/3liz/lizmap-web-client/pull/7081
+* e2e: replace checkJson by response to be JSON https://github.com/3liz/lizmap-web-client/pull/7109
 
 ### Backend
 
 * Update JS dependencies
 * Update Jelix version
-* Update rspack to 2.1.5 https://github.com/3liz/lizmap-web-client/pull/7038
+* Update rspack to 2.2.1 https://github.com/3liz/lizmap-web-client/pull/7089
 * Update @playwright/test dependency to version 1.62.x
+* Update OpenLayers to 10.10.0
+* Update Panoramax web viewer to 5.2.0
 
 ## 3.10.0-rc.2 - 2026-07-11
 
