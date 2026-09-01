@@ -1,6 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { checkJson } from './globals';
+import { expect as responseExpect } from './fixtures/expect-response.js';
 
 const url = '/index.php/dataviz/service';
 const projectParams = new URLSearchParams({
@@ -22,7 +22,8 @@ test.describe('Dataviz API tests',
                         'plot_id': '0',
                     }
                 });
-            const json = await checkJson(response);
+            responseExpect(response).toBeJson();
+            const json = await response.json();
 
             expect(json).toHaveProperty('title', 'Municipalities');
             expect(json).toHaveProperty('data');
@@ -53,7 +54,8 @@ test.describe('Dataviz API tests',
                         'plot_id': '2',
                     }
                 });
-            const json = await checkJson(response);
+            responseExpect(response).toBeJson();
+            const json = await response.json();
 
             expect(json).toHaveProperty('title', 'Pie Bakeries by municipalities');
             expect(json).toHaveProperty('data');
@@ -84,7 +86,8 @@ test.describe('Dataviz API tests',
                         'plot_id': '3',
                     }
                 });
-            const json = await checkJson(response);
+            responseExpect(response).toBeJson();
+            const json = await response.json();
 
             expect(json).toHaveProperty('title', 'Horizontal bar bakeries in municipalities');
             expect(json).toHaveProperty('data');
@@ -151,7 +154,8 @@ test.describe('Dataviz API tests JSON data filtered for plot in popup',
                         'exp_filter': `"polygon_id" IN ('5')`,
                     }
                 });
-            const json = await checkJson(response);
+            responseExpect(response).toBeJson();
+            const json = await response.json();
 
             expect(json).toHaveProperty('title', 'Number of bakeries by polygon');
             expect(json).toHaveProperty('data');
@@ -182,7 +186,8 @@ test.describe('Dataviz API tests JSON data filtered for plot in popup',
                         'exp_filter': `"polygon_id" IN ('5')`,
                     }
                 });
-            const json = await checkJson(response);
+            responseExpect(response).toBeJson();
+            const json = await response.json();
 
             expect(json).toHaveProperty('title', 'Bakeries');
             expect(json).toHaveProperty('data');
@@ -209,7 +214,8 @@ test.describe('Dataviz API tests JSON data filtered for plot in popup',
                         'exp_filter': `"fid_point" IN ('1')`,
                     }
                 });
-            const json = await checkJson(response);
+            responseExpect(response).toBeJson();
+            const json = await response.json();
 
             expect(json).toHaveProperty('title', 'users');
             expect(json).toHaveProperty('data');
@@ -240,7 +246,8 @@ test.describe('Dataviz API tests JSON data filtered for plot in popup',
                         'exp_filter': `"fid_point" IN ('2')`,
                     }
                 });
-            const json = await checkJson(response);
+            responseExpect(response).toBeJson();
+            const json = await response.json();
 
             expect(json).toHaveProperty('title', 'users');
             expect(json).toHaveProperty('data');
@@ -271,7 +278,8 @@ test.describe('Dataviz API tests JSON data filtered for plot in popup',
                         'exp_filter': `"fid_point" IN ('3')`,
                     }
                 });
-            const json = await checkJson(response);
+            responseExpect(response).toBeJson();
+            const json = await response.json();
 
             expect(json).toHaveProperty('title', 'users');
             expect(json).toHaveProperty('data');
@@ -322,7 +330,8 @@ test.describe('Dataviz API tests with Basic Auth',
                 },
                 data: json_body,
             });
-            const json = await checkJson(response);
+            responseExpect(response).toBeJson();
+            const json = await response.json();
 
             expect(json).toHaveProperty('title', 'Bakeries by district');
             expect(json).toHaveProperty('data');
@@ -373,7 +382,8 @@ test.describe('Dataviz API tests with Basic Auth',
                 },
                 data: json_body,
             });
-            const json = await checkJson(response, 404);
+            responseExpect(response).toBeJson(404);
+            const json = await response.json();
             expect(json).toHaveProperty('errors');
             // check errors
             const errors = json.errors;
