@@ -198,7 +198,9 @@ export default class Panoramax extends HTMLElement {
                     endpoint="${endpoint}"
                     url-parameters="false"
                     widgets="false"
-                ></pnx-photo-viewer>
+                >
+                    <pnx-widget-player slot="top" more="always" />
+                </pnx-photo-viewer>
                 <div class="panoramax-filters border-top flex-shrink-0">
                     <div class="d-flex align-items-center justify-content-between px-2 py-1">
                         <span class="fw-semibold small"><i class="icon-filter"></i></span>
