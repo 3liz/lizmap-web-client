@@ -1,10 +1,10 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { getAuthStorageStatePath, checkJson } from './globals';
+import { getAuthStorageStatePath } from './globals';
 import { AdminPage } from "./pages/admin";
 import { ProjectPage } from "./pages/project";
 import { expect as requestExpect } from './fixtures/expect-request.js';
-import { expect as responseExpect } from './fixtures/expect-response.js'
+import { expect as responseExpect } from './fixtures/expect-response.js';
 
 test.describe('Permalinks management acl @readonly', () => {
 
@@ -192,7 +192,8 @@ test.describe('Permalink page',()=>{
             }
         });
 
-        const insertBody = await checkJson(response);
+        responseExpect(response).toBeJson();
+        const insertBody = await response.json();
         expect(insertBody).toHaveProperty('permalink', '18cpdxABubeZ');
     })
 

@@ -1,6 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { checkJson } from './globals';
+import { expect as responseExpect } from './fixtures/expect-response.js';
 
 test.describe('Read short link permalink @requests @read', () => {
     test('Read short link permalink', async({ request }) => {
@@ -13,7 +13,8 @@ test.describe('Read short link permalink @requests @read', () => {
 
         let url = `/index.php/lizmap/permalink?${params}`;
         let response = await request.post(url);
-        const body = await checkJson(response);
+        responseExpect(response).toBeJson();
+        const body = await response.json();
         expect(body).toHaveProperty('repository', 'testsrepository');
         expect(body).toHaveProperty('project', 'short_link_permalink');
         expect(body).toHaveProperty('plink');
@@ -33,7 +34,8 @@ test.describe('Read short link permalink @requests @read', () => {
 
         let url = `/index.php/lizmap/permalink?${params}`;
         let response = await request.post(url);
-        const body = await checkJson(response);
+        responseExpect(response).toBeJson();
+        const body = await response.json();
         expect(body).toHaveProperty('error', ['Wrong parameters given']);
     })
 
@@ -46,7 +48,8 @@ test.describe('Read short link permalink @requests @read', () => {
 
         let url = `/index.php/lizmap/permalink?${params}`;
         let response = await request.post(url);
-        const body = await checkJson(response);
+        responseExpect(response).toBeJson();
+        const body = await response.json();
         expect(body).toHaveProperty('error', ['Wrong parameters given']);
     })
 
@@ -60,7 +63,8 @@ test.describe('Read short link permalink @requests @read', () => {
         let url = `/index.php/lizmap/permalink?${params}`;
         let response = await request.post(url);
 
-        const body = await checkJson(response);
+        responseExpect(response).toBeJson();
+        const body = await response.json();
         expect(body).toHaveProperty('error', ['Wrong parameters given']);
     })
 
@@ -72,7 +76,8 @@ test.describe('Read short link permalink @requests @read', () => {
 
         let url = `/index.php/lizmap/permalink?${params}`;
         let response = await request.post(url);
-        const body = await checkJson(response);
+        responseExpect(response).toBeJson();
+        const body = await response.json();
         expect(body).toHaveProperty('error', ['Wrong parameters given']);
     })
 
@@ -87,7 +92,8 @@ test.describe('Read short link permalink @requests @read', () => {
         let url = `/index.php/lizmap/permalink?${params}`;
         let response = await request.post(url);
 
-        const body = await checkJson(response);
+        responseExpect(response).toBeJson();
+        const body = await response.json();
         expect(body).toHaveProperty('error', ['Wrong parameters given']);
     })
 
@@ -118,7 +124,8 @@ test.describe('Read short link permalink @requests @read', () => {
         let url = `/index.php/lizmap/permalink?${params}`;
         let response = await request.post(url);
 
-        const body = await checkJson(response);
+        responseExpect(response).toBeJson();
+        const body = await response.json();
         expect(body).toHaveProperty('error', ['The permalink does not exists']);
     })
 })
@@ -146,7 +153,8 @@ test.describe('Add short link permalink @requests @write', () => {
             }
         });
 
-        const body = await checkJson(response);
+        responseExpect(response).toBeJson();
+        const body = await response.json();
         expect(body).toHaveProperty('permalink', '7ZqbMKgf8BHE');
     });
 
@@ -170,7 +178,8 @@ test.describe('Add short link permalink @requests @write', () => {
             }
         });
 
-        const body = await checkJson(response);
+        responseExpect(response).toBeJson();
+        const body = await response.json();
         expect(body).toHaveProperty('permalink', '7ZqbMKgf8BHE');
     })*/
 
@@ -195,7 +204,8 @@ test.describe('Add short link permalink @requests @write', () => {
             }
         });
 
-        const body = await checkJson(response);
+        responseExpect(response).toBeJson();
+        const body = await response.json();
         expect(body).toHaveProperty('permalink', 'odWd3JBHQFde');
     });
 
@@ -218,7 +228,8 @@ test.describe('Add short link permalink @requests @write', () => {
             }
         });
 
-        const body = await checkJson(response);
+        responseExpect(response).toBeJson();
+        const body = await response.json();
         expect(body).toHaveProperty('error', ['Wrong parameters given']);
     });
 
@@ -241,7 +252,8 @@ test.describe('Add short link permalink @requests @write', () => {
             }
         });
 
-        const body = await checkJson(response);
+        responseExpect(response).toBeJson();
+        const body = await response.json();
         expect(body).toHaveProperty('error', ['Wrong parameters given']);
     });
 
@@ -264,7 +276,8 @@ test.describe('Add short link permalink @requests @write', () => {
             }
         });
 
-        const body = await checkJson(response);
+        responseExpect(response).toBeJson();
+        const body = await response.json();
         expect(body).toHaveProperty('error', ['Wrong parameters given']);
     });
 
@@ -288,7 +301,8 @@ test.describe('Add short link permalink @requests @write', () => {
             }
         });
 
-        const body = await checkJson(response);
+        responseExpect(response).toBeJson();
+        const body = await response.json();
         expect(body).toHaveProperty('error', ['Wrong parameters given']);
     });
 
@@ -335,7 +349,8 @@ test.describe('Add short link permalink @requests @write', () => {
             }
         });
 
-        const body = await checkJson(response);
+        responseExpect(response).toBeJson();
+        const body = await response.json();
         expect(body).toHaveProperty('error', ['Invalid bounding box']);
     });
 
@@ -359,7 +374,8 @@ test.describe('Add short link permalink @requests @write', () => {
             }
         });
 
-        const body = await checkJson(response);
+        responseExpect(response).toBeJson();
+        const body = await response.json();
         expect(body).toHaveProperty('error', ['Invalid bounding box']);
     });
 
@@ -382,7 +398,8 @@ test.describe('Add short link permalink @requests @write', () => {
             }
         });
 
-        const body = await checkJson(response);
+        responseExpect(response).toBeJson();
+        const body = await response.json();
         expect(body).toHaveProperty('error', ['Wrong parameters given']);
     });
 
@@ -406,7 +423,8 @@ test.describe('Add short link permalink @requests @write', () => {
             }
         });
 
-        const body = await checkJson(response);
+        responseExpect(response).toBeJson();
+        const body = await response.json();
         expect(body).toHaveProperty('error', ['Wrong parameters given']);
     });
 
@@ -430,7 +448,8 @@ test.describe('Add short link permalink @requests @write', () => {
             }
         });
 
-        const body = await checkJson(response);
+        responseExpect(response).toBeJson();
+        const body = await response.json();
         expect(body).toHaveProperty('error', ['Wrong parameters given']);
     });
 
@@ -454,7 +473,8 @@ test.describe('Add short link permalink @requests @write', () => {
             }
         });
 
-        const body = await checkJson(response);
+        responseExpect(response).toBeJson();
+        const body = await response.json();
         expect(body).toHaveProperty('error', ['Wrong parameters given']);
     });
 
@@ -478,7 +498,8 @@ test.describe('Add short link permalink @requests @write', () => {
             }
         });
 
-        const body = await checkJson(response);
+        responseExpect(response).toBeJson();
+        const body = await response.json();
         expect(body).toHaveProperty('permalink', 'lPLl5gwgpEZW');
     });
 });
