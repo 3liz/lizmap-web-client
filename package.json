@@ -46,7 +46,7 @@
     "flatgeobuf": "^4.4.x",
     "jsts": "^2.12.x",
     "lit-html": "^3.3.x",
-    "mocha": "^11.8.x",
+    "mocha": "^12.0.x",
     "ol": "^10.10.x",
     "ol-ext": "^4.0.x",
     "ol-wfs-capabilities": "^2.0.x",
