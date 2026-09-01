@@ -23,7 +23,7 @@ import Fill from 'ol/style/Fill.js';
 const DEFAULT_PANORAMAX_URL = 'https://panoramax.openstreetmap.fr/api';
 
 /** Default (classic) colour for the coverage layer — matches COLORS.BASE on panoramax.openstreetmap.fr */
-const PNX_COLOR = '#FF6F00';
+const PNX_COLOR = '#54278f';
 
 /** Colour applied to the selected sequence — matches COLORS.SELECTED on panoramax.openstreetmap.fr */
 const PNX_SELECTED_COLOR = '#1E88E5';
@@ -33,7 +33,7 @@ const PNX_SELECTED_COLOR = '#1E88E5';
  * Index: 0 = > 2 years (oldest), 1 = < 2 years, 2 = < 1 year, 3 = < 1 month (newest),
  *        4 = no date field (BASE colour).
  */
-export const PNX_DATE_PALETTE = ['#fecc5c', '#fd8d3c', '#f03b20', '#bd0026', '#FF6F00'];
+export const PNX_DATE_PALETTE = ['#BA68C8', '#9C27B0', '#7B1FA2', '#4A148C', '#54278f'];
 
 /**
  * Arrow icon pointing to the North (heading 0). Rotated clockwise to match the
@@ -95,7 +95,7 @@ export default class Panoramax {
             }),
         });
         this._lineStyle = new Style({
-            stroke: new Stroke({ color: PNX_COLOR, width: 3 }),
+            stroke: new Stroke({ color: PNX_COLOR, width: 2 }),
         });
 
         // Date-based styles (one per palette entry, for points and lines).
