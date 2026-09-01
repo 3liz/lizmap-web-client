@@ -22,6 +22,12 @@ import Fill from 'ol/style/Fill.js';
 /** Default Panoramax instance used when `panoramaxUrl` is not set in the config */
 const DEFAULT_PANORAMAX_URL = 'https://panoramax.openstreetmap.fr/api';
 
+/**
+ * Max zoom level served by the Panoramax MVT tile endpoint (`sources.geovisio.maxzoom`
+ * in `${panoramaxUrl}/map/style.json`, e.g. https://panoramax.openstreetmap.fr/api/map/style.json).
+ */
+const PNX_MAX_ZOOM = 15;
+
 /** Default (classic) colour for the coverage layer — matches COLORS.BASE on panoramax.openstreetmap.fr */
 const PNX_COLOR = '#54278f';
 
@@ -139,6 +145,7 @@ export default class Panoramax {
                 format: new MVT(),
                 projection: 'EPSG:3857',
                 url: tilesUrl,
+                maxZoom: PNX_MAX_ZOOM,
             }),
             style: (feature) => {
                 const isPoint = feature.getType() === 'Point' || feature.getType() === 'MultiPoint';
