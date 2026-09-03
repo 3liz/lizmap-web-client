@@ -1,6 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg">
 <symbol id="box" viewBox="0 0 24 24"><path d="M1.48 1029.842h21.04v19.04H1.48Z" style="fill:#e5e5e5;stroke:currentColor;stroke-width:.95975173;stroke-dasharray:1.91950336,.95975168" transform="translate(.05 -1027.676)"/></symbol>
 <symbol id="circle" viewBox="0 0 24 24"><g transform="translate(0 -1028.362)"><circle cx="12.1" cy="1040.272" r="10.509" fill="#ebebeb"/><circle cx="12" cy="1040.362" r="10.5" fill="none" stroke="currentColor" stroke-dasharray="1.99829691 .99914846" stroke-dashoffset=".168" stroke-width=".999"/></g></symbol>
+<!--https://icons.getbootstrap.com/icons/compass/ -->
+<symbol id="compass" fill="currentColor" viewBox="0 0 16 16">
+    <path d="M8 16.016a7.5 7.5 0 0 0 1.962-14.74A1 1 0 0 0 9 0H7a1 1 0 0 0-.962 1.276A7.5 7.5 0 0 0 8 16.016m6.5-7.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0"/>
+    <path d="m6.94 7.44 4.95-2.83-2.83 4.95-4.949 2.83 2.828-4.95z"/>
+</symbol>
 <symbol id="device-mobile-vibration" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path stroke="none" d="M0 0h24v24H0z"/><g transform="rotate(20 12 12)"><rect width="10" height="16" x="7" y="4" rx="1"/><path d="M11 5h2M12 17v.01M3 8v8M21 8v8"/></g></symbol>
 <symbol id="edit" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path stroke="none" d="M0 0h24v24H0z"/><path d="M9 7H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-3"/><path d="M9 15h3l8.5-8.5a1.5 1.5 0 0 0-3-3L9 12zM16 5l3 3"/></symbol>
 <symbol id="eraser" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path stroke="none" d="M0 0h24v24H0z"/><path d="M19 19H8l-4-4a1 1 0 0 1 0-1.41l10-10a1 1 0 0 1 1.41 0l5 5a1 1 0 0 1 0 1.41l-9 9M18 12.3 11.7 6"/></symbol>

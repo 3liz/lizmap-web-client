@@ -63,8 +63,9 @@ export default class Geolocation {
         this._displayPrecision = options.geolocationPrecision;
         this._displayDirection = options.geolocationDirection;
         this._isBind = false;
+        this._isRotatedView = false;
         this._bindIntervalID = 0;
-        this._bindIntervalInSecond = 10;
+        this._bindIntervalInSecond = this._displayDirection ? 1 : 10;
         this._isLinkedToEdition = false;
 
         const qgisProjectProjection = lizmap3.map.getProjection();
@@ -155,24 +156,17 @@ export default class Geolocation {
         this._map.getView().setCenter(center);
         this._map.render();
 
-        if (this.displayDirection && this.isBind) {
-            this.rotateView()
+        if (this.isRotatedView) {
+            this.rotateView();
         }
+    }
+
+    toggleRotatedView() {
+        this.isRotatedView = !this._isRotatedView;
     }
 
     toggleBind() {
         this.isBind = !this._isBind;
-
-        // Center when binding
-        if (this.isBind) {
-            this.center();
-
-            this._startBindInterval();
-        }else{
-            this._map.getView().setRotation(0);
-            this._map.render();
-            this._stopBindInterval();
-        }
     }
 
     _startBindInterval(){
@@ -299,9 +293,61 @@ export default class Geolocation {
      * @param {boolean} isBind - Enable map view always centered on current position.
      */
     set isBind(isBind) {
+        if (this._isBind === isBind) {
+            return;
+        }
         this._isBind = isBind;
 
+        // Center when binding
+        if (this._isBind) {
+            this.center();
+
+            // Then activate display direction
+            // which rotate the map view
+            if (this.displayDirection) {
+                this.isRotatedView = true;
+            }
+
+            this._startBindInterval();
+        } else {
+            this.isRotatedView = false;
+            this._stopBindInterval();
+        }
+
         mainEventDispatcher.dispatch('geolocation.isBind');
+    }
+
+
+    get isRotatedView() {
+        if (!this.displayDirection) {
+            return false;
+        }
+        return this._isRotatedView;
+    }
+
+    /**
+     * Set rotated view status
+     * @param {boolean} isRotatedView - Enable map view rotated on current position heading.
+     */
+    set isRotatedView(isRotatedView) {
+        if (!this.displayDirection) {
+            return;
+        }
+        if (this._isRotatedView === isRotatedView) {
+            return;
+        }
+
+        this._isRotatedView = isRotatedView;
+
+        if (this._isRotatedView) {
+            this.rotateView();
+        } else {
+            // Reset rotation
+            this._map.getView().setRotation(0);
+            this._map.render();
+        }
+
+        mainEventDispatcher.dispatch('geolocation.isRotatedView');
     }
 
     get isLinkedToEdition() {

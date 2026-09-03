@@ -75,6 +75,20 @@ export default class Geolocation extends HTMLElement {
                         >
                     <span class="bind-text input-group-text">s</span>
                 </div>
+                ${mainLizmap.geolocation.displayDirection ? html`
+                <button type="button"
+                    class="btn-rotate-map btn btn-sm ${mainLizmap.geolocation.isRotatedView ? 'active btn-success' : ''}"
+                    title="${lizDict['geolocate.toolbar.rotate']}"
+                    @click=${() => mainLizmap.geolocation.toggleRotatedView()}
+                    ?disabled=${
+                            !mainLizmap.geolocation.isBind ||
+                            !mainLizmap.geolocation.isTracking
+                    }>
+                    <svg width="24" height="24">
+                        <use href="${lizUrls.svgSprite}#compass"/>
+                    </svg>
+                </button>
+                ` : ''}
             </div>
             <div class="geolocation-infos">
                 <div>
@@ -105,6 +119,7 @@ export default class Geolocation extends HTMLElement {
                 'geolocation.isTracking',
                 'geolocation.firstGeolocation',
                 'geolocation.isBind',
+                'geolocation.isRotatedView',
                 'geolocation.position',
                 'geolocation.accuracy'
             ]
