@@ -439,6 +439,11 @@ test.describe('Geolocation heading @readonly', () => {
         const geolocationDockButtonBar = geolocationDock.locator('.button-bar');
         await geolocationDockButtonBar.locator('.bind-btn').click();
 
+        // Check UI
+        await expect(geolocationDockButtonBar.locator('.bind-btn')).toContainClass('active');
+        await expect(geolocationDockButtonBar.locator('.bind-control')).toHaveValue('1');
+        await expect(geolocationDockButtonBar.locator('.btn-rotate-map')).toContainClass('active');
+
         // Wait for OL transition
         await page.waitForTimeout(500);
 
