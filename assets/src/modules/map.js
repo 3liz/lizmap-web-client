@@ -214,30 +214,46 @@ export default class map extends olMap {
                 let minResolution = node.wmsMinScaleDenominator <= 1 ? undefined : Utils.getResolutionFromScale(node.layerConfig.minScale, metersPerUnit);
                 let maxResolution = node.wmsMaxScaleDenominator <= 1 ? undefined : Utils.getResolutionFromScale(node.layerConfig.maxScale, metersPerUnit);
 
-                // The layer is configured to be cached
+                // If the layer is configured to be cached: try to build the wmts options
+                let wmts_options = null;
                 if (node.layerConfig.cached) {
                     // Using WMTS
                     const parser = new WMTSCapabilities();
                     const result = parser.read(lizMap.wmtsCapabilities);
 
-                    // Build WMTS options
-                    let options;
+                    // Build WMTS options if the WMTS Capabilities contain Layers
                     if (result['Contents']['Layer']) {
-                        options = optionsFromCapabilities(result, {
-                            layer: node.wmsName,
-                            matrixSet: qgisProjectProjection,
-                        });
+                        // Check the wmts layer definition to check the tile matrix limits
+                        // This is needed to avoid errors when the layer is outside the project extent
+                        // and the tile matrix limits are empty
+                        for (const wmts_layer of result['Contents']['Layer']) {
+                            if (wmts_layer['Identifier'] !== node.wmsName) {
+                                continue;
+                            }
+                            // Check the tile matrix limits for the layer
+                            for (const tileMatrixSetLink of wmts_layer['TileMatrixSetLink']) {
+                                if (tileMatrixSetLink['TileMatrixSet'] !== qgisProjectProjection) {
+                                    continue;
+                                }
+                                if (tileMatrixSetLink['TileMatrixSetLimits'].length !== 0) {
+                                    wmts_options = optionsFromCapabilities(result, {
+                                        layer: node.wmsName,
+                                        matrixSet: qgisProjectProjection,
+                                    });
+                                }
+                            }
+                        }
                     }
+                }
 
-                    // The options could be null if the layer has not been found in
-                    // WMTS capabilities
-                    if (options) {
-                        layer = new TileLayer({
-                            minResolution: minResolution,
-                            maxResolution: maxResolution,
-                            source: new WMTS(options)
-                        });
-                    }
+                // If the layer is configured to be cached and wmts options have been build
+                // then use a WMTS layer
+                if (node.layerConfig.cached && wmts_options) {
+                    layer = new TileLayer({
+                        minResolution: minResolution,
+                        maxResolution: maxResolution,
+                        source: new WMTS(wmts_options)
+                    });
                 } else {
                     if(mapState.singleWMSLayer){
                         this._statesSingleWMSLayers.set(node.name,node);
