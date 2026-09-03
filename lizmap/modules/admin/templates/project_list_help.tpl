@@ -57,25 +57,25 @@
                             <li class="warning">{@admin.project.rules.list.custom.projection@}</li>
                         </ul>
 
-                        {if $hasInspectionData}
-                        <li>{@admin.project.list.column.invalid.layers.count.label@}</li>
-                        <ul class="rules">
+                        {* Inspection-only legend items. Rendered unconditionally and hidden by
+                           the datatable script when no project has inspection data. *}
+                        <li class="help-inspection-only">{@admin.project.list.column.invalid.layers.count.label@}</li>
+                        <ul class="rules help-inspection-only">
                             <li class="warning">{@admin.project.rules.list.invalid.datasource.html@}</li>
                         </ul>
-                        <li>{@admin.project.list.column.loading.time.label.alt@}</li>
-                        <ul class="rules">
+                        <li class="help-inspection-only">{@admin.project.list.column.loading.time.label.alt@}</li>
+                        <ul class="rules help-inspection-only">
                             <li class="warning">{jlocale "admin.project.rules.list.warning.loading.html",
                                 array($warningLoadingTime)}</li>
                             <li class="error">{jlocale "admin.project.rules.list.error.loading.html", array($errorLoadingTime)}
                             </li>
                         </ul>
-                        <li>{@admin.project.list.column.memory.usage.label.alt@}</li>
-                        <ul class="rules">
+                        <li class="help-inspection-only">{@admin.project.list.column.memory.usage.label.alt@}</li>
+                        <ul class="rules help-inspection-only">
                             <li class="warning">{jlocale "admin.project.rules.list.warning.memory.html", array($warningMemory)}
                             </li>
                             <li class="error">{jlocale "admin.project.rules.list.error.memory.html", array($errorMemory)}</li>
                         </ul>
-                        {/if}
 
                     </ul>
                 </ul>

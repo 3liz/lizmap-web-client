@@ -30,13 +30,19 @@ test.describe('QGIS Projects page', () => {
     test('Filter by repository', async ({ page }) => {
         const adminPage = new AdminPage(page);
         await adminPage.open();
+        let dataJsonPromise = adminPage.page.waitForResponse(/qgis_projects\/data/);
         await adminPage.openPage('QGIS projects');
+        // waiting the json response (computed by datatable)
+        await dataJsonPromise;
         const projects = adminPage.page.locator('#lizmap_project_list');
         const allProjectCount = await projects.locator('table tbody tr').count();
         expect(allProjectCount).toBeGreaterThan(1);
         // select bad respository (0 projects)
+        dataJsonPromise = adminPage.page.waitForResponse(/qgis_projects\/data/);
         await page.locator('#repository-selector').selectOption('badrepository');
         await page.waitForURL(/repository=badrepository/);
+        // waiting the json response (computed by datatable)
+        await dataJsonPromise;
         // datatable show 1 line with class dataTables_empty
         expect(projects.locator('table tbody tr')).toHaveCount(1)
         expect(projects.locator('table tbody tr td')).toHaveClass('dataTables_empty');
@@ -46,15 +52,21 @@ test.describe('QGIS Projects page', () => {
     test('Check project with inspection', async ({ page }) => {
         const adminPage = new AdminPage(page);
         await adminPage.open();
+        let dataJsonPromise = adminPage.page.waitForResponse(/qgis_projects\/data/);
         await adminPage.openPage('QGIS projects');
+        // waiting the json response (computed by datatable)
+        await dataJsonPromise;
         const projects = adminPage.page.locator('#lizmap_project_list');
         const columnLocator = 'table tbody tr:first-child td';
         const projectAdminColCount = 11;
         const inspectionDelta = 7;
         expect(await projects.locator(columnLocator).count()).toBe(projectAdminColCount+inspectionDelta);
         // select testsrepository (no inpection)
+        dataJsonPromise = adminPage.page.waitForResponse(/qgis_projects\/data/);
         await page.locator('#repository-selector').selectOption('testsrepository');
         await page.waitForURL(/repository=testsrepository/);
+        // waiting the json response (computed by datatable)
+        await dataJsonPromise;
         expect(await projects.locator(columnLocator).count()).toBe(projectAdminColCount);
 
     });
