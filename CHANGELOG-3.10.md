@@ -13,6 +13,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * **[Klein und Leber GbR](https://www.gisgeometer.de/)** with @meyerlor
 * **[Faunalia](https://www.faunalia.eu/)** with @mind84
 * **[Terre De Provence Agglomération](https://www.terredeprovence-agglo.com/)**
+* **[SBE](https://www.sbe-engineering.com/)**
 
 ### Fixed
 
@@ -39,6 +40,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Update Panoramax min-width to prevent overflow and unwanted scrollbar
 * Add pnx-widget-player to pnx-photo-viewer
 * Edition: save the parent foreign key of a read-only child field https://github.com/3liz/lizmap-web-client/pull/7097
+* WMTS Layer without TileMatrixSetLimits https://github.com/3liz/lizmap-web-client/pull/7120
 
 ### Security
 
@@ -58,7 +60,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 ### Backend
 
 * Update JS dependencies
-* Update Jelix version
+* Update Jelix version 1.8.26
+* Update jCommunity
 * Update rspack to 2.2.1 https://github.com/3liz/lizmap-web-client/pull/7089
 * Update @playwright/test dependency to version 1.62.x
 * Update OpenLayers to 10.10.0
