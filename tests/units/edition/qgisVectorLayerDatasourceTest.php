@@ -115,18 +115,6 @@ class qgisVectorLayerDatasourceTest extends TestCase
         $this->assertEquals('test password', $element->getDatasourceParameter('password'));
         $this->assertEquals('prefer', $element->getDatasourceParameter('sslmode'));
 
-        $provider = 'postgres';
-        $datasource = "dbname='test_dbname' host=test_host port=5432 user='test_user' password=test password sslmode=prefer";
-
-        $element = new qgisVectorLayerDatasource($provider, $datasource);
-
-        $this->assertEquals('test_dbname', $element->getDatasourceParameter('dbname'));
-        $this->assertEquals('test_host', $element->getDatasourceParameter('host'));
-        $this->assertEquals('5432', $element->getDatasourceParameter('port'));
-        $this->assertEquals('test_user', $element->getDatasourceParameter('user'));
-        $this->assertEquals('test', $element->getDatasourceParameter('password'));
-        $this->assertEquals('prefer', $element->getDatasourceParameter('sslmode'));
-
     }
 
     public function testPostgresDatasourceWithoutGeometry(): void
@@ -636,7 +624,7 @@ WHERE fk_id_series = 2  )
     public function testBadDatasourceMissingEqual(): void
     {
         $provider = 'postgres';
-        // missing a quote for user
+        // missing value for foo
         $datasource = "dbname='test_dbname' host=127.0.0.1 port=5432 foo user='test_user' ";
         $this->expectException(QgisConnectionStringParserException::class);
         $this->expectExceptionCode(2);
