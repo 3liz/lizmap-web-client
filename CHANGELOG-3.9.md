@@ -33,6 +33,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Edition: read the parent feature again when creating a child feature https://github.com/3liz/lizmap-web-client/pull/7098
 * Edition: save the parent foreign key of a read-only child field https://github.com/3liz/lizmap-web-client/pull/7097
 * WMTS Layer without TileMatrixSetLimits https://github.com/3liz/lizmap-web-client/pull/7120
+* Action: Feature ID can be a big interger
 
 ### Security
 

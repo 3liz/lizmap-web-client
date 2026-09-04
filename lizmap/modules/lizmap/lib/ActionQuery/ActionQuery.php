@@ -85,7 +85,7 @@ class ActionQuery
         $sqlValues = array();
 
         foreach ($params as $key => $value) {
-            $caster = ($key === 'feature_id') ? 'integer' : 'text';
+            $caster = ($key === 'feature_id') ? 'bigint' : 'text';
             $sqlParts[] = "'{$key}', (\${$i})::{$caster}";
             $sqlValues[] = $value;
             ++$i;
