@@ -1,6 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-// import { expect as requestExpect } from './fixtures/expect-request.js'
+import { expect as requestExpect } from './fixtures/expect-request.js'
 import { expect as responseExpect } from './fixtures/expect-response.js'
 import { ProjectPage } from './pages/project';
 
@@ -204,5 +204,41 @@ test.describe('Lizmap actions @readonly', () => {
 
         // The action message is back to be hidden
         actionMessage.isHidden();
+    });
+
+    test('should display working feature action', async ({ page }) => {
+        // Zoom out
+        await page.locator('#navbar button.btn.zoom-out').click();
+        // Zoom out
+        await page.locator('#navbar button.btn.zoom-out').click();
+        // Zoom out
+        await page.locator('#navbar button.btn.zoom-out').click();
+        // Zoom out
+        await page.locator('#navbar button.btn.zoom-out').click();
+        // Wait for OL transition
+        await page.waitForTimeout(1000);
+
+        const project = new ProjectPage(page, 'feature_toolbar');
+        // Click on points
+        let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
+        await project.clickOnMap(436, 290);
+
+        let getFeatureInfoRequest = await getFeatureInfoPromise;
+        const getFeatureInfoExpectedParameters = {
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'REQUEST': 'GetFeatureInfo',
+            'INFO_FORMAT': /^text\/html/,
+            'LAYERS': 'parent_layer',
+            'QUERY_LAYERS': 'parent_layer',
+        }
+        requestExpect(getFeatureInfoRequest).toContainParametersInPostData(getFeatureInfoExpectedParameters);
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
+
+        // Action button
+        const featureToolbars = project.popupContent.locator('.lizmapPopupSingleFeature lizmap-feature-toolbar[value^="parent_layer_"]');
+        await expect(featureToolbars).toHaveCount(2);
+        await expect(featureToolbars.locator('button.popup-action')).toHaveCount(2);
     });
 });
