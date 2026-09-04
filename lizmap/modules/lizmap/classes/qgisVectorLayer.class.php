@@ -4,7 +4,7 @@
  * Give access to qgis mapLayer configuration.
  *
  * @author    3liz
- * @copyright 2013-2023 3liz
+ * @copyright 2013-2026 3liz
  *
  * @see      http://3liz.com
  *
@@ -14,6 +14,7 @@
 use GuzzleHttp\Psr7\StreamWrapper as Psr7StreamWrapper;
 use Jelix\IniFile\IniModifier;
 use JsonMachine\Items as JsonMachineItems;
+use Lizmap\App\QgisConnectionStringParserException;
 use Lizmap\Project\Project;
 use Lizmap\Request\Proxy;
 use Lizmap\Request\WFSRequest;
@@ -238,10 +239,7 @@ class qgisVectorLayer extends qgisMapLayer
             return $this->dtParams;
         }
 
-        $datasourceParser = new qgisVectorLayerDatasource(
-            $this->provider,
-            $this->datasource
-        );
+        $ds = array();
         $parameters = array(
             'dbname', 'service', 'host', 'port', 'user', 'password',
             'sslmode', 'authcfg', 'key', 'estimatedmetadata', 'selectatid',
@@ -249,8 +247,23 @@ class qgisVectorLayer extends qgisMapLayer
             'table', 'geocol', 'sql', 'schema', 'tablename',
         );
 
-        foreach ($parameters as $param) {
-            $ds[$param] = $datasourceParser->getDatasourceParameter($param);
+        try {
+            $datasourceParser = new qgisVectorLayerDatasource(
+                $this->provider,
+                $this->datasource
+            );
+
+            foreach ($parameters as $param) {
+                $ds[$param] = $datasourceParser->getDatasourceParameter($param);
+            }
+
+        } catch (QgisConnectionStringParserException $e) {
+            $error = 'Project '.$this->project->getKey().' layer '.$this->name.', error in datasource: '.$e->getMessage();
+            jLog::log($error, 'lizmapadmin');
+
+            // As we don't have parsed all parameters, probably it's better to trigger an exception instead of trying
+            // to connect to a database without any or bad connection parameters.
+            throw new Exception($error);
         }
 
         $this->dtParams = (object) $ds;
