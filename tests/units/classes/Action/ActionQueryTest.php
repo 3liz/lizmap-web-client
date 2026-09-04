@@ -193,7 +193,7 @@ class ActionQueryTest extends TestCase
 
         [$sql] = $aq->buildSql($params, (object) array('options' => array()), array());
 
-        $this->assertStringContainsString("'feature_id', (\$1)::integer", $sql);
+        $this->assertStringContainsString("'feature_id', (\$1)::bigint", $sql);
     }
 
     public function testBuildSqlTextParamCastAsText(): void
