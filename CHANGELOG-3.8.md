@@ -8,6 +8,11 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Backend
+
+* Upgrade Jelix to version 1.8.26
+* Upgrade jCommunity to version 1.4.7
+
 ## 3.8.18 - 2026-05-20
 
 ### Security
