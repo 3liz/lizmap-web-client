@@ -693,7 +693,9 @@ export default class Action {
 
         // Find Lizmap popup toolbar
         let popupContainer = document.getElementById(popupContainerId);
-        let featureToolbar = popupContainer.querySelector(`lizmap-feature-toolbar[value="${layerId}.${featureId}"]`);
+        let featureToolbarSelector = `div.lizmapPopupContent .lizmapPopupSingleFeature`;
+        featureToolbarSelector += ` lizmap-feature-toolbar[value="${layerId}.${featureId}"]`
+        let featureToolbar = popupContainer.querySelector(featureToolbarSelector);
         if (!featureToolbar) {
             return false;
         }
