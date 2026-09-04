@@ -50,7 +50,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 * Update JS dependencies
 * Update Jelix version 1.8.26
-* Update jCommunity
+* Update jCommunity to version 1.4.7
 * Update rspack to 2.2.1 https://github.com/3liz/lizmap-web-client/pull/7089
 * Update @playwright/test dependency to version 1.62.x
 * Update OpenLayers to 10.10.0
