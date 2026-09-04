@@ -1,6 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg">
 <symbol id="box" viewBox="0 0 24 24"><path d="M1.48 1029.842h21.04v19.04H1.48Z" style="fill:#e5e5e5;stroke:currentColor;stroke-width:.95975173;stroke-dasharray:1.91950336,.95975168" transform="translate(.05 -1027.676)"/></symbol>
 <symbol id="circle" viewBox="0 0 24 24"><g transform="translate(0 -1028.362)"><circle cx="12.1" cy="1040.272" r="10.509" fill="#ebebeb"/><circle cx="12" cy="1040.362" r="10.5" fill="none" stroke="currentColor" stroke-dasharray="1.99829691 .99914846" stroke-dashoffset=".168" stroke-width=".999"/></g></symbol>
+<!--https://icons.getbootstrap.com/icons/compass/ -->
+<symbol id="compass" fill="currentColor" viewBox="0 0 16 16">
+    <path d="M8 16.016a7.5 7.5 0 0 0 1.962-14.74A1 1 0 0 0 9 0H7a1 1 0 0 0-.962 1.276A7.5 7.5 0 0 0 8 16.016m6.5-7.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0"/>
+    <path d="m6.94 7.44 4.95-2.83-2.83 4.95-4.949 2.83 2.828-4.95z"/>
+</symbol>
+<!--https://icons.getbootstrap.com/icons/crosshair/ -->
+<symbol id="crosshair" fill="currentColor" viewBox="0 0 16 16">
+    <path d="M8.5.5a.5.5 0 0 0-1 0v.518A7 7 0 0 0 1.018 7.5H.5a.5.5 0 0 0 0 1h.518A7 7 0 0 0 7.5 14.982v.518a.5.5 0 0 0 1 0v-.518A7 7 0 0 0 14.982 8.5h.518a.5.5 0 0 0 0-1h-.518A7 7 0 0 0 8.5 1.018zm-6.48 7A6 6 0 0 1 7.5 2.02v.48a.5.5 0 0 0 1 0v-.48a6 6 0 0 1 5.48 5.48h-.48a.5.5 0 0 0 0 1h.48a6 6 0 0 1-5.48 5.48v-.48a.5.5 0 0 0-1 0v.48A6 6 0 0 1 2.02 8.5h.48a.5.5 0 0 0 0-1zM8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/>
+</symbol>
+<!--https://icons.getbootstrap.com/icons/crosshair2/ -->
+<symbol id="crosshair2" fill="currentColor" viewBox="0 0 16 16">
+    <path d="M8 0a.5.5 0 0 1 .5.5v.518A7 7 0 0 1 14.982 7.5h.518a.5.5 0 0 1 0 1h-.518A7 7 0 0 1 8.5 14.982v.518a.5.5 0 0 1-1 0v-.518A7 7 0 0 1 1.018 8.5H.5a.5.5 0 0 1 0-1h.518A7 7 0 0 1 7.5 1.018V.5A.5.5 0 0 1 8 0m-.5 2.02A6 6 0 0 0 2.02 7.5h1.005A5 5 0 0 1 7.5 3.025zm1 1.005A5 5 0 0 1 12.975 7.5h1.005A6 6 0 0 0 8.5 2.02zM12.975 8.5A5 5 0 0 1 8.5 12.975v1.005a6 6 0 0 0 5.48-5.48zM7.5 12.975A5 5 0 0 1 3.025 8.5H2.02a6 6 0 0 0 5.48 5.48zM10 8a2 2 0 1 0-4 0 2 2 0 0 0 4 0"/>
+</symbol>
 <symbol id="device-mobile-vibration" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path stroke="none" d="M0 0h24v24H0z"/><g transform="rotate(20 12 12)"><rect width="10" height="16" x="7" y="4" rx="1"/><path d="M11 5h2M12 17v.01M3 8v8M21 8v8"/></g></symbol>
 <symbol id="edit" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path stroke="none" d="M0 0h24v24H0z"/><path d="M9 7H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-3"/><path d="M9 15h3l8.5-8.5a1.5 1.5 0 0 0-3-3L9 12zM16 5l3 3"/></symbol>
 <symbol id="eraser" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path stroke="none" d="M0 0h24v24H0z"/><path d="M19 19H8l-4-4a1 1 0 0 1 0-1.41l10-10a1 1 0 0 1 1.41 0l5 5a1 1 0 0 1 0 1.41l-9 9M18 12.3 11.7 6"/></symbol>
@@ -26,6 +39,14 @@
 <symbol id="save" fill="currentColor" viewBox="0 0 16 16"><path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H9.5a1 1 0 0 0-1 1v7.293l2.646-2.647a.5.5 0 0 1 .708.708l-3.5 3.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L7.5 9.293V2a2 2 0 0 1 2-2H14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2.5a.5.5 0 0 1 0 1z"/></symbol>
 <symbol id="scaling" fill="currentColor" stroke="currentColor" viewBox="0 0 100 100"><path d="m37.62 5.028-.337.284-4.039 4.068 3.547 3.523L39.875 9.8l2.846.596 1.025-4.893-4.176-.877Zm9.995 6.393 9.787 2.053 1.026-4.895-9.787-2.05zm14.68 3.078 9.787 2.05 1.025-4.892-9.787-2.053zm-39.623 5.522 3.547 3.523 7.049-7.094-3.547-3.523zm-10.57 10.642 3.546 3.524 7.047-7.094-3.547-3.524zM1.529 41.306l3.55 3.523 7.046-7.096-3.547-3.523Zm70.977 4.027 3.91 3.115 3.44-4.387-1.118-6.55zM.947 48.319l5.617 8.274 4.137-2.809-5.617-8.273Zm62.211 8.744 3.91 3.116 6.233-7.82-3.91-3.116zM9.373 60.73l5.62 8.272 4.134-2.809-5.617-8.271zm44.438 8.067 3.91 3.115 6.232-7.82-3.91-3.117zM17.8 73.138l5.617 8.273 4.137-2.808-5.617-8.274zm26.662 7.388 3.91 3.116 6.232-7.82-3.91-3.116zm-18.236 5.022 5.617 8.273 4.136-2.81-5.617-8.272zm8.888 6.709 3.91 3.117 6.233-7.822-3.91-3.115z"/><path d="M22.672 20.02a3.5 3.5 0 0 0-2.506 1.034L-.514 41.872a3.5 3.5 0 0 0-.412 4.434L18 74.176a3.5 3.5 0 0 0 5.633.216l33.494-42.038a3.5 3.5 0 0 0-2.018-5.605l-31.742-6.654a3.5 3.5 0 0 0-.695-.074zm1.121 7.317 24.32 5.098-26.992 33.877L6.484 44.759ZM78.734 7.668l2.61 11.396-18.145 4.154 2.705 11.816L84.05 30.88l2.609 11.396L100 21.011Z"/></symbol>
 <symbol id="split" fill="currentColor" stroke="currentColor" viewBox="0 0 100 100"><path d="M5 1 0 6l9 9 5-4Zm14 14-5 5 9 9 5-4zm14 14-5 5 9 10 5-5z"/><path d="M43 9a6 6 0 0 0-3 0l13 43L9 42c-1 4 2 10 8 12l38 8 4 11c-4 0-7 3-8 6v10l5 8c3 2 6 3 9 2 13-5 3-27 0-35 10 2 32 10 35-3 1-3-1-6-3-8l-8-5c-3-1-6-1-9 1-3 1-7 4-6 8l-11-3-11-38c-2-3-6-6-9-7Zm45 45c2 0 4 1 5 3l1 3-2 2h-6c-2 0-4-2-5-3s-2-2-1-3l2-2zM60 79l2 1 3 5v6l-2 2-3-1c-1-1-3-3-3-5v-6l2-2a2 2 0 0 1 1 0z"/></symbol>
+<!--https://icons.getbootstrap.com/icons/caret-right-fill/ -->
+<symbol id="start" fill="currentColor" viewBox="0 0 16 16">
+    <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
+</symbol>
+<!--https://icons.getbootstrap.com/icons/stop-fill/ -->
+<symbol id="stop" fill="currentColor" viewBox="0 0 16 16">
+    <path d="M5 3.5h6A1.5 1.5 0 0 1 12.5 5v6a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 11V5A1.5 1.5 0 0 1 5 3.5"/>
+</symbol>
 <symbol id="text" viewBox="0 0 24 24"><text xml:space="preserve" x="2.323" y="15.977" style="font-style:normal;font-variant:normal;font-weight:400;font-stretch:normal;font-size:12px;line-height:125%;font-family:FontAwesome;text-align:start;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:currentColor;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"><tspan x="2.323" y="15.977">Abc</tspan></text></symbol>
 <symbol id="rule" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path stroke="none" d="M0 0h24v24H0z"/><path d="m17 3 4 4L7 21l-4-4zm-1 4-1.5-1.5M13 10l-1.5-1.5M10 13l-1.5-1.5M7 16l-1.5-1.5"/></symbol>
 </svg>
