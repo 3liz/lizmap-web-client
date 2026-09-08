@@ -42,7 +42,8 @@ COPY xdebug.ini /etc/php/${PHP_VERSION}/fpm/conf.d/90-xdebug.ini
 ## Install healtcheck script
 COPY php-fpm-healthcheck /usr/local/bin/
 
-RUN chmod 755 /bin/entrypoint.d/lizmap-entrypoint.sh /bin/appctl.sh /usr/local/bin/php-fpm-healthcheck
+RUN chmod 755 /bin/entrypoint.d/lizmap-entrypoint.sh /bin/appctl.sh /usr/local/bin/php-fpm-healthcheck; \
+    git config --global --add safe.directory /srv/lzm;
 
 HEALTHCHECK \
     --interval=30s \
