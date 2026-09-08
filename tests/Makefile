@@ -110,6 +110,7 @@ reset:
 
 # install or update base images, to be sure we have the latest images
 build:: env
+	docker compose build
 	docker compose pull
 
 # install or update plugins, to be sure we have the latest plugins
