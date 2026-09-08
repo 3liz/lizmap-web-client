@@ -26,23 +26,12 @@ export default class Snapping extends HTMLElement {
             <h3>${lizDict['snapping.title']}</h3>
             <div class="form-group">
                 <div class="controls">
-                    <div class="btn-group">
-                        <button
-                            class="btn ${mainLizmap.snapping.active ? 'active btn-success' : ''}"
-                            @click=${() => mainLizmap.snapping.toggle()}
-                            >
-                            ${mainLizmap.snapping.active ? lizDict['geolocate.toolbar.stop'] : lizDict['geolocate.toolbar.start']}
-                        </button>
-                        <button
-                            class="btn ${mainLizmap.snapping._snapLayersRefreshable ? 'btn-warning' : ''}"
-                            ?disabled=${!mainLizmap.snapping._snapLayersRefreshable}
-                            @click=${() => mainLizmap.snapping.getSnappingData() }
-                            >
-                            <svg width="14" height="14">
-                                <use href="${lizUrls.svgSprite}#refresh"/>
-                            </svg>
-                        </button>
-                    </div>
+                    <button
+                        class="btn ${mainLizmap.snapping.active ? 'active btn-success' : ''}"
+                        @click=${() => mainLizmap.snapping.toggle()}
+                        >
+                        ${mainLizmap.snapping.active ? lizDict['geolocate.toolbar.stop'] : lizDict['geolocate.toolbar.start']}
+                    </button>
                 </div>
                 ${mainLizmap.snapping.active ?
                     html`<div class="snap-panel-controls">
@@ -91,8 +80,7 @@ export default class Snapping extends HTMLElement {
             },
             [
                 'snapping.config',
-                'snapping.active',
-                'snapping.refreshable'
+                'snapping.active'
             ]
         );
     }
