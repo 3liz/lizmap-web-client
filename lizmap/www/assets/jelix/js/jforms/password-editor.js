@@ -93,9 +93,13 @@ var JelixPasswordEditor = {
 
         ctrl.deactivate = (function(deactivate){
             if(deactivate){
+                inputEl.setAttribute('disabled', 'disabled');
+                inputEl.classList.add('jforms-disabled');
                 deactivateButtons();
             }
             else{
+                inputEl.removeAttribute('disabled');
+                inputEl.classList.remove('jforms-disabled');
                 activateButtons();
             }
         }).bind(ctrl);
@@ -125,9 +129,13 @@ var JelixPasswordEditor = {
 
         ctrl.deactivate = (function(deactivate){
             if(deactivate){
+                inputEl.setAttribute('disabled', 'disabled');
+                inputEl.classList.add('jforms-disabled');
                 deactivateButtons();
             }
             else{
+                inputEl.removeAttribute('disabled');
+                inputEl.classList.remove('jforms-disabled');
                 activateButtons();
             }
         }).bind(ctrl);
@@ -221,6 +229,3 @@ var JelixPasswordEditor = {
     }
 
 }
-
-
-
