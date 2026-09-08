@@ -48,6 +48,7 @@ class upload_imageCtrl extends jController
         $paramName = 'upload';
         $maxSize = 2 * 1024 * 1024; // Mb
         $allowedMimeType = array('image/jpg', 'image/jpeg', 'image/png', 'image/gif');
+        $allowedExtensions = array('jpg', 'jpeg', 'png', 'gif');
         $uploadPath = 'live/images/home/';
 
         $directoryPath = jApp::wwwPath($uploadPath);
@@ -92,6 +93,11 @@ class upload_imageCtrl extends jController
             $type = jFile::getMimeTypeFromFilename($fileName);
         }
         if (!in_array($type, $allowedMimeType)) {
+            return $this->uploadError(jLocale::get('admin~admin.upload.image.error.file.wrongType'));
+        }
+
+        $ext = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+        if (!in_array($ext, $allowedExtensions)) {
             return $this->uploadError(jLocale::get('admin~admin.upload.image.error.file.wrongType'));
         }
 
