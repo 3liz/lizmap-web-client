@@ -48,6 +48,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 * Harden sanitizeGFIContent (hook leak, iframe handling) https://github.com/3liz/lizmap-web-client/pull/7047
 * enforce access control on datatables endpoints https://github.com/3liz/lizmap-web-client/pull/7091
+* ckeditor: improve the validation of uploaded images
 
 ### Tests
 
@@ -62,7 +63,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 ### Backend
 
 * Update JS dependencies
-* Update Jelix version 1.8.26
+* Update Jelix version 1.8.27
 * Update jCommunity
 * Update rspack to 2.2.1 https://github.com/3liz/lizmap-web-client/pull/7089
 * Update @playwright/test dependency to version 1.62.x
