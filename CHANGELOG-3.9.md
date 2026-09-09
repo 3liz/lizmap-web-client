@@ -8,6 +8,14 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Security
+
+* ckeditor: improve the validation of uploaded images
+
+### Backend
+
+* Upgrade Jelix to version 1.8.27
+
 ## 3.9.10 - 2026-09-04
 
 ### Funders
