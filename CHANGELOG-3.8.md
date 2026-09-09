@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.8.20 - 2026-09-09
+
 ### Security
 
 * ckeditor: improve the validation of uploaded images
