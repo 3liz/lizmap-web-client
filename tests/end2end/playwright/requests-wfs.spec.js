@@ -1059,6 +1059,7 @@ test.describe('WFS Requests @requests @readonly', () => {
         // Geometry coordinates must be in EPSG:3857 range for this area.
         // EPSG:4326 would give x ≈ 3.9, EPSG:2154 x ≈ 769 000 — both wrong.
         for (const feature of body.features) {
+            /** @type number[] */
             const coords = feature.geometry.coordinates.flat(Infinity);
             const xs = coords.filter((_, i) => i % 2 === 0);
             const ys = coords.filter((_, i) => i % 2 === 1);
