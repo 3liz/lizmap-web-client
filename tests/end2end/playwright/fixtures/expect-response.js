@@ -417,6 +417,13 @@ export const expect = baseExpect.extend({
         };
     },
 
+    /**
+     * Expecting the response contains expected headers
+     * @param {APIResponse|Response|null} response the response to test
+     * @param {{[key: string]: string|RegExp}} expectedHeaders  List of expected headers
+     *
+     * @returns {MatcherReturnType} the result
+     */
     toContainHeaders(response, expectedHeaders) {
         const assertionName = 'toContainHeaders';
         let pass = true;
