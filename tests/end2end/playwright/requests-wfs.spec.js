@@ -302,10 +302,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         let body = await response.json();
@@ -422,10 +419,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         let body = await response.json();
@@ -459,10 +453,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -499,10 +490,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         let body = await response.json();
@@ -538,10 +526,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -569,10 +554,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -603,10 +585,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -658,10 +637,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         let body = await response.json();
@@ -697,10 +673,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -748,10 +721,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -780,10 +750,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -815,10 +782,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -872,10 +836,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         let body = await response.json();
@@ -908,10 +869,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         let body = await response.json();
@@ -937,10 +895,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -974,10 +929,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         let body = await response.json();
@@ -1004,10 +956,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -1109,10 +1058,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         let body = await response.json();
@@ -1136,10 +1082,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -1171,10 +1114,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         let body = await response.json();
@@ -1199,10 +1139,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -1230,10 +1167,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         let body = await response.json();
@@ -1259,10 +1193,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -1290,10 +1221,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         let body = await response.json();
@@ -1319,10 +1247,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -1343,10 +1268,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -1372,10 +1294,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -1400,10 +1319,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         let body = await response.json();
@@ -1434,10 +1350,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         let body = await response.json();
@@ -1462,10 +1375,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -1492,10 +1402,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         let body = await response.json();
@@ -1521,10 +1428,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -1551,10 +1455,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         let body = await response.json();
@@ -1579,10 +1480,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -1602,10 +1500,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -1630,10 +1525,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             }
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -1666,10 +1558,7 @@ test.describe('WFS Requests @requests @readonly', () => {
             data: data,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         let body = await response.json();
@@ -1834,10 +1723,7 @@ test.describe('WFS Requests filter_layer_by_user @requests @readonly ', () => {
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         let body = await response.json();
@@ -1851,10 +1737,7 @@ test.describe('WFS Requests filter_layer_by_user @requests @readonly ', () => {
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -1896,10 +1779,7 @@ test.describe('WFS Requests filter_layer_by_user @requests @readonly ', () => {
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         let body = await response.json();
@@ -1915,10 +1795,7 @@ test.describe('WFS Requests filter_layer_by_user @requests @readonly ', () => {
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -1962,10 +1839,7 @@ test.describe('WFS Requests filter_layer_by_user @requests @readonly ', () => {
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         let body = await response.json();
@@ -1981,10 +1855,7 @@ test.describe('WFS Requests filter_layer_by_user @requests @readonly ', () => {
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -2028,10 +1899,7 @@ test.describe('WFS Requests filter_layer_by_user @requests @readonly ', () => {
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         let body = await response.json();
@@ -2045,10 +1913,7 @@ test.describe('WFS Requests filter_layer_by_user @requests @readonly ', () => {
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -2092,10 +1957,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         let body = await response.json();
@@ -2109,10 +1971,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -2155,10 +2014,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         let body = await response.json();
@@ -2177,10 +2033,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -2228,10 +2081,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         let body = await response.json();
@@ -2252,10 +2102,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -2303,10 +2150,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         let body = await response.json();
@@ -2320,10 +2164,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -2366,10 +2207,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         let body = await response.json();
@@ -2388,10 +2226,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -2439,10 +2274,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         let body = await response.json();
@@ -2464,10 +2296,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -2516,10 +2345,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         let body = await response.json();
@@ -2533,10 +2359,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -2579,10 +2402,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         let body = await response.json();
@@ -2601,10 +2421,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -2652,10 +2469,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         let body = await response.json();
@@ -2674,10 +2488,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -2730,10 +2541,7 @@ test.describe('WFS Requests attribute_table @requests @readonly ', () => {
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         let body = await response.json();
@@ -2753,10 +2561,7 @@ test.describe('WFS Requests attribute_table @requests @readonly ', () => {
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -2776,10 +2581,7 @@ test.describe('WFS Requests attribute_table @requests @readonly ', () => {
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -2798,10 +2600,7 @@ test.describe('WFS Requests attribute_table @requests @readonly ', () => {
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -2855,10 +2654,7 @@ test.describe('WFS Requests attribute_table @requests @readonly ', () => {
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         let body = await response.json();
@@ -2878,10 +2674,7 @@ test.describe('WFS Requests attribute_table @requests @readonly ', () => {
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -2901,10 +2694,7 @@ test.describe('WFS Requests attribute_table @requests @readonly ', () => {
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -2923,10 +2713,7 @@ test.describe('WFS Requests attribute_table @requests @readonly ', () => {
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -2978,10 +2765,7 @@ test.describe('WFS Requests attribute_table @requests @readonly ', () => {
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         let body = await response.json();
@@ -3000,10 +2784,7 @@ test.describe('WFS Requests attribute_table @requests @readonly ', () => {
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
@@ -3023,10 +2804,7 @@ test.describe('WFS Requests attribute_table @requests @readonly ', () => {
             form: form,
         });
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+        responseExpect(response).toBeGeoJson();
 
         // check body
         body = await response.json();
