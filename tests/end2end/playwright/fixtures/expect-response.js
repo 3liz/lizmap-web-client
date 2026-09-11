@@ -485,6 +485,59 @@ export const expect = baseExpect.extend({
     },
 
     /**
+     * Expecting the response is a GeoJSON with expected features property length
+     * @param {APIResponse} response the response to test
+     * @param {number} expected the expected value of features property length
+     *
+     * @returns {Promise<MatcherReturnType>} the result
+     */
+    async toHaveGeoJsonFeaturesLength(response, expected) {
+        const assertionName = 'toHaveGeoJsonFeaturesLength';
+        let pass = true;
+        let theMessage = '';
+        /** @type {MatcherReturnType} matcherResult */
+        let matcherResult = {
+            message: () => theMessage,
+            pass: pass,
+            name: assertionName,
+            expected: expected,
+            actual: '',
+        };
+        const response_body = await response.body();
+        try {
+            let body = await response.json();
+            expect(body).toHaveProperty('type', 'FeatureCollection');
+            expect(body).toHaveProperty('features');
+            expect(body.features).toHaveLength(expected);
+        } catch(/** @type {any} */ e) {
+            theMessage = e.matcherResult.message;
+            pass = false;
+        }
+
+        if (this.isNot) {
+            pass =!pass;
+        }
+
+        const message = pass
+            ? () => this.utils.matcherHint(assertionName, undefined, undefined, { isNot: this.isNot }) +
+                '\n\n' +
+                `Expected: Response not to be JSON with property numberOfFeatures: ${this.utils.printExpected(expected)}\n`+
+                `Actual: ${response_body} - ${matcherResult?.message()}`
+            : () => this.utils.matcherHint(assertionName, undefined, undefined, { isNot: this.isNot }) +
+                '\n\n' +
+                `Expected: Response to be JSON with property numberOfFeatures: ${this.utils.printExpected(expected)}\n`+
+                `Actual: ${response_body} - ${matcherResult?.message()}`
+
+        return {
+            message,
+            pass,
+            name: assertionName,
+            expected: expected,
+            actual: matcherResult?.actual,
+        };
+    },
+
+    /**
      * Expecting the response is a GeoJSON with numberOfFeatures property to expected
      * @param {APIResponse} response the response to test
      * @param {number} expected the expected value of numberOfFeatures property
