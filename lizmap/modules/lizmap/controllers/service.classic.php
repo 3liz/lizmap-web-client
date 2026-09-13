@@ -297,7 +297,9 @@ class serviceCtrl extends jController
         jMessage::clearAll();
 
         foreach ($messages as $code => $msg) {
-            if ($code == 'AuthorizationRequired') {
+            if ($code == 'BadRequest') {
+                $rep->setHttpStatus(400, Proxy::getHttpStatusMsg(400));
+            } elseif ($code == 'AuthorizationRequired') {
 
                 // 401 : AuthorizationRequired
                 $rep->setHttpStatus(401, Proxy::getHttpStatusMsg(401));
@@ -525,6 +527,11 @@ class serviceCtrl extends jController
                                 $feature_ids[] = implode(',', $data_ids);
                             }
                         }
+                    } else {
+                        // Unkown or expired token
+                        jMessage::add('Unknown or expired token: '.$token, 'BadRequest');
+
+                        return false;
                     }
                 }
                 // Add SELECTION for WMS
