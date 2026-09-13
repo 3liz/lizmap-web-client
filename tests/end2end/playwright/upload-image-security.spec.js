@@ -1,13 +1,12 @@
 // @ts-check
 import { expect, test } from '@playwright/test';
-import { getAuthStorageStatePath } from './globals';
 
 test.describe('Upload image security',
     {
         tag: ['@requests', '@readonly'],
     }, () => {
 
-        test.use({ storageState: getAuthStorageStatePath('admin') });
+        test.use({ storageState: 'playwright/.auth/admin.json' });
 
         test('Reject PHP file disguised as image with GIF magic bytes', async ({ request }) => {
             const response = await request.post('/admin.php/admin/upload_image/uploadfile', {
