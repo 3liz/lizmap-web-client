@@ -481,6 +481,11 @@ class serviceCtrl extends jController
                     ) {
                         $filters[] = $data->filter;
                     }
+                } else {
+                    // Unkown or expired token
+                    jMessage::add('Unknown or expired token: '.$token, 'BadRequest');
+
+                    return false;
                 }
             }
             if (count($filters) > 0) {
