@@ -1534,6 +1534,133 @@ test.describe('WFS Requests @requests @readonly', () => {
         expect(body.features).toHaveLength(0);
     });
 
+    test('WFS GetFeature SELECTIONTOKEN', async({ request }) => {
+        // GetSelectionToken parameters
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'selection',
+            SERVICE: 'WMS',
+            REQUEST: 'GetSelectionToken',
+            TYPENAME: 'selection_polygon',
+            IDS: '1',
+        });
+        // GetSSelectionToken request
+        let url = `/index.php/lizmap/service/?${params}`;
+        let response = await request.get(url, {});
+        // check response
+        responseExpect(response).toBeJson();
+        // get the token
+        let token = (await response.json())['token'];
+        expect(token).toBeTruthy();
+        expect(token).toHaveLength(32);
+
+        // WFS GetFeature request
+        params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'selection',
+        });
+        url = `/index.php/lizmap/service?${params}`;
+        response = await request.post(url, {
+            form: {
+                SERVICE: 'WFS',
+                VERSION: '1.0.0',
+                REQUEST: 'GetFeature',
+                SELECTIONTOKEN: token,
+                OUTPUTFORMAT: 'GeoJSON',
+            }
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        let body = await response.json();
+        expect(body).toHaveProperty('type', 'FeatureCollection');
+        expect(body).toHaveProperty('features');
+        expect(body.features).toHaveLength(1);
+        let feature = body.features[0];
+        expect(feature).toHaveProperty('type', 'Feature');
+        expect(feature).toHaveProperty('id', 'selection_polygon.1');
+        expect(feature).toHaveProperty('properties');
+        expect(feature.properties).toHaveProperty('id', 1);
+
+        // GetSelectionToken parameters
+        params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'selection',
+            SERVICE: 'WMS',
+            REQUEST: 'GetSelectionToken',
+            TYPENAME: 'selection_polygon',
+            IDS: '1,2',
+        });
+        // GetSSelectionToken request
+        url = `/index.php/lizmap/service/?${params}`;
+        response = await request.get(url, {});
+        // check response
+        responseExpect(response).toBeJson();
+        // get the token
+        token = (await response.json())['token'];
+        expect(token).toBeTruthy();
+        expect(token).toHaveLength(32);
+
+        // WFS GetFeature request
+        params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'selection',
+        });
+        url = `/index.php/lizmap/service?${params}`;
+        response = await request.post(url, {
+            form: {
+                SERVICE: 'WFS',
+                VERSION: '1.0.0',
+                REQUEST: 'GetFeature',
+                SELECTIONTOKEN: token,
+                OUTPUTFORMAT: 'GeoJSON',
+            }
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        body = await response.json();
+        expect(body).toHaveProperty('type', 'FeatureCollection');
+        expect(body).toHaveProperty('features');
+        expect(body.features).toHaveLength(2);
+        feature = body.features[0];
+        expect(feature).toHaveProperty('type', 'Feature');
+        expect(feature).toHaveProperty('id', 'selection_polygon.1');
+        expect(feature).toHaveProperty('properties');
+        expect(feature.properties).toHaveProperty('id', 1);
+        feature = body.features[1];
+        expect(feature).toHaveProperty('type', 'Feature');
+        expect(feature).toHaveProperty('id', 'selection_polygon.2');
+        expect(feature).toHaveProperty('properties');
+        expect(feature.properties).toHaveProperty('id', 2);
+    });
+
+    test('WFS GetFeature SELECTIONTOKEN with bad token', async({ request }) => {
+        // WFS GetFeature request
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'selection',
+        });
+        let url = `/index.php/lizmap/service?${params}`;
+        let response = await request.post(url, {
+            form: {
+                SERVICE: 'WFS',
+                VERSION: '1.0.0',
+                REQUEST: 'GetFeature',
+                SELECTIONTOKEN: 'token',
+                OUTPUTFORMAT: 'GeoJSON',
+            }
+        });
+        // check response
+        responseExpect(response).toBeXml(400);
+        // check body
+        let body = await response.text();
+        expect(body).toContain('ServiceException');
+        expect(body).toContain('Unknown or expired token:');
+    });
+
     test('WFS GetFeature XML', async({ request }) => {
         let params = new URLSearchParams({
             repository: 'testsrepository',
