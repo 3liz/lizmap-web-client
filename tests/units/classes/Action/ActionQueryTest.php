@@ -259,7 +259,8 @@ class ActionQueryTest extends TestCase
 
         [, $values] = $aq->buildSql(array(), $action, $clientOptions);
 
-        $this->assertEquals('safe_default', $values[0]);
+        // When the client sends an empty string, we should allow this empty string as a valid value, instead of falling back to the default.
+        $this->assertEquals('', $values[0]);
     }
 
     public static function sqlInjectionProvider(): array
