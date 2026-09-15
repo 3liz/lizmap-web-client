@@ -22,6 +22,7 @@ describe('AttributeLayerConfig', function () {
         expect(layer.hideLayer).to.be.eq(false)
         expect(layer.order).to.be.eq(7)
         expect(layer.exportEnabled).to.be.eq(true)
+        expect(layer.exportFormats).to.be.deep.eq([])
     })
 
     it('Valid with export_enabled false', function () {
@@ -43,6 +44,29 @@ describe('AttributeLayerConfig', function () {
         expect(layer.hideLayer).to.be.eq(false)
         expect(layer.order).to.be.eq(7)
         expect(layer.exportEnabled).to.be.eq(false)
+        expect(layer.exportFormats).to.be.deep.eq([])
+    })
+
+    it('Valid with export formats', function () {
+        const layer = new AttributeLayerConfig("Quartiers", {
+            "primaryKey": "QUARTMNO",
+            "pivot": "False",
+            "hideAsChild": "False",
+            "hideLayer": "",
+            "layerId": "VilleMTP_MTP_Quartiers_2011_432620130116112610876",
+            "order": 7,
+            "export_formats": ['ods', 'xlsx', 'csv'],
+        });
+        expect(layer.id).to.be.eq('VilleMTP_MTP_Quartiers_2011_432620130116112610876')
+        expect(layer.name).to.be.eq('Quartiers')
+        expect(layer.primaryKey).to.be.eq('QUARTMNO')
+        expect(layer.hiddenFields).to.be.eq('')
+        expect(layer.pivot).to.be.eq(false)
+        expect(layer.hideAsChild).to.be.eq(false)
+        expect(layer.hideLayer).to.be.eq(false)
+        expect(layer.order).to.be.eq(7)
+        expect(layer.exportEnabled).to.be.eq(true)
+        expect(layer.exportFormats).to.be.deep.eq(['ods', 'xlsx', 'csv'])
     })
 
     it('ValidationError', function () {
