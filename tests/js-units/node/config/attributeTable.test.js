@@ -4,14 +4,14 @@ import { ValidationError, ConversionError } from 'assets/src/modules/Errors.js';
 import { AttributeLayerConfig, AttributeLayersConfig } from 'assets/src/modules/config/AttributeTable.js';
 
 describe('AttributeLayerConfig', function () {
-    it('Valid', function () {
+    it('Valid default', function () {
         const layer = new AttributeLayerConfig("Quartiers", {
             "primaryKey": "QUARTMNO",
             "pivot": "False",
             "hideAsChild": "False",
             "hideLayer": "",
             "layerId": "VilleMTP_MTP_Quartiers_2011_432620130116112610876",
-            "order": 7
+            "order": 7,
         });
         expect(layer.id).to.be.eq('VilleMTP_MTP_Quartiers_2011_432620130116112610876')
         expect(layer.name).to.be.eq('Quartiers')
@@ -21,6 +21,28 @@ describe('AttributeLayerConfig', function () {
         expect(layer.hideAsChild).to.be.eq(false)
         expect(layer.hideLayer).to.be.eq(false)
         expect(layer.order).to.be.eq(7)
+        expect(layer.exportEnabled).to.be.eq(true)
+    })
+
+    it('Valid with export_enabled false', function () {
+        const layer = new AttributeLayerConfig("Quartiers", {
+            "primaryKey": "QUARTMNO",
+            "pivot": "False",
+            "hideAsChild": "False",
+            "hideLayer": "",
+            "layerId": "VilleMTP_MTP_Quartiers_2011_432620130116112610876",
+            "order": 7,
+            "export_enabled": false,
+        });
+        expect(layer.id).to.be.eq('VilleMTP_MTP_Quartiers_2011_432620130116112610876')
+        expect(layer.name).to.be.eq('Quartiers')
+        expect(layer.primaryKey).to.be.eq('QUARTMNO')
+        expect(layer.hiddenFields).to.be.eq('')
+        expect(layer.pivot).to.be.eq(false)
+        expect(layer.hideAsChild).to.be.eq(false)
+        expect(layer.hideLayer).to.be.eq(false)
+        expect(layer.order).to.be.eq(7)
+        expect(layer.exportEnabled).to.be.eq(false)
     })
 
     it('ValidationError', function () {
