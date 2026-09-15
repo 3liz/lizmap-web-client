@@ -18,6 +18,7 @@ const requiredProperties = {
 const optionalProperties = {
     'hiddenFields': {type: 'string', default: ''},
     'export_enabled': {type: 'boolean', default: true},
+    'export_formats': {type: 'array', contentType: 'string', default: []},
 };
 
 /**
@@ -82,6 +83,14 @@ export class AttributeLayerConfig extends BaseObjectLayerConfig {
      */
     get exportEnabled() {
         return this._export_enabled;
+    }
+
+    /**
+     * The layer export is enabled
+     * @type {string[]}
+     */
+    get exportFormats() {
+        return [...this._export_formats];
     }
 }
 
