@@ -708,7 +708,7 @@ class Proxy
         if ($cacheStorageType == 'file') {
             // CACHE CONTENT INTO FILE SYSTEM
             // Directory where to store the cached files
-            $cacheDirectory = $cacheRootDirectory.'/'.$repository.'/'.$project.'/'.$layers.'/'.$crs.'/';
+            $cacheDirectory = $cacheRootDirectory.'/'.sha1($repository.'_'.$project.'_'.$layers.'_'.$crs).'/';
             self::createFileProfile($cacheDirectory, $cacheName, $cacheExpiration);
         } elseif ($cacheStorageType == 'redis') {
             // CACHE CONTENT INTO REDIS
@@ -716,8 +716,8 @@ class Proxy
         } else {
             // CACHE CONTENT INTO SQLITE DATABASE
             // Directory where to store the sqlite database
-            $cacheDirectory = $cacheRootDirectory.'/'.$repository.'/'.$project.'/';
-            $cacheDatabase = $cacheDirectory.$layers.'_'.$crs.'.db';
+            $cacheDirectory = $cacheRootDirectory.'/'.sha1($repository.'_'.$project).'/';
+            $cacheDatabase = $cacheDirectory.sha1($layers).'_'.$crs.'.db';
             self::createSqLiteProfile($cacheDirectory, $cacheName, $cacheExpiration, $cacheDatabase);
         }
 
