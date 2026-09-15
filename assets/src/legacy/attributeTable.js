@@ -1812,7 +1812,9 @@ var lizAttributeTable = function() {
              * @returns {MutationObserver}
              */
             function observeDomSearchBuilderMutation(name, oTable, allColumnsKeyValues){
-                const observedNode = document.querySelector(`#attribute-layer-${name} .dt-buttons.btn-group.flex-wrap`);
+                // lizmap internal js cleaned name - used for html ids
+                const cleanName = lizMap.cleanName(name);
+                const observedNode = document.querySelector(`#attribute-layer-${cleanName} .dt-buttons.btn-group.flex-wrap`);
                 // table does not have search builder
                 if(!observedNode) return;
                 const config = { childList: true, subtree: true };
