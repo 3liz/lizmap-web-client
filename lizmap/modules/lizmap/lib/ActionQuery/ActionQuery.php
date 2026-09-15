@@ -91,19 +91,26 @@ class ActionQuery
             ++$i;
         }
 
+        // Validate the client options against the action configuration
+        // If the client value is invalid, we keep the default value from the action configuration
         foreach ($action->options as $key => $configValue) {
             $sqlParts[] = "'{$key}', (\${$i})::text";
             $clientValue = $clientOptions[$key] ?? '';
-            [$validFilter, $block_items] = SqlTools::validateExpressionFilter($clientValue);
-            if ($clientValue && $validFilter) {
-                $sqlValues[] = $clientValue;
-            } else {
-                $this->appContext->logMessage(
-                    'Choose the config value because the client option param contains dangerous chars : '.implode(', ', $block_items),
-                    'lizmapadmin'
-                );
-                $sqlValues[] = $configValue;
+            // Check that the given value does not contains forbidden expressions
+            $keptValue = $clientValue;
+            if (!empty($clientValue)) {
+                [$validFilter, $block_items] = SqlTools::validateExpressionFilter($clientValue);
+                if (!$validFilter) {
+                    $this->appContext->logMessage(
+                        'Invalid value given for the action '.$action->name.', parameter '.$key.' in project '.$this->repository.'/'.$this->project.
+                        ', layer '.$this->layerId.
+                        ', while using the given value : '.$clientValue.' → blocked items: '.implode(', ', $block_items),
+                        'lizmapadmin'
+                    );
+                    $keptValue = $configValue;
+                }
             }
+            $sqlValues[] = $keptValue;
             ++$i;
         }
 
