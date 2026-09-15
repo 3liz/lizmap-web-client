@@ -24,23 +24,28 @@ jobs:
         # docker stack (own PostgreSQL), so sharding the @write / no-tag tests
         # across shards is race-free. The per-config fields (php, pg, qgis...)
         # are attached to every shard of a given name via the include entries.
-        name: ["LEGACY", "STABLE", "BLEEDING_EDGE"]
+        name: ["LEGACY", "STABLE", "BLEEDING_EDGE", "QJAZZ_UNSTABLE"]
         shard: [1, 2, 3]
         include:
           - name: "LEGACY"
             php: "8.2"
             pg-postgis: "14-3"
-            qgis-server: "3.40"
+            qgis-server: "qgis-3.40"
             update-projects: "FALSE"
           - name: "STABLE"
             php: "8.3"
             pg-postgis: "15-3"
-            qgis-server: "3.40"
+            qgis-server: "qgis-3.40"
             update-projects: "FALSE"
           - name: "BLEEDING_EDGE"
             php: "8.5"
             pg-postgis: "18-3"
-            qgis-server: "3.44"
+            qgis-server: "qgis-3.44"
+            update-projects: "TRUE"
+          - name: "QJAZZ_UNSTABLE"
+            php: "8.5"
+            pg-postgis: "18-3"
+            qgis-server: "qgis-ltr-unstable"
             update-projects: "TRUE"
     env:
       PLAYWRIGHT_FORCE_TTY: true
@@ -85,9 +90,6 @@ jobs:
           git status
           git diff qgis-projects/tests/
 
-      - name: Install QGIS server plugins
-        run: make build-plugins
-
       - name: Show QGIS server environment
         run: |
           make show-qgis-server-versions
@@ -101,6 +103,17 @@ jobs:
           echo "Starting docker stack - wait for healthy states"
           docker compose up -d --quiet-pull --wait --wait-timeout 300
           docker compose ps
+
+      - name: Check about QGIS Serve status (direct)
+        id: qgis-server-status-direct
+        run: |
+          curl \
+            -N \
+            --retry 30 \
+            --retry-delay 5 \
+            "http://localhost:8131/lizmap/server.json" \
+            -o /tmp/test-qgis-server-direct.json
+          cat /tmp/test-qgis-server-direct.json
 
       - name: Check about QGIS Server status
         id: qgis-server-status
@@ -118,8 +131,7 @@ jobs:
           qgis_info=$(cat /tmp/test-qgis-server.json | jq --raw-output '.qgis_server_info.error')
           echo $qgis_info
           if [[ "$qgis_info" != "null" ]]; then
-              echo "QGIS Server is not well configured"
-              echo "::warning QGIS Server was not up"
+              echo "Failed to retrieve QGIS server metadata"
               exit 1
           else
              echo "JSON metadata OK about QGIS Server"
@@ -298,8 +310,9 @@ jobs:
           echo $GITHUB_WORKSPACE
           echo ${{ github.workspace }}
           echo ${{ github.workspace }}/tests/end2end/test-results/
-          ls -l $GITHUB_WORKSPACE/tests/end2end/test-results/
-          ls ${{ github.workspace }}/tests/end2end/test-results/
+          # XXX: these directory may not exists !!!!!
+          ls -l $GITHUB_WORKSPACE/tests/end2end/test-results/  || true
+          ls ${{ github.workspace }}/tests/end2end/test-results/ || true
 
       - name: Send screenshots if necessary about all Playwright tests, if one failed
         if: |
@@ -362,6 +375,7 @@ jobs:
           mkdir -p /tmp/e2e/lwc
           mkdir -p /tmp/e2e/docker
           docker logs lizmap${{ env.LZMBRANCH }}_test_qgis &> /tmp/e2e/docker/qgis-server.log | true
+          docker logs lizmap${{ env.LZMBRANCH }}_test_qgis_rpc &> /tmp/e2e/docker/qgis-server-rpc.log | true
           docker logs lizmap${{ env.LZMBRANCH }}_test_php &> /tmp/e2e/docker/php.log | true
           docker logs lizmap${{ env.LZMBRANCH }}_test_nginx &> /tmp/e2e/docker/nginx.log | true
           cp -r ../lizmap/var/log /tmp/e2e/lwc/
