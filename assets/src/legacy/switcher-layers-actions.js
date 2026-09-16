@@ -176,8 +176,7 @@ var lizLayerActionButtons = function() {
             html+= '</dd>';
 
             // Export
-            if ( 'exportLayers' in lizMap.config.options
-                && lizMap.config.options.exportLayers == 'True'
+            if ( initialConfig.options.exportLayers
                 && featureTypes != null
                 && featureTypes.length != 0
                 && layerConfig.typename != undefined) {
