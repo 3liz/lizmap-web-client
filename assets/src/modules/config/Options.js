@@ -28,6 +28,7 @@ const optionalProperties = {
     'hideProject': {type: 'boolean', default: false},
     'wmsMaxHeight': {type: 'number', default: 3000},
     'wmsMaxWidth': {type: 'number', default: 3000},
+    'exportLayers': {type: 'boolean', default: false},
     'geolocation': {type: 'boolean', default: false},
     'geolocationPrecision': {type: 'boolean', default: true},
     'geolocationDirection': {type: 'boolean', default: false},
@@ -72,6 +73,7 @@ export class OptionsConfig  extends BaseObjectConfig {
      * @param {boolean}  [cfg.hideProject]                        - is the project hidden in user interface ? Only services are available.
      * @param {number}   [cfg.wmsMaxHeight]                       - the image max height for WMS GetMap request
      * @param {number}   [cfg.wmsMaxWidth]                        - the image max width for WMS GetMap request
+     * @param {boolean}  [cfg.exportLayers]                       - is the export layers enabled ?
      * @param {boolean}  [cfg.geolocation]                        - is geolocation enabled ?
      * @param {boolean}  [cfg.geolocationPrecision]               - is geolocation pecision enabled ?
      * @param {boolean}  [cfg.geolocationDirection]               - is geolocation direction enabled ?
@@ -245,6 +247,14 @@ export class OptionsConfig  extends BaseObjectConfig {
      */
     get wmsMaxWidth() {
         return this._wmsMaxWidth;
+    }
+
+    /**
+     * The export layers is enabled
+     * @type {boolean}
+     */
+    get exportLayers() {
+        return this._exportLayers;
     }
 
     /**
