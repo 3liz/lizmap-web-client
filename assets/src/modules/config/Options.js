@@ -28,6 +28,7 @@ const optionalProperties = {
     'hideProject': {type: 'boolean', default: false},
     'wmsMaxHeight': {type: 'number', default: 3000},
     'wmsMaxWidth': {type: 'number', default: 3000},
+    'exportLayers': {type: 'boolean', default: false},
     'fixed_scale_overview_map': {type: 'boolean', default: true},
     'max_scale_points': {type: 'number', default: 5000},
     'max_scale_lines_polygons': {type: 'number', default: 5000},
@@ -63,6 +64,7 @@ export class OptionsConfig  extends BaseObjectConfig {
      * @param {boolean}  [cfg.hideProject]                        - is the project hidden in user interface ? Only services are available.
      * @param {number}   [cfg.wmsMaxHeight]                       - the image max height for WMS GetMap request
      * @param {number}   [cfg.wmsMaxWidth]                        - the image max width for WMS GetMap request
+     * @param {boolean}  [cfg.exportLayers]                       - is the export layers enabled ?
      * @param {boolean}  [cfg.fixed_scale_overview_map]           - does the Overview map have fixed scale ?
      * @param {number}   [cfg.max_scale_points]                   - maximum scale when zooming on points
      * @param {boolean}  [cfg.max_scale_lines_polygons]           - maximum scale when zooming on lines or polygons
@@ -201,6 +203,14 @@ export class OptionsConfig  extends BaseObjectConfig {
      */
     get wmsMaxWidth() {
         return this._wmsMaxWidth;
+    }
+
+    /**
+     * The export layers is enabled
+     * @type {boolean}
+     */
+    get exportLayers() {
+        return this._exportLayers;
     }
 
     /**
