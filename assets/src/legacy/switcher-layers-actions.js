@@ -7,6 +7,11 @@
 
 var lizLayerActionButtons = function() {
 
+    let initialConfig = null;
+    let lizmapState = null;
+    let lizmapMap = null;
+    let lizmapAction = null;
+    let lizmapPermalink = null;
     var featureTypes = null;
 
     /**
@@ -85,11 +90,14 @@ var lizLayerActionButtons = function() {
                 metadatas.styles = layerConfig.styles
 
             // Add actions
-            let layerActions = lizMap.mainLizmap.action.getActions('layer', layerConfig.id);
+            if (lizmapAction === null) {
+                lizmapAction = lizMap.mainLizmap.action;
+            }
+            let layerActions = lizmapAction.getActions('layer', layerConfig.id);
             if (layerActions.length) metadatas.actions = layerActions;
 
         }
-        if( lizMap.mainLizmap.map.getActiveBaseLayer()?.get("name") == aName ){
+        if( lizmapMap.getActiveBaseLayer()?.get("name") == aName ){
             metadatas.type = 'layer';
             metadatas.isBaselayer = true;
         }
@@ -128,7 +136,7 @@ var lizLayerActionButtons = function() {
 
             // Styles
             if( metadatas.styles ){
-                const layer = lizMap.mainLizmap.state.rootMapGroup.getMapLayerByName(aName);
+                const layer = lizmapState.rootMapGroup.getMapLayerByName(aName);
                 options = '';
                 for( var st in metadatas.styles ){
                     st = metadatas.styles[st];
@@ -150,7 +158,7 @@ var lizLayerActionButtons = function() {
             // Opacity
             let isSingleWMSLayer = false;
             if (!metadatas.isBaselayer) {
-                isSingleWMSLayer = lizMap.mainLizmap.state.rootMapGroup.getMapLayerOrGroupByName(aName).singleWMSLayer;
+                isSingleWMSLayer = lizmapState.rootMapGroup.getMapLayerOrGroupByName(aName).singleWMSLayer;
             }
             if (!isSingleWMSLayer) {
                 html+= '        <dt>'+lizDict['layer.metadata.opacity.title']+'</dt>';
@@ -158,8 +166,8 @@ var lizLayerActionButtons = function() {
                 html+= '<input type="hidden" class="opacityLayer '+isBaselayer+'" value="'+aName+'">';
 
                 const currentOpacity = metadatas.isBaselayer ?
-                    lizMap.mainLizmap.state.baseLayers.getBaseLayerByName(aName).opacity :
-                    lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerOrGroupByName(aName).opacity;
+                    lizmapState.baseLayers.getBaseLayerByName(aName).opacity :
+                    lizmapState.layersAndGroupsCollection.getLayerOrGroupByName(aName).opacity;
                 var opacities = lizMap.config.options.layersOpacities;
                 if (typeof opacities === 'undefined') {
                     opacities = [0.2, 0.4, 0.6, 0.8, 1];
@@ -179,7 +187,7 @@ var lizLayerActionButtons = function() {
                 && featureTypes != null
                 && featureTypes.length != 0
                 && layerConfig.typename != undefined) {
-                var exportFormats = lizMap.mainLizmap.initialConfig.vectorLayerResultFormat;
+                const exportFormats = initialConfig.vectorLayerResultFormat;
                 var options = '';
                 for ( const format of exportFormats ) {
                     options += '<option value="'+format+'">'+format+'</option>';
@@ -189,16 +197,16 @@ var lizLayerActionButtons = function() {
                 let exportEnabled = true;
                 // If attribute layers is defined, we have to check if the publisher
                 // has disabled export in attribute table config
-                const attrLayersConfig = lizMap.mainLizmap.initialConfig.attributeLayers;
-                if (attrLayersConfig !== null) {
-                    const attrLayerConfigsLen = attrLayersConfig.layerConfigs.length;
-                    const exportLayersLen = attrLayersConfig.layerConfigs.filter(attr => attr.exportEnabled).length;
+                if (initialConfig.hasAttributeLayers) {
+                    const attrLayersConfig = initialConfig.attributeLayers;
+                    const attrLayerConfigs = attrLayersConfig.layerConfigs;
+                    const attrLayerConfigsWithExport = attrLayerConfigs.filter(attr => attr.exportEnabled);
                     // If some layers have export disabled, we have to check if the current layer is in the list
-                    if (attrLayerConfigsLen != exportLayersLen) {
-                        const attrLayerConfig = attrLayersConfig.layerConfigs.find(layer => layer.id === layerConfig.id);
+                    if (attrLayerConfigs.length != attrLayerConfigsWithExport.length) {
+                        const attrLayerConfigWithExport = attrLayerConfigsWithExport.find(layer => layer.id === layerConfig.id);
                         // If the layer is not in the list, export is disabled
                         // else export is available as definde in attribute layer config
-                        exportEnabled = (attrLayerConfig !== undefined && attrLayerConfig.exportEnabled);
+                        exportEnabled = (attrLayerConfigWithExport !== undefined);
                     }
                 }
                 // Export layer
@@ -270,6 +278,9 @@ var lizLayerActionButtons = function() {
     lizMap.events.on({
 
         'uicreated': function(){
+            initialConfig = lizMap.mainLizmap.initialConfig;
+            lizmapState = lizMap.mainLizmap.state;
+            lizmapMap = lizMap.mainLizmap.map;
 
             // Display theme switcher if any
             if ('themes' in lizMap.config){
@@ -304,16 +315,18 @@ var lizLayerActionButtons = function() {
                         const expandedLegendNodes = themeSelected?.expandedLegendNode || [];
                         const checkedLegendNodes = themeSelected?.checkedLegendNodes || {};
 
-                        const allItems = lizMap.mainLizmap.state.layerTree.findTreeLayersAndGroups();
+                        const allItems = lizmapState.layerTree.findTreeLayersAndGroups();
 
                         // Suspend permalink updates during theme application
                         // This prevents "Too many Location/History API calls" error
-                        const permalink = lizMap.mainLizmap.permalink;
-                        if (permalink) {
+                        if (lizmapPermalink === null) {
+                            lizmapPermalink = lizMap.mainLizmap.permalink;
+                        }
+                        if (lizmapPermalink) {
                             // Save original _writeURLFragment method
-                            permalink._originalWriteURLFragment = permalink._writeURLFragment;
+                            lizmapPermalink._originalWriteURLFragment = lizmapPermalink._writeURLFragment;
                             // Replace with no-op function during theme application
-                            permalink._writeURLFragment = () => {};
+                            lizmapPermalink._writeURLFragment = () => {};
                         }
 
                         // STEP 1: Set ALL layers (ON if in theme, OFF if not)
@@ -453,28 +466,28 @@ var lizLayerActionButtons = function() {
                         }
 
                         // Resume permalink updates after theme application
-                        if (permalink && permalink._originalWriteURLFragment) {
+                        if (lizmapPermalink && lizmapPermalink._originalWriteURLFragment) {
                             // Restore original _writeURLFragment method
-                            permalink._writeURLFragment = permalink._originalWriteURLFragment;
-                            delete permalink._originalWriteURLFragment;
+                            lizmapPermalink._writeURLFragment = lizmapPermalink._originalWriteURLFragment;
+                            delete lizmapPermalink._originalWriteURLFragment;
                             // Clear the suspend flag if this is the initial theme activation
-                            if (permalink._suspendInitialWrite) {
-                                delete permalink._suspendInitialWrite;
+                            if (lizmapPermalink._suspendInitialWrite) {
+                                delete lizmapPermalink._suspendInitialWrite;
                             }
                             // Manually trigger one permalink update now that all changes are done
-                            permalink._writeURLFragment();
+                            lizmapPermalink._writeURLFragment();
                         }
 
                         // Set baseLayers checked state
                         if (themeSelected?.checkedGroupNode?.includes("baselayers/project-background-color")) {
-                            lizMap.mainLizmap.state.baseLayers.selectedBaseLayerName = "project-background-color";
+                            lizmapState.baseLayers.selectedBaseLayerName = "project-background-color";
                         } else {
-                            for (const baseLayer of lizMap.mainLizmap.state.baseLayers.getBaseLayers()) {
+                            for (const baseLayer of lizmapState.baseLayers.getBaseLayers()) {
                                 if (!baseLayer.layerConfig) {
                                     continue;
                                 }
                                 if (themeSelected?.layers?.[baseLayer.layerConfig.id]) {
-                                    lizMap.mainLizmap.state.baseLayers.selectedBaseLayerName = baseLayer.name;
+                                    lizmapState.baseLayers.selectedBaseLayerName = baseLayer.name;
                                     break;
                                 }
                             }
@@ -500,11 +513,13 @@ var lizLayerActionButtons = function() {
                 );
 
                 // Activate first map theme on load
-                if (lizMap.mainLizmap.initialConfig.options.activateFirstMapTheme) {
+                if (initialConfig.options.activateFirstMapTheme) {
                     // Prevent permalink from writing until after first theme is applied
-                    const permalink = lizMap.mainLizmap.permalink;
-                    if (permalink) {
-                        permalink._suspendInitialWrite = true;
+                    if (lizmapPermalink === null) {
+                        lizmapPermalink = lizMap.mainLizmap.permalink;
+                    }
+                    if (lizmapPermalink) {
+                        lizmapPermalink._suspendInitialWrite = true;
                     }
                     $('#theme-selector li.theme:nth-child(1)').click();
                 }
@@ -515,7 +530,7 @@ var lizLayerActionButtons = function() {
                 }
             }
 
-            featureTypes = lizMap.mainLizmap.initialConfig.vectorLayerFeatureTypeList;
+            featureTypes = initialConfig.vectorLayerFeatureTypeList;
 
             // title tooltip
             $('#switcher-layers-actions .btn, #get-baselayer-metadata').tooltip({
@@ -535,7 +550,7 @@ var lizLayerActionButtons = function() {
 
                 $('#hide-sub-dock').click();
 
-                const activeBaseLayerName = lizMap.mainLizmap.map.getActiveBaseLayer().get("name");
+                const activeBaseLayerName = lizmapMap.getActiveBaseLayer().get("name");
                 if( !activeBaseLayerName ){
                     return false;
                 }
@@ -597,7 +612,7 @@ var lizLayerActionButtons = function() {
                 if (isBaselayer) {
                     layer = lizMap.map.baseLayer;
                 } else {
-                    layer = lizMap.mainLizmap.state.rootMapGroup.getMapLayerByName(name);
+                    layer = lizmapState.rootMapGroup.getMapLayerByName(name);
                 }
 
                 // Set style
@@ -618,12 +633,12 @@ var lizLayerActionButtons = function() {
                     return false;
                 }
 
-                const isBaselayer = lizMap.mainLizmap.map.getActiveBaseLayer()?.get("name") == eName;
+                const isBaselayer = lizmapMap.getActiveBaseLayer()?.get("name") == eName;
 
                 // Get layer
                 const layer = isBaselayer ?
-                    lizMap.mainLizmap.state.baseLayers.getBaseLayerByName(eName) :
-                    lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerOrGroupByName(eName);
+                    lizmapState.baseLayers.getBaseLayerByName(eName) :
+                    lizmapState.layersAndGroupsCollection.getLayerOrGroupByName(eName);
 
                 // Set opacity
                 if( layer ) {
