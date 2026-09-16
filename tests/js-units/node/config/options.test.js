@@ -70,6 +70,7 @@ describe('OptionsConfig', function () {
         // default value
         expect(opt.wmsMaxHeight).to.be.eq(3000)
         expect(opt.wmsMaxWidth).to.be.eq(3000)
+        expect(opt.exportLayers).to.be.eq(false);
         expect(opt.fixed_scale_overview_map).to.be.eq(true)
         expect(opt.hide_numeric_scale_value).to.be.eq(false)
         expect(opt.hideGroupCheckbox).to.be.eq(false)
