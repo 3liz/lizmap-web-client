@@ -639,23 +639,23 @@ var lizAttributeTable = function() {
 
                 // Export tools
                 if ( attrLayerConfig.exportEnabled ) {
-                    html+= '&nbsp;<div class="export-formats btn-group pull-right" role="group" >';
-                    html+= '    <button type="button" class="btn btn-mini dropdown-toggle exportLayer" data-toggle="dropdown" aria-expanded="false">';
-                    html+= lizDict['attributeLayers.toolbar.btn.data.export.title'];
-                    html+= '      <span class="caret"></span>';
-                    html+= '    </button>';
-                    html+= '    <ul class="dropdown-menu" role="menu">';
-                    html+= '        <li><a href="#" class="btn-export-attributeTable">GeoJSON</a></li>';
-                    html+= '        <li><a href="#" class="btn-export-attributeTable">GML</a></li>';
-                    var exportFormats = initialConfig.vectorLayerResultFormat;
-                    for ( var i=0, len=exportFormats.length; i<len; i++ ) {
-                        var format = exportFormats[i].toLowerCase();
-                        if ( format != 'gml2' && format != 'gml3' && format != 'geojson' ) {
-                            html += '        <li><a href="#" class="btn-export-attributeTable">'+format+'</a></li>';
-                        }
+                    // Get the list of effective format for file export
+                    const exportFormats = attrLayerConfig.getEffectiveExportFormats(
+                        initialConfig.vectorLayerResultFormat
+                    );
+                    if (exportFormats) {
+                        html+= '&nbsp;<div class="export-formats btn-group pull-right" role="group" >';
+                        html+= '    <button type="button" class="btn btn-mini dropdown-toggle exportLayer" data-toggle="dropdown" aria-expanded="false">';
+                        html+= lizDict['attributeLayers.toolbar.btn.data.export.title'];
+                        html+= '      <span class="caret"></span>';
+                        html+= '    </button>';
+                        html+= '    <ul class="dropdown-menu" role="menu">';
+                        exportFormats.forEach(format => {
+                            html += `        <li><a href="#" class="btn-export-attributeTable">${format}</a></li>`;
+                        });
+                        html+= '    </ul>';
+                        html+= '</div>';
                     }
-                    html+= '    </ul>';
-                    html+= '</div>';
                 }
 
                 html+= '</div>'; // attribute-layer-action-bar
