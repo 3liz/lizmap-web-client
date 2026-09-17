@@ -58,57 +58,57 @@ export class SelectionPage extends ProjectPage {
 
     /**
      * Gets the refresh button
-     * @returns {Promise<Locator>} The refresh button locator
+     * @returns {Locator} The refresh button locator
      */
-    async getRefreshButton() {
+    getRefreshButton() {
         return this.selectionPanel.locator('.selectiontool-type-refresh');
     }
 
     /**
      * Gets the plus button
-     * @returns {Promise<Locator>} The plus button locator
+     * @returns {Locator} The plus button locator
      */
-    async getPlusButton() {
+    getPlusButton() {
         return this.selectionPanel.locator('.selectiontool-type-plus');
     }
 
     /**
      * Gets the minus button
-     * @returns {Promise<Locator>} The minus button locator
+     * @returns {Locator} The minus button locator
      */
-    async getMinusButton() {
+    getMinusButton() {
         return this.selectionPanel.locator('.selectiontool-type-minus');
     }
 
     /**
      * Gets the unselect button
-     * @returns {Promise<Locator>} The unselect button locator
+     * @returns {Locator} The unselect button locator
      */
-    async getUnselectButton() {
+    getUnselectButton() {
         return this.selectionPanel.locator('.selectiontool-unselect');
     }
 
     /**
      * Gets the filter button
-     * @returns {Promise<Locator>} The filter button locator
+     * @returns {Locator} The filter button locator
      */
-    async getFilterButton() {
+    getFilterButton() {
         return this.selectionPanel.locator('.selectiontool-filter');
     }
 
     /**
      * Gets the invert button
-     * @returns {Promise<Locator>} The invert button locator
+     * @returns {Locator} The invert button locator
      */
-    async getInvertButton() {
+    getInvertButton() {
         return this.selectionPanel.locator('lizmap-selection-invert');
     }
 
     /**
      * Get the result container of the selection tool
-     * @returns {Promise<Locator>} The results container locator
+     * @returns {Locator} The results container locator
      */
-    async getResultsContainer() {
+    getResultsContainer() {
         return this.selectionPanel.locator('.selectiontool-results');
     }
 

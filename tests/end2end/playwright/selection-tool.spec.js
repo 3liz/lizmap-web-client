@@ -15,8 +15,8 @@ test.describe('Selection tool', {tag: ['@readonly'],},() => {
         await project.openSelectionPanel();
         await expect(project.selectionPanel).toBeVisible();
 
-        await expect(await project.getUnselectButton()).toBeDisabled();
-        await expect(await project.getFilterButton()).toBeDisabled();
+        await expect(project.getUnselectButton()).toBeDisabled();
+        await expect(project.getFilterButton()).toBeDisabled();
 
         await project.closeSelectionPanel();
         await expect(project.selectionPanel).not.toBeVisible();
@@ -42,7 +42,7 @@ test.describe('Selection tool', {tag: ['@readonly'],},() => {
 
         // Draw polygon
         // It should select two features
-        await expect (await project.getRefreshButton()).toHaveClass(/active/);
+        await expect (project.getRefreshButton()).toHaveClass(/active/);
         await project.clickOnMap(200, 350);
         await project.clickOnMap(750, 350);
         await project.dblClickOnMap(425, 250);
@@ -50,15 +50,15 @@ test.describe('Selection tool', {tag: ['@readonly'],},() => {
         // Wait for WFS GetFeature request and WMS GetSelectionToken request
         await Promise.all([getFeatureRequestPromise, getSelectionTokenRequestPromise]);
         // Check that two features are selected
-        await expect(await project.getResultsContainer()).toHaveText(/^2/);
+        await expect(project.getResultsContainer()).toHaveText(/^2/);
 
         getFeatureRequestPromise = project.waitForGetFeatureRequest();
 
         // Draw polygon
         // It should unselect one feature
-        await (await project.getMinusButton()).click();
-        await expect (await project.getRefreshButton()).not.toHaveClass(/active/);
-        await expect (await project.getMinusButton()).toHaveClass(/active/);
+        await (project.getMinusButton()).click();
+        await expect (project.getRefreshButton()).not.toHaveClass(/active/);
+        await expect (project.getMinusButton()).toHaveClass(/active/);
 
         await project.clickOnMap(150, 300);
         await project.clickOnMap(200, 300);
@@ -67,16 +67,16 @@ test.describe('Selection tool', {tag: ['@readonly'],},() => {
         // Wait for WFS GetFeature request and WMS GetSelectionToken request
         await Promise.all([getFeatureRequestPromise, getSelectionTokenRequestPromise]);
         // Check that two features are selected
-        await expect(await project.getResultsContainer()).toHaveText(/^1/);
+        await expect(project.getResultsContainer()).toHaveText(/^1/);
 
         getFeatureRequestPromise = project.waitForGetFeatureRequest();
 
         // Draw polygon
         // It should select one more feature
-        await (await project.getPlusButton()).click();
-        await expect (await project.getRefreshButton()).not.toHaveClass(/active/);
-        await expect (await project.getMinusButton()).not.toHaveClass(/active/);
-        await expect (await project.getPlusButton()).toHaveClass(/active/);
+        await (project.getPlusButton()).click();
+        await expect (project.getRefreshButton()).not.toHaveClass(/active/);
+        await expect (project.getMinusButton()).not.toHaveClass(/active/);
+        await expect (project.getPlusButton()).toHaveClass(/active/);
 
         await project.clickOnMap(150, 300);
         await project.clickOnMap(200, 300);
@@ -85,16 +85,16 @@ test.describe('Selection tool', {tag: ['@readonly'],},() => {
         // Wait for WFS GetFeature request and WMS GetSelectionToken request
         await Promise.all([getFeatureRequestPromise, getSelectionTokenRequestPromise]);
         // Check that two features are selected
-        await expect(await project.getResultsContainer()).toHaveText(/^2/);
+        await expect(project.getResultsContainer()).toHaveText(/^2/);
 
         getFeatureRequestPromise = project.waitForGetFeatureRequest();
 
         // Draw polygon
         // It should not select any features
-        await (await project.getRefreshButton()).click();
-        await expect (await project.getRefreshButton()).toHaveClass(/active/);
-        await expect (await project.getMinusButton()).not.toHaveClass(/active/);
-        await expect (await project.getPlusButton()).not.toHaveClass(/active/);
+        await (project.getRefreshButton()).click();
+        await expect (project.getRefreshButton()).toHaveClass(/active/);
+        await expect (project.getMinusButton()).not.toHaveClass(/active/);
+        await expect (project.getPlusButton()).not.toHaveClass(/active/);
 
         await project.clickOnMap(450, 350);
         await project.clickOnMap(400, 400);
@@ -103,7 +103,7 @@ test.describe('Selection tool', {tag: ['@readonly'],},() => {
         // Wait for WFS GetFeature request
         await getFeatureRequestPromise;
         // Check that no feature is selected
-        await expect(await project.getResultsContainer()).toHaveText(/^No object selected/);
+        await expect(project.getResultsContainer()).toHaveText(/^No object selected/);
     });
 
     test('should select features intersecting a line', async ({ page }) => {
@@ -132,7 +132,7 @@ test.describe('Selection tool', {tag: ['@readonly'],},() => {
         // Wait for WFS GetFeature request and WMS GetSelectionToken request
         await Promise.all([getFeatureRequestPromise, getSelectionTokenRequestPromise]);
         // Check that two features are selected
-        await expect(await project.getResultsContainer()).toHaveText(/^2/);
+        await expect(project.getResultsContainer()).toHaveText(/^2/);
 
         getFeatureRequestPromise = project.waitForGetFeatureRequest();
 
@@ -144,7 +144,7 @@ test.describe('Selection tool', {tag: ['@readonly'],},() => {
         // Wait for WFS GetFeature request
         await getFeatureRequestPromise;
         // Check that no feature is selected
-        await expect(await project.getResultsContainer()).toHaveText(/^No object selected/);
+        await expect(project.getResultsContainer()).toHaveText(/^No object selected/);
     });
 
     test('should select features intersecting a point', async ({ page }) => {
@@ -172,7 +172,7 @@ test.describe('Selection tool', {tag: ['@readonly'],},() => {
         // Wait for WFS GetFeature request and WMS GetSelectionToken request
         await Promise.all([getFeatureRequestPromise, getSelectionTokenRequestPromise]);
         // Check that two features are selected
-        await expect(await project.getResultsContainer()).toHaveText(/^1/);
+        await expect(project.getResultsContainer()).toHaveText(/^1/);
 
         getFeatureRequestPromise = project.waitForGetFeatureRequest();
 
@@ -183,7 +183,7 @@ test.describe('Selection tool', {tag: ['@readonly'],},() => {
         // Wait for WFS GetFeature request
         await getFeatureRequestPromise;
         // Check that no feature is selected
-        await expect(await project.getResultsContainer()).toHaveText(/^No object selected/);
+        await expect(project.getResultsContainer()).toHaveText(/^No object selected/);
     });
 
     test('invert selection', async ({ page }) => {
@@ -243,7 +243,7 @@ test.describe('Selection tool', {tag: ['@readonly'],},() => {
         getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
         getMapRequestPromise = project.waitForGetMapRequest();
 
-        await (await project.getInvertButton()).click();
+        await (project.getInvertButton()).click();
 
         getFeatureRequest = await getFeatureRequestPromise;
         getSelectionTokenRequest = await getSelectionTokenRequestPromise;
@@ -297,10 +297,10 @@ test.describe('Selection tool connected as user a', {tag: ['@readonly'],},() => 
         // Wait for WFS GetFeature request and WMS GetSelectionToken request
         await Promise.all([getFeatureRequestPromise, getSelectionTokenRequestPromise]);
         // Check that two features are selected
-        await expect(await project.getResultsContainer()).toHaveText(/^1/);
+        await expect(project.getResultsContainer()).toHaveText(/^1/);
 
         // Unselect
-        await (await project.getUnselectButton()).click();
+        await (project.getUnselectButton()).click();
 
         getFeatureRequestPromise = project.waitForGetFeatureRequest();
         getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
@@ -314,7 +314,7 @@ test.describe('Selection tool connected as user a', {tag: ['@readonly'],},() => 
         // Wait for WFS GetFeature request and WMS GetSelectionToken request
         await Promise.all([getFeatureRequestPromise, getSelectionTokenRequestPromise]);
         // Check that two features are selected
-        await expect(await project.getResultsContainer()).toHaveText(/^2/);
+        await expect(project.getResultsContainer()).toHaveText(/^2/);
     });
 });
 
@@ -349,10 +349,10 @@ test.describe('Selection tool connected as admin', {tag: ['@readonly'],},() => {
         // Wait for WFS GetFeature request and WMS GetSelectionToken request
         await Promise.all([getFeatureRequestPromise, getSelectionTokenRequestPromise]);
         // Check that two features are selected
-        await expect(await project.getResultsContainer()).toHaveText(/^1/);
+        await expect(project.getResultsContainer()).toHaveText(/^1/);
 
         // Unselect
-        await (await project.getUnselectButton()).click();
+        await (project.getUnselectButton()).click();
 
         getFeatureRequestPromise = project.waitForGetFeatureRequest();
         getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
@@ -366,7 +366,7 @@ test.describe('Selection tool connected as admin', {tag: ['@readonly'],},() => {
         // Wait for WFS GetFeature request and WMS GetSelectionToken request
         await Promise.all([getFeatureRequestPromise, getSelectionTokenRequestPromise]);
         // Check that two features are selected
-        await expect(await project.getResultsContainer()).toHaveText(/^2/);
+        await expect(project.getResultsContainer()).toHaveText(/^2/);
     });
 
 });
