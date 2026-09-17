@@ -12,7 +12,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Security
 
-* ckeditor: improve the validation of uploaded images
+* fix a security issue related to the html editor (ckeditor) used in some administration pages: malicious PHP files
+  disguised as image files could be uploaded and then executed
 
 ### Backend
 
