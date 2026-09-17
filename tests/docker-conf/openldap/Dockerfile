@@ -3,7 +3,7 @@
 #
 # from https://github.com/dinkel/docker-openldap
 # -----------------
-FROM debian:buster-slim
+FROM debian:bookworm-slim
 LABEL org.opencontainers.image.authors="3Liz"
 
 # properly setup debian sources
