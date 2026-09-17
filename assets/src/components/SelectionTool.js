@@ -140,8 +140,6 @@ export default class SelectionTool extends HTMLElement {
                     ${lizDict['switcher.layer.export.title']}
                 </button>
                 <ul class="selectiontool-export-formats dropdown-menu dropdown-menu-right" role="menu">
-                    <li><a href="#" class="btn-export-selection dropdown-item">GeoJSON</a></li>
-                    <li><a href="#" class="btn-export-selection dropdown-item">GML</a></li>
                     ${mainLizmap.selectionTool.exportFormats.map(
                         (format) => html`<li><a href="#" class="btn-export-selection dropdown-item">${format}</a></li>`
                     )}
