@@ -412,4 +412,13 @@ class Server
 
         return $data;
     }
+
+    public function isServerReachable()
+    {
+        if (!array_key_exists('error', $this->metadata['qgis_server_info'])) {
+            return true;
+        }
+
+        return $this->metadata['qgis_server_info']['error'] != 'HTTP_ERROR';
+    }
 }
