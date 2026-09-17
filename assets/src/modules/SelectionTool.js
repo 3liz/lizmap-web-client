@@ -252,7 +252,25 @@ export default class SelectionTool {
     // - one single feature type is selected in list
     // - there is at least one feature selected
     get isExportable(){
-        return (this._allFeatureTypeSelected.length === 1 && this.selectedFeaturesCount);
+        const exportEnabled = (this._allFeatureTypeSelected.length === 1 && this.selectedFeaturesCount);
+        if (!exportEnabled) {
+            return exportEnabled;
+        }
+        if (this._initialConfig.hasAttributeLayers) {
+            const layerName = this._allFeatureTypeSelected[0];
+            const layerConfig = this._initialConfig.layers.getLayerConfigByLayerName(layerName);
+            const attrLayersConfig = this._initialConfig.attributeLayers;
+            const attrLayerConfigs = attrLayersConfig.layerConfigs;
+            const attrLayerConfigsWithExport = attrLayerConfigs.filter(attr => attr.exportEnabled);
+            // If some layers have export disabled, we have to check if the current layer is in the list
+            if (attrLayerConfigs.length != attrLayerConfigsWithExport.length) {
+                const attrLayerConfigWithExport = attrLayerConfigsWithExport.find(layer => layer.id === layerConfig.id);
+                // If the layer is not in the list, export is disabled
+                // else export is available as definde in attribute layer config
+                return (attrLayerConfigWithExport !== undefined);
+            }
+        }
+        return exportEnabled;
     }
 
     get selectedFeaturesCount() {
