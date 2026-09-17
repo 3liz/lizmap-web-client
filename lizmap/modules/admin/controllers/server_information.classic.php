@@ -40,11 +40,12 @@ class server_informationCtrl extends jController
         // Get current versions of QGIS server and Lizmap QGIS server plugin
         $currentQgisVersion = $server->getQgisServerVersion();
         $currentLizmapVersion = $server->getLizmapPluginServerVersion();
-
+        // simple check if QGIS is reachable
+        $isQgisReachable = $server->isServerReachable();
         // Check QGIS server wrapper
         $checkQgisServerWrapper = $server->checkQgisServerWrapper();
         $qgisServerWrapperLabel = jLocale::get('admin.server.information.qgis.wrapper.force.html');
-        if (!$checkQgisServerWrapper) {
+        if (!$checkQgisServerWrapper && $isQgisReachable) {
             jLog::log($qgisServerWrapperLabel, 'lizmapadmin');
         }
 
@@ -93,6 +94,7 @@ class server_informationCtrl extends jController
             'updateQgisServer' => $updateQgisServer,
             'checkQgisServerWrapper' => $checkQgisServerWrapper,
             'qgisServerWrapperLabel' => $qgisServerWrapperLabel,
+            'isQgisReachable' => $isQgisReachable,
             'lizmapQgisServerNeedsUpdate' => $lizmapQgisServerNeedsUpdate,
             'lizmapPluginUpdate' => $updateLizmapPlugin,
             'minimumQgisVersion' => $qgisMinimumVersionRequired,
