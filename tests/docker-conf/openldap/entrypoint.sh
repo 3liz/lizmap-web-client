@@ -58,7 +58,9 @@ EOF
 
     base_string="BASE ${dc_string:1}"
 
-    sed -i "s/^#BASE.*/${base_string}/g" /etc/ldap/ldap.conf
+    echo $base_string >> /etc/ldap/ldap.conf
+
+    #sed -i "s/^#BASE.*/${base_string}/g" /etc/ldap/ldap.conf
 
     if [[ -n "$SLAPD_CONFIG_PASSWORD" ]]; then
         password_hash=`slappasswd -s "${SLAPD_CONFIG_PASSWORD}"`
@@ -88,7 +90,8 @@ EOF
           #  openssl dhparam  -out /etc/ssl/ldap_dhparam.pem 2048
           #fi
 
-          sed -i "s/^TLS_CACERT.*/TLS_CACERT \/etc\/ssl\/certs\/ldap_CA.crt/g" /etc/ldap/ldap.conf
+          #sed -i "s/^TLS_CACERT.*/TLS_CACERT \/etc\/ssl\/certs\/ldap_CA.crt/g" /etc/ldap/ldap.conf
+          echo "TLS_CACERT /etc/ssl/certs/ldap_CA.crt" >> /etc/ldap/ldap.conf 
 
           slapcat -n0 -F /etc/ldap/slapd.d -l /tmp/config.ldif
           sed -i "s/\(cn: config\)/\1\nolcTLSCACertificateFile: \/etc\/ssl\/certs\/ldap_CA.crt\nolcTLSCertificateFile: \/etc\/ssl\/certs\/ldap.crt\nolcTLSCertificateKeyFile: \/etc\/ssl\/private\/ldap.key\nolcTLSVerifyClient: never/g" /tmp/config.ldif
