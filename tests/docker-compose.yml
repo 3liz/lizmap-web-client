@@ -86,23 +86,19 @@ services:
     container_name: "lizmap${LZMBRANCH}_test_qgis_rpc"
     image: 3liz/qjazz:${LZMQGSRVVERSION}
     command: ["qjazz-rpc", "serve", "-C", "/srv/etc/qgis-server.toml"]
+    user: ${LIZMAP_USER_ID}:${LIZMAP_GROUP_ID}
     environment:
       CONF_LOGGING__LEVEL: trace
       CONF_WORKER__NUM_PROCESSES: 4
       CONF_DISPLAY_XVFB: ON
-      CONF_USER: ${LIZMAP_USER_ID}:${LIZMAP_GROUP_ID}
       QGIS_PLUGINPATH: /srv/qgis-server-plugins
       QGIS_SERVER_LIZMAP_REVEAL_SETTINGS: yes
-      QGIS_PLUGIN_MANAGER_SOURCES_FILE: /srv/etc/plugin-sources.list
       PGSERVICEFILE: /srv/etc/pg_service.conf
     volumes:
       - { type: bind, source: ./qgis-projects, target: /srv/projects }
       - { type: bind, source: ./qgis-server-plugins, target: /srv/qgis-server-plugins }
       - { type: bind, source: ./docker-conf/pg_service.conf, target: /srv/etc/pg_service.conf }
       - { type: bind, source: ./docker-conf/qgis-server.toml, target: /srv/etc/qgis-server.toml }
-      - type: bind
-        source: ./docker-conf/plugin-sources.list
-        target: /srv/etc/plugin-sources.list
   # QGIS workers frontend
   map:
     container_name: "lizmap${LZMBRANCH}_test_qgis"
