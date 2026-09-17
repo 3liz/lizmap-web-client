@@ -300,13 +300,15 @@ export class ProjectPage extends BasePage {
 
     /**
      * Waits for a GetSelectionToken request
+     * @param {undefined|string} typename Optional TYPENAME to filter on
      * @returns {Promise<Request>} The GetSelectionToken request
      */
-    async waitForGetSelectionTokenRequest() {
+    async waitForGetSelectionTokenRequest(typename = undefined) {
         return this.page.waitForRequest(
             request => request.method() === 'POST' &&
             request.postData()?.includes('WMS') === true &&
-            request.postData()?.includes('GETSELECTIONTOKEN') === true
+            request.postData()?.includes('GETSELECTIONTOKEN') === true &&
+            (typename === undefined || request.postData()?.includes(typename) === true)
         );
     }
 
