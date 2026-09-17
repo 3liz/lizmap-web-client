@@ -305,10 +305,8 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(2);
         let body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(2);
         let feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', 'selection_polygon.1');
@@ -422,10 +420,8 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(1);
         let body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(1);
         let feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', 'selection_polygon.1');
@@ -456,10 +452,8 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(1);
         body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(1);
         feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', 'selection_polygon.2');
@@ -493,10 +487,8 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(2);
         let body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(2);
         let feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', 'selection_polygon.1');
@@ -529,10 +521,8 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(2);
         body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(2);
         feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', 'selection_polygon.1');
@@ -557,10 +547,8 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(2);
         body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(2);
         feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', 'selection_polygon.1');
@@ -588,10 +576,8 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(2);
         body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(2);
         feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', 'selection_polygon.1');
@@ -640,10 +626,8 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(2);
         let body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(2);
         let feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', 'selection_polygon.1');
@@ -676,10 +660,8 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(2);
         body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(2);
         feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', 'selection_polygon.1');
@@ -724,10 +706,8 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(2);
         body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(2);
         feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', 'selection_polygon.1');
@@ -753,10 +733,8 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(2);
         body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(2);
         feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', 'selection_polygon.1');
@@ -785,10 +763,8 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(2);
         body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(2);
         feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', 'selection_polygon.1');
@@ -839,10 +815,8 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(1);
         let body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(1);
         let feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', 'selection_polygon.1');
@@ -872,10 +846,8 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(1);
         let body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(1);
         let feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', 'selection_polygon.1');
@@ -898,10 +870,8 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(1);
         body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(1);
         feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', 'selection_polygon.1');
@@ -932,10 +902,8 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(1);
         let body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(1);
         let feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', 'selection_polygon.1');
@@ -959,10 +927,8 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(1);
         body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(1);
         feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', 'selection_polygon.1');
@@ -1061,10 +1027,8 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(1);
         let body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(1);
         let feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', 'selection_polygon.1');
@@ -1085,10 +1049,8 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(1);
         body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(1);
         feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', 'selection_polygon.2');
@@ -1117,10 +1079,8 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(1);
         let body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(1);
         let feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', 'selection_polygon.1');
@@ -1142,10 +1102,7 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
-        body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(0);
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(0);
     });
 
     test('WFS GetFeature TYPENAME && EXP_FILTER && BBOX && FORCE_QGIS', async({ request }) => {
@@ -1170,10 +1127,8 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(1);
         let body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(1);
         let feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', 'selection_polygon.1');
@@ -1196,10 +1151,7 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
-        body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(0);
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(0);
     });
 
     test('WFS GetFeature TYPENAME && EXP_FILTER && BBOX && SRSNAME', async({ request }) => {
@@ -1224,10 +1176,8 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(1);
         let body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(1);
         let feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', 'selection_polygon.1');
@@ -1250,10 +1200,7 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
-        body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(0);
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(0);
 
         response = await request.post(url, {
             form: {
@@ -1271,10 +1218,8 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(1);
         body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(1);
         feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', 'selection_polygon.1');
@@ -1297,10 +1242,7 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
-        body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(0);
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(0);
     });
 
     test('WFS GetFeature FEATUREID', async({ request }) => {
@@ -1322,10 +1264,8 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(1);
         let body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(1);
         let feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', 'selection_polygon.1');
@@ -1353,10 +1293,8 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(1);
         let body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(1);
         let feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', 'selection_polygon.1');
@@ -1378,10 +1316,7 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
-        body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(0);
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(0);
     });
 
     test('WFS GetFeature FEATUREID && BBOX && FORCE_QGIS', async({ request }) => {
@@ -1405,10 +1340,8 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(1);
         let body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(1);
         let feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', 'selection_polygon.1');
@@ -1431,10 +1364,7 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
-        body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(0);
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(0);
     });
 
     test('WFS GetFeature FEATUREID && BBOX && SRSNAME', async({ request }) => {
@@ -1458,10 +1388,8 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(1);
         let body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(1);
         let feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', 'selection_polygon.1');
@@ -1483,10 +1411,7 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
-        body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(0);
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(0);
 
         response = await request.post(url, {
             form: {
@@ -1503,10 +1428,8 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(1);
         body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(1);
         feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', 'selection_polygon.1');
@@ -1528,10 +1451,7 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
-        body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(0);
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(0);
     });
 
     test('WFS GetFeature SELECTIONTOKEN', async({ request }) => {
@@ -1573,10 +1493,8 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(1);
         let body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(1);
         let feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', 'selection_polygon.1');
@@ -1621,10 +1539,8 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(2);
         body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(2);
         feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', 'selection_polygon.1');
@@ -1688,10 +1604,8 @@ test.describe('WFS Requests @requests @readonly', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(2);
         let body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(2);
         let feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', 'selection_polygon.1');
@@ -1853,10 +1767,7 @@ test.describe('WFS Requests filter_layer_by_user @requests @readonly ', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
-        let body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(0);
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(0);
 
         form['FORCE_QGIS'] = 1;
         response = await request.post(url, {
@@ -1867,10 +1778,7 @@ test.describe('WFS Requests filter_layer_by_user @requests @readonly ', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
-        body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(0);
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(0);
 
         // RESULTTYPE=hits
         delete form['FORCE_QGIS'];
@@ -1909,10 +1817,8 @@ test.describe('WFS Requests filter_layer_by_user @requests @readonly ', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(1);
         let body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(1);
         expect(body.features[0]).toHaveProperty('properties');
         expect(body.features[0].properties).toHaveProperty('gid', 2);
 
@@ -1925,10 +1831,7 @@ test.describe('WFS Requests filter_layer_by_user @requests @readonly ', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
-        body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(1);
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(1);
         expect(body.features[0]).toHaveProperty('properties');
         expect(body.features[0].properties).toHaveProperty('gid', 2);
 
@@ -1969,10 +1872,8 @@ test.describe('WFS Requests filter_layer_by_user @requests @readonly ', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(1);
         let body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(1);
         expect(body.features[0]).toHaveProperty('properties');
         expect(body.features[0].properties).toHaveProperty('gid', 2);
 
@@ -1985,10 +1886,8 @@ test.describe('WFS Requests filter_layer_by_user @requests @readonly ', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(1);
         body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(1);
         expect(body.features[0]).toHaveProperty('properties');
         expect(body.features[0].properties).toHaveProperty('gid', 2);
 
@@ -2029,10 +1928,7 @@ test.describe('WFS Requests filter_layer_by_user @requests @readonly ', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
-        let body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(3);
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(3);
 
         form['FORCE_QGIS'] = 1;
         response = await request.post(url, {
@@ -2043,10 +1939,7 @@ test.describe('WFS Requests filter_layer_by_user @requests @readonly ', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
-        body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(3);
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(3);
 
         // RESULTTYPE=hits
         delete form['FORCE_QGIS'];
@@ -2087,10 +1980,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         responseExpect(response).toBeGeoJson();
 
         // check body
-        let body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(0);
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(0);
 
         form['FORCE_QGIS'] = 1;
         response = await request.post(url, {
@@ -2101,10 +1991,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         responseExpect(response).toBeGeoJson();
 
         // check body
-        body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(0);
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(0);
 
         // RESULTTYPE=hits
         delete form['FORCE_QGIS'];
@@ -2144,10 +2031,8 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(4);
         let body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(4);
         /** @type {[{properties:{id: number}}]} */
         let features = body.features;
         expect(features.map(feat => feat.properties.id)).toEqual(
@@ -2163,10 +2048,8 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(4);
         body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(4);
         /** @type {[{properties:{id: number}}]} */
         features = body.features;
         expect(features.map(feat => feat.properties.id)).toEqual(
@@ -2211,10 +2094,8 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(17);
         let body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(17);
         /** @type {[{properties:{id: number}}]} */
         let features = body.features;
         expect(features.map(feat => feat.properties.id)).toEqual(
@@ -2232,10 +2113,8 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(17);
         body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(17);
         /** @type {[{properties:{id: number}}]} */
         features = body.features;
         expect(features.map(feat => feat.properties.id)).toEqual(
@@ -2280,10 +2159,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         responseExpect(response).toBeGeoJson();
 
         // check body
-        let body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(0);
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(0);
 
         form['FORCE_QGIS'] = 1;
         response = await request.post(url, {
@@ -2294,10 +2170,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         responseExpect(response).toBeGeoJson();
 
         // check body
-        body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(0);
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(0);
 
         // RESULTTYPE=hits
         delete form['FORCE_QGIS'];
@@ -2337,10 +2210,8 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(5);
         let body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(5);
         /** @type {[{properties:{id: number}}]} */
         let features = body.features;
         expect(features.map(feat => feat.properties.id)).toEqual(
@@ -2356,10 +2227,8 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(5);
         body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(5);
         /** @type {[{properties:{id: number}}]} */
         features = body.features;
         expect(features.map(feat => feat.properties.id)).toEqual(
@@ -2404,10 +2273,8 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(25);
         let body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(25);
         /** @type {[{properties:{id: number}}]} */
         let features = body.features;
         expect(features.map(feat => feat.properties.id)).toEqual(
@@ -2426,10 +2293,8 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(25);
         body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(25);
         /** @type {[{properties:{id: number}}]} */
         features = body.features;
         expect(features.map(feat => feat.properties.id)).toEqual(
@@ -2475,10 +2340,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         responseExpect(response).toBeGeoJson();
 
         // check body
-        let body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(0);
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(0);
 
         form['FORCE_QGIS'] = 1;
         response = await request.post(url, {
@@ -2489,10 +2351,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         responseExpect(response).toBeGeoJson();
 
         // check body
-        body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(0);
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(0);
 
         // RESULTTYPE=hits
         delete form['FORCE_QGIS'];
@@ -2532,10 +2391,8 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(4);
         let body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(4);
         /** @type {[{properties:{fid: number}}]} */
         let features = body.features;
         expect(features.map(feat => feat.properties.fid)).toEqual(
@@ -2551,10 +2408,8 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(4);
         body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(4);
         /** @type {[{properties:{fid: number}}]} */
         features = body.features;
         expect(features.map(feat => feat.properties.fid)).toEqual(
@@ -2599,10 +2454,8 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(17);
         let body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(17);
         /** @type {[{properties:{fid: number}}]} */
         let features = body.features;
         expect(features.map(feat => feat.properties.fid)).toEqual(
@@ -2618,10 +2471,8 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(17);
         body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(17);
         /** @type {[{properties:{fid: number}}]} */
         features = body.features;
         expect(features.map(feat => feat.properties.fid)).toEqual(
@@ -2671,10 +2522,8 @@ test.describe('WFS Requests attribute_table @requests @readonly ', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(7);
         let body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(7);
         /** @type {[{properties:{quartier: number}}]} */
         let features = body.features;
         // SORTBY quartier ASC
@@ -2691,10 +2540,8 @@ test.describe('WFS Requests attribute_table @requests @readonly ', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(7);
         body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(7);
         features = body.features;
         // SORTBY quartier DESC
         expect(features.map(feat => feat.properties.quartier)).toEqual(
@@ -2711,10 +2558,8 @@ test.describe('WFS Requests attribute_table @requests @readonly ', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(7);
         body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(7);
         features = body.features;
         // SORTBY quartier ASC
         expect(features.map(feat => feat.properties.quartier)).toEqual(
@@ -2730,10 +2575,8 @@ test.describe('WFS Requests attribute_table @requests @readonly ', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(7);
         body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(7);
         features = body.features;
         // SORTBY quartier DESC
         expect(features.map(feat => feat.properties.quartier)).toEqual(
@@ -2784,10 +2627,8 @@ test.describe('WFS Requests attribute_table @requests @readonly ', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(5);
         let body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(5);
         /** @type {[{properties:{quartier: number}}]} */
         let features = body.features;
         // SORTBY quartier ASC
@@ -2804,10 +2645,8 @@ test.describe('WFS Requests attribute_table @requests @readonly ', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(5);
         body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(5);
         features = body.features;
         // SORTBY quartier DESC
         expect(features.map(feat => feat.properties.quartier)).toEqual(
@@ -2824,10 +2663,8 @@ test.describe('WFS Requests attribute_table @requests @readonly ', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(5);
         body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(5);
         features = body.features;
         // SORTBY quartier ASC
         expect(features.map(feat => feat.properties.quartier)).toEqual(
@@ -2843,10 +2680,8 @@ test.describe('WFS Requests attribute_table @requests @readonly ', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(5);
         body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(5);
         features = body.features;
         // SORTBY quartier DESC
         expect(features.map(feat => feat.properties.quartier)).toEqual(
@@ -2895,10 +2730,8 @@ test.describe('WFS Requests attribute_table @requests @readonly ', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(50);
         let body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(50);
         // SORTBY id ASC
         expect(body.features[0].properties.id).toEqual(0);
         expect(body.features[14].properties.id).toEqual(14);
@@ -2914,10 +2747,8 @@ test.describe('WFS Requests attribute_table @requests @readonly ', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(50);
         body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(50);
         // SORTBY id ASC
         expect(body.features[0].properties.id).toEqual(650);
         expect(body.features[14].properties.id).toEqual(664);
@@ -2934,10 +2765,8 @@ test.describe('WFS Requests attribute_table @requests @readonly ', () => {
         responseExpect(response).toBeGeoJson();
 
         // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(50);
         body = await response.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(50);
         // SORTBY id DESC
         expect(body.features[0].properties.id).toEqual(699);
         expect(body.features[14].properties.id).toEqual(685);
