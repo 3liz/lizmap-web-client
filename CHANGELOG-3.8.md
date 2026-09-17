@@ -8,11 +8,18 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Security
+
+* html editor (ckeditor): strengthens the validation of uploaded images to prevent security issues caused by improper 
+  configuration of web servers and PHP (for example web configuration allowing foo.php.jpg to be sent to PHP, or allowing
+  foo.jpg having php code into its content).
+
 ## 3.8.20 - 2026-09-09
 
 ### Security
 
-* ckeditor: improve the validation of uploaded images
+* fix a security issue related to the html editor (ckeditor) used in some administration pages: malicious PHP files 
+  disguised as image files could be uploaded and then executed
 
 
 ### Backend
