@@ -12,18 +12,30 @@ import { ProjectPage } from './project';
  */
 
 export class SelectionPage extends ProjectPage {
-    // Metadata
+
     /**
-     * The print panel
+     * The selection panel
      * @type {Locator}
      */
     selectionPanel;
 
     /**
-     * The print button on menu
+     * The selection tool element
+     * @type {Locator}
+     */
+    selectionToolElement;
+
+    /**
+     * The selection button on menu
      * @type {Locator}
      */
     selectionSwitcherButton;
+
+    /**
+     * The selection message
+     * @type {Locator}
+     */
+    selectionMessage;
 
     /**
      * Constructor for a QGIS project page
@@ -35,7 +47,9 @@ export class SelectionPage extends ProjectPage {
         super(page, project, repository);
 
         this.selectionPanel = page.locator('#selectiontool');
+        this.selectionToolElement = this.selectionPanel.locator('lizmap-selection-tool');
         this.selectionSwitcherButton = page.locator('#button-selectiontool');
+        this.selectionMessage = page.locator('#lizmap-selection-message');
     }
 
     /**
@@ -57,51 +71,36 @@ export class SelectionPage extends ProjectPage {
     }
 
     /**
-     * Gets the refresh button
-     * @returns {Locator} The refresh button locator
+     * Gets the layer list
+     * @returns {Locator} The layer list locator
      */
-    getRefreshButton() {
-        return this.selectionPanel.locator('.selectiontool-type-refresh');
+    getLayerList() {
+        return this.selectionToolElement.locator('.selectiontool-layer-list');
+    }
+
+
+    /**
+     * Gets the digitizing toolbar
+     * @returns {Locator} The digitizing toolbar locator
+     */
+    getDigitizingToolBar() {
+        return this.selectionToolElement.locator('lizmap-digitizing');
     }
 
     /**
-     * Gets the plus button
-     * @returns {Locator} The plus button locator
+     * Gets the buffer input
+     * @returns {Locator} The buffer input locator
      */
-    getPlusButton() {
-        return this.selectionPanel.locator('.selectiontool-type-plus');
+    getBufferInput() {
+        return this.selectionToolElement.locator('.selectiontool-buffer input');
     }
 
     /**
-     * Gets the minus button
-     * @returns {Locator} The minus button locator
+     * Gets the buffer geom operator select
+     * @returns {Locator} The buffer geom operator select locator
      */
-    getMinusButton() {
-        return this.selectionPanel.locator('.selectiontool-type-minus');
-    }
-
-    /**
-     * Gets the unselect button
-     * @returns {Locator} The unselect button locator
-     */
-    getUnselectButton() {
-        return this.selectionPanel.locator('.selectiontool-unselect');
-    }
-
-    /**
-     * Gets the filter button
-     * @returns {Locator} The filter button locator
-     */
-    getFilterButton() {
-        return this.selectionPanel.locator('.selectiontool-filter');
-    }
-
-    /**
-     * Gets the invert button
-     * @returns {Locator} The invert button locator
-     */
-    getInvertButton() {
-        return this.selectionPanel.locator('lizmap-selection-invert');
+    getBufferGeomOperatorSelect() {
+        return this.selectionToolElement.locator('.selectiontool-geom-operator');
     }
 
     /**
@@ -109,7 +108,79 @@ export class SelectionPage extends ProjectPage {
      * @returns {Locator} The results container locator
      */
     getResultsContainer() {
-        return this.selectionPanel.locator('.selectiontool-results');
+        return this.selectionToolElement.locator('.selectiontool-results');
+    }
+
+    /**
+     * Gets the refresh button
+     * @returns {Locator} The refresh button locator
+     */
+    getRefreshButton() {
+        return this.selectionToolElement.locator('.selectiontool-type-refresh');
+    }
+
+    /**
+     * Gets the plus button
+     * @returns {Locator} The plus button locator
+     */
+    getPlusButton() {
+        return this.selectionToolElement.locator('.selectiontool-type-plus');
+    }
+
+    /**
+     * Gets the minus button
+     * @returns {Locator} The minus button locator
+     */
+    getMinusButton() {
+        return this.selectionToolElement.locator('.selectiontool-type-minus');
+    }
+
+    /**
+     * Gets the unselect button
+     * @returns {Locator} The unselect button locator
+     */
+    getUnselectButton() {
+        return this.selectionToolElement.locator('.selectiontool-unselect');
+    }
+
+    /**
+     * Gets the filter button
+     * @returns {Locator} The filter button locator
+     */
+    getFilterButton() {
+        return this.selectionToolElement.locator('.selectiontool-filter');
+    }
+
+    /**
+     * Gets the invert button
+     * @returns {Locator} The invert button locator
+     */
+    getInvertButton() {
+        return this.selectionToolElement.locator('lizmap-selection-invert button');
+    }
+
+    /**
+     * Gets the export button
+     * @returns {Locator} The export button locator
+     */
+    getExportButton() {
+        return this.selectionToolElement.locator('.selectiontool-export button');
+    }
+
+    /**
+     * Gets the export formats list
+     * @returns {Locator} The export formats list locator
+     */
+    getExportFormatsList() {
+        return this.selectionToolElement.locator('.selectiontool-export-formats');
+    }
+
+    /**
+     * Gets the export formats items
+     * @returns {Locator} The export formats items locator
+     */
+    getExportFormatsItems() {
+        return this.getExportFormatsList().locator('.dropdown-item');
     }
 
     /**
@@ -118,8 +189,8 @@ export class SelectionPage extends ProjectPage {
      *                      Possible values 'point', 'line', 'polygon','box','circle','freehand'.
      */
     async selectGeometry(type) {
-        await this.selectionPanel.locator('lizmap-digitizing .digitizing-buttons .dropdown-toggle-split').click();
-        await this.selectionPanel.locator(`lizmap-digitizing .digitizing-${type}`).click();
+        await this.getDigitizingToolBar().locator('.digitizing-buttons .dropdown-toggle-split').click();
+        await this.getDigitizingToolBar().locator(`.digitizing-${type}`).click();
     }
 
     /**
@@ -128,7 +199,7 @@ export class SelectionPage extends ProjectPage {
      * @returns {Promise<void>} A promise that resolves when the layer is selected
      */
     async selectLayer(layer) {
-        await this.selectionPanel.locator('lizmap-selection-tool .selectiontool-layer-list').selectOption(layer);
+        await this.getLayerList().selectOption(layer);
     }
 
     /**
@@ -139,6 +210,6 @@ export class SelectionPage extends ProjectPage {
      * @returns {Promise<void>} A promise that resolves when the operator is selected
      */
     async selectGeomOperator(operator) {
-        await this.selectionPanel.locator('lizmap-selection-tool .selectiontool-geom-operator').selectOption(operator);
+        await this.getBufferGeomOperatorSelect().selectOption(operator);
     }
 }
