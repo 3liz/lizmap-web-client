@@ -80,7 +80,8 @@ services:
       - ${LZMWEBPORT}:80
       - ${LZMWEBSPORT}:443
     depends_on:
-      - lizmap
+      lizmap:
+        condition: service_healthy
   # QGIS RPC backend
   map-rpc:
     container_name: "lizmap${LZMBRANCH}_test_qgis_rpc"
