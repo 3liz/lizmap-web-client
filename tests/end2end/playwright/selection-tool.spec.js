@@ -114,6 +114,8 @@ test.describe('Selection tool', {tag: ['@readonly'],},() => {
 
         await project.closeSelectionPanel();
         await expect(project.selectionPanel).not.toBeVisible();
+
+        await expect(project.selectionMessage).toHaveCount(0);
     });
 
     test('should select features intersecting a polygon', async ({ page }) => {
