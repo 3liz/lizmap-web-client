@@ -201,6 +201,8 @@ export default class SelectionTool {
                 if (event.id === 'selectiontool'){
                     this._digitizing.toolSelected = 'deactivate';
                     this._digitizing.toggleVisibility(false);
+                    let previousMessage = document.getElementById('lizmap-selection-message');
+                    if (previousMessage) previousMessage.remove();
                 }
             }
         });
