@@ -13,7 +13,7 @@
           {@admin.server.information.installation.not.complete.html@}
       </div>
     {/if}
-    {if !$checkQgisServerWrapper}
+    {if !$checkQgisServerWrapper && $isQgisReachable}
       <div class="alert alert-danger" role="alert">
           {$qgisServerWrapperLabel}
       </div>
@@ -67,16 +67,21 @@
 
     <h3>{@admin.server.information.qgis.label@}</h3>
 
-    {if array_key_exists('qgis_server', $data) && array_key_exists('test', $data['qgis_server'])}
-      {* The lizmap plugin is not installed or not well configured *}
-      {* The QGIS Server has been tried with a WMS GetCapabilities without map parameter *}
-      {if $data['qgis_server']['test'] == 'OK'}
-          <p>{@admin.server.information.qgis.test.ok@}</p>
-      {else}
-          <p><b>{@admin.server.information.qgis.test.error@}</b></p>
-      {/if}
+    {if !$isQgisReachable}
+        <div class="alert alert-danger" role="alert">
+        {@admin.server.information.qgis.test.http.error@}
+        </div>
+    {else}
+        {if array_key_exists('qgis_server', $data) && array_key_exists('test', $data['qgis_server'])}
+        {* The lizmap plugin is not installed or not well configured *}
+        {* The QGIS Server has been tried with a WMS GetCapabilities without map parameter *}
+        {if $data['qgis_server']['test'] == 'OK'}
+            <p>{@admin.server.information.qgis.test.ok@}</p>
+        {else}
+            <p><b>{@admin.server.information.qgis.test.error@}</b></p>
+        {/if}
+        {/if}
     {/if}
-
 {if array_key_exists('error', $data['qgis_server_info'])}
 {* The lizmap plugin is not installed or not well configured *}
 {* The QGIS Server has been tried with a WMS GetCapabilities without map parameter *}
