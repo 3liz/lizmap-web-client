@@ -243,16 +243,48 @@ export default class SelectionTool {
 
     // List of WFS format
     get exportFormats() {
-        return this._initialConfig.vectorLayerResultFormat.filter(
-            format => !['GML2', 'GML3', 'GEOJSON'].includes(format.toUpperCase())
-        );
+        if (this.isExportable) {
+            const layerName = this._allFeatureTypeSelected[0];
+            const layerConfig = this._initialConfig.layers.getLayerConfigByLayerName(layerName);
+            const attrLayerConfig = this._initialConfig.attributeLayers.layerConfigs.find(
+                layer => layer.id === layerConfig.id
+            );
+            if (attrLayerConfig !== undefined) {
+                return attrLayerConfig.getEffectiveExportFormats(
+                    this._initialConfig.vectorLayerResultFormat
+                );
+            }
+        }
+        return ['GeoJSON', 'GML'].concat(
+            this._initialConfig.vectorLayerResultFormat.filter(format => {
+                return ['gml2', 'gml3', 'geojson'].indexOf(format.toLowerCase()) == -1;
+            })
+        )
     }
 
     // Selection is exportable if :
     // - one single feature type is selected in list
     // - there is at least one feature selected
     get isExportable(){
-        return (this._allFeatureTypeSelected.length === 1 && this.selectedFeaturesCount);
+        const exportEnabled = (this._allFeatureTypeSelected.length === 1 && this.selectedFeaturesCount);
+        if (!exportEnabled) {
+            return exportEnabled;
+        }
+        if (this._initialConfig.hasAttributeLayers) {
+            const layerName = this._allFeatureTypeSelected[0];
+            const layerConfig = this._initialConfig.layers.getLayerConfigByLayerName(layerName);
+            const attrLayersConfig = this._initialConfig.attributeLayers;
+            const attrLayerConfigs = attrLayersConfig.layerConfigs;
+            const attrLayerConfigsWithExport = attrLayerConfigs.filter(attr => attr.exportEnabled);
+            // If some layers have export disabled, we have to check if the current layer is in the list
+            if (attrLayerConfigs.length != attrLayerConfigsWithExport.length) {
+                const attrLayerConfigWithExport = attrLayerConfigsWithExport.find(layer => layer.id === layerConfig.id);
+                // If the layer is not in the list, export is disabled
+                // else export is available as definde in attribute layer config
+                return (attrLayerConfigWithExport !== undefined);
+            }
+        }
+        return exportEnabled;
     }
 
     get selectedFeaturesCount() {
