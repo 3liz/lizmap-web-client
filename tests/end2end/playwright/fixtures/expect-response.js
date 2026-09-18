@@ -486,7 +486,7 @@ export const expect = baseExpect.extend({
 
     /**
      * Expecting the response is a GeoJSON with expected features property length
-     * @param {APIResponse} response the response to test
+     * @param {APIResponse|Response|null} response the response to test
      * @param {number} expected the expected value of features property length
      *
      * @returns {Promise<MatcherReturnType>} the result
@@ -503,9 +503,9 @@ export const expect = baseExpect.extend({
             expected: expected,
             actual: '',
         };
-        const response_body = await response.body();
+        const response_body = await response?.body();
         try {
-            let body = await response.json();
+            let body = await response?.json();
             expect(body).toHaveProperty('type', 'FeatureCollection');
             expect(body).toHaveProperty('features');
             expect(body.features).toHaveLength(expected);
