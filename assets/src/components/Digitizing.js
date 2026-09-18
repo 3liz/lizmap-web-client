@@ -553,7 +553,7 @@ export default class Digitizing extends HTMLElement {
      * The element attribute: available-tools
      * All or part of DigitizingAvailableTools except deactivate
      * @see DigitizingAvailableTools
-     * @type {string}
+     * @type {string[]}
      */
     get availableTools() {
         return this._availableTools;
