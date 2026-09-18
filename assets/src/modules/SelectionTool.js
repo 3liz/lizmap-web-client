@@ -6,7 +6,8 @@
  */
 import { mainEventDispatcher } from '../modules/Globals.js';
 import Digitizing from './Digitizing.js';
-import {Config} from './Config.js';
+import { Config } from './Config.js';
+import { State } from './State.js';
 
 import {
     LinearRing,
@@ -39,13 +40,15 @@ export default class SelectionTool {
      * @param {Map}        map        - OpenLayers map
      * @param {Digitizing} digitizing - The digitizing module
      * @param {Config}     initialConfig - The Lizmap initial config
+     * @param {State}      lizmapState - The Lizmap global state
      * @param {object}     lizmap3    - The old lizmap object
      */
-    constructor(map, digitizing, initialConfig, lizmap3) {
+    constructor(map, digitizing, initialConfig, lizmapState, lizmap3) {
 
         this._map = map;
         this._digitizing = digitizing;
         this._initialConfig = initialConfig;
+        this._lizmapState = lizmapState;
         this._lizmap3 = lizmap3;
 
         this._layers = [];
@@ -300,12 +303,7 @@ export default class SelectionTool {
                 this._allFeatureTypeSelected = this.layers.map(layer => layer.name);
             } else if (featureType === 'selectable-visible-layers') {
                 this._allFeatureTypeSelected = this.layers.map(layer => layer.name).filter(layerName => {
-                    for (let index = 0; index < this._lizmap3.map.layers.length; index++) {
-                        if (this._lizmap3.map.layers[index].visibility
-                          && this._lizmap3.map.layers[index].name === layerName) {
-                            return true;
-                        }
-                    }
+                    return this._lizmapState.layersAndGroupsCollection.getLayerByName(layerName).visibility;
                 });
             } else {
                 this._allFeatureTypeSelected = [featureType];
