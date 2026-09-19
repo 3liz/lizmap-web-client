@@ -177,7 +177,7 @@ export default class Lizmap {
                     this.geolocation = new Geolocation(this.map, this.initialConfig.options, this.lizmap3);
                     this.geolocationSurvey = new GeolocationSurvey(this.geolocation, this.edition);
                     this.digitizing = new Digitizing(this.map, this.lizmap3);
-                    this.selectionTool = new SelectionTool(this.map, this.digitizing, this.initialConfig, this.lizmap3);
+                    this.selectionTool = new SelectionTool(this.map, this.digitizing, this.initialConfig, this.state, this.lizmap3);
                     this.snapping = new Snapping(this.edition, this.state.rootMapGroup, this.state.layerTree, this.lizmap3);
                     this.action = new Action(this.map, this.selectionTool, this.digitizing, this.lizmap3);
                     this.geometryCopyHandler = new GeometryCopyHandler(this._lizmap3.map);
