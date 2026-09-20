@@ -595,20 +595,20 @@ test.describe('Selection tool', {tag: ['@readonly'],},() => {
         await project.selectLayer('selection_polygon');
         await expect(project.getLayerList()).toHaveValue('selection_polygon');
 
-        // Check that one feature is still selected
+        // Check that one feature is selected
         await expect(project.getResultsContainer()).toHaveText(/^1/);
 
-        // Export button is enabled
+        // Export button is back enabled
         await expect(exportButton).toBeEnabled();
 
         // Select multiple layers
         await project.selectLayer('selectable-layers');
         await expect(project.getLayerList()).toHaveValue('selectable-layers');
 
-        // Check that one feature is selected
+        // Check that one feature is still selected
         await expect(project.getResultsContainer()).toHaveText(/^1/);
 
-        // Export button still disabled, because multiple layers selected
+        // Export button disabled, because multiple layers selected
         await expect(exportButton).toBeDisabled();
 
         // Select single layer without selected features
@@ -625,6 +625,7 @@ test.describe('Selection tool', {tag: ['@readonly'],},() => {
         await project.selectLayer('selectable-visible-layers');
         await expect(project.getLayerList()).toHaveValue('selectable-visible-layers');
 
+        // Check that one feature is selected
         await expect(project.getResultsContainer()).toHaveText(/^1/);
 
         // Export button still disabled, because multiple layers selected
@@ -637,7 +638,7 @@ test.describe('Selection tool', {tag: ['@readonly'],},() => {
         // Check that one feature is still selected
         await expect(project.getResultsContainer()).toHaveText(/^1/);
 
-        // Export button is enabled
+        // Export button is back enabled
         await expect(exportButton).toBeEnabled();
     });
 });
@@ -733,7 +734,7 @@ test.describe('Selection tool connected as user a', {tag: ['@readonly'],},() => 
         let getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
         let getMapRequestPromise = project.waitForGetMapRequest();
 
-        // Draw point
+        // Draw box
         // It should select one feature
         await project.clickOnMap(650, 350);
         await project.clickOnMap(450, 250);
@@ -827,7 +828,7 @@ test.describe('Selection tool connected as user a', {tag: ['@readonly'],},() => 
         // Check that one feature is still selected
         await expect(project.getResultsContainer()).toHaveText(/^1/);
 
-        // Export button is enabled
+        // Export button is back enabled
         await expect(exportButton).toBeEnabled();
 
         // Select multiple layers
@@ -837,7 +838,7 @@ test.describe('Selection tool connected as user a', {tag: ['@readonly'],},() => 
         // Check that one feature is selected
         await expect(project.getResultsContainer()).toHaveText(/^1/);
 
-        // Export button still disabled, because multiple layers selected
+        // Export button disabled, because multiple layers selected
         await expect(exportButton).toBeDisabled();
 
         // Select single layer without selected features
@@ -854,6 +855,7 @@ test.describe('Selection tool connected as user a', {tag: ['@readonly'],},() => 
         await project.selectLayer('selectable-visible-layers');
         await expect(project.getLayerList()).toHaveValue('selectable-visible-layers');
 
+        // Check that one feature is selected
         await expect(project.getResultsContainer()).toHaveText(/^1/);
 
         // Export button still disabled, because multiple layers selected
@@ -866,7 +868,7 @@ test.describe('Selection tool connected as user a', {tag: ['@readonly'],},() => 
         // Check that one feature is still selected
         await expect(project.getResultsContainer()).toHaveText(/^1/);
 
-        // Export button is enabled
+        // Export button is back enabled
         await expect(exportButton).toBeEnabled();
     });
 });
@@ -964,8 +966,8 @@ test.describe('Selection tool connected as admin', {tag: ['@readonly'],},() => {
         let getMapPolygonRequestPromise = project.waitForGetMapRequest('selection_polygon');
         let getMapLayerRequestPromise = project.waitForGetMapRequest('selection_layer');
 
-        // Draw point
-        // It should select one feature
+        // Draw box
+        // It should select two features
         await project.clickOnMap(650, 350);
         await project.clickOnMap(450, 250);
 
@@ -1060,17 +1062,17 @@ test.describe('Selection tool connected as admin', {tag: ['@readonly'],},() => {
         await project.selectLayer('selection_polygon');
         await expect(project.getLayerList()).toHaveValue('selection_polygon');
 
-        // Check that one feature is still selected
+        // Check that one feature is selected
         await expect(project.getResultsContainer()).toHaveText(/^1/);
 
         // Export button is enabled
         await expect(exportButton).toBeEnabled();
 
-        // Select single layer without selected features
+        // Select another single layer with selected features
         await project.selectLayer('selection');
         await expect(project.getLayerList()).toHaveValue('selection');
 
-        // Check that no feature is selected
+        // Check that one feature is still selected
         await expect(project.getResultsContainer()).toHaveText(/^1/);
 
         // Export button is also enabled
@@ -1080,36 +1082,210 @@ test.describe('Selection tool connected as admin', {tag: ['@readonly'],},() => {
         await project.selectLayer('selectable-layers');
         await expect(project.getLayerList()).toHaveValue('selectable-layers');
 
-        // Check that one feature is selected
+        // Check that two features are selected
         await expect(project.getResultsContainer()).toHaveText(/^2/);
 
         // Select single layer with selected features
         await project.selectLayer('selection_polygon');
         await expect(project.getLayerList()).toHaveValue('selection_polygon');
 
-        // Check that one feature is still selected
+        // Check that one feature is selected
         await expect(project.getResultsContainer()).toHaveText(/^1/);
 
-        // Export button is still enabled
+        // Export button is enabled
         await expect(exportButton).toBeEnabled();
 
         // Select multiple layers
         await project.selectLayer('selectable-visible-layers');
         await expect(project.getLayerList()).toHaveValue('selectable-visible-layers');
 
+        // Two features are selected in the two layer
+        await expect(project.getResultsContainer()).toHaveText(/^2/);
+
+        // Export button is disabled, because multiple layers selected
+        await expect(exportButton).toBeDisabled();
+
+        // Select an other layer with selected features
+        await project.selectLayer('selection');
+        await expect(project.getLayerList()).toHaveValue('selection');
+
+        // Check that one feature is selected
+        await expect(project.getResultsContainer()).toHaveText(/^1/);
+
+        // Export button is also enabled
+        await expect(exportButton).toBeEnabled();
+    });
+
+    test('Export disabled for one selection layer', async ({ page }) => {
+        // Catch GetProjectConfig to override export_enabled for selection layer
+        await page.route('**/service/getProjectConfig*', async route => {
+            const response = await route.fetch();
+            const json = await response.json();
+            json.attributeLayers['selection']['export_enabled']  = false;
+            await route.fulfill({ response, json });
+        });
+
+        const project = new SelectionPage(page, 'selection');
+        // re-open the page to apply the route
+        await project.open();
+        await project.closeLeftDock();
+
+        // Remove catching GetProjectConfig
+        await page.unroute('**/service/getProjectConfig*');
+
+        await project.openSelectionPanel();
+
+        // Selection layer list
+        const layerList = project.getLayerList();
+        await expect(layerList).toHaveValue('selectable-visible-layers');
+
+        // Digitizing toolbar
+        const digitizingToolBar = project.getDigitizingToolBar();
+        expect(await digitizingToolBar.evaluate(
+            element => element.toolSelected)
+        ).toBe('box');
+
+        // Export button
+        const exportButton = project.getExportButton();
+        await expect(exportButton).toBeDisabled();
+
+        let getFeatureLayerRequestPromise = project.waitForGetFeatureRequest('selection_layer');
+        let getFeaturePolygonRequestPromise = project.waitForGetFeatureRequest('selection_polygon');
+        let getSelectionTokenLayerRequestPromise = project.waitForGetSelectionTokenRequest('selection_layer');
+        let getSelectionTokenPolygonRequestPromise = project.waitForGetSelectionTokenRequest('selection_polygon');
+        let getMapPolygonRequestPromise = project.waitForGetMapRequest('selection_polygon');
+        let getMapLayerRequestPromise = project.waitForGetMapRequest('selection_layer');
+
+        // Draw box
+        // It should select two feature
+        await project.clickOnMap(650, 350);
+        await project.clickOnMap(450, 250);
+
+        // Wait for WFS GetFeature, WMS GetSelectionToken, WMS GetMap requests
+        let [
+            getFeatureLayerRequest, getFeaturePolygonRequest,
+            getSelectionTokenLayerRequest, getSelectionTokenPolygonRequest,
+            getMapLayerRequest, getMapPolygonRequest,
+        ] = await Promise.all([
+            getFeatureLayerRequestPromise, getFeaturePolygonRequestPromise,
+            getSelectionTokenLayerRequestPromise, getSelectionTokenPolygonRequestPromise,
+            getMapLayerRequestPromise, getMapPolygonRequestPromise,
+        ]);
+
+        /** @type {{[key: string]: string|RegExp}} */
+        let getFeatureLayerExpectedParameters = {
+            TYPENAME: 'selection_layer',
+            EXP_FILTER: /intersects\(\$geometry, geom_from_gml.*\)/,
+        };
+        requestExpect(getFeatureLayerRequest).toContainParametersInPostData(getFeatureLayerExpectedParameters);
+
+        /** @type {{[key: string]: string|RegExp}} */
+        let getFeaturePolygonExpectedParameters = {
+            TYPENAME: 'selection_polygon',
+            EXP_FILTER: /intersects\(\$geometry, geom_from_gml.*\)/,
+        };
+        requestExpect(getFeaturePolygonRequest).toContainParametersInPostData(getFeaturePolygonExpectedParameters);
+
+        // Check GetFeature responses
+        let getFeatureLayerResponse = await getFeatureLayerRequest.response();
+        responseExpect(getFeatureLayerResponse).toBeGeoJson();
+        await responseExpect(getFeatureLayerResponse).toHaveGeoJsonFeaturesLength(1);
+
+        let getFeaturePolygonResponse = await getFeaturePolygonRequest.response();
+        responseExpect(getFeaturePolygonResponse).toBeGeoJson();
+        await responseExpect(getFeaturePolygonResponse).toHaveGeoJsonFeaturesLength(1);
+
+        /** @type {{[key: string]: string|RegExp}} */
+        let getSelectionTokeLayerExpectedParameters = {
+            typename: 'selection_layer',
+            ids: '2',
+        };
+        requestExpect(getSelectionTokenLayerRequest).toContainParametersInPostData(getSelectionTokeLayerExpectedParameters);
+
+        /** @type {{[key: string]: string|RegExp}} */
+        let getSelectionTokenPolygonExpectedParameters = {
+            typename: 'selection_polygon',
+            ids: '2',
+        };
+        requestExpect(getSelectionTokenPolygonRequest).toContainParametersInPostData(getSelectionTokenPolygonExpectedParameters);
+
+        let getSelectionTokenLayerResponse = await getSelectionTokenLayerRequest.response();
+        responseExpect(getSelectionTokenLayerResponse).toBeJson();
+
+        let getSelectionTokenPolygonResponse = await getSelectionTokenPolygonRequest.response();
+        responseExpect(getSelectionTokenPolygonResponse).toBeJson();
+
+        // get tokens
+        let jsonGetSelectionTokenLayer = await getSelectionTokenLayerResponse?.json();
+        expect(jsonGetSelectionTokenLayer).toHaveProperty('token');
+        const layerToken = jsonGetSelectionTokenLayer['token'];
+        expect(layerToken).toBeTruthy();
+        expect(layerToken).toHaveLength(32);
+
+        let jsonGetSelectionTokenPolygon = await getSelectionTokenPolygonResponse?.json();
+        expect(jsonGetSelectionTokenPolygon).toHaveProperty('token');
+        const polygonToken = jsonGetSelectionTokenPolygon['token'];
+        expect(polygonToken).toBeTruthy();
+        expect(polygonToken).toHaveLength(32);
+
+        /** @type {{[key: string]: string|RegExp}} */
+        let getMapLayerExpectedParameters = {
+            LAYERS: 'selection_layer',
+            SELECTIONTOKEN: layerToken,
+        };
+        requestExpect(getMapLayerRequest).toContainParametersInUrl(getMapLayerExpectedParameters);
+
+        /** @type {{[key: string]: string|RegExp}} */
+        let getMapPolygonExpectedParameters = {
+            LAYERS: 'selection_polygon',
+            SELECTIONTOKEN: polygonToken,
+        };
+        requestExpect(getMapPolygonRequest).toContainParametersInUrl(getMapPolygonExpectedParameters);
+
+        // Check that two feature is selected (one in each layers)
         await expect(project.getResultsContainer()).toHaveText(/^2/);
 
         // Export button still disabled, because multiple layers selected
         await expect(exportButton).toBeDisabled();
 
-        // Select single layer without selected features
+        // Select single layer with selected features
+        await project.selectLayer('selection_polygon');
+        await expect(project.getLayerList()).toHaveValue('selection_polygon');
+
+        // Check that one feature is selected
+        await expect(project.getResultsContainer()).toHaveText(/^1/);
+
+        // Export button is enabled
+        await expect(exportButton).toBeEnabled();
+
+        // Select single layer with selected features but export disabled
         await project.selectLayer('selection');
         await expect(project.getLayerList()).toHaveValue('selection');
 
-        // Check that no feature is selected
+        // Check that one feature is still selected
         await expect(project.getResultsContainer()).toHaveText(/^1/);
 
-        // Export button is also enabled
+        // Export button is disabled for this layer
+        await expect(exportButton).toBeDisabled();
+
+        // Go back to select the layer with selected features and export enabled
+        await project.selectLayer('selection_polygon');
+        await expect(project.getLayerList()).toHaveValue('selection_polygon');
+
+        // Check that one feature is selected
+        await expect(project.getResultsContainer()).toHaveText(/^1/);
+
+        // Export button is enabled
         await expect(exportButton).toBeEnabled();
+
+        // Select multiple layers
+        await project.selectLayer('selectable-layers');
+        await expect(project.getLayerList()).toHaveValue('selectable-layers');
+
+        // Check that two features are selected
+        await expect(project.getResultsContainer()).toHaveText(/^2/);
+
+        // Export button still disabled, because multiple layers selected
+        await expect(exportButton).toBeDisabled();
     });
 });
