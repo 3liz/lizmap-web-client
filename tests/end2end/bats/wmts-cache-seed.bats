@@ -178,6 +178,9 @@ setup() {
 }
 
 @test "wmts:cache:clean & wmts:cache:seed" {
+    # sha1 "Quartiers" (echo -n "Quartiers" | openssl sha1)
+    local layer_hash="d62abe00cde937a6224679b3b4f8c2f332014edc"
+
     run lizmap-ctl console wmts:cache:clean -v testsrepository cache Quartiers
     assert_success
     assert_output --partial "Start cleaning"
@@ -197,11 +200,11 @@ setup() {
 
     assert_exists "$TESTS_ROOT/tmp/testsrepository"
     assert_exists "$TESTS_ROOT/tmp/testsrepository/cache"
-    assert_exists "$TESTS_ROOT/tmp/testsrepository/cache/Quartiers"
-    assert_exists "$TESTS_ROOT/tmp/testsrepository/cache/Quartiers/EPSG_3857"
-    assert_exists "$TESTS_ROOT/tmp/testsrepository/cache/Quartiers/EPSG_3857/lizmap_"
+    assert_exists "$TESTS_ROOT/tmp/testsrepository/cache/$layer_hash"
+    assert_exists "$TESTS_ROOT/tmp/testsrepository/cache/$layer_hash/EPSG_3857"
+    assert_exists "$TESTS_ROOT/tmp/testsrepository/cache/$layer_hash/EPSG_3857/lizmap_"
 
-    assert_count_files "$TESTS_ROOT/tmp/testsrepository/cache/Quartiers/EPSG_3857/lizmap_" 4
+    assert_count_files "$TESTS_ROOT/tmp/testsrepository/cache/$layer_hash/EPSG_3857/lizmap_" 4
 
     run lizmap-ctl console wmts:cache:seed -v -f testsrepository cache Quartiers EPSG:3857 11 15
     assert_success
@@ -235,7 +238,7 @@ setup() {
     assert_output --partial "Progression: 100%, 224 tiles generated on 224 tiles"
     assert_output --partial "End generation"
 
-    assert_count_files "$TESTS_ROOT/tmp/testsrepository/cache/Quartiers/EPSG_3857/lizmap_" 228
+    assert_count_files "$TESTS_ROOT/tmp/testsrepository/cache/$layer_hash/EPSG_3857/lizmap_" 228
 
     run lizmap-ctl console wmts:cache:clean -v testsrepository cache Quartiers
     assert_success
