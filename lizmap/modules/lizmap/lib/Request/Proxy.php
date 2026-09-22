@@ -419,9 +419,11 @@ class Proxy
             $stack->push(new EchoMiddleWare(self::getAppContext()));
         }
         // Create Client
+        // We set some request options.
         $client = new Client(array(
-            // You can set any number of default request options.
-            'timeout' => max(10.0, floatval(ini_get('max_execution_time')) - 5.0),
+            // We use a timeout equal to the default_socket_timeout (usually 60 seconds) to avoid PHP timeout errors.
+            // NB: the network request time is not part of the PHP execution time, so we can set a timeout higher than the PHP max_execution_time.
+            'timeout' => max(10.0, floatval(ini_get('default_socket_timeout'))),
             // Set stack handler
             'handler' => $stack,
         ));
