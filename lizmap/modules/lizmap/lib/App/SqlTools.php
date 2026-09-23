@@ -27,24 +27,6 @@ class SqlTools
     public const PARSER_STATE_TABLE_SQL = 9;
     public const PARSER_STATE_SQL_VALUE = 10;
 
-    protected static $blockSqlWords = array(
-        ';',
-        'select',
-        'delete',
-        'insert',
-        'update',
-        'drop',
-        'alter',
-        '--',
-        'truncate',
-        'vacuum',
-        'create',
-        'reindex',
-        'grant',
-        'revoke',
-        '/*',
-    );
-
     /**
      * QGIS geometry predicate functions mapped to their PostGIS ST_* equivalents.
      *
@@ -62,19 +44,340 @@ class SqlTools
         'disjoint' => 'ST_Disjoint',
     );
 
-    /**
-     * Validate an expression filter.
-     *
-     * @param string $filter The expression filter to validate
-     *
-     * @return array{0: bool, 1: list<string>} returns if the expression does not contains dangerous chars, and the list of blocked items
-     */
-    public static function validateExpressionFilter(string $filter): array
-    {
-        $block_items = array();
-        $pattern = '#'.implode('|', array_map(fn ($w): string => preg_quote($w, '#'), static::$blockSqlWords)).'#i';
+    protected const ALLOWED_SQL_TOKENS = array(
+        'IS',
+        'NOT',
+        'NULL',
+        'AND',
+        'OR',
+        'IN',
+        'LIKE',
+        'ILIKE',
+        'AS',
+        'CASE',
+        'WHEN',
+        'THEN',
+        'ELSE',
+        'END',
+        'BETWEEN',
+        'DMETAPHONE',
+        'SOUNDEX',
 
-        return array(!preg_match($pattern, $filter, $block_items), $block_items);
+        // QGIS Expression tokens
+        '$id',
+        '$geometry',
+        '$area',
+        '$length',
+
+        // Lizmap tokens
+        '@lizmap_user',
+        '@lizmap_user_groups',
+    );
+
+    protected const ALLOWED_SQL_FUNCTIONS = array(
+        // Spatial functions
+        'ST_Intersects',
+        'ST_Contains',
+        'ST_Within',
+        'ST_Crosses',
+        'ST_Overlaps',
+        'ST_Touches',
+        'ST_Disjoint',
+        'ST_GeomFromGML',
+        'ST_GeomFromText',
+        'ST_GeomFromWKB',
+        'ST_GeomFromEWKB',
+        'ST_GeomFromEWKT',
+        'ST_GeomFromGeoJSON',
+        'ST_GeomFromKML',
+        'ST_MakePoint',
+        'ST_MakeLine',
+        'ST_MakePolygon',
+        'ST_MakeEnvelope',
+        'ST_Buffer',
+        'ST_Transform',
+        'ST_SetSRID',
+        'ST_SRID',
+        'ST_AsText',
+        'ST_AsBinary',
+        'ST_AsEWKT',
+        'ST_AsEWKB',
+        'ST_AsGeoJSON',
+        'ST_AsKML',
+        'ST_AsGML',
+        'ST_Distance',
+        'ST_Length',
+        'ST_Area',
+        'ST_Area2D',
+        'ST_Intersection',
+        'ST_Union',
+        'ST_Difference',
+        'ST_SymDifference',
+        'ST_ConvexHull',
+        'ST_Envelope',
+        'ST_Centroid',
+        'ST_X',
+        'ST_Y',
+        'ST_ExteriorRing',
+        'ST_InteriorRingN',
+        'ST_NumInteriorRings',
+        'ST_NumGeometries',
+        'ST_GeometryN',
+
+        // QGIS Expression functions
+        'buffer',
+        'distance',
+        'area',
+        'length',
+        'intersects',
+        'contains',
+        'within',
+        'crosses',
+        'overlaps',
+        'touches',
+        'disjoint',
+        'geom_from_gml',
+
+        // String functions
+        'LENGTH',
+        'LOWER',
+        'UPPER',
+        'TRIM',
+        'LTRIM',
+        'RTRIM',
+        'SUBSTRING',
+        'POSITION',
+        'REPLACE',
+        'CONCAT',
+        'LEFT',
+        'RIGHT',
+        'INITCAP',
+
+        // Date and time functions
+        'NOW',
+        'CURRENT_DATE',
+        'CURRENT_TIME',
+        'CURRENT_TIMESTAMP',
+        'EXTRACT',
+        'DATE_PART',
+        'DATE_TRUNC',
+        'AGE',
+
+        // Miscellaneous functions
+        'COALESCE',
+        'NULLIF',
+    );
+
+    /**
+     * Parse and validate the provided SQL query string against the defined whitelist of tokens and functions.
+     *
+     * @param string $sql                 the SQL query string to be parsed and validated
+     * @param array  $allowedSqlTokens    allowed SQL tokens to be merged with the default whitelist
+     * @param array  $allowedSqlFunctions allowed SQL functions to be merged with the default whitelist
+     *
+     * @return string Cleaned SQL string (original string with no comments)
+     *
+     * @throws \Exception if the SQL query contains disallowed tokens, functions, or syntax errors
+     */
+    public static function parseAndValidateSQLString(string $sql, array $allowedSqlTokens = array(), array $allowedSqlFunctions = array()): string
+    {
+        // Remove comments and unnecessary whitespace
+        $cleanSql = self::stripComments($sql);
+        // If there are somme comments, the string is not valid
+        if (trim($sql) != $cleanSql) {
+            throw new \Exception('SQL parser - Comments are not allowed !');
+        }
+
+        // 2. Extract tokens from the cleaned SQL string
+        $tokens = self::tokenizeSQL($cleanSql);
+
+        // 3. Validate the balance and correctness of parentheses
+        self::validateParentheses($tokens);
+
+        // 4. Validate the tokens against the whitelist and check for disallowed elements
+        self::validateSecurityAndAliases($tokens, $allowedSqlTokens, $allowedSqlFunctions);
+
+        return $cleanSql;
+    }
+
+    /**
+     * Validate if the given string is valid.
+     *
+     * This is a helper function for testing purpose
+     *
+     * @param string $sql The SQL string to test
+     *
+     * @return bool True if the SQL string is valid
+     */
+    public static function validateExpressionFilter(string $sql): bool
+    {
+        try {
+            $sql = self::parseAndValidateSQLString($sql);
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Remove SQL comments (-- ... and /* ... *\/) from the SQL string.
+     *
+     * @return string the SQL string without comments
+     */
+    private static function stripComments(string $sql): string
+    {
+        $regex = '/(--.*$|\/\*[\s\S]*?\*\/)/m';
+        if (preg_match_all($regex, $sql, $matches)) {
+            return preg_replace($regex, ' ', $sql);
+        }
+
+        return trim($sql);
+    }
+
+    /**
+     * Tokenize the SQL string into an array of tokens, including keywords, identifiers, operators, and literals.
+     *
+     * @return array{type: string, value: mixed[]}
+     */
+    private static function tokenizeSQL(string $sql): array
+    {
+        // The order of the regexp is needed to avoid a token to be captured as a simple identifier
+        $pattern = '/(?>'
+        .'\'(?:[^\']|\'\')*+\''          // Single quoted strings
+        .'|"(?>[^"\\\]+|\\\.)*"'       // Double quoted strings
+        .'|\d++(?:\.\d++)?+'             // Numbers
+        .'|[\$@]?[a-zA-Z_]\w*+'          // Words / Identifiers . We should keep $bob for QGIS variables
+        .'|<=|>=|!=|<>|==|->>|->'        // Composed operators
+        .'|[\+\-\*\/<>=!\|&\^~%?:]'      // Simple operators
+        .'|[()\[\]{}]'                   // Parentheses, brackets
+        .'|[.,;]'                        // Ponctuation : , . ;
+        .')/x';
+
+        $result = preg_match_all(
+            $pattern,
+            $sql,
+            $matches,
+            PREG_SET_ORDER
+        );
+        if ($result === false) {
+            throw new \Exception('SQL parser - regexp error: '.preg_last_error_msg());
+        }
+
+        $tokens = array();
+        foreach ($matches as $match) {
+            $tokens[] = $match[0];
+        }
+
+        return $tokens;
+    }
+
+    /**
+     * Check for balanced parentheses in the token array. Throws an exception if unbalanced.
+     */
+    private static function validateParentheses(array $tokens): void
+    {
+        $stack = 0;
+        foreach ($tokens as $token) {
+            if ($token === '(') {
+                ++$stack;
+            } elseif ($token === ')') {
+
+                --$stack;
+                if ($stack < 0) {
+                    throw new \Exception('SQL parser - Unmatched closing parenthesis');
+                }
+            }
+        }
+        if ($stack !== 0) {
+            throw new \Exception("SQL parser - Unmatched parenthesis. Missing {$stack} closing parenthesis(es)");
+        }
+    }
+
+    /**
+     * Check if a token is a literal string (enclosed in single or double quotes).
+     *
+     * @return bool true if the token is a literal string, false otherwise
+     */
+    private static function isLiteralString(string $token): bool
+    {
+        $firstChar = $token[0] ?? '';
+        $lastChar = substr($token, -1);
+
+        return ($firstChar === "'" && $lastChar === "'") || ($firstChar === '"' && $lastChar === '"');
+    }
+
+    /**
+     * Check the tokens against the whitelist and validate security constraints, including dynamic alias handling.
+     *
+     * Semi-colons are strictly forbidden outside of string literals, and only whitelisted functions and tokens are allowed.
+     *
+     * @param array $allowedSqlTokens    allowed SQL tokens to be merged with the default whitelist
+     * @param array $allowedSqlFunctions allowed SQL functions to be merged with the default whitelist
+     */
+    private static function validateSecurityAndAliases(array $tokens, array $allowedSqlTokens, array $allowedSqlFunctions): void
+    {
+        $count = count($tokens);
+
+        // Merge the default whitelists with the provided ones, ensuring uniqueness
+        $whitelistWords = array_unique(array_merge(self::ALLOWED_SQL_TOKENS, $allowedSqlTokens));
+        $whitelistWords = array_map('strtolower', $whitelistWords);
+
+        $whitelistFunctions = array_unique(array_merge(self::ALLOWED_SQL_FUNCTIONS, $allowedSqlFunctions));
+        $whitelistFunctions = array_map('strtolower', $whitelistFunctions);
+
+        // Local list to store aliases discovered on-the-fly during the reading of this query
+        $dynamicAliases = array();
+
+        for ($i = 0; $i < $count; ++$i) {
+            $token = $tokens[$i];
+
+            // Forbidden semi-colons outside of string literals
+            if ($token === ';') {
+                throw new \Exception('forbidden semi-colon ');
+            }
+
+            // Ignore string literals (single or double quoted) to avoid false positives in validation
+            if (self::isLiteralString($token)) {
+                continue;
+            }
+
+            // Ignore punctuation and mathematical/logical operators
+            if (preg_match('/^[\+\-\*\/<>=!,\(\)\.]+/', $token)) {
+                continue;
+            }
+
+            // Ignore numbers
+            if (is_numeric($token)) {
+                continue;
+            }
+
+            $cleanToken = strtolower(trim($token, '`[]'));
+
+            // Check for dynamic aliasing: if the previous token was 'as', the current token is a valid temporary alias
+            if ($i > 0 && strtolower(trim($tokens[$i - 1], '`[]')) === 'as') {
+                $dynamicAliases[] = $cleanToken;
+
+                continue;
+            }
+
+            // Validate the use of functions: if the token is followed by a parenthesis, it is considered a function call
+            $isFollowedByParenthesis = ($i + 1 < $count && $tokens[$i + 1] === '(');
+
+            if ($isFollowedByParenthesis && !in_array($cleanToken, $whitelistWords)) {
+                if (!empty($whitelistFunctions) && !in_array($cleanToken, $whitelistFunctions)) {
+                    throw new \Exception('Forbidden function: '.$token);
+                }
+            } else {
+                // Validation of identifiers, keywords, and other tokens against the whitelist and dynamic aliases
+                if (!empty($whitelistWords)
+                    && !in_array($cleanToken, $whitelistWords)
+                    && !in_array($cleanToken, $dynamicAliases)
+                ) {
+                    throw new \Exception('Forbidden token: '.$token);
+                }
+            }
+        }
     }
 
     /**
