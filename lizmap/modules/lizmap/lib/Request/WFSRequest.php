@@ -642,12 +642,15 @@ class WFSRequest extends OGCRequest
         if (!$expFilter) {
             return '';
         }
-        [$validFilter, $block_items] = SqlTools::validateExpressionFilter($expFilter);
-        if (!$validFilter) {
-            $this->appContext->logMessage(
-                'The EXP_FILTER param contains dangerous chars : '.implode(', ', $block_items),
-                'lizmapadmin'
-            );
+
+        // Validate the SQL filter
+        $additionalLayerTokens = array();
+        $additionalFunctions = array();
+
+        try {
+            $sql = SqlTools::parseAndValidateSQLString($expFilter, $additionalLayerTokens, $additionalFunctions);
+        } catch (\Exception $e) {
+            $this->appContext->logException($e, 'lizmapadmin');
 
             return '';
         }
@@ -1147,12 +1150,13 @@ class WFSRequest extends OGCRequest
      */
     protected function validateFilter(string $filter): false|string
     {
-        [$validFilter, $block_items] = SqlTools::validateExpressionFilter($filter);
-        if (!$validFilter) {
-            $this->appContext->logMessage(
-                'The EXP_FILTER param contains dangerous chars : '.implode(', ', $block_items),
-                'lizmapadmin'
-            );
+        $additionalLayerTokens = array();
+        $additionalFunctions = array();
+
+        try {
+            $filter = SqlTools::parseAndValidateSQLString($filter, $additionalLayerTokens, $additionalFunctions);
+        } catch (\Exception $e) {
+            $this->appContext->logException($e, 'lizmapadmin');
 
             return false;
         }
