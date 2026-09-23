@@ -69,18 +69,45 @@ class filterDatasource
         return $this->errors;
     }
 
+    /**
+     * Validate the SQL filter.
+     *
+     * If it is not valid, we return 1>2 to force the return of empty data
+     *
+     * @param string $filter The SQL filter
+     *
+     * @return string The processed filter
+     */
     private function validateFilter($filter)
     {
+        // Return null if filter is null
+        if ($filter === null) {
+            return null;
+        }
+
+        // If the filter is empty, return null
+        if (empty($filter)) {
+            return null;
+        }
+
         // For Spatialite and GeoPackage, replace ILIKE with LIKE
         if ($this->provider != 'postgres') {
             $filter = str_replace(' ILIKE ', ' LIKE ', $filter);
         }
 
-        [$validFilter, $block_items] = SqlTools::validateExpressionFilter($filter);
-        if (!$validFilter) {
-            jLog::log('The EXP_FILTER param contains dangerous chars : '.implode(', ', $block_items), 'lizmapadmin');
+        // If an error occurred, return a filter which will return no data
+        $badFilter = ' 1>2 ';
+        // Optionally pass additional allowed words and functions
+        $layerTokens = array();
+        $layerFunctions = array();
 
-            return null;
+        // Validate the SQL filter
+        try {
+            $sql = SqlTools::parseAndValidateSQLString($filter, $layerTokens, $layerFunctions);
+        } catch (Exception $e) {
+            jLog::log('The EXP_FILTER param contains dangerous chars : '.$e->getMessage().' No data are returned !', 'lizmapadmin');
+
+            return $badFilter;
         }
 
         return SqlTools::translateExpressionToPostgis($filter, $this->datasource->geocol);
@@ -138,7 +165,6 @@ class filterDatasource
 
     public function getFeatureCount($filter = null)
     {
-
         // validate filter
         $filter = $this->validateFilter($filter);
 
