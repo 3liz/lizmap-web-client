@@ -63,6 +63,10 @@ var lizTimemanager = function() {
             var filter = null;
             var tmAnimationTimer;
             var tmCurrentDate;
+            // Filter each controlled layer already had when the time manager was
+            // opened, by layer name. The date filter is combined with it, instead
+            // of replacing it.
+            var tmBaseFilters = {};
             var tmStartDate = -Infinity; // lower bound of when values
             var tmEndDate = Infinity; // upper value of when values
 
@@ -83,6 +87,16 @@ var lizTimemanager = function() {
 
                 // hourglass
                 //$('#loading').dialog('open');
+
+                // Keep the filter the layers may already have, e.g. set from the
+                // form filter, so that the date filter is combined with it (#6773)
+                tmBaseFilters = {};
+                for (var tmLayer in config.timemanagerLayers) {
+                    var tmLayerRequestParams = config.layers[tmLayer]?.['request_params'];
+                    if (tmLayerRequestParams?.['exp_filter']) {
+                        tmBaseFilters[tmLayer] = tmLayerRequestParams['exp_filter'];
+                    }
+                }
 
                 // Get min and max timestamps from layers
                 var minTime = Infinity, maxTime = -Infinity ;
@@ -352,6 +366,15 @@ var lizTimemanager = function() {
                 // Set filter for each vector layer
                 for (var l in config.timemanagerLayers){
                     filter = buildDateFilter(config.timemanagerLayers[l], lowerBoundary, upperBoundary);
+
+                    // Combine the date filter with the filter the layer already had,
+                    // otherwise the time manager would drop it (#6773)
+                    if (tmBaseFilters[l]) {
+                        filter = filter
+                            ? '( ' + tmBaseFilters[l] + ' ) AND ' + filter
+                            : tmBaseFilters[l];
+                    }
+
                     lizMap.triggerLayerFilter(l, filter);
                 }
             }
@@ -516,6 +539,14 @@ var lizTimemanager = function() {
             function unFilterTimeLayers() {
                 // Remove filter
                 for(var layerName in lizMap.config.timemanagerLayers){
+                    // The layer was already filtered before the time manager was
+                    // opened: only remove the date part, by restoring that filter.
+                    // `triggerLayerFilter` refreshes plots and popups on its own.
+                    if (tmBaseFilters[layerName]) {
+                        lizMap.triggerLayerFilter(layerName, tmBaseFilters[layerName]);
+                        continue;
+                    }
+
                     lizMap.deactivateMaplayerFilter(layerName);
                     // Refresh plots and popups
                     lizMap.config.layers[layerName]['request_params']['filtertoken'] = null;
@@ -527,6 +558,7 @@ var lizTimemanager = function() {
                         }
                     );
                 }
+                tmBaseFilters = {};
             }
 
             /**
