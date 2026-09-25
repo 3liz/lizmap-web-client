@@ -77,10 +77,10 @@ export class AtlasPage extends ProjectPage {
     /**
      * selectAtlasFeature function
      * selects a feature in the atlas panel
-     * @param {string} featureId the feature id to select
+     * @param {string} label the feature label to select
      */
-    async selectAtlasFeature(featureId) {
-        await this.atlasFeatureSelect.selectOption(featureId);
+    async selectAtlasFeature(label) {
+        await this.atlasFeatureSelect.selectOption(label);
     }
 
 }
