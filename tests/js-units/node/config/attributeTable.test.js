@@ -22,6 +22,7 @@ describe('AttributeLayerConfig', function () {
         expect(layer.hideLayer).to.be.eq(false)
         expect(layer.order).to.be.eq(7)
         expect(layer.exportEnabled).to.be.eq(true)
+        expect(layer.exportFormats).to.be.deep.eq([])
     })
 
     it('Valid with export_enabled false', function () {
@@ -43,6 +44,184 @@ describe('AttributeLayerConfig', function () {
         expect(layer.hideLayer).to.be.eq(false)
         expect(layer.order).to.be.eq(7)
         expect(layer.exportEnabled).to.be.eq(false)
+        expect(layer.exportFormats).to.be.deep.eq([])
+    })
+
+    it('Valid with export formats', function () {
+        const layer = new AttributeLayerConfig("Quartiers", {
+            "primaryKey": "QUARTMNO",
+            "pivot": "False",
+            "hideAsChild": "False",
+            "hideLayer": "",
+            "layerId": "VilleMTP_MTP_Quartiers_2011_432620130116112610876",
+            "order": 7,
+            "export_formats": ['ods', 'xlsx', 'csv'],
+        });
+        expect(layer.id).to.be.eq('VilleMTP_MTP_Quartiers_2011_432620130116112610876')
+        expect(layer.name).to.be.eq('Quartiers')
+        expect(layer.primaryKey).to.be.eq('QUARTMNO')
+        expect(layer.hiddenFields).to.be.eq('')
+        expect(layer.pivot).to.be.eq(false)
+        expect(layer.hideAsChild).to.be.eq(false)
+        expect(layer.hideLayer).to.be.eq(false)
+        expect(layer.order).to.be.eq(7)
+        expect(layer.exportEnabled).to.be.eq(true)
+        expect(layer.exportFormats).to.be.deep.eq(['ods', 'xlsx', 'csv'])
+    })
+
+    it('getEffectiveExportFormats without export_formats', function() {
+        const layer = new AttributeLayerConfig("Quartiers", {
+            "primaryKey": "QUARTMNO",
+            "pivot": "False",
+            "hideAsChild": "False",
+            "hideLayer": "",
+            "layerId": "VilleMTP_MTP_Quartiers_2011_432620130116112610876",
+            "order": 7,
+        });
+        expect(layer.getEffectiveExportFormats(['GEOJSON'])).to.be.deep.eq(['GeoJSON'])
+        expect(layer.getEffectiveExportFormats(['GeoJson'])).to.be.deep.eq(['GeoJSON'])
+        expect(layer.getEffectiveExportFormats(['GML2'])).to.be.deep.eq(['GML'])
+        expect(layer.getEffectiveExportFormats(['Gml2'])).to.be.deep.eq(['GML'])
+        expect(layer.getEffectiveExportFormats(['GML3'])).to.be.deep.eq(['GML'])
+        expect(layer.getEffectiveExportFormats(['Gml3'])).to.be.deep.eq(['GML'])
+        expect(layer.getEffectiveExportFormats(['GML2', 'GML3'])).to.be.deep.eq(['GML'])
+        expect(layer.getEffectiveExportFormats(['GmL2', 'GMl3'])).to.be.deep.eq(['GML'])
+        expect(layer.getEffectiveExportFormats(['GEOJSON', 'GML2'])).to.be.deep.eq(['GeoJSON', 'GML'])
+        expect(layer.getEffectiveExportFormats(['GEOJSON', 'GML3'])).to.be.deep.eq(['GeoJSON', 'GML'])
+        expect(layer.getEffectiveExportFormats(['GEOJSON', 'GML2', 'GML3'])).to.be.deep.eq(['GeoJSON', 'GML'])
+        expect(layer.getEffectiveExportFormats(['ods', 'xlsx', 'csv'])).to.be.deep.eq(['ods', 'xlsx', 'csv'])
+        expect(layer.getEffectiveExportFormats(['ODS', 'XLSX', 'CSV'])).to.be.deep.eq(['ODS', 'XLSX', 'CSV'])
+        expect(layer.getEffectiveExportFormats(
+            ['GEOJSON', 'GML2', 'GML3', 'ODS', 'XLSX', 'CSV']
+        )).to.be.deep.eq(
+            ['GeoJSON', 'GML', 'ODS', 'XLSX', 'CSV']
+        )
+    })
+
+    it('getEffectiveExportFormats with export formats: ods, xlsx, csv', function () {
+        const layer = new AttributeLayerConfig("Quartiers", {
+            "primaryKey": "QUARTMNO",
+            "pivot": "False",
+            "hideAsChild": "False",
+            "hideLayer": "",
+            "layerId": "VilleMTP_MTP_Quartiers_2011_432620130116112610876",
+            "order": 7,
+            "export_formats": ['ods', 'xlsx', 'csv'],
+        });
+        expect(layer.getEffectiveExportFormats(
+            ['ODS', 'XLSX', 'CSV']
+        )).to.be.deep.eq(
+            ['ODS', 'XLSX', 'CSV']
+        )
+        expect(layer.getEffectiveExportFormats(
+            ['GEOJSON', 'GML2', 'GML3', 'ODS', 'XLSX', 'CSV']
+        )).to.be.deep.eq(
+            ['ODS', 'XLSX', 'CSV']
+        )
+        expect(layer.getEffectiveExportFormats(
+            ['GEOJSON', 'GML2', 'GML3', 'ODS', 'SHP', 'XLSX', 'FGB', 'CSV', 'KML']
+        )).to.be.deep.eq(
+            ['ODS', 'XLSX', 'CSV']
+        )
+        expect(layer.getEffectiveExportFormats(
+            ['GEOJSON', 'GML2', 'GML3', 'ODS', 'SHP', 'XLSX', 'FGB']
+        )).to.be.deep.eq(
+            ['ODS', 'XLSX']
+        )
+        expect(layer.getEffectiveExportFormats(
+            ['GEOJSON', 'GML2', 'GML3', 'ODS']
+        )).to.be.deep.eq(
+            ['ODS']
+        )
+        expect(layer.getEffectiveExportFormats(
+            ['GEOJSON', 'GML2', 'GML3']
+        )).to.be.deep.eq(
+            []
+        )
+    })
+
+    it('getEffectiveExportFormats with export formats: xlsx', function () {
+        const layer = new AttributeLayerConfig("Quartiers", {
+            "primaryKey": "QUARTMNO",
+            "pivot": "False",
+            "hideAsChild": "False",
+            "hideLayer": "",
+            "layerId": "VilleMTP_MTP_Quartiers_2011_432620130116112610876",
+            "order": 7,
+            "export_formats": ['xlsx'],
+        });
+        expect(layer.getEffectiveExportFormats(
+            ['ODS', 'XLSX', 'CSV']
+        )).to.be.deep.eq(
+            ['XLSX']
+        )
+        expect(layer.getEffectiveExportFormats(
+            ['GEOJSON', 'GML2', 'GML3', 'ODS', 'XLSX', 'CSV']
+        )).to.be.deep.eq(
+            ['XLSX']
+        )
+        expect(layer.getEffectiveExportFormats(
+            ['GEOJSON', 'GML2', 'GML3', 'ODS', 'SHP', 'XLSX', 'FGB', 'CSV', 'KML']
+        )).to.be.deep.eq(
+            ['XLSX']
+        )
+        expect(layer.getEffectiveExportFormats(
+            ['GEOJSON', 'GML2', 'GML3', 'ODS', 'SHP', 'XLSX', 'FGB']
+        )).to.be.deep.eq(
+            ['XLSX']
+        )
+        expect(layer.getEffectiveExportFormats(
+            ['GEOJSON', 'GML2', 'GML3', 'ODS']
+        )).to.be.deep.eq(
+            []
+        )
+        expect(layer.getEffectiveExportFormats(
+            ['GEOJSON', 'GML2', 'GML3']
+        )).to.be.deep.eq(
+            []
+        )
+    })
+
+    it('getEffectiveExportFormats with export formats: geojson, gml', function () {
+        const layer = new AttributeLayerConfig("Quartiers", {
+            "primaryKey": "QUARTMNO",
+            "pivot": "False",
+            "hideAsChild": "False",
+            "hideLayer": "",
+            "layerId": "VilleMTP_MTP_Quartiers_2011_432620130116112610876",
+            "order": 7,
+            "export_formats": ['geojson', 'gml'],
+        });
+        expect(layer.getEffectiveExportFormats(
+            ['ODS', 'XLSX', 'CSV']
+        )).to.be.deep.eq(
+            []
+        )
+        expect(layer.getEffectiveExportFormats(
+            ['GEOJSON', 'GML2', 'GML3', 'ODS', 'XLSX', 'CSV']
+        )).to.be.deep.eq(
+            ['GeoJSON', 'GML']
+        )
+        expect(layer.getEffectiveExportFormats(
+            ['GEOJSON', 'GML2', 'GML3', 'ODS', 'SHP', 'XLSX', 'FGB', 'CSV', 'KML']
+        )).to.be.deep.eq(
+            ['GeoJSON', 'GML']
+        )
+        expect(layer.getEffectiveExportFormats(
+            ['GEOJSON', 'GML2', 'GML3', 'ODS', 'SHP', 'XLSX', 'FGB']
+        )).to.be.deep.eq(
+            ['GeoJSON', 'GML']
+        )
+        expect(layer.getEffectiveExportFormats(
+            ['GEOJSON', 'GML2', 'GML3', 'ODS']
+        )).to.be.deep.eq(
+            ['GeoJSON', 'GML']
+        )
+        expect(layer.getEffectiveExportFormats(
+            ['GEOJSON', 'GML2', 'GML3']
+        )).to.be.deep.eq(
+            ['GeoJSON', 'GML']
+        )
     })
 
     it('ValidationError', function () {
