@@ -259,7 +259,7 @@ class lizMapCtrl extends jController
         // Set page title from projet title
         $title = $project;
         if ($wmsInfo['WMSServiceTitle'] != '') {
-            $title = $wmsInfo['WMSServiceTitle'];
+            $title = strip_tags($wmsInfo['WMSServiceTitle']);
         }
         $openGraphTitle = $title;
 
@@ -273,7 +273,7 @@ class lizMapCtrl extends jController
         $rep->addMeta(array('property' => 'og:image:width', 'content' => '250'));
         $rep->addMeta(array('property' => 'og:image:height', 'content' => '250'));
         if (!empty($wmsInfo['WMSServiceAbstract'])) {
-            $rep->addMeta(array('property' => 'og:description', 'content' => $wmsInfo['WMSServiceAbstract']));
+            $rep->addMeta(array('property' => 'og:description', 'content' => strip_tags($wmsInfo['WMSServiceAbstract'])));
         }
         // Add moment.js for timemanager
         if ($lproj->hasTimemanagerLayers()) {
