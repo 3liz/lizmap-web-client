@@ -245,7 +245,7 @@ class lizMapCtrl extends jController
         // Set page title from projet title
         $title = $project;
         if ($wmsInfo['WMSServiceTitle'] != '') {
-            $title = $wmsInfo['WMSServiceTitle'];
+            $title = strip_tags($wmsInfo['WMSServiceTitle']);
         }
 
         $title .= ' - '.$lrep->getLabel();
