@@ -294,7 +294,7 @@ import { getCenter } from 'ol/extent.js';
                     var item = lizAtlasConfig['features_sorted'][i];
 
                     // Add option
-                    home += '<option value="' + i + '">';
+                    home += '<option value="' + i + '" data-pkey="' + item[pkey_field] + '">';
                     home += item[lizAtlasConfig['titleField']];
                     home += '</option>';
                 }

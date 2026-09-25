@@ -21,6 +21,7 @@ test.describe('Atlas @readonly', () => {
         // Check select
         await expect(atlasPage.atlasFeatureSelect).toHaveValue('1');
         await expect(atlasPage.atlasFeatureSelect.locator('option:checked')).toHaveText('2');
+        await expect(atlasPage.atlasFeatureSelect.locator('option:checked')).toHaveAttribute('data-pkey', '2');
 
         // Wait for requests
         let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
@@ -67,6 +68,7 @@ test.describe('Atlas @readonly', () => {
         // Check select
         await expect(atlasPage.atlasFeatureSelect).toHaveValue('2');
         await expect(atlasPage.atlasFeatureSelect.locator('option:checked')).toHaveText('3');
+        await expect(atlasPage.atlasFeatureSelect.locator('option:checked')).toHaveAttribute('data-pkey', '3');
 
         // Wait for requests
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
@@ -91,6 +93,7 @@ test.describe('Atlas @readonly', () => {
         // Check select
         await expect(atlasPage.atlasFeatureSelect).toHaveValue('4');
         await expect(atlasPage.atlasFeatureSelect.locator('option:checked')).toHaveText('5');
+        await expect(atlasPage.atlasFeatureSelect.locator('option:checked')).toHaveAttribute('data-pkey', '5');
 
         // Wait for requests
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
@@ -115,6 +118,7 @@ test.describe('Atlas @readonly', () => {
         // Check select
         await expect(atlasPage.atlasFeatureSelect).toHaveValue('3');
         await expect(atlasPage.atlasFeatureSelect.locator('option:checked')).toHaveText('4');
+        await expect(atlasPage.atlasFeatureSelect.locator('option:checked')).toHaveAttribute('data-pkey', '4');
 
         // Wait for requests
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
@@ -146,6 +150,7 @@ test.describe('Atlas @readonly', () => {
         // Check select
         await expect(atlasPage.atlasFeatureSelect).toHaveValue('1');
         await expect(atlasPage.atlasFeatureSelect.locator('option:checked')).toHaveText('2');
+        await expect(atlasPage.atlasFeatureSelect.locator('option:checked')).toHaveAttribute('data-pkey', '2');
 
         // Wait for requests
         let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
@@ -192,6 +197,7 @@ test.describe('Atlas @readonly', () => {
         // Check select
         await expect(atlasPage.atlasFeatureSelect).toHaveValue('2');
         await expect(atlasPage.atlasFeatureSelect.locator('option:checked')).toHaveText('3');
+        await expect(atlasPage.atlasFeatureSelect.locator('option:checked')).toHaveAttribute('data-pkey', '3');
 
         // Wait for requests
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
@@ -216,6 +222,7 @@ test.describe('Atlas @readonly', () => {
         // Check select
         await expect(atlasPage.atlasFeatureSelect).toHaveValue('4');
         await expect(atlasPage.atlasFeatureSelect.locator('option:checked')).toHaveText('5');
+        await expect(atlasPage.atlasFeatureSelect.locator('option:checked')).toHaveAttribute('data-pkey', '5');
 
         // Wait for requests
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
@@ -240,6 +247,7 @@ test.describe('Atlas @readonly', () => {
         // Check select
         await expect(atlasPage.atlasFeatureSelect).toHaveValue('3');
         await expect(atlasPage.atlasFeatureSelect.locator('option:checked')).toHaveText('4');
+        await expect(atlasPage.atlasFeatureSelect.locator('option:checked')).toHaveAttribute('data-pkey', '4');
 
         // Wait for requests
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
