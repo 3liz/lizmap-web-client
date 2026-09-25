@@ -1,7 +1,8 @@
 // @ts-check
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import { AtlasPage } from './pages/atlaspage';
 import { expect as requestExpect } from './fixtures/expect-request.js';
+import { expect as responseExpect } from './fixtures/expect-response.js';
 
 test.describe('Atlas @readonly', () => {
 
@@ -17,8 +18,12 @@ test.describe('Atlas @readonly', () => {
 
         await atlasPage.selectAtlasFeature('2');
 
-        let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
+        // Check select
+        await expect(atlasPage.atlasFeatureSelect).toHaveValue('1');
+        await expect(atlasPage.atlasFeatureSelect.locator('option:checked')).toHaveText('2');
 
+        // Wait for requests
+        let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
         let getMapRequest = await getMapPromise;
 
         const getFeatureInfoExpectedParameters = {
@@ -49,11 +54,21 @@ test.describe('Atlas @readonly', () => {
         }
         requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
 
+        // Check response
+        responseExpect(await getFeatureInfoRequest.response()).toBeHtml();
+        responseExpect(await getMapRequest.response()).toBeImagePng();
+
         // Click on next button
         getFeatureInfoRequestPromise = atlasPage.waitForGetFeatureInfoRequest();
         getMapPromise = atlasPage.waitForGetMapRequest();
 
         await atlasPage.atlasNextButton.click();
+
+        // Check select
+        await expect(atlasPage.atlasFeatureSelect).toHaveValue('2');
+        await expect(atlasPage.atlasFeatureSelect.locator('option:checked')).toHaveText('3');
+
+        // Wait for requests
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
         getMapRequest = await getMapPromise;
 
@@ -63,11 +78,21 @@ test.describe('Atlas @readonly', () => {
         getMapExpectedParameters['BBOX'] = /43.5356\d+,3.7540\d+,43.6863\d+,3.9233\d+/;
         requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
 
+        // Check response
+        responseExpect(await getFeatureInfoRequest.response()).toBeHtml();
+        responseExpect(await getMapRequest.response()).toBeImagePng();
+
         // Select feature 5
         getFeatureInfoRequestPromise = atlasPage.waitForGetFeatureInfoRequest();
         getMapPromise = atlasPage.waitForGetMapRequest();
 
         await atlasPage.selectAtlasFeature('5');
+
+        // Check select
+        await expect(atlasPage.atlasFeatureSelect).toHaveValue('4');
+        await expect(atlasPage.atlasFeatureSelect.locator('option:checked')).toHaveText('5');
+
+        // Wait for requests
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
         getMapRequest = await getMapPromise;
 
@@ -77,11 +102,21 @@ test.describe('Atlas @readonly', () => {
         getMapExpectedParameters['BBOX'] = /43.5143\d+,3.8037\d+,43.6651\d+,3.9729\d+/;
         requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
 
+        // Check response
+        responseExpect(await getFeatureInfoRequest.response()).toBeHtml();
+        responseExpect(await getMapRequest.response()).toBeImagePng();
+
         // Click on previous button
         getFeatureInfoRequestPromise = atlasPage.waitForGetFeatureInfoRequest();
         getMapPromise = atlasPage.waitForGetMapRequest();
 
         await atlasPage.atlasPreviousButton.click();
+
+        // Check select
+        await expect(atlasPage.atlasFeatureSelect).toHaveValue('3');
+        await expect(atlasPage.atlasFeatureSelect.locator('option:checked')).toHaveText('4');
+
+        // Wait for requests
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
         getMapRequest = await getMapPromise;
 
@@ -91,6 +126,9 @@ test.describe('Atlas @readonly', () => {
         getMapExpectedParameters['BBOX'] = /43.5100\d+,3.7720\d+,43.6607\d+,3.9413\d+/;
         requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
 
+        // Check response
+        responseExpect(await getFeatureInfoRequest.response()).toBeHtml();
+        responseExpect(await getMapRequest.response()).toBeImagePng();
     });
 
     test('Zoom 2154', async ({ page }) => {
@@ -105,8 +143,12 @@ test.describe('Atlas @readonly', () => {
 
         await atlasPage.selectAtlasFeature('2');
 
-        let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
+        // Check select
+        await expect(atlasPage.atlasFeatureSelect).toHaveValue('1');
+        await expect(atlasPage.atlasFeatureSelect.locator('option:checked')).toHaveText('2');
 
+        // Wait for requests
+        let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
         let getMapRequest = await getMapPromise;
 
         const getFeatureInfoExpectedParameters = {
@@ -137,11 +179,21 @@ test.describe('Atlas @readonly', () => {
         }
         requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
 
+        // Check response
+        responseExpect(await getFeatureInfoRequest.response()).toBeHtml();
+        responseExpect(await getMapRequest.response()).toBeImagePng();
+
         // Click on next button
         getFeatureInfoRequestPromise = atlasPage.waitForGetFeatureInfoRequest();
         getMapPromise = atlasPage.waitForGetMapRequest();
 
         await atlasPage.atlasNextButton.click();
+
+        // Check select
+        await expect(atlasPage.atlasFeatureSelect).toHaveValue('2');
+        await expect(atlasPage.atlasFeatureSelect.locator('option:checked')).toHaveText('3');
+
+        // Wait for requests
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
         getMapRequest = await getMapPromise;
 
@@ -151,11 +203,21 @@ test.describe('Atlas @readonly', () => {
         getMapExpectedParameters['BBOX'] = /763029.00\d+,6275270.57\d+,772434.95\d+,6283644.64\d+/;
         requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
 
+        // Check response
+        responseExpect(await getFeatureInfoRequest.response()).toBeHtml();
+        responseExpect(await getMapRequest.response()).toBeImagePng();
+
         // Select feature 5
         getFeatureInfoRequestPromise = atlasPage.waitForGetFeatureInfoRequest();
         getMapPromise = atlasPage.waitForGetMapRequest();
 
         await atlasPage.selectAtlasFeature('5');
+
+        // Check select
+        await expect(atlasPage.atlasFeatureSelect).toHaveValue('4');
+        await expect(atlasPage.atlasFeatureSelect.locator('option:checked')).toHaveText('5');
+
+        // Wait for requests
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
         getMapRequest = await getMapPromise;
 
@@ -165,11 +227,21 @@ test.describe('Atlas @readonly', () => {
         getMapExpectedParameters['BBOX'] = /769418.61\d+,6275047.74\d+,774121.59\d+,6279234.78\d+/;
         requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
 
+        // Check response
+        responseExpect(await getFeatureInfoRequest.response()).toBeHtml();
+        responseExpect(await getMapRequest.response()).toBeImagePng();
+
         // Click on previous button
         getFeatureInfoRequestPromise = atlasPage.waitForGetFeatureInfoRequest();
         getMapPromise = atlasPage.waitForGetMapRequest();
 
         await atlasPage.atlasPreviousButton.click();
+
+        // Check select
+        await expect(atlasPage.atlasFeatureSelect).toHaveValue('3');
+        await expect(atlasPage.atlasFeatureSelect.locator('option:checked')).toHaveText('4');
+
+        // Wait for requests
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
         getMapRequest = await getMapPromise;
 
@@ -179,5 +251,8 @@ test.describe('Atlas @readonly', () => {
         getMapExpectedParameters['BBOX'] = /764495.97\d+,6272453.77\d+,773901.92\d+,6280827.84\d+/;
         requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
 
+        // Check response
+        responseExpect(await getFeatureInfoRequest.response()).toBeHtml();
+        responseExpect(await getMapRequest.response()).toBeImagePng();
     });
 });
