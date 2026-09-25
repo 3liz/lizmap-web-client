@@ -94,7 +94,9 @@ div#lizmap_project_list_container {
     height: 80%;
     width: 100%;
     margin: auto;
+}
 
+ div#lizmap_project_list_help, div#lizmap_project_list_container {
     /* Colors */
     --warning-bg-color: lightyellow;
     --error-bg-color: lightcoral;
