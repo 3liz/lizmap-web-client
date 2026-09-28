@@ -97,13 +97,10 @@ class filterDatasource
 
         // If an error occurred, return a filter which will return no data
         $badFilter = ' 1>2 ';
-        // Optionally pass additional allowed words and functions
-        $layerTokens = array();
-        $layerFunctions = array();
 
         // Validate the SQL filter
         try {
-            $sql = SqlTools::parseAndValidateSQLString($filter, $layerTokens, $layerFunctions);
+            SqlTools::parseAndValidateSQLString($filter);
         } catch (Exception $e) {
             jLog::log('The EXP_FILTER param contains dangerous chars : '.$e->getMessage().' No data are returned !', 'lizmapadmin');
 
