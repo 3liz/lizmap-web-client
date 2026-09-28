@@ -21,7 +21,10 @@ class SqlToolsTest extends TestCase
             array('update ', false),
             array('drop ', false),
             array('alter ', false),
-            array('--', false),
+            array('--', true),
+            array("-- foo\n\"foo\" = 'bar'", true),
+            array("/* hello\n   world */ \"foo\" = 'bar'", true),
+            array("foo = 'bar'", false), // columns must be quoted
             array('truncate ', false),
             array('vacuum ', false),
             array('create ', false),

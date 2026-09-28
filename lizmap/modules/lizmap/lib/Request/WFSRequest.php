@@ -400,7 +400,7 @@ class WFSRequest extends OGCRequest
                 }
 
                 /** @var \qgisVectorLayer $layer The QGIS vector layer instance */
-                $layer = $this->project->getLayer($layer->id);
+                $layer = $this->project->getLayer($layer->getId());
                 $jsonData['aliases'] = (object) $layer->getAliasFields();
                 $jsonData['defaults'] = (object) $layer->getDefaultValues();
             }
@@ -644,11 +644,8 @@ class WFSRequest extends OGCRequest
         }
 
         // Validate the SQL filter
-        $additionalLayerTokens = array();
-        $additionalFunctions = array();
-
         try {
-            $sql = SqlTools::parseAndValidateSQLString($expFilter, $additionalLayerTokens, $additionalFunctions);
+            SqlTools::parseAndValidateSQLString($expFilter);
         } catch (\Exception $e) {
             $this->appContext->logException($e, 'lizmapadmin');
 
@@ -1150,11 +1147,8 @@ class WFSRequest extends OGCRequest
      */
     protected function validateFilter(string $filter): false|string
     {
-        $additionalLayerTokens = array();
-        $additionalFunctions = array();
-
         try {
-            $filter = SqlTools::parseAndValidateSQLString($filter, $additionalLayerTokens, $additionalFunctions);
+            SqlTools::parseAndValidateSQLString($filter);
         } catch (\Exception $e) {
             $this->appContext->logException($e, 'lizmapadmin');
 
