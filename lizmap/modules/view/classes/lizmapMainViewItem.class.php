@@ -29,6 +29,25 @@ class lizmapMainViewItem
 
     public $childItems = array();
 
+    /**
+     * clean title and abstract vars from malicious code (event js, script, iframe),
+     * see `jFilter:cleanHtml`.
+     *
+     * @param mixed $id
+     * @param mixed $title
+     * @param mixed $abstract
+     * @param mixed $keywordList
+     * @param mixed $proj
+     * @param mixed $bbox
+     * @param mixed $url
+     * @param mixed $img
+     * @param mixed $order
+     * @param mixed $parentId
+     * @param mixed $type
+     * @param mixed $wmsGetCapabilitiesUrl
+     * @param mixed $wmtsGetCapabilitiesUrl
+     * @param mixed $wfsGetCapabilitiesUrl
+     */
     public function __construct(
         $id,
         $title,
@@ -47,8 +66,8 @@ class lizmapMainViewItem
     ) {
         $this->id = $id;
         $this->parentId = $parentId;
-        $this->title = $title;
-        $this->abstract = $abstract;
+        $this->title = jFilter::cleanHtml($title);
+        $this->abstract = jFilter::cleanHtml($abstract);
         $this->keywordList = $keywordList;
         $this->proj = $proj;
         $this->bbox = $bbox;
