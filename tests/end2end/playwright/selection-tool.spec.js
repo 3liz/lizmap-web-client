@@ -641,6 +641,36 @@ test.describe('Selection tool', {tag: ['@readonly'],},() => {
         // Export button is back enabled
         await expect(exportButton).toBeEnabled();
     });
+
+    test('Export formats', async ({ page }) => {
+        // Catch GetProjectConfig to override export_enabled for selection layer
+        await page.route('**/service/getProjectConfig*', async route => {
+            const response = await route.fetch();
+            const json = await response.json();
+            json.attributeLayers['selection_polygon']['export_formats']  = ['xlsx', 'csv', 'ods'];
+            await route.fulfill({ response, json });
+        });
+
+        const project = new SelectionPage(page, 'selection');
+        // re-open the page to apply the route
+        await project.open();
+        await project.closeLeftDock();
+
+        // Remove catching GetProjectConfig
+        await page.unroute('**/service/getProjectConfig*');
+
+        await project.openSelectionPanel();
+
+        // Default export formats
+        await expect(project.getExportFormatsItems()).toHaveCount(12);
+
+        // Select layer with export formats defined
+        await project.selectLayer('selection_polygon');
+        await expect(project.getLayerList()).toHaveValue('selection_polygon');
+
+        // 3 export formats
+        await expect(project.getExportFormatsItems()).toHaveCount(3);
+    });
 });
 
 test.describe('Selection tool connected as user a', {tag: ['@readonly'],},() => {
