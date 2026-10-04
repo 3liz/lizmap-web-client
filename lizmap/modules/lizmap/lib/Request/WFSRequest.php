@@ -399,10 +399,10 @@ class WFSRequest extends OGCRequest
                     }
                 }
 
-                /** @var \qgisVectorLayer $layer The QGIS vector layer instance */
-                $layer = $this->project->getLayer($layer->getId());
-                $jsonData['aliases'] = (object) $layer->getAliasFields();
-                $jsonData['defaults'] = (object) $layer->getDefaultValues();
+                /** @var \qgisVectorLayer $qgisLayer The QGIS vector layer instance */
+                $qgisLayer = $this->project->getLayer($layer->id);
+                $jsonData['aliases'] = (object) $qgisLayer->getAliasFields();
+                $jsonData['defaults'] = (object) $qgisLayer->getDefaultValues();
             }
             $data = json_encode((object) $jsonData);
             $mime = 'application/json; charset=utf-8';
