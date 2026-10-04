@@ -189,12 +189,20 @@ class SqlTools
      */
     public static function parseAndValidateSQLString(string $sql, array $allowedSqlTokens = array()): bool
     {
+        $numericLiteral = '[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?';
+
         // split the SQL string into tokens using regular expression. Splitting is made on syntaxic elements
         $tokens = preg_split('#('
-            .'!=|<=|>=|<>|==|->>|->' // Composed operators
-            .'|--|\n|/\*|\*/' // comments
+            .$numericLiteral
+            .'|!=|<=|>=|<>|==|->>|->' // Composed operators
+            .'|--|\r\n|\r|\n|/\*|\*/' // comments
             .'|[;:.,()=<>%\'"+*\-/!|&^~?\[\]{}]' // Simple operators, ponctuations, Parentheses, brackets
-            .'|[ \t]+|\d+)#u', $sql, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+            .'|[ \t]+)#u', $sql, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+
+        if ($tokens === false) {
+            throw new \InvalidArgumentException('Unable to tokenize SQL filter');
+        }
+
         $state = self::PARSER_STATE_BETWEEN_TOKENS;
 
         if (count($allowedSqlTokens)) {
@@ -204,7 +212,9 @@ class SqlTools
         }
 
         $openedParenthesis = 0;
-
+        $escapedSingleQuote = false;
+        $escapedDoubleQuote = false;
+        $numericLiteralPattern = '/^'.$numericLiteral.'$/';
         foreach ($tokens as $k => $token) {
 
             switch ($state) {
@@ -246,24 +256,57 @@ class SqlTools
                         if ($openedParenthesis < 0) {
                             throw new \Exception('SQL parser - Unmatched closing parenthesis');
                         }
-                    } elseif (!preg_match('/^\d+$/', $token) && !in_array(strtolower($token), $whitelistWords)) {
+                    } elseif (
+                        !preg_match($numericLiteralPattern, $token)
+                        && !in_array(strtolower($token), $whitelistWords, true)
+                    ) {
                         throw new \Exception('Forbidden keyword or syntax element: '.$token);
                     }
 
                     break;
 
                 case self::PARSER_STATE_STRING_VALUE:
-                    // if we reach a single quote, ensure this is not an escaped single quote ( '' in SQL)
-                    if ($token == "'" && (!isset($tokens[$k + 1]) || $tokens[$k + 1] != "'")) {
-                        $state = self::PARSER_STATE_BETWEEN_TOKENS;
+                    if ($escapedSingleQuote) {
+                        // This is the second quote in an escaped SQL quote: ''
+                        if ($token !== "'") {
+                            throw new \Exception('SQL parser - Invalid escaped single quote');
+                        }
+                        $escapedSingleQuote = false;
+
+                        break;
+                    }
+
+                    if ($token === "'") {
+                        if (isset($tokens[$k + 1]) && $tokens[$k + 1] === "'") {
+                            // The next quote is part of the escaped quote pair.
+                            $escapedSingleQuote = true;
+                        } else {
+                            // This is the closing quote.
+                            $state = self::PARSER_STATE_BETWEEN_TOKENS;
+                        }
                     }
 
                     break;
 
                 case self::PARSER_STATE_TABLE_NAME:
-                    // if we reach a double quote, ensure this is not an escaped double quote ( "" in SQL)
-                    if ($token == '"' && (!isset($tokens[$k + 1]) || $tokens[$k + 1] != '"')) {
-                        $state = self::PARSER_STATE_BETWEEN_TOKENS;
+                    if ($escapedDoubleQuote) {
+                        // This is the second quote in an escaped SQL double quote: ""
+                        if ($token !== '"') {
+                            throw new \Exception('SQL parser - Invalid escaped double quote');
+                        }
+                        $escapedDoubleQuote = false;
+
+                        break;
+                    }
+
+                    if ($token === '"') {
+                        if (isset($tokens[$k + 1]) && $tokens[$k + 1] === '"') {
+                            // The next quote is part of the escaped quote pair.
+                            $escapedDoubleQuote = true;
+                        } else {
+                            // This is the closing quote.
+                            $state = self::PARSER_STATE_BETWEEN_TOKENS;
+                        }
                     }
 
                     break;
