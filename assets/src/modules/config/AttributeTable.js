@@ -18,6 +18,7 @@ const requiredProperties = {
 const optionalProperties = {
     'hiddenFields': {type: 'string', default: ''},
     'export_enabled': {type: 'boolean', default: true},
+    'export_formats': {type: 'array', contentType: 'string', default: []},
 };
 
 /**
@@ -82,6 +83,38 @@ export class AttributeLayerConfig extends BaseObjectLayerConfig {
      */
     get exportEnabled() {
         return this._export_enabled;
+    }
+
+    /**
+     * The layer export is enabled
+     * @type {string[]}
+     */
+    get exportFormats() {
+        return [...this._export_formats];
+    }
+
+    /**
+     * Get the list of effective format for file export
+     * @param {string[]} vectorLayerResultFormats The list of format for file export
+     * @returns {string[]} The list of effective format for file export
+     */
+    getEffectiveExportFormats(vectorLayerResultFormats) {
+        const lowerVectorLayerResultFormats = vectorLayerResultFormats.map(format => format.toLowerCase());
+        const exportFormats = [].concat(
+            lowerVectorLayerResultFormats.indexOf('geojson') != -1 ? ['GeoJSON'] : [],
+            lowerVectorLayerResultFormats.indexOf('gml2') != -1 ||
+            lowerVectorLayerResultFormats.indexOf('gml3') != -1 ? ['GML'] : [],
+            vectorLayerResultFormats.filter(format => {
+                return ['gml2', 'gml3', 'geojson'].indexOf(format.toLowerCase()) == -1;
+            })
+        );
+        if (this.exportFormats.length == 0) {
+            return exportFormats;
+        }
+        const lowerExportFormats = this.exportFormats.map(format => format.toLowerCase());
+        return exportFormats.filter(format => {
+            return lowerExportFormats.indexOf(format.toLowerCase()) != -1;
+        });
     }
 }
 
