@@ -668,6 +668,68 @@ test.describe('Selection tool', {tag: ['@readonly'],},() => {
         await project.selectLayer('selection_polygon');
         await expect(project.getLayerList()).toHaveValue('selection_polygon');
 
+
+        // Export button
+        const exportButton = project.getExportButton();
+        await expect(exportButton).toBeDisabled();
+
+        let getFeaturePolygonRequestPromise = project.waitForGetFeatureRequest('selection_polygon');
+        let getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
+        let getMapRequestPromise = project.waitForGetMapRequest();
+
+        // Draw point
+        // It should select one feature
+        await project.clickOnMap(650, 350);
+        await project.clickOnMap(450, 250);
+
+        // Wait for WFS GetFeature, WMS GetSelectionToken, WMS GetMap requests
+        let [
+            getFeaturePolygonRequest,
+            getSelectionTokenRequest, getMapRequest
+        ] = await Promise.all([
+            getFeaturePolygonRequestPromise,
+            getSelectionTokenRequestPromise, getMapRequestPromise,
+        ]);
+
+        /** @type {{[key: string]: string|RegExp}} */
+        let getFeaturePolygonExpectedParameters = {
+            TYPENAME: 'selection_polygon',
+            EXP_FILTER: /intersects\(\$geometry, geom_from_gml.*\)/,
+        };
+        requestExpect(getFeaturePolygonRequest).toContainParametersInPostData(getFeaturePolygonExpectedParameters);
+
+        /** @type {{[key: string]: string|RegExp}} */
+        let getSelectionTokenExpectedParameters = {
+            typename: 'selection_polygon',
+            ids: '2',
+        };
+        requestExpect(getSelectionTokenRequest).toContainParametersInPostData(getSelectionTokenExpectedParameters);
+
+        // Check responses
+        let getFeaturePolygonResponse = await getFeaturePolygonRequest.response();
+        responseExpect(getFeaturePolygonResponse).toBeGeoJson();
+        await responseExpect(getFeaturePolygonResponse).toHaveGeoJsonFeaturesLength(1);
+
+        let getSelectionTokenResponse = await getSelectionTokenRequest.response();
+        responseExpect(getSelectionTokenResponse).toBeJson();
+
+        // get the token
+        let jsonGetSelectionToken = await getSelectionTokenResponse?.json();
+        expect(jsonGetSelectionToken).toHaveProperty('token');
+        const firstToken = jsonGetSelectionToken['token'];
+        expect(firstToken).toBeTruthy();
+        expect(firstToken).toHaveLength(32);
+
+        /** @type {{[key: string]: string|RegExp}} */
+        let getMapExpectedParameters = {
+            LAYERS: 'selection_polygon',
+            SELECTIONTOKEN: firstToken,
+        };
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
+
+        // Check that one feature is selected
+        await expect(project.getResultsContainer()).toHaveText(/^1/);
+
         // 3 export formats
         await expect(project.getExportFormatsItems()).toHaveCount(3);
     });
