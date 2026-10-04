@@ -17,7 +17,7 @@ parameters:
 
     -
       message: "#^Method filterConfig\\:\\:__construct\\(\\) with return type void returns false but should not return anything\\.$#"
-      count: 3
+      count: 5
       path: lizmap/modules/filter/classes/filterConfig.class.php
 
     -

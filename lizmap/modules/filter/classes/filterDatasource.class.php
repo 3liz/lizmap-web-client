@@ -81,13 +81,8 @@ class filterDatasource
     private function validateFilter($filter)
     {
         // Return null if filter is null
-        if ($filter === null) {
-            return null;
-        }
-
-        // If the filter is empty, return null
-        if (empty($filter)) {
-            return null;
+        if (!$filter) {
+            return '';
         }
 
         // For Spatialite and GeoPackage, replace ILIKE with LIKE
