@@ -99,4 +99,34 @@ test.describe('Form filter', () => {
         await expect(page.locator('#ui-id-2 .ui-menu-item')).toHaveCount(1);
         await expect(page.locator('#ui-id-2 .ui-menu-item div')).toHaveText('monuments');
     });
+
+    test('Filtering a second layer keeps the filter on the first one', async ({ page }) => {
+        // https://github.com/3liz/lizmap-web-client/issues/6772
+        const PARENT = 'form filter (à)';
+        const CHILD = 'form_filter_child_bus_stops';
+        const expFilter = (layer) => page.evaluate(
+            (l) => lizMap.config.layers[l]?.request_params?.exp_filter ?? null,
+            layer,
+        );
+
+        // Filter the first layer
+        await page.locator('#liz-filter-field-test_filter').selectOption('_uvres_d_art_et_monuments_de_l_espace_urbain');
+        await expect(page.locator('#liz-filter-item-layer-total-count')).toHaveText('1');
+        await expect.poll(() => expFilter(PARENT)).toBeTruthy();
+
+        // Switch the filter panel to the second layer, then filter it too
+        await page.locator('#liz-filter-layer-selector').selectOption(CHILD);
+        // Pick the first real value (index 0 is the empty " --- " entry)
+        await page.locator('#liz-filter-field-child_label').selectOption({ index: 1 });
+        await expect.poll(() => expFilter(CHILD)).toBeTruthy();
+
+        // Bug #6772: switching layers used to reset the first layer's filter
+        expect(await expFilter(PARENT)).toBeTruthy();
+
+        // Coming back to the first layer shows its filter again, the form
+        // fields are kept in the DOM instead of being rebuilt from scratch
+        await page.locator('#liz-filter-layer-selector').selectOption(PARENT);
+        await expect(page.locator('#liz-filter-field-test_filter')).toHaveValue('_uvres_d_art_et_monuments_de_l_espace_urbain');
+        await expect(page.locator('#liz-filter-item-layer-total-count')).toHaveText('1');
+    });
 });

@@ -145,23 +145,30 @@ var lizLayerFilterTool = function () {
                     && lizMap.config.attributeLayers[layerName].export_enabled == 'True';
                 $('#liz-filter-export').toggle(!!layerExportEnabled);
 
-                // Remove previous field inputs
-                $('div.liz-filter-field-box').remove();
+                // Hide the field inputs of the other layers. They are kept in the
+                // DOM so that their state, and therefore their filter, is preserved
+                // when the user comes back to them.
+                $('#filter div.tree > div[id^="filter-field-order"]').hide();
 
-                // Get html and add it
+                // Get html and add it, or show it back when already built
                 getLayerFilterForm();
 
                 // Limit dock size
                 adaptLayerFilterSize();
 
+                // This layer may already be filtered, from a previous visit of
+                // its form. Restore that filter as the current one.
+                var layerFilter = getFilterForLayer(layerId);
+                globalThis['filterConfigData'].filter = layerFilter ? layerFilter : undefined;
+
                 // Get Feature count
-                getFeatureCount();
+                getFeatureCount(layerFilter);
 
                 // Set default zoom extent setZoomExtent
                 // Only if first query works
                 // Which means PHP spatialite extension is activated
                 if ($('#liz-filter-zoom').is(":visible")) {
-                    setZoomExtent();
+                    setZoomExtent(layerFilter);
                 }
             }
 
@@ -178,8 +185,15 @@ var lizLayerFilterTool = function () {
                 for (var o in globalThis['filterConfig']) {
                     var field_item = globalThis['filterConfig'][o];
                     if ('title' in field_item && field_item.layerId == layerId) {
+                        var fieldContainerId = 'filter-field-order' + String(field_item.order);
+                        // The field has already been built: only show it back,
+                        // its current value and filter are preserved
+                        if (document.getElementById(fieldContainerId)) {
+                            $('#' + fieldContainerId).show();
+                            continue;
+                        }
                         formFilterLayersSorted.push(field_item);
-                        $("#filter div.tree").append('<div id="filter-field-order' + String(field_item.order) + '"></div>');
+                        $("#filter div.tree").append('<div id="' + fieldContainerId + '"></div>');
                     }
                 }
 
@@ -979,14 +993,13 @@ var lizLayerFilterTool = function () {
 
 
             /**
-             * Compute the global filter to pass to the layer
-             * and apply it to the map and other tools
-             *
+             * Compute the filter of a layer by combining the filter
+             * of each of its form fields. Returns an empty string when the
+             * layer is not filtered.
+             * @param layerId
+             * @returns {string} The layer filter
              */
-            function activateFilter() {
-                var layerId = globalThis['filterConfigData'].layerId;
-                var layerName = globalThis['filterConfigData'].layerName;
-
+            function getFilterForLayer(layerId) {
                 var afilter = [];
                 for (var o in globalThis['filterConfig']) {
                     var field_item = globalThis['filterConfig'][o];
@@ -996,14 +1009,26 @@ var lizLayerFilterTool = function () {
                 }
 
                 // We use AND clause between fields
-                var filter = afilter.join(' AND ');
+                return afilter.join(' AND ');
+            }
+
+            /**
+             * Compute the global filter to pass to the layer
+             * and apply it to the map and other tools
+             *
+             */
+            function activateFilter() {
+                var layerId = globalThis['filterConfigData'].layerId;
+                var layerName = globalThis['filterConfigData'].layerName;
+
+                var filter = getFilterForLayer(layerId);
 
                 // Deactivate the filter if it is empty.
                 // It can occur when the user unchecks the only checkbox
                 // which was checked before,
                 // or resetted the field input with the reset button
                 // when only this field filter was active
-                if (afilter.length == 0 || filter.trim() == '') {
+                if (filter.trim() == '') {
                     deactivateFilter();
                     return true;
                 }
@@ -1531,7 +1556,8 @@ var lizLayerFilterTool = function () {
 
             // Listen to the layer selector changes
             $('#liz-filter-layer-selector').change(function () {
-                deactivateFilter();
+                // The filter of the layer we are leaving is kept, so that several
+                // layers can be filtered at the same time
                 globalThis['filterConfigData'].layerId = $(this).val();
                 launchLayerFilterTool($(this).val());
             });
