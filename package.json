@@ -49,7 +49,7 @@
     "dompurify": "^3.4.x",
     "dotenv": "^18.0.2",
     "eslint-plugin-jsdoc": "^63.3.x",
-    "flatgeobuf": "^4.4.x",
+    "flatgeobuf": "^4.5.x",
     "jsts": "^2.12.x",
     "lit-html": "^3.3.x",
     "mocha": "^12.0.3",
