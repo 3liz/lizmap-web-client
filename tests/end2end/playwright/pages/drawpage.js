@@ -64,8 +64,8 @@ export class DrawPage extends ProjectPage {
     }
 
     /**
-     * openDrawPanel function
-     * Opens the draw panel
+     * closeDrawPanel function
+     * Closes the draw panel
      */
     async closeDrawPanel() {
         if (await this.drawPanel.isVisible()) {

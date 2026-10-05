@@ -63,7 +63,19 @@ export class PrintPage extends ProjectPage {
      * opens the print mini-dock panel
      */
     async openPrintPanel() {
-        await this.page.locator('#button-print').click();
+        if (!await this.printPanel.isVisible()) {
+            await this.printSwitcherButton.click();
+        }
+    }
+
+    /**
+     * closePrintPanel function
+     * closes the print mini-dock panel
+     */
+    async closePrintPanel() {
+        if (await this.printPanel.isVisible()) {
+            await this.printSwitcherButton.click();
+        }
     }
 
     /**
