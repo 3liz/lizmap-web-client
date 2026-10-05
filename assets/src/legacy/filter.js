@@ -1013,6 +1013,10 @@ var lizLayerFilterTool = function () {
                 if (filterMethod == 'simple') {
                     // Use a simple filter only for the getmap and other WMS/WFS queries
                     lizMap.triggerLayerFilter(layerName, filter);
+
+                    // Show the "deactivate current filter" button in the layer switcher
+                    lizMap.lizmapLayerFilterActive = layerName;
+                    $('#layerActionUnfilter').toggle(true);
                 } else {
                     // Get the filtered features fids
                     var pkField = lizMap.config.attributeLayers[layerName]['primaryKey'];
@@ -1076,6 +1080,12 @@ var lizLayerFilterTool = function () {
                 if (filterMethod == 'simple') {
                     // Use a simple filter only for the getmap and other WMS/WFS queries
                     lizMap.deactivateMaplayerFilter(layerName);
+
+                    // Hide the "deactivate current filter" button in the layer switcher
+                    if (lizMap.lizmapLayerFilterActive === layerName) {
+                        lizMap.lizmapLayerFilterActive = null;
+                    }
+                    $('#layerActionUnfilter').toggle((lizMap.lizmapLayerFilterActive !== null));
 
                     // Refresh plots
                     lizMap.events.triggerEvent("layerFilterParamChanged",
