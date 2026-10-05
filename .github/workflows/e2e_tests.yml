@@ -338,7 +338,7 @@ jobs:
           steps.test-playwright-read-only.outcome != 'success' ||
           steps.test-playwright-no-tag.outcome != 'success' ||
           steps.test-playwright-write.outcome != 'success'
-        uses: ctrf-io/github-test-reporter@v1.1.0
+        uses: ctrf-io/github-test-reporter@v1.3.0
         env:
           GITHUB_TOKEN: ${{ secrets.BOT_HUB_TOKEN || github.token  }}
         with:
