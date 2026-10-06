@@ -334,13 +334,15 @@ export class ProjectPage extends BasePage {
 
     /**
      * Waits for a GetFilterToken request
+     * @param {undefined|string} featureType Optional TYPENAME to filter on
      * @returns {Promise<Request>} The GetFilterToken request
      */
-    async waitForGetFilterTokenRequest() {
+    async waitForGetFilterTokenRequest(featureType = undefined) {
         return this.page.waitForRequest(
             request => request.method() === 'POST' &&
             request.postData()?.includes('WMS') === true &&
-            request.postData()?.includes('GETFILTERTOKEN') === true
+            request.postData()?.includes('GETFILTERTOKEN') === true &&
+            (featureType === undefined || request.postData()?.includes(featureType) === true)
         );
     }
 
@@ -532,7 +534,7 @@ export class ProjectPage extends BasePage {
      */
     async openAttributeTable(layer, maximise = false){
         if (!await this.page.locator('#attributeLayers').isVisible()) {
-            await this.page.locator('a#button-attributeLayers').click();
+            await this.page.locator('#button-attributeLayers').click();
             if (maximise) {
                 await this.page.getByRole('button', { name: 'Maximize' }).click();
             }
@@ -543,6 +545,19 @@ export class ProjectPage extends BasePage {
         const datatablesPromise = this.waitForDatatablesRequest();
         await this.page.locator('#attribute-layer-list-table').locator(`button[value=${layer}]`).click();
         return await datatablesPromise;
+    }
+
+    /**
+     * closeLayerAttributeTable function
+     * Close the layer attribute table panel
+     * @param {string} layer Name of the layer
+     */
+    async closeLayerAttributeTable(layer){
+        const attributeLayerDock = this.page.locator('#attributeLayers');
+        const closeButton = attributeLayerDock.locator(`#nav-tab-attribute-layer-${layer} .btn-close-attribute-tab`);
+        if (await closeButton.isVisible()) {
+            await closeButton.click();
+        }
     }
 
     /**
