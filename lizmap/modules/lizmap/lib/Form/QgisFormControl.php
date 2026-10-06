@@ -157,6 +157,12 @@ class QgisFormControl
         'bigint' => 'integer',
         'smallint' => 'integer',
         '_int' => 'integer[]',
+
+         // PostgreSQL floating point arrays
+        '_float' => 'text',
+        '_float4' => 'text',
+        '_float8' => 'text',
+
         'text' => 'text',
         'string' => 'text',
         'varchar' => 'text',
@@ -376,6 +382,7 @@ class QgisFormControl
         }
         $upload->mimetype = $this->properties->getMimeTypes();
         $upload->accept = $this->properties->getUploadAccept();
+        $upload->capture = $this->properties->getUploadCapture();
         $this->DefaultRoot = $this->getEditAttribute('DefaultRoot');
 
         // WebDAV External Resource
@@ -413,6 +420,7 @@ class QgisFormControl
 
         // Add new editTypes naming convention since QGIS 2.4
         self::$qgisEdittypeMap['LineEdit'] = self::$qgisEdittypeMap[0];
+        self::$qgisEdittypeMap['List'] = self::$qgisEdittypeMap[0]; // QGIS PostgreSQL array/List widget:fallback to a standard text input
         self::$qgisEdittypeMap['UniqueValues'] = self::$qgisEdittypeMap[2];
         self::$qgisEdittypeMap['UniqueValuesEditable'] = self::$qgisEdittypeMap[2];
         self::$qgisEdittypeMap['ValueMap'] = self::$qgisEdittypeMap[3];
