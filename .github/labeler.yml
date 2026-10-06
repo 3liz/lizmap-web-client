@@ -17,9 +17,9 @@
 
 "dataviz":
   - any: [
-    'lizmap/modules/dataviz/**',
-    'lizmap/www/assets/js/dataviz/**',
-  ]
+     'lizmap/modules/dataviz/**',
+     'lizmap/www/assets/js/dataviz/**',
+    ]
 
 "docker":
   - any: [
@@ -28,11 +28,11 @@
 
 "javascript":
   - any: [
-    'assets/**',
-    'lizmap/www/assets/js/**',
-    'assets/src/modules/**',
-    'tests/js-units/**',
-  ]
+     'assets/**',
+     'lizmap/www/assets/js/**',
+     'assets/src/modules/**',
+     'tests/js-units/**',
+    ]
 
 "QGIS Server":
   - any: [
