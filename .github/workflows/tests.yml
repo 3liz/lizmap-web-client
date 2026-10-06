@@ -45,7 +45,7 @@ jobs:
           tools: php-cs-fixer, phpunit
 
       - name: Cache dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ${{ env.composer_cache_dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
@@ -59,7 +59,7 @@ jobs:
         run: composer require --working-dir=tests/units/ phpunit/phpunit:${{ matrix.php-unit }}
 
       - name: "Setup Node.js (from .nvmrc)"
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
@@ -77,7 +77,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: "Setup Node.js (from .nvmrc)"
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
