@@ -277,6 +277,8 @@ export default class GeometryCopyHandler {
                 // Extract layer ID and feature ID from data attributes
                 const layerId = $featureDiv.attr('data-layer-id') || '';
                 const featureId = $featureDiv.attr('data-feature-id') || 'Unknown';
+                // Feature display name, from the QGIS layer display expression
+                const displayName = $featureDiv.attr('data-feature-display-name') || '';
 
                 // Extract geometry WKT from hidden input
                 const geometryWKT = $featureDiv.find('.lizmap-popup-layer-feature-geometry').val();
@@ -306,7 +308,7 @@ export default class GeometryCopyHandler {
                 features.push({
                     layerName: layerName,
                     layerId: layerId,
-                    featureLabel: featureId,
+                    featureLabel: displayName,
                     geometryType: geometryType,
                     geometry: ol2Geometry,
                     feature: ol2Feature

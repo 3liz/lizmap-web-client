@@ -444,36 +444,36 @@ class WMSRequestTest extends TestCase
         $uncheckedHtml = '<input type="checkbox" disabled="disabled" class="lizmap-popup-checkbox-widget">';
 
         return array(
-            'WMS true → checked'                    => array(
+            'WMS true → checked' => array(
                 $spanTrue, $boolFields,
                 '<span id="dd_jforms_view_edition_has_photo" class="jforms-control-input">'.$checkedHtml.'</span>',
             ),
-            'WMS false → unchecked'                 => array(
+            'WMS false → unchecked' => array(
                 $spanFalse, $boolFields,
                 '<span id="dd_jforms_view_edition_has_photo" class="jforms-control-input">'.$uncheckedHtml.'</span>',
             ),
-            'bool_field true → checked'             => array(
+            'bool_field true → checked' => array(
                 $spanBoolTrue, $boolFields,
                 '<span id="dd_jforms_view_edition_bool_field" class="jforms-control-input">'.$checkedHtml.'</span>',
             ),
-            'custom Yes → checked'                  => array(
+            'custom Yes → checked' => array(
                 $spanCustomYes, $textFields,
                 '<span id="dd_jforms_view_edition_status" class="jforms-control-input">'.$checkedHtml.'</span>',
             ),
-            'fallback suppressed for text field'    => array(
+            'fallback suppressed for text field' => array(
                 $spanCustomFallback, $textFields,
                 $spanCustomFallback,
             ),
-            'field not in checkBoxFields'           => array(
+            'field not in checkBoxFields' => array(
                 $spanUnknownField, $boolFields,
                 $spanUnknownField,
             ),
-            'value not recognised'                  => array(
+            'value not recognised' => array(
                 $spanUnknownValue, $boolFields,
                 $spanUnknownValue,
             ),
-            'empty html passthrough'                => array('', $boolFields, ''),
-            'empty fields passthrough'              => array($spanTrue, array(), $spanTrue),
+            'empty html passthrough' => array('', $boolFields, ''),
+            'empty fields passthrough' => array($spanTrue, array(), $spanTrue),
         );
     }
 
@@ -532,11 +532,11 @@ class WMSRequestTest extends TestCase
 
     public function testBuildAllFeaturesTableDataDiscardsEmptyAndInternalColumns(): void
     {
-        // 'geometry' and 'maptip' are never displayed, and a field which is empty
-        // for every feature is still dropped.
+        // 'geometry', 'maptip' and 'displayName' are never displayed, and a field
+        // which is empty for every feature is still dropped.
         $allFeatureAttributes = self::featureAttributes(array(
-            array('idu' => '1', 'unused' => '', 'geometry' => 'POLYGON((0 0))', 'maptip' => '<p>tip</p>'),
-            array('idu' => '2', 'unused' => '', 'geometry' => 'POLYGON((1 1))', 'maptip' => '<p>tip</p>'),
+            array('idu' => '1', 'unused' => '', 'geometry' => 'POLYGON((0 0))', 'maptip' => '<p>tip</p>', 'displayName' => 'Auch'),
+            array('idu' => '2', 'unused' => '', 'geometry' => 'POLYGON((1 1))', 'maptip' => '<p>tip</p>', 'displayName' => 'Condom'),
         ));
 
         list($columns, $rows) = WMSRequestForTests::buildAllFeaturesTableDataForTests($allFeatureAttributes);
