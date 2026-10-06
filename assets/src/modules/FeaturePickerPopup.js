@@ -94,7 +94,15 @@ export default class FeaturePickerPopup {
 
         features.forEach((feature, index) => {
             html += `<tr class="feature-row" data-index="${index}" style="cursor:pointer;">`;
-            html += `<td style="border-top:none;">${this._escapeHtml(feature.layerName)}</td>`;
+            html += '<td style="border-top:none;">';
+            if (feature.featureLabel) {
+                // Feature display name first, layer name as context
+                html += `<strong>${this._escapeHtml(feature.featureLabel)}</strong>`;
+                html += ` <span class="text-muted">${this._escapeHtml(feature.layerName)}</span>`;
+            } else {
+                html += this._escapeHtml(feature.layerName);
+            }
+            html += '</td>';
             html += '</tr>';
         });
 

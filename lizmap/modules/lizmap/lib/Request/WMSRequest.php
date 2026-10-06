@@ -512,6 +512,8 @@ class WMSRequest extends OGCRequest
         $toHtml = ($this->param('info_format') == 'text/html');
         if ($toHtml) {
             $this->params['info_format'] = 'text/xml';
+            // Request the feature display name (QGIS layer display expression), available since QGIS Server 3.32
+            $this->params['with_display_name'] = 'true';
         }
 
         // force layers
@@ -797,9 +799,12 @@ class WMSRequest extends OGCRequest
             $hiddenGeometry = '';
             $featureToolbarExtent = '';
             $maptipValue = null;
+            $displayName = '';
 
             foreach ($feature->Attribute as $attribute) {
-                if ($attribute['name'] == 'maptip') {
+                if ($attribute['name'] == 'displayName') {
+                    $displayName = (string) $attribute['value'];
+                } elseif ($attribute['name'] == 'maptip') {
                     // first replace all "media/bla/bla/media.ext" by full url
                     $maptipValue = preg_replace_callback(
                         self::$regexp_media_urls,
@@ -881,6 +886,7 @@ class WMSRequest extends OGCRequest
 
             $content[] = $this->getViewTpl('view~popup', $layerName, $layerId, $layerTitle, array(
                 'featureId' => $id,
+                'featureDisplayName' => $displayName,
                 'popupContent' => $hiddenFeatureId.$hiddenGeometry.$featureToolbar.$finalContent,
             ));
         } // loop features
@@ -926,7 +932,7 @@ class WMSRequest extends OGCRequest
             $values = array();
             foreach ($featureAttributes as $attribute) {
                 $name = (string) $attribute['name'];
-                if ($name === 'geometry' || $name === 'maptip') {
+                if ($name === 'geometry' || $name === 'maptip' || $name === 'displayName') {
                     continue;
                 }
                 $value = (string) $attribute['value'];
