@@ -2095,14 +2095,14 @@ var lizAttributeTable = function() {
 
                             if (lizMap.constants.MEDIA_REGEX.test(data)) {
                                 var rdata = data;
-                                var colMeta = meta.settings.aoColumns[meta.col];
+                                var colMeta = meta.settings.columns[meta.col];
                                 if (data.substring(0, 7) == '/media/')
                                     rdata = data.slice(1);
                                 return '<a href="' + mediaLinkPrefix + '&path=' + rdata + '" target="_blank">' + colMeta.title + '</a>';
                             }
                             else if (davConf && data.substring(0, 4) == globalThis['lizUrls'].resourceUrlReplacement.webdav) {
                                 var rdata = data;
-                                var colMeta = meta.settings.aoColumns[meta.col];
+                                var colMeta = meta.settings.columns[meta.col];
                                 return '<a href="' + mediaLinkPrefix + '&path=' + rdata + '" target="_blank">' + colMeta.title + '</a>';
 
                             }
