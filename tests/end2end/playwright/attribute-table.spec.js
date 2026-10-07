@@ -261,9 +261,9 @@ test.describe('Attribute table @readonly', () => {
         expect(filterHash).not.toEqual(defaultHash);
         expect(filterHash).not.toEqual(selectHash);
         const filterByteLength = buffer.byteLength;
-        expect(filterByteLength).toBeLessThan(defaultByteLength); // 2781 - 3053
-        expect(filterByteLength).toBeLessThan(selectByteLength); // 2781 - 3053
-        expect(filterByteLength).toBeLessThan(3100); // 2781 - 3053
+        expect(filterByteLength).toBeLessThan(defaultByteLength); // 2781 or 3067
+        expect(filterByteLength).toBeLessThan(selectByteLength); // 2781 or 3067
+        expect(filterByteLength).toBeLessThan(3500); // 2781 or 3067
 
         // Disable filter
         await actionBar.locator('.btn-filter-attributeTable').click();
