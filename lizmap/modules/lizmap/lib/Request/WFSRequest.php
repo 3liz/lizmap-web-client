@@ -399,10 +399,10 @@ class WFSRequest extends OGCRequest
                     }
                 }
 
-                /** @var \qgisVectorLayer $layer The QGIS vector layer instance */
-                $layer = $this->project->getLayer($layer->id);
-                $jsonData['aliases'] = (object) $layer->getAliasFields();
-                $jsonData['defaults'] = (object) $layer->getDefaultValues();
+                /** @var \qgisVectorLayer $qgisLayer The QGIS vector layer instance */
+                $qgisLayer = $this->project->getLayer($layer->id);
+                $jsonData['aliases'] = (object) $qgisLayer->getAliasFields();
+                $jsonData['defaults'] = (object) $qgisLayer->getDefaultValues();
             }
             $data = json_encode((object) $jsonData);
             $mime = 'application/json; charset=utf-8';
@@ -642,12 +642,12 @@ class WFSRequest extends OGCRequest
         if (!$expFilter) {
             return '';
         }
-        [$validFilter, $block_items] = SqlTools::validateExpressionFilter($expFilter);
-        if (!$validFilter) {
-            $this->appContext->logMessage(
-                'The EXP_FILTER param contains dangerous chars : '.implode(', ', $block_items),
-                'lizmapadmin'
-            );
+
+        // Validate the SQL filter
+        try {
+            SqlTools::parseAndValidateSQLString($expFilter);
+        } catch (\Exception $e) {
+            $this->appContext->logException($e, 'lizmapadmin');
 
             return '';
         }
@@ -1147,12 +1147,10 @@ class WFSRequest extends OGCRequest
      */
     protected function validateFilter(string $filter): false|string
     {
-        [$validFilter, $block_items] = SqlTools::validateExpressionFilter($filter);
-        if (!$validFilter) {
-            $this->appContext->logMessage(
-                'The EXP_FILTER param contains dangerous chars : '.implode(', ', $block_items),
-                'lizmapadmin'
-            );
+        try {
+            SqlTools::parseAndValidateSQLString($filter);
+        } catch (\Exception $e) {
+            $this->appContext->logException($e, 'lizmapadmin');
 
             return false;
         }

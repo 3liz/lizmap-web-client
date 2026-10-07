@@ -23,6 +23,13 @@ class filterConfig
 
     public function __construct($repository, $project)
     {
+        if ($repository === null) {
+            return false;
+        }
+        if ($project === null) {
+            return false;
+        }
+
         try {
             $lproj = lizmap::getProject($repository.'~'.$project);
             if (!$lproj) {

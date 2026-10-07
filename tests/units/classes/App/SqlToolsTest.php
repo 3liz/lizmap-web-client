@@ -21,16 +21,20 @@ class SqlToolsTest extends TestCase
             array('update ', false),
             array('drop ', false),
             array('alter ', false),
-            array('--', false),
+            array('--', true),
+            array("-- foo\n\"foo\" = 'bar'", true),
+            array("/* hello\n   world */ \"foo\" = 'bar'", true),
+            array("foo = 'bar'", false), // columns must be quoted
             array('truncate ', false),
             array('vacuum ', false),
             array('create ', false),
             array('grant ', false),
             array('revoke ', false),
             array('selectoioio', false),
-            array('test intersects other test', true),
-            array('test geom_from_gml other test', true),
-            array('test intersects $geometry', true),
+            array('"id" = 1 UNION SELECT bird_name AS v, bird_scientific_name AS c FROM tests_projects.birds--', false),
+            array('("foo" = \'test\' AND "id" = 55) OR ("foo" = \'bar\' AND "id" = 44); -- SELECT * FROM jlx_user', false),
+            array('intersects( $geometry', false),
+            array('$id IN (1)', true),
             array('$id IN (1)', true),
             array('$id IN (1, 2)', true),
             array('"id" IN (1)', true),
@@ -38,14 +42,14 @@ class SqlToolsTest extends TestCase
             array('"id" IN (\'test\')', true),
             array('("foo" = \'test\' AND "id" = 55)', true),
             array('("foo" = \'test\' AND "id" = 55) OR ("foo" = \'bar\' AND "id" = 44)', true),
-            array('("foo" = \'test\' AND "id" = 55) OR ("foo" = \'bar\' AND "id" = 44); -- SELECT * FROM jlx_user', false),
+            array('intersects($geometry, geom_from_gml(\'some gml\'))', true),
         );
     }
 
     #[DataProvider('getValidateExpressionFilterData')]
     public function testValidateExpressionFilter($filter, $expectedResult): void
     {
-        [$valid, $blocked] = SqlTools::validateExpressionFilter($filter);
+        $valid = SqlTools::validateExpressionFilter($filter);
         $this->assertEquals($expectedResult, $valid);
     }
 
