@@ -3,7 +3,6 @@
 namespace Lizmap\ActionQuery;
 
 use Lizmap\App\AppContextInterface;
-use Lizmap\App\SqlTools;
 
 class ActionQuery
 {
@@ -14,6 +13,24 @@ class ActionQuery
     private string $repository;
     private string $project;
     private string $layerId;
+
+    protected static $blockSqlWords = array(
+        ';',
+        'select',
+        'delete',
+        'insert',
+        'update',
+        'drop',
+        'alter',
+        '--',
+        'truncate',
+        'vacuum',
+        'create',
+        'reindex',
+        'grant',
+        'revoke',
+        '/*',
+    );
 
     public function __construct($cnx, string $repository, string $project, string $layerId, AppContextInterface $appContext)
     {
@@ -70,6 +87,24 @@ class ActionQuery
     }
 
     /**
+     * Validate an string given in action parameter.
+     *
+     * The string are already used in prepared statements
+     * but we still restrain some unwanted chars
+     *
+     * @param string $filter The content to validate
+     *
+     * @return array{0: bool, 1: list<string>} returns if the string does not contain unwanted chars, and the list of blocked items
+     */
+    private function validateActionParameterString(string $filter): array
+    {
+        $block_items = array();
+        $pattern = '#'.implode('|', array_map(fn ($w): string => preg_quote($w, '#'), static::$blockSqlWords)).'#i';
+
+        return array(!preg_match($pattern, $filter, $block_items), $block_items);
+    }
+
+    /**
      * Build the SQL string and the ordered values list for the prepared statement.
      *
      * @param array<string, null|int|string> $params        Output of buildParams()
@@ -107,7 +142,7 @@ class ActionQuery
 
                 // Check that the given value does not contains forbidden expressions
                 if (!empty($clientValue)) {
-                    [$validFilter, $block_items] = SqlTools::validateExpressionFilter($clientValue);
+                    [$validFilter, $block_items] = $this->validateActionParameterString($clientValue);
                     if (!$validFilter) {
                         $this->appContext->logMessage(
                             'Invalid value given for the action '.$action->name.', parameter '.$key.' in project '.$this->repository.'/'.$this->project.
@@ -122,7 +157,6 @@ class ActionQuery
             $sqlValues[] = $clientValue;
             ++$i;
         }
-
         $sql = '
             SELECT public.lizmap_get_data(
                 json_build_object(
