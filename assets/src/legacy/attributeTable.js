@@ -1830,7 +1830,7 @@ var lizAttributeTable = function() {
                                 if(relateDataElement.length == 1){
                                     const dataFilterValue = relateDataElement.val();
                                     // get column on filter
-                                    const columnOnFilter = oTable.settings()[0].aoColumns.filter((f)=>{
+                                    const columnOnFilter = oTable.settings()[0].columns.filter((f)=>{
                                         return f.idx == +dataFilterValue;
                                     })
                                     if(columnOnFilter.length == 1){
