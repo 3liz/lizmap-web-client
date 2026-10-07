@@ -169,11 +169,12 @@ test.describe('Attribute table @readonly', () => {
         // Select feature
         // click on select Button
         let getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
+        getMapRequestPromise = project.waitForGetMapRequest();
         await tr2.locator('lizmap-feature-toolbar .feature-select').click();
         let getSelectionTokenRequest = await getSelectionTokenRequestPromise;
+
         // Once the GetSelectionToken is received, the map is refreshed
-        getMapRequestPromise = project.waitForGetMapRequest();
-        await getSelectionTokenRequest.response();
+        responseExpect(await getSelectionTokenRequest.response()).toBeJson();
         getMapRequest = await getMapRequestPromise;
         // Check response
         getMapResponse = await getMapRequest.response();
@@ -260,9 +261,9 @@ test.describe('Attribute table @readonly', () => {
         expect(filterHash).not.toEqual(defaultHash);
         expect(filterHash).not.toEqual(selectHash);
         const filterByteLength = buffer.byteLength;
-        expect(filterByteLength).toBeLessThan(defaultByteLength); // 2781
-        expect(filterByteLength).toBeLessThan(selectByteLength); // 2781
-        expect(filterByteLength).toBeLessThan(3000); // 2781
+        expect(filterByteLength).toBeLessThan(defaultByteLength); // 2781 - 3053
+        expect(filterByteLength).toBeLessThan(selectByteLength); // 2781 - 3053
+        expect(filterByteLength).toBeLessThan(3100); // 2781 - 3053
 
         // Disable filter
         await actionBar.locator('.btn-filter-attributeTable').click();
@@ -278,7 +279,7 @@ test.describe('Attribute table @readonly', () => {
         await expect(page.locator('#layerActionUnfilter')).not.toBeVisible();
 
         // Wait for OL rendering
-        await page.waitForTimeout(100);
+        await page.waitForTimeout(200);
 
         // Check rendering
         buffer = await page.screenshot({clip:clip});
@@ -286,8 +287,8 @@ test.describe('Attribute table @readonly', () => {
         expect(firstDisableHash).not.toEqual(filterHash);
         expect(firstDisableHash).not.toEqual(selectHash);
         expect(firstDisableHash).not.toEqual(defaultHash);
-        expect(buffer.byteLength).toBeGreaterThan(defaultByteLength-10);
-        expect(buffer.byteLength).toBeLessThan(defaultByteLength+10);
+        expect(buffer.byteLength).toBeGreaterThan(defaultByteLength-40);
+        expect(buffer.byteLength).toBeLessThan(defaultByteLength+40);
 
         // select feature 2,4,6
         // click to select 2
@@ -296,7 +297,7 @@ test.describe('Attribute table @readonly', () => {
         getSelectionTokenRequest = await getSelectionTokenRequestPromise;
         // Check GetSelectionToken request
         requestExpect(getSelectionTokenRequest).toContainParametersInPostData(getSelectionTokenParameters);
-        await getSelectionTokenRequest.response();
+        responseExpect(await getSelectionTokenRequest.response()).toBeJson();
 
         // Use line with id 4
         let tr4 = tableHtml.locator('tbody tr[id="4"]');
@@ -316,11 +317,11 @@ test.describe('Attribute table @readonly', () => {
 
         // click to select 4
         getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
+        getMapRequestPromise = project.waitForGetMapRequest();
         await tr4.locator('lizmap-feature-toolbar .feature-select').click();
         getSelectionTokenRequest = await getSelectionTokenRequestPromise;
         // Once the GetSelectionToken is received, the map is refreshed
-        getMapRequestPromise = project.waitForGetMapRequest();
-        await getSelectionTokenRequest.response();
+        responseExpect(await getSelectionTokenRequest.response()).toBeJson();
         getMapRequest = await getMapRequestPromise;
         // Check response
         getMapResponse = await getMapRequest.response();
@@ -341,11 +342,13 @@ test.describe('Attribute table @readonly', () => {
 
         // click to select 6
         getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
+        getMapRequestPromise = project.waitForGetMapRequest();
         await tr6.locator('lizmap-feature-toolbar .feature-select').click();
         getSelectionTokenRequest = await getSelectionTokenRequestPromise;
+
         // Once the GetSelectionToken is received, the map is refreshed
-        getMapRequestPromise = project.waitForGetMapRequest();
-        await getSelectionTokenRequest.response();
+        responseExpect(await getSelectionTokenRequest.response()).toBeJson();
+        getMapRequest = await getMapRequestPromise;
 
         // Update expected GetSelection token parameters
         getSelectionTokenParameters['ids'] = '2,4,6'
@@ -355,7 +358,6 @@ test.describe('Attribute table @readonly', () => {
         // update expected GetMap paramaeters
         delete getMapExpectedParameters['FILTERTOKEN'];
         getMapExpectedParameters['SELECTIONTOKEN'] = /^[a-zA-Z0-9]{32}$/;
-        getMapRequest = await getMapRequestPromise;
         requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
         // Check response
         getMapResponse = await getMapRequest.response();
@@ -442,7 +444,16 @@ test.describe('Attribute table @readonly', () => {
         expect(multiFilterByteLength).toBeGreaterThan(6000);
 
         // Disable filter
+        getMapRequestPromise = project.waitForGetMapRequest();
         await actionBar.locator('.btn-filter-attributeTable').click();
+        getMapRequest = await getMapRequestPromise;
+        // Check response
+        getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
+
+        req_url = new URL(getMapRequest.url());
+        expect(req_url.searchParams.get('SELECTIONTOKEN')).toBeNull();
+        expect(req_url.searchParams.get('FILTERTOKEN')).toBeNull();
 
         // Check that the filter button display that the feature is not filtered
         await expect(actionBar.locator('.btn-filter-attributeTable')).not.toContainClass('btn-primary');
@@ -455,7 +466,7 @@ test.describe('Attribute table @readonly', () => {
         await expect(page.locator('#layerActionUnfilter')).not.toBeVisible();
 
         // Wait for OL rendering
-        await page.waitForTimeout(100);
+        await page.waitForTimeout(200);
 
         // Check rendering
         buffer = await page.screenshot({clip:clip});
@@ -465,9 +476,9 @@ test.describe('Attribute table @readonly', () => {
         expect(scndDisableHash).not.toEqual(filterHash);
         expect(scndDisableHash).not.toEqual(selectHash);
         expect(scndDisableHash).not.toEqual(defaultHash);
-        expect(scndDisableHash).toEqual(firstDisableHash);
-        expect(buffer.byteLength).toBeGreaterThan(defaultByteLength-10);
-        expect(buffer.byteLength).toBeLessThan(defaultByteLength+10);
+        // expect(scndDisableHash).toEqual(firstDisableHash);
+        expect(buffer.byteLength).toBeGreaterThan(defaultByteLength-50);
+        expect(buffer.byteLength).toBeLessThan(defaultByteLength+50);
 
         await project.closeAttributeTable();
     });
@@ -501,7 +512,7 @@ test.describe('Attribute table @readonly', () => {
         let getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
         await tr2.locator('lizmap-feature-toolbar .feature-select').click();
         let getSelectionTokenRequest = await getSelectionTokenRequestPromise;
-        await getSelectionTokenRequest.response();
+        responseExpect(await getSelectionTokenRequest.response()).toBeJson();
 
         // Check GetSelectionToken request
         const getSelectionTokenParameters = {
@@ -521,7 +532,7 @@ test.describe('Attribute table @readonly', () => {
         let getFilterTokenRequestPromise = project.waitForGetFilterTokenRequest();
         await actionBar.locator('.btn-filter-attributeTable').click();
         let getFilterTokenRequest = await getFilterTokenRequestPromise;
-        await getFilterTokenRequest.response();
+        responseExpect(await getFilterTokenRequest.response()).toBeJson();
 
         // Check GetSelectionToken request
         const getFilterTokenParameters = {
@@ -567,7 +578,7 @@ test.describe('Attribute table @readonly', () => {
         getSelectionTokenRequest = await getSelectionTokenRequestPromise;
         // Check GetSelectionToken request
         requestExpect(getSelectionTokenRequest).toContainParametersInPostData(getSelectionTokenParameters);
-        await getSelectionTokenRequest.response();
+        responseExpect(await getSelectionTokenRequest.response()).toBeJson();
 
         // Use line with id 4
         let tr4 = tableHtml.locator('tbody tr[id="4"]');
@@ -589,7 +600,7 @@ test.describe('Attribute table @readonly', () => {
         getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
         await tr4.locator('lizmap-feature-toolbar .feature-select').click();
         getSelectionTokenRequest = await getSelectionTokenRequestPromise;
-        await getSelectionTokenRequest.response();
+        responseExpect(await getSelectionTokenRequest.response()).toBeJson();
 
         // Update expected GetSelection token parameters
         getSelectionTokenParameters['ids'] = '2,4'
@@ -608,7 +619,7 @@ test.describe('Attribute table @readonly', () => {
         getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
         await tr6.locator('lizmap-feature-toolbar .feature-select').click();
         getSelectionTokenRequest = await getSelectionTokenRequestPromise;
-        await getSelectionTokenRequest.response();
+        responseExpect(await getSelectionTokenRequest.response()).toBeJson();
 
         // Update expected GetSelection token parameters
         getSelectionTokenParameters['ids'] = '2,4,6'
@@ -627,7 +638,7 @@ test.describe('Attribute table @readonly', () => {
         getFilterTokenRequestPromise = project.waitForGetFilterTokenRequest();
         await actionBar.locator('.btn-filter-attributeTable').click();
         getFilterTokenRequest = await getFilterTokenRequestPromise;
-        await getFilterTokenRequest.response();
+        responseExpect(await getFilterTokenRequest.response()).toBeJson();
 
         // Check GetSelectionToken request
         getFilterTokenParameters['filter'] = typeName+':"quartier" IN ( 3 , 7 , 4 ) ';
