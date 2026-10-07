@@ -1,3 +1,82 @@
+/* VARIABLES */
+:root {
+    /* Since Bootstrap 5, the default font size must be decreased to look like LWC <= 3.9 */
+    --bs-body-font-size: 0.875rem;
+
+    /* Revert the main text color to gray and not black */
+    --color-admin-body: #404040;
+    --color-admin-sub-heading: #505050;
+
+    /* Left menu. The link and active text colors must stay consistent with each other */
+    --color-admin-menu-link: #08c;
+    --color-admin-menu-link-active-text: #fff;
+    --color-admin-menu-link-hover-background: #f5f5f5;
+}
+
+body {
+    /* The font size must be repeated here: assets/css/main.css also declares
+       `body { font-size: 1em }` and is loaded just before this file */
+    font-size: var(--bs-body-font-size);
+    color: var(--color-admin-body);
+}
+
+/* Keep the Bootstrap components in line with the reduced body font size.
+   The size modifiers are excluded so they keep their own font size */
+.btn:not(.btn-sm, .btn-lg) {
+    --bs-btn-font-size: var(--bs-body-font-size);
+}
+
+.form-control:not(.form-control-sm, .form-control-lg),
+.form-select:not(.form-select-sm, .form-select-lg) {
+    font-size: var(--bs-body-font-size);
+}
+
+h1, h2, h3 {
+    color: var(--color-contrasted-elements);
+}
+
+h4 {
+    color: var(--color-admin-sub-heading);
+}
+
+/* Revert BS black color for tables and other elements */
+.table {
+    --bs-table-color: var(--color-admin-body);
+    --bs-table-striped-color: var(--color-admin-body);
+    --bs-table-hover-color: var(--color-admin-body);
+    --bs-table-active-color: var(--color-admin-body);
+
+    color: var(--color-admin-body);
+}
+
+#content {
+  padding-top: 30px;
+}
+
+/* Adapt the left menu sidebar to look more like Lizmap Web Client <= 3.9 */
+#menu nav.sidebar-nav > ul.nav li.nav-header {
+    color: var(--color-contrasted-elements);
+    font-size: 1em;
+    font-weight: bold;
+}
+
+#menu nav.sidebar-nav > ul.nav a.nav-link {
+    /* Bootstrap applies these as `padding: <y> <x>` */
+    --bs-nav-link-padding-x: 10px;
+    --bs-nav-link-padding-y: 3px;
+
+    color: var(--color-admin-menu-link);
+}
+
+#menu nav.sidebar-nav ul.nav li.nav-item a.nav-link:not(.active):hover {
+    background-color: var(--color-admin-menu-link-hover-background);
+}
+
+#menu nav.sidebar-nav ul.nav li.nav-item a.nav-link.active {
+    background-color: var(--color-admin-menu-link);
+    color: var(--color-admin-menu-link-active-text);
+}
+
 #menu .list-group-item > a {
   background-repeat : no-repeat;
   background-position : left center;
