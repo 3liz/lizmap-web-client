@@ -19,7 +19,7 @@ ignore_bad_layers = false
 # Plugins allowed to install from plugin paths
 [worker.qgis.plugins]
 install = [
-    "Lizmap server",
+    "Lizmap server==2.16.0-beta+security-fixes",
     "atlasprint",
     "wfsOutputExtension",
 ]
