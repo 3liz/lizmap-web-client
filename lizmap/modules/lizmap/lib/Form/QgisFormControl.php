@@ -159,9 +159,9 @@ class QgisFormControl
         '_int' => 'integer[]',
 
          // PostgreSQL floating point arrays
-        '_float' => 'text',
-        '_float4' => 'text',
-        '_float8' => 'text',
+        '_float' => 'decimal[]',
+        '_float4' => 'decimal[]',
+        '_float8' => 'decimal[]',
 
         'text' => 'text',
         'string' => 'text',
