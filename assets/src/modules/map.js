@@ -283,11 +283,13 @@ export default class map extends olMap {
                             });
 
                             // Force no cache w/ Firefox
+                            /* Disable
                             if(navigator.userAgent.includes("Firefox")){
                                 layer.getSource().setTileLoadFunction((image, src) => {
                                     (image.getImage()).src = src + '&ts=' + Date.now();
                                 });
                             }
+                            */
                         } else if (!node.layerConfig.singleTile) {
                             layer = new TileLayer({
                                 minResolution: minResolution,
@@ -324,11 +326,13 @@ export default class map extends olMap {
                             });
 
                             // Force no cache w/ Firefox
+                            /* Disable
                             if(navigator.userAgent.includes("Firefox")){
                                 layer.getSource().setImageLoadFunction((image, src) => {
                                     (image.getImage()).src = src + '&ts=' + Date.now();
                                 });
                             }
+                            */
                         }
                     }
                 }
@@ -821,6 +825,10 @@ export default class map extends olMap {
                         delete wmsParams[key];
                     }
                 }
+                // Add a timestamp parameter to force browser to fetch image
+                wmsParams['ts'] = `${Date.now()}`;
+                console.log(wmsParams['ts']);
+                // Merge parameters
                 Object.assign(wmsParams, state.wmsParameters);
 
                 olLayer.getSource().updateParams(wmsParams);
