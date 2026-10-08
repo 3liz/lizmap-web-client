@@ -279,8 +279,9 @@ var lizLayerActionButtons = function() {
             if ('themes' in lizMap.config){
                 var themes = lizMap.config.themes;
                 var themeSelector = '<div id="theme-selector" class="btn-group">';
-                themeSelector += '<button class="btn btn-sm dropdown-toggle" data-bs-toggle="dropdown" type="button" aria-expanded="false" title="' + lizDict['switcherLayersActions.themeSelector.title'] +'"><i class="icon-none qgis_sprite mActionShowAllLayers"></i></button>';
-                themeSelector += '<ul class="dropdown-menu">';
+                // data-bs-display="static": Popper shifts the menu off its button, see #7223
+                themeSelector += '<button class="btn btn-sm dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" type="button" aria-expanded="false" title="' + lizDict['switcherLayersActions.themeSelector.title'] +'"><i class="icon-none qgis_sprite mActionShowAllLayers"></i></button>';
+                themeSelector += '<ul class="dropdown-menu dropdown-menu-end">';
 
                 for (var themeName in themes) {
                     themeSelector += '<li><button class="dropdown-item" type="button" data-theme="' + themeName + '">' + themeName + '</button></li>';
