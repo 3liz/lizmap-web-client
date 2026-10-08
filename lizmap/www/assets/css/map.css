@@ -2315,6 +2315,8 @@ lizmap-print .flex {
   text-align: right;
   border-top: 1px solid rgb(255 255 255 / 40%);
 
+  /* Anchors the theme selector dropdown */
+  position: relative;
 }
 
 #switcher-layers-actions div.btn-group > ul{
@@ -3685,6 +3687,24 @@ img {
    buttons; trim the vertical padding so all three buttons share the same height. */
 #theme-selector .btn {
   --bs-btn-padding-y: 0.15rem;
+}
+
+/* Anchor the menu on the toolbar, not the button-wide group, so it cannot
+   overflow the legend panel and make it scroll sideways. See #7223 */
+#theme-selector {
+  position: static;
+}
+
+#switcher-layers-actions #theme-selector > ul.dropdown-menu {
+  inset: 100% 0 auto auto;
+  max-width: 100%;
+  max-height: 300px;
+  overflow: hidden auto;
+}
+
+/* Wrap long theme names instead of widening the menu */
+#switcher-layers-actions #theme-selector .dropdown-item {
+  white-space: normal;
 }
 
 /* Geolocation */
