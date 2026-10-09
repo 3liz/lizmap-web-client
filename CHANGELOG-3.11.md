@@ -18,4 +18,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Changed
 
+### Fixed
+
+* Tooltip - Do not apply the light popup table style inside the dark map tooltip, which made the text unreadable https://github.com/3liz/lizmap-web-client/issues/7163
+
 ### Backend
