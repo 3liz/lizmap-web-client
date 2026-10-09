@@ -15,7 +15,6 @@
         </div>
     </div>
     <div id="permalink-box" style="display:none;">
-        <button id="permalink-back" class="btn btn-sm">{@view~dictionnary.permalink.back@}</button>
         <ul class="nav nav-tabs permalink-tabs" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" data-bs-target="#tab-share-permalink" data-bs-toggle="tab" title="{@view~map.permalink.share.tab.title@}">{@view~map.permalink.share.tab@}</button>
@@ -47,6 +46,7 @@
                 <input id="input-embed-permalink" class="permalink-embed-input" type="text" class="form-control">
             </div>
         </div>
+        <button id="permalink-back" class="btn btn-sm">{@view~dictionnary.permalink.back@}</button>
     </div>
 
     {if $gbContent}
