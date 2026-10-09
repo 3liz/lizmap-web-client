@@ -932,6 +932,7 @@ test.describe('GetCapabilities Requests - admin - @requests @readonly', () => {
         expect(xmlBody.name).toBe('WMS_Capabilities');
         expect(xmlBody.attr).toHaveProperty('version', '1.3.0');
     });
+
     test('WFS 1.0.0 GetCapabilities', async({ request }) => {
         let params = new URLSearchParams({
             repository: 'testsrepository',
@@ -1008,6 +1009,149 @@ test.describe('GetCapabilities Requests - admin - @requests @readonly', () => {
         xmlBody = new XmlDocument(await response.text());
         expect(xmlBody.name).toBe('WFS_Capabilities');
         expect(xmlBody.attr).toHaveProperty('version', '1.0.0');
+    });
+
+});
+
+test.describe('GetCapabilities Requests - layer visibility - @requests @readonly', () => {
+
+    test('WMS 1.3.0 GetCapabilities', async({ request }) => {
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'layer_group_visible_only',
+            SERVICE: 'WMS',
+            VERSION: '1.3.0',
+            REQUEST: 'GetCapabilities',
+        });
+        let url = `/index.php/lizmap/service?${params}`;
+        let response = await request.get(url, {});
+        // check response
+        responseExpect(response).toBeXml();
+        // check headers
+        expect(response.headers()).toHaveProperty('cache-control');
+        expect(response.headers()['cache-control']).toBe('no-cache');
+        expect(response.headers()).toHaveProperty('etag');
+        const etag = response.headers()['etag'];
+        expect(etag).not.toBe('');
+        expect(etag).toHaveLength(43);
+
+        let xmlBody = new XmlDocument(await response.text());
+        expect(xmlBody.childNamed('Capability')).not.toBeUndefined();
+        let capabilityElem = xmlBody.childNamed('Capability');
+        if (capabilityElem !== undefined) {
+            expect(capabilityElem.childNamed('Layer')).not.toBeUndefined();
+            let rootLayerElem = capabilityElem.childNamed('Layer');
+            if (rootLayerElem !== undefined) {
+                expect(rootLayerElem.descendantsNamed('Layer')).toHaveLength(2);
+            }
+        }
+
+        // Request as admin
+        response = await request.get(url, {
+            headers: {
+                authorization: "Basic " + btoa("admin:admin")
+            }
+        });
+        // check response
+        responseExpect(response).toBeXml();
+        // check headers
+        expect(response.headers()).toHaveProperty('cache-control');
+        expect(response.headers()['cache-control']).toBe('no-cache');
+        expect(response.headers()).toHaveProperty('etag');
+        const adminEtag = response.headers()['etag'];
+        expect(adminEtag).not.toBe('');
+        expect(adminEtag).toHaveLength(43);
+        expect(adminEtag).not.toBe(etag);
+
+        xmlBody = new XmlDocument(await response.text());
+        expect(xmlBody.childNamed('Capability')).not.toBeUndefined();
+        capabilityElem = xmlBody.childNamed('Capability');
+        if (capabilityElem !== undefined) {
+            expect(capabilityElem.childNamed('Layer')).not.toBeUndefined();
+            let rootLayerElem = capabilityElem.childNamed('Layer');
+            if (rootLayerElem !== undefined) {
+                expect(rootLayerElem.descendantsNamed('Layer')).toHaveLength(3);
+            }
+        }
+
+        // Request as user_in_group_a
+        response = await request.get(url, {
+            headers: {
+                authorization: "Basic " + btoa("user_in_group_a:admin")
+            }
+        });
+        // check response
+        responseExpect(response).toBeXml();
+        // check headers
+        expect(response.headers()).toHaveProperty('cache-control');
+        expect(response.headers()['cache-control']).toBe('no-cache');
+        expect(response.headers()).toHaveProperty('etag');
+        const group_aEtag = response.headers()['etag'];
+        expect(group_aEtag).not.toBe('');
+        expect(group_aEtag).toHaveLength(43);
+        expect(group_aEtag).not.toBe(etag);
+        expect(group_aEtag).not.toBe(adminEtag);
+
+        xmlBody = new XmlDocument(await response.text());
+        expect(xmlBody.childNamed('Capability')).not.toBeUndefined();
+        capabilityElem = xmlBody.childNamed('Capability');
+        if (capabilityElem !== undefined) {
+            expect(capabilityElem.childNamed('Layer')).not.toBeUndefined();
+            let rootLayerElem = capabilityElem.childNamed('Layer');
+            if (rootLayerElem !== undefined) {
+                expect(rootLayerElem.descendantsNamed('Layer')).toHaveLength(2);
+            }
+        }
+
+        // Request as admin
+        response = await request.get(url, {
+            headers: {
+                authorization: "Basic " + btoa("admin:admin")
+            }
+        });
+        // check response
+        responseExpect(response).toBeXml();
+        // check headers
+        expect(response.headers()).toHaveProperty('cache-control');
+        expect(response.headers()['cache-control']).toBe('no-cache');
+        expect(response.headers()).toHaveProperty('etag');
+        expect(response.headers()['etag']).not.toBe(etag);
+        expect(response.headers()['etag']).not.toBe(group_aEtag);
+        expect(response.headers()['etag']).toBe(adminEtag);
+
+        xmlBody = new XmlDocument(await response.text());
+        expect(xmlBody.childNamed('Capability')).not.toBeUndefined();
+        capabilityElem = xmlBody.childNamed('Capability');
+        if (capabilityElem !== undefined) {
+            expect(capabilityElem.childNamed('Layer')).not.toBeUndefined();
+            let rootLayerElem = capabilityElem.childNamed('Layer');
+            if (rootLayerElem !== undefined) {
+                expect(rootLayerElem.descendantsNamed('Layer')).toHaveLength(3);
+            }
+        }
+
+        // Request as not authenticated
+        response = await request.get(url, {});
+        // check response
+        responseExpect(response).toBeXml();
+        // check headers
+        expect(response.headers()).toHaveProperty('cache-control');
+        expect(response.headers()['cache-control']).toBe('no-cache');
+        expect(response.headers()).toHaveProperty('etag');
+        expect(response.headers()['etag']).not.toBe(group_aEtag);
+        expect(response.headers()['etag']).not.toBe(adminEtag);
+        expect(response.headers()['etag']).toBe(etag);
+
+        xmlBody = new XmlDocument(await response.text());
+        expect(xmlBody.childNamed('Capability')).not.toBeUndefined();
+        capabilityElem = xmlBody.childNamed('Capability');
+        if (capabilityElem !== undefined) {
+            expect(capabilityElem.childNamed('Layer')).not.toBeUndefined();
+            let rootLayerElem = capabilityElem.childNamed('Layer');
+            if (rootLayerElem !== undefined) {
+                expect(rootLayerElem.descendantsNamed('Layer')).toHaveLength(2);
+            }
+        }
     });
 
 });
