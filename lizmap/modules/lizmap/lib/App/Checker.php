@@ -22,4 +22,26 @@ class Checker
 
         return true;
     }
+
+    /**
+     * Logout the user authenticated by BASIC HTTP authentication.
+     *
+     * @param array $serverVars Server variables, including authentication details
+     *
+     * @return bool True if the user was logged out, false otherwise
+     */
+    public static function logoutCredentials($serverVars)
+    {
+        $appContext = \lizmap::getAppContext();
+        if (isset($serverVars['PHP_AUTH_USER']) && $appContext->UserIsConnected()) {
+            $juser = $appContext->getUserSession();
+            if ($serverVars['PHP_AUTH_USER'] == $juser->login) {
+                \jAuth::logout();
+
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
