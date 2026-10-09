@@ -98,7 +98,7 @@ export default class Permalink {
         // initialize UI
         document.getElementById('permalink-box').style.display = this._shortLinkPermalink ? 'none' : 'block';
         document.getElementById('permalink-generator').style.display = this._shortLinkPermalink ? 'flex' : 'none';
-        document.getElementById('permalink-back').style.display = this._shortLinkPermalink ? 'initial' : 'none';
+        document.getElementById('permalink-back').style.display = this._shortLinkPermalink ? '' : 'none';
 
         this._renderHistoryTemplate();
 
