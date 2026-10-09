@@ -14,7 +14,7 @@ class actionListener extends jEventListener
         // Check config
         jClasses::inc('action~actionConfig');
         $actionConfigInstance = new actionConfig($event->repository, $event->project);
-        if ($actionConfigInstance->getStatus()) {
+        if ($actionConfigInstance->getStatus() && !empty($actionConfigInstance->getConfig())) {
             $actionConfig = $actionConfigInstance->getConfig();
             $actionConfigData = array(
                 'url' => jUrl::get(
