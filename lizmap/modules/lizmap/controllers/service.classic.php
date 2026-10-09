@@ -102,58 +102,52 @@ class serviceCtrl extends jController
 
         $request = strtoupper($request);
 
+        /** @var null|jResponse $rep */
+        $rep = null;
+
         // Extra request
         if ($request == 'GETPROJ4') {
-            return $this->GetProj4();
-        }
-        if ($request == 'GETSELECTIONTOKEN') {
-            return $this->GetSelectionToken();
-        }
-        if ($request == 'GETFILTERTOKEN') {
-            return $this->GetFilterToken();
+            $rep = $this->GetProj4();
+        } elseif ($request == 'GETSELECTIONTOKEN') {
+            $rep = $this->GetSelectionToken();
+        } elseif ($request == 'GETFILTERTOKEN') {
+            $rep = $this->GetFilterToken();
         }
 
         // Standard request
         // All requests are not possible for all services. The possibility is
         // checked into the process() method of $ogcRequest.
-        if ($request == 'GETCAPABILITIES') {
-            return $this->GetCapabilities($ogcRequest);
+        elseif ($request == 'GETCAPABILITIES') {
+            $rep = $this->GetCapabilities($ogcRequest);
+        } elseif ($request == 'GETCONTEXT') {
+            $rep = $this->GetContext($ogcRequest);
+        } elseif ($request == 'GETSCHEMAEXTENSION') {
+            $rep = $this->GetSchemaExtension($ogcRequest);
+        } elseif ($request == 'GETLEGENDGRAPHICS') {
+            $rep = $this->GetLegendGraphics($ogcRequest);
+        } elseif ($request == 'GETLEGENDGRAPHIC') {
+            $rep = $this->GetLegendGraphics($ogcRequest);
+        } elseif ($request == 'GETFEATUREINFO') {
+            $rep = $this->GetFeatureInfo($ogcRequest);
+        } elseif ($request == 'GETPRINT') {
+            $rep = $this->GetPrint($ogcRequest);
+        } elseif ($request == 'GETPRINTATLAS') {
+            $rep = $this->GetPrintAtlas($ogcRequest);
+        } elseif ($request == 'GETSTYLES') {
+            $rep = $this->GetStyles($ogcRequest);
+        } elseif ($request == 'GETMAP') {
+            $rep = $this->GetMap($ogcRequest);
+        } elseif ($request == 'GETFEATURE') {
+            $rep = $this->GetFeature($ogcRequest);
+        } elseif ($request == 'DESCRIBEFEATURETYPE') {
+            $rep = $this->DescribeFeatureType($ogcRequest);
+        } elseif ($request == 'GETTILE') {
+            $rep = $this->GetTile($ogcRequest);
         }
-        if ($request == 'GETCONTEXT') {
-            return $this->GetContext($ogcRequest);
-        }
-        if ($request == 'GETSCHEMAEXTENSION') {
-            return $this->GetSchemaExtension($ogcRequest);
-        }
-        if ($request == 'GETLEGENDGRAPHICS') {
-            return $this->GetLegendGraphics($ogcRequest);
-        }
-        if ($request == 'GETLEGENDGRAPHIC') {
-            return $this->GetLegendGraphics($ogcRequest);
-        }
-        if ($request == 'GETFEATUREINFO') {
-            return $this->GetFeatureInfo($ogcRequest);
-        }
-        if ($request == 'GETPRINT') {
-            return $this->GetPrint($ogcRequest);
-        }
-        if ($request == 'GETPRINTATLAS') {
-            return $this->GetPrintAtlas($ogcRequest);
-        }
-        if ($request == 'GETSTYLES') {
-            return $this->GetStyles($ogcRequest);
-        }
-        if ($request == 'GETMAP') {
-            return $this->GetMap($ogcRequest);
-        }
-        if ($request == 'GETFEATURE') {
-            return $this->GetFeature($ogcRequest);
-        }
-        if ($request == 'DESCRIBEFEATURETYPE') {
-            return $this->DescribeFeatureType($ogcRequest);
-        }
-        if ($request == 'GETTILE') {
-            return $this->GetTile($ogcRequest);
+
+        Checker::logoutCredentials($_SERVER);
+        if ($rep !== null) {
+            return $rep;
         }
 
         jMessage::add('Request '.$request.' is not supported', 'OperationNotSupported');
