@@ -3030,6 +3030,29 @@ lizmap-mouse-position > div.coords-unit > select{
   padding-right: 5px;
 }
 
+/* Tooltip tables reuse the light popup style; reset it for the dark box.
+   Keep after the `.lizmapPopupTable` rules above.
+   https://github.com/3liz/lizmap-web-client/issues/7163 */
+#tooltip table,
+#tooltip .lizmapPopupTable {
+  width: auto;
+  margin: 0;
+  background-color: transparent !important;
+}
+
+/* Bootstrap paints every cell */
+#tooltip table > :not(caption) > * > * {
+  padding: 1px 5px;
+  color: inherit;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+#tooltip table th {
+  text-align: left;
+  white-space: nowrap;
+}
+
 #edition-modal form {
   margin: 0;
 }
