@@ -58,6 +58,32 @@ class serviceCtrl extends jController
      */
     public function index()
     {
+        // Optional BASIC authentication
+        $ok = Checker::checkCredentials($_SERVER);
+        if (!$ok) {
+            return $this->error(
+                array(
+                    'code' => 401,
+                    'error_code' => 'wrong_credentials',
+                    'title' => jLocale::get('dataviz~dataviz.log.wrong_credentials.title'),
+                    'detail' => jLocale::get('dataviz~dataviz.log.wrong_credentials.detail'),
+                )
+            );
+        }
+
+        $rep = $this->processRequest();
+        Checker::logoutCredentials($_SERVER);
+
+        return $rep;
+    }
+
+    /**
+     * Process the request.
+     *
+     * @return jResponseJson the request response
+     */
+    protected function processRequest()
+    {
         // Get the debug mode status
         $services = lizmap::getServices();
         $this->debugMode = $services->debugMode;
@@ -71,18 +97,7 @@ class serviceCtrl extends jController
             jLog::log('Dataviz - repository: '.$repository.' - project: '.$project, 'lizmapadmin');
         }
 
-        // Optional BASIC authentication
-        $ok = Checker::checkCredentials($_SERVER);
-        if (!$ok) {
-            return $this->error(
-                array(
-                    'code' => 401,
-                    'error_code' => 'wrong_credentials',
-                    'title' => jLocale::get('dataviz~dataviz.log.wrong_credentials.title'),
-                    'detail' => jLocale::get('dataviz~dataviz.log.wrong_credentials.detail'),
-                )
-            );
-        }
+        // Check if basic authentication is used
         if (isset($_SERVER['PHP_AUTH_USER'])) {
             $this->basicAuthUsed = true;
         }
