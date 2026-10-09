@@ -4,7 +4,7 @@
          {foreach $bloc->childItems as $item}
                 <li class="nav-item">
                     {if $item->type == 'url'}
-                        <a class="nav-link{if $item->id == $selectedMenuItem} active{else} link-body-emphasis{/if}" href="{$item->content|eschtml}">
+                        <a class="nav-link{if $item->id == $selectedMenuItem} active{/if}" href="{$item->content|eschtml}">
                             {if $item->icon}<i class="nav-icon"><img src="{$item->icon}"/></i>{/if}
                             {$item->label|eschtml}
                         </a>
