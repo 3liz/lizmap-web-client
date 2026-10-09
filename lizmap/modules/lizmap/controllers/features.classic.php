@@ -9,6 +9,10 @@
  *
  * @license Mozilla Public License : https://www.mozilla.org/MPL/
  */
+
+use Lizmap\App\Checker;
+use Lizmap\Request\Proxy;
+
 class featuresCtrl extends jController
 {
     /**
@@ -140,6 +144,40 @@ class featuresCtrl extends jController
         );
         $rep->data = $content;
 
+        // Optional BASIC authentication
+        $ok = Checker::checkCredentials($_SERVER);
+        if (!$ok) {
+            $content['error'] = jLocale::get('view~default.service.access.wrong_credentials.title');
+            $rep->data = $content;
+
+            // 401 : AuthorizationRequired
+            $rep->setHttpStatus(401, Proxy::getHttpStatusMsg(401));
+
+            return $rep;
+        }
+
+        $rep = $this->processDisplayExpression($rep);
+        Checker::logoutCredentials($_SERVER);
+
+        return $rep;
+    }
+
+    /**
+     * Process get display expressions evaluated for the given layer and parameters.
+     *
+     * @urlparam string  $REPOSITORY Name of the repository
+     * @urlparam string  $PROJECT Name of the project
+     * @urlparam string  $LAYERID Layer Id
+     * @urlparam string  $EXP_FILTER QGIS expression filter
+     * @urlparam string  $WITH_GEOMETRY If we need to get the features geometries
+     * @urlparam string  $FIELDS List of field names separated by comma
+     *
+     * @param jResponseJson $rep prepared response
+     *
+     * @return jResponseJson geoJSON content
+     */
+    protected function processDisplayExpression($rep)
+    {
         // Get project and repository, and check rights
         $project = $this->param('project');
         $repository = $this->param('repository');
