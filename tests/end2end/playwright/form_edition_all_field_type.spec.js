@@ -569,3 +569,37 @@ test.describe('Form edition all field type', function () {
         await project.editingSubmit('cancel').click();
     });
 });
+
+
+test.describe('Form edition date field', function () {
+
+    test('Non editable date field cannot be edited @readonly', async function ({ page }) {
+        const project = new ProjectPage(page, 'form_edition_all_field_type');
+        await project.open();
+
+        const formRequest = await project.openEditingFormWithLayer('many_date_formats');
+        await formRequest.response();
+
+        await expect(page.locator('#edition-form-container')).toBeVisible();
+
+        // field_date is not editable in the QGIS project: readonly is not
+        // enough, the day and month selects would stay fully interactive
+        for (const part of ['day', 'month', 'year']) {
+            await expect(project.editingField(`field_date[${part}]`)).toBeDisabled();
+        }
+
+        // The calendar and reset buttons must not act on it either
+        expect(await page.evaluate(
+            () => jQuery('#jforms_view_edition_field_date_hidden').datepicker('isDisabled')
+        )).toBe(true);
+
+        // Any other date field of the same form stays editable
+        for (const part of ['day', 'month', 'year']) {
+            await expect(project.editingField(`field_date_auto_cast[${part}]`)).not.toBeDisabled();
+        }
+
+        // Close form
+        page.once('dialog', dialog => dialog.accept());
+        await project.editingSubmit('cancel').click();
+    });
+});
