@@ -3356,7 +3356,7 @@ def my_form_open(dialog, layer, feature):
         </attributeEditorContainer>
       </attributeEditorForm>
       <editable>
-        <field name="field_date" editable="1"/>
+        <field name="field_date" editable="0"/>
         <field name="field_date_auto" editable="1"/>
         <field name="field_date_auto_cast" editable="1"/>
         <field name="field_date_expr_now" editable="1"/>
