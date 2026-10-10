@@ -16,6 +16,7 @@
  *
  * Key DOM selectors used in tests:
  *   lizmap-paste-geom            → copy-paste button web component
+ *   #newOlMap                    → the OL10 map canvas every map click goes to
  *   lizmap-paste-geom button     → inner <button> rendered by lit-html
  *   #feature-picker-popup        → picker popup container
  *   #feature-picker-popup .feature-row  → one row per matching feature
@@ -80,14 +81,14 @@ const EMPTY_X = 550, EMPTY_Y = 200;
  */
 async function drawGeometry(project, geomType, x, y) {
     if (geomType === 'point') {
-        await project.clickOnMapLegacy(x, y);
+        await project.clickOnMap(x, y);
     } else if (geomType === 'line') {
-        await project.clickOnMapLegacy(x, y);
-        await project.dblClickOnMapLegacy(x + 60, y);
+        await project.clickOnMap(x, y);
+        await project.dblClickOnMap(x + 60, y);
     } else if (geomType === 'polygon') {
-        await project.clickOnMapLegacy(x, y);
-        await project.clickOnMapLegacy(x + 60, y);
-        await project.dblClickOnMapLegacy(x + 30, y + 50);
+        await project.clickOnMap(x, y);
+        await project.clickOnMap(x + 60, y);
+        await project.dblClickOnMap(x + 30, y + 50);
     }
 }
 
@@ -435,7 +436,7 @@ test.describe('Copy-paste geometry — feature picker popup',
 
                 // Click on the map where the source feature lives
                 // GeometryCopyHandler._onMapClick fires → WMS GetFeatureInfo POST
-                await project.clickOnMapLegacy(SRC_X, SRC_Y);
+                await project.clickOnMap(SRC_X, SRC_Y);
 
                 // Wait for the WMS request to complete so the response is processed
                 const gfiRequest = await gfiRequestPromise;
@@ -482,7 +483,7 @@ test.describe('Copy-paste geometry — feature picker popup',
                 const gfiRequestPromise = waitForCopyModeGFIRequest(page);
 
                 // Click a corner far from any drawn feature
-                await project.clickOnMapLegacy(EMPTY_X, EMPTY_Y);
+                await project.clickOnMap(EMPTY_X, EMPTY_Y);
 
                 const gfiRequest = await gfiRequestPromise;
                 await gfiRequest.response();
@@ -518,7 +519,7 @@ test.describe('Copy-paste geometry — feature picker popup',
                 await expect(btn).toHaveClass(/active/);
 
                 const gfiRequestPromise = waitForCopyModeGFIRequest(page);
-                await project.clickOnMapLegacy(SRC_X, SRC_Y);
+                await project.clickOnMap(SRC_X, SRC_Y);
                 const gfiReq = await gfiRequestPromise;
                 await gfiReq.response();
 
@@ -559,7 +560,7 @@ test.describe('Copy-paste geometry — feature picker popup',
                 await expect(btn).toHaveClass(/active/);
 
                 const gfiRequestPromise = waitForCopyModeGFIRequest(page);
-                await project.clickOnMapLegacy(SRC_X, SRC_Y);
+                await project.clickOnMap(SRC_X, SRC_Y);
                 const gfiReq = await gfiRequestPromise;
                 await gfiReq.response();
 
@@ -633,7 +634,7 @@ test.describe('Copy-paste geometry — geometry type filtering',
                     // WMS returns the source feature but _geometryTypesMatch() filters it out
                     // because source.geomType ≠ editLayer.geomType.
                     const gfiRequestPromise = waitForCopyModeGFIRequest(page);
-                    await project.clickOnMapLegacy(SRC_X, SRC_Y);
+                    await project.clickOnMap(SRC_X, SRC_Y);
                     await (await gfiRequestPromise).response();
 
                     // No picker popup — all features were filtered out
@@ -706,7 +707,7 @@ test.describe('Copy-paste geometry — full copy workflow',
 
             // Step 5a: click at S's position to trigger WMS GetFeatureInfo
             const gfiRequestPromise = waitForCopyModeGFIRequest(page);
-            await project.clickOnMapLegacy(SRC_X, SRC_Y);
+            await project.clickOnMap(SRC_X, SRC_Y);
             const gfiReq = await gfiRequestPromise;
             await gfiReq.response();
 
@@ -777,7 +778,7 @@ test.describe('Copy-paste geometry — edge cases',
                 await expect(btn).toHaveClass(/active/);
 
                 const gfi1Promise = waitForCopyModeGFIRequest(page);
-                await project.clickOnMapLegacy(SRC_X, SRC_Y);
+                await project.clickOnMap(SRC_X, SRC_Y);
                 await (await gfi1Promise).response();
 
                 const popup = page.locator('#feature-picker-popup');
@@ -791,7 +792,7 @@ test.describe('Copy-paste geometry — edge cases',
 
                 // ---- Second activation: same click position, should work again ----
                 const gfi2Promise = waitForCopyModeGFIRequest(page);
-                await project.clickOnMapLegacy(SRC_X, SRC_Y);
+                await project.clickOnMap(SRC_X, SRC_Y);
                 await (await gfi2Promise).response();
 
                 await expect(popup).toBeVisible({ timeout: 5_000 });
@@ -894,7 +895,7 @@ test.describe('Copy-paste geometry — user-facing messages (_notify)',
                 // will be empty so GeometryCopyHandler._handleWMSResponse goes through
                 // the "no compatible features" branch and calls _notify(...).
                 const gfiRequestPromise = waitForCopyModeGFIRequest(page);
-                await project.clickOnMapLegacy(EMPTY_X, EMPTY_Y);
+                await project.clickOnMap(EMPTY_X, EMPTY_Y);
                 await (await gfiRequestPromise).response();
 
                 // The message element must exist, be visible, and carry the
@@ -941,7 +942,7 @@ test.describe('Copy-paste geometry — user-facing messages (_notify)',
                 await expect(btn).toHaveClass(/active/);
 
                 const gfi1Promise = waitForCopyModeGFIRequest(page);
-                await project.clickOnMapLegacy(EMPTY_X, EMPTY_Y);
+                await project.clickOnMap(EMPTY_X, EMPTY_Y);
                 await (await gfi1Promise).response();
 
                 await expect(message).toHaveCount(1);
@@ -961,7 +962,7 @@ test.describe('Copy-paste geometry — user-facing messages (_notify)',
                 await expect(btn).toHaveClass(/active/);
 
                 const gfi2Promise = waitForCopyModeGFIRequest(page);
-                await project.clickOnMapLegacy(EMPTY_X, EMPTY_Y);
+                await project.clickOnMap(EMPTY_X, EMPTY_Y);
                 await (await gfi2Promise).response();
 
                 // After the second call the count must still be exactly 1:

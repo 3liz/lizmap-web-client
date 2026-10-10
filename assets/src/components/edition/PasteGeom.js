@@ -44,28 +44,36 @@ export default class pasteGeom extends HTMLElement {
      * @returns {boolean} True if can activate
      */
     _canActivate() {
-        const drawActive = mainLizmap?.edition?.drawFeatureActivated || false;
+        if (mainLizmap?.digitizing?.isSplitLocked) return false;
+        const digitizingActive = mainLizmap?.digitizing?.toolSelected !== 'deactivate'
+            || mainLizmap?.digitizing?.context === 'edition';
         const hasLayerId = !!mainLizmap?.edition?.layerId;
-        return drawActive || hasLayerId;
+        return digitizingActive || hasLayerId;
     }
 
     connectedCallback() {
         // Tooltip is initialized on the inner <button> via $('button', this).tooltip(...)
-        // below. The wrapper <lizmap-paste-geom> in map_edition.tpl must NOT carry
-        // data-bs-toggle/data-bs-title attributes — otherwise the global Bootstrap
-        // tooltip init in legacy/map.js attaches a second tooltip to the wrapper
-        // and both render on hover, each with its own locale key.
-        this._template = () =>
-            html`
-        <button class='btn btn-sm ${this._active ? 'active btn-primary' : ''}'
+        // below. The <lizmap-paste-geom> wrapper rendered by the OL10 digitizing
+        // toolbar must NOT carry data-bs-toggle/data-bs-title attributes - otherwise
+        // the global Bootstrap tooltip init in legacy/map.js attaches a second
+        // tooltip to the wrapper and both render on hover, each with its own
+        // locale key.
+        this._template = () => {
+            const splitLocked = mainLizmap?.digitizing?.isSplitLocked;
+            const tooltip = splitLocked
+                ? (lizDict['edition.split.save.first'] || 'Save features first before using this tool.')
+                : (lizDict['edition.geom.copyPaste'] || 'Copy the geometry from an existing map layer feature');
+            return html`
+        <button class='btn edition-tool-btn ${this._active ? 'active btn-primary' : ''}'
             data-bs-toggle="tooltip"
-            data-bs-title='${lizDict['edition.geom.copyPaste'] || 'Copy and paste an existing geometry'}'
+            data-bs-title='${tooltip}'
             ?disabled=${!this._canActivate()}
             @click=${() => this._toggle()}>
             <svg>
                 <use href="${lizUrls.svgSprite}#copyGeometry"/>
             </svg>
         </button>`;
+        };
 
         render(this._template(), this);
 
@@ -104,6 +112,12 @@ export default class pasteGeom extends HTMLElement {
             () => {
                 render(this._template(), this);
             }, 'edition.formClosed'
+        );
+
+        mainEventDispatcher.addListener(
+            () => {
+                render(this._template(), this);
+            }, 'digitizing.splitLocked'
         );
     }
 

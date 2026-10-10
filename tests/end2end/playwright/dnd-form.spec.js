@@ -20,12 +20,13 @@ test.describe(
 
             await project.dock.getByText('tab2').click();
             await project.editingField('field_in_dnd_form').fill('value in DND form');
-            await project.clickOnMapLegacy(600, 200);
+            // Click on OL6 map since edition drawing was migrated from OL2 to OL6
+            await project.clickOnMap(400, 200);
 
             await project.editingSubmitForm();
             const ids = await editedFeatureIds(page);
 
-            await project.clickOnMap(600, 200);
+            await project.clickOnMap(400, 200);
             await expect(project.popupContent).toBeVisible();
 
             const feature = await project.identifyContentLocator(ids['id']);

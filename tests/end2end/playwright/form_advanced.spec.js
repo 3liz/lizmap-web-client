@@ -17,7 +17,8 @@ test.describe('Advanced form', function () {
         const getDataPromise = page.waitForResponse(/jelix\/forms\/getdata/)
 
         // Click on map as form needs a geometry
-        project.clickOnMapLegacy(410, 175);
+        // Click on OL6 map since edition drawing was migrated from OL2 to OL6
+        project.clickOnMap(410, 175);
 
         // wait for the response completed
         let getDataResponse = await getDataPromise;
@@ -137,6 +138,8 @@ test.describe('Advanced form', function () {
         page.on('dialog', dialog => dialog.accept());
         await project.editingSubmit('cancel').click();
         await page.locator('#edition-draw').click();
+        // Wait for form to be visible so activateDigitizing() is called before map click
+        await page.locator('#edition-form-container').waitFor({ state: 'visible' });
 
         // Create the promise to wait for the request to GetData for quartier
         let getDataQuartierPromise = page.waitForRequest(
@@ -149,7 +152,8 @@ test.describe('Advanced form', function () {
             request.postData()?.includes('_ref=sousquartier')
         );
         // Assert quartier value is good for another drawn point
-        project.clickOnMapLegacy(455, 250);
+        // Click on OL6 map since edition drawing was migrated from OL2 to OL6
+        project.clickOnMap(455, 250);
         // Wait for GetData quartier completed (based on geometry)
         let getDataQuartier = await (await getDataQuartierPromise).response();
         expect(getDataQuartier.status()).toBe(200);
