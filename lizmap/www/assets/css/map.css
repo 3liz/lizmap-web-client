@@ -3102,6 +3102,25 @@ img.ui-datepicker-trigger {
   width:0;
 }
 
+/* Checkboxes and radios follow the dock font (12px) while the other controls
+   use .form-control-sm (14px), which left them and their label too small */
+#edition-form-container label.checkbox,
+#edition-form-container label.radio,
+#edition-form-container .form-check-label,
+#edition-modal label.checkbox,
+#edition-modal label.radio,
+#edition-modal .form-check-label {
+  font-size: 0.875rem;
+}
+
+#edition-form-container .form-check-input,
+#edition-modal .form-check-input {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.4em;
+  vertical-align: -0.18em;
+}
+
 #edition-segment-length, #edition-segment-angle {
   line-height: 30px;
 }
