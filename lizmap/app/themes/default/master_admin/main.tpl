@@ -24,7 +24,7 @@
   <div class="row">
     <div id="menu" class="sidebar col-sm-2">
       <nav class="sidebar-nav">
-        <ul class="nav nav-pills nav-sidebar flex-column mb-auto">
+        <ul class="nav flex-column">
          {$MENU}
         </ul>
       </nav>
