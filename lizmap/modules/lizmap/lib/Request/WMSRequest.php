@@ -1187,10 +1187,7 @@ class WMSRequest extends OGCRequest
                 $tile = false;
             }
             if ($tile) {
-                $mime = 'image/jpeg';
-                if (preg_match('#png#', $params['format'])) {
-                    $mime = 'image/png';
-                }
+                $mime = 'image/'.$this->getTileImageType($params['format']);
 
                 \lizmap::logMetric('LIZMAP_PROXY_HIT_CACHE', 'WMS', array(
                     'qgisParams' => $params,
@@ -1201,6 +1198,42 @@ class WMSRequest extends OGCRequest
         }
 
         return $key;
+    }
+
+    /**
+     * Get the image type of the tiles from the WMS FORMAT parameter.
+     *
+     * @param string $format The WMS FORMAT parameter, i.e. image/png; mode=8bit
+     *
+     * @return string png, webp or jpeg
+     */
+    protected function getTileImageType($format)
+    {
+        if (preg_match('#png#', $format)) {
+            return 'png';
+        }
+        if (preg_match('#webp#', $format)) {
+            return 'webp';
+        }
+
+        return 'jpeg';
+    }
+
+    /**
+     * Check that gd is installed and is able to crop the tiles of the given format.
+     *
+     * @param string $format The WMS FORMAT parameter
+     *
+     * @return bool
+     */
+    protected function canCropTile($format)
+    {
+        if (!extension_loaded('gd') || !function_exists('gd_info')) {
+            return false;
+        }
+
+        // The WebP support is optional in gd
+        return $this->getTileImageType($format) != 'webp' || function_exists('imagewebp');
     }
 
     /**
@@ -1272,8 +1305,10 @@ class WMSRequest extends OGCRequest
         // create new gd image
         $image = imagecreatetruecolor($newWidth, $newHeight);
 
+        $imageType = $this->getTileImageType($params['format']);
+
         // save transparency if needed
-        if (preg_match('#png#', $params['format'])) {
+        if ($imageType != 'jpeg') {
             imagesavealpha($original, true);
             imagealphablending($image, false);
             $color = imagecolortransparent($image, imagecolorallocatealpha($image, 0, 0, 0, 127));
@@ -1286,8 +1321,10 @@ class WMSRequest extends OGCRequest
 
         // Output the image as a string (use PHP buffering)
         ob_start();
-        if (preg_match('#png#', $params['format'])) {
+        if ($imageType == 'png') {
             imagepng($image, null, 9);
+        } elseif ($imageType == 'webp') {
+            imagewebp($image, null, 90);
         } else {
             imagejpeg($image, null, 90);
         }
@@ -1384,13 +1421,12 @@ class WMSRequest extends OGCRequest
             }
         }
 
-        // Also checks if gd is installed
+        // Also checks if gd is installed and supports the image format
         $originalParams = array();
         $xFactor = -1;
         $yFactor = -1;
-        if ($metatileSize && $useCache && $wmsClient == 'web'
-            && extension_loaded('gd') && function_exists('gd_info')
-        ) {
+        $canCropTile = $this->canCropTile($params['format']);
+        if ($metatileSize && $useCache && $wmsClient == 'web' && $canCropTile) {
             list($params, $originalParams, $xFactor, $yFactor) = $this->getMetaTileData($params, $metatileSize);
         }
 
@@ -1411,9 +1447,7 @@ class WMSRequest extends OGCRequest
         }
 
         // Metatile : if needed, crop the metatile into a single tile
-        if ($metatileSize && $useCache && $wmsClient == 'web'
-            && extension_loaded('gd') && function_exists('gd_info')
-        ) {
+        if ($metatileSize && $useCache && $wmsClient == 'web' && $canCropTile) {
             $data = $this->getImageData($data, $params, $originalParams, $xFactor, $yFactor);
         }
 
