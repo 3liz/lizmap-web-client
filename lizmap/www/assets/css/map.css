@@ -4427,7 +4427,9 @@ These lines will be removed in the future, when the minimum target version will 
 
 /** server-side-permalink **/
 #permalink-back {
-    margin-bottom: 1em;
+  display: block;
+  margin-top: 0.5em;
+  margin-left: auto;
 }
 
 #lizmap-new-permalink {
@@ -4482,4 +4484,10 @@ These lines will be removed in the future, when the minimum target version will 
 
 #permalink-history i {
     cursor:pointer;
+}
+
+.btn-geobookmark-add {
+  display: block;
+  margin-top: 0.5em;
+  margin-left: auto;
 }
