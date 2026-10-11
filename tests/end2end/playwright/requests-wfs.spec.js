@@ -1784,6 +1784,7 @@ test.describe('WFS Requests filter_layer_by_user @requests @readonly ', () => {
         delete form['FORCE_QGIS'];
         form['RESULTTYPE'] = 'hits';
         response = await request.post(url, {
+            headers: headers,
             form: form,
         });
         // check response
@@ -1839,6 +1840,7 @@ test.describe('WFS Requests filter_layer_by_user @requests @readonly ', () => {
         delete form['FORCE_QGIS'];
         form['RESULTTYPE'] = 'hits';
         response = await request.post(url, {
+            headers: headers,
             form: form,
         });
         // check response
@@ -1895,6 +1897,7 @@ test.describe('WFS Requests filter_layer_by_user @requests @readonly ', () => {
         delete form['FORCE_QGIS'];
         form['RESULTTYPE'] = 'hits';
         response = await request.post(url, {
+            headers: headers,
             form: form,
         });
         // check response
@@ -1945,6 +1948,7 @@ test.describe('WFS Requests filter_layer_by_user @requests @readonly ', () => {
         delete form['FORCE_QGIS'];
         form['RESULTTYPE'] = 'hits';
         response = await request.post(url, {
+            headers: headers,
             form: form,
         });
         // check response
@@ -1997,6 +2001,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         delete form['FORCE_QGIS'];
         form['RESULTTYPE'] = 'hits';
         response = await request.post(url, {
+            headers: headers,
             form: form,
         });
         // check response
@@ -2060,6 +2065,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         delete form['FORCE_QGIS'];
         form['RESULTTYPE'] = 'hits';
         response = await request.post(url, {
+            headers: headers,
             form: form,
         });
         // check response
@@ -2127,6 +2133,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         delete form['FORCE_QGIS'];
         form['RESULTTYPE'] = 'hits';
         response = await request.post(url, {
+            headers: headers,
             form: form,
         });
         // check response
@@ -2176,6 +2183,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         delete form['FORCE_QGIS'];
         form['RESULTTYPE'] = 'hits';
         response = await request.post(url, {
+            headers: headers,
             form: form,
         });
         // check response
@@ -2239,6 +2247,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         delete form['FORCE_QGIS'];
         form['RESULTTYPE'] = 'hits';
         response = await request.post(url, {
+            headers: headers,
             form: form,
         });
         // check response
@@ -2308,6 +2317,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         delete form['FORCE_QGIS'];
         form['RESULTTYPE'] = 'hits';
         response = await request.post(url, {
+            headers: headers,
             form: form,
         });
         // check response
@@ -2357,6 +2367,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         delete form['FORCE_QGIS'];
         form['RESULTTYPE'] = 'hits';
         response = await request.post(url, {
+            headers: headers,
             form: form,
         });
         // check response
@@ -2420,6 +2431,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         delete form['FORCE_QGIS'];
         form['RESULTTYPE'] = 'hits';
         response = await request.post(url, {
+            headers: headers,
             form: form,
         });
         // check response
@@ -2483,6 +2495,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         delete form['FORCE_QGIS'];
         form['RESULTTYPE'] = 'hits';
         response = await request.post(url, {
+            headers: headers,
             form: form,
         });
         // check response
