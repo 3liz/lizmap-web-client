@@ -522,11 +522,11 @@ export const expect = baseExpect.extend({
             ? () => this.utils.matcherHint(assertionName, undefined, undefined, { isNot: this.isNot }) +
                 '\n\n' +
                 `Expected: Response not to be JSON with property numberOfFeatures: ${this.utils.printExpected(expected)}\n`+
-                `Actual: ${response_body} - ${matcherResult?.message()}`
+                `Actual: ${response_body} - ${matcherResult.message()}`
             : () => this.utils.matcherHint(assertionName, undefined, undefined, { isNot: this.isNot }) +
                 '\n\n' +
                 `Expected: Response to be JSON with property numberOfFeatures: ${this.utils.printExpected(expected)}\n`+
-                `Actual: ${response_body} - ${matcherResult?.message()}`
+                `Actual: ${response_body} - ${matcherResult.message()}`
 
         return {
             message,
@@ -547,9 +547,10 @@ export const expect = baseExpect.extend({
     async toHaveGeoJsonNumberOfFeatures(response, expected) {
         const assertionName = 'toBeGeoJsonNumberOfFeatures';
         let pass = true;
+        let theMessage = '';
         /** @type {MatcherReturnType} matcherResult */
         let matcherResult = {
-            message: () => '',
+            message: () => theMessage,
             pass: pass,
             name: assertionName,
             expected: expected,
@@ -562,7 +563,7 @@ export const expect = baseExpect.extend({
             expect(body).toHaveProperty('timeStamp');
             expect(body).toHaveProperty('numberOfFeatures', expected);
         } catch(/** @type {any} */ e) {
-            matcherResult = e.matcherResult;
+            theMessage = e.matcherResult.message;
             pass = false;
         }
 
@@ -574,11 +575,11 @@ export const expect = baseExpect.extend({
             ? () => this.utils.matcherHint(assertionName, undefined, undefined, { isNot: this.isNot }) +
                 '\n\n' +
                 `Expected: Response not to be JSON with property numberOfFeatures: ${this.utils.printExpected(expected)}\n`+
-                `Actual: ${response_body} - ${matcherResult?.message()}`
+                `Actual: ${response_body} - ${matcherResult.message()}`
             : () => this.utils.matcherHint(assertionName, undefined, undefined, { isNot: this.isNot }) +
                 '\n\n' +
                 `Expected: Response to be JSON with property numberOfFeatures: ${this.utils.printExpected(expected)}\n`+
-                `Actual: ${response_body} - ${matcherResult?.message()}`
+                `Actual: ${response_body} - ${matcherResult.message()}`
 
         return {
             message,
