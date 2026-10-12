@@ -457,6 +457,11 @@ class WMSRequest extends OGCRequest
         $qgisQueryLayers = array();
         foreach ($queryLayers as $queryLayer) {
             $configLayer = $this->project->findLayerByAnyName($queryLayer);
+            if (!$configLayer) {
+                \jMessage::add('The QUERY_LAYERS parameter contain unknown layer.', 'BadRequest');
+
+                return $this->serviceException();
+            }
             if (property_exists($configLayer, 'externalAccess')
                 && $configLayer->externalAccess != 'False'
                 && property_exists($configLayer->externalAccess, 'url')
