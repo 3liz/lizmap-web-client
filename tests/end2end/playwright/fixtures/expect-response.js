@@ -239,17 +239,20 @@ export const expect = baseExpect.extend({
     /**
      * Expecting the response is a valid HTML
      * @param {APIResponse|Response|null} response the response to test
+     * @param {number} status the response status
      *
      * @returns {MatcherReturnType} the result
      */
-    toBeHtml(response) {
+    toBeHtml(response, status=200) {
         const assertionName = 'toBeHtml';
         let pass = response !== null;
         try {
             if (pass) {
                 // check response status
-                expect(response?.ok()).toBeTruthy();
-                expect(response?.status()).toBe(200);
+                if (status < 300) {
+                    expect(response?.ok()).toBeTruthy();
+                }
+                expect(response?.status()).toBe(status);
                 // check content-type header
                 expect(response?.headers()['content-type']).toContain('text/html');
             }

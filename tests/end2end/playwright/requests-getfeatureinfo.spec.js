@@ -528,4 +528,32 @@ test.describe('GetFeatureInfo Requests - anonymous - @requests @readonly', () =>
         popupExpect(thirdDiv).toHaveLizmapPopupTable();
         popupExpect(thirdDiv).toHaveLizmapFeatureId('children_layer', '3');
     });
+
+    test('Error: Layer not in project', async({ request }) => {
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'feature_toolbar',
+            SERVICE: 'WMS',
+            VERSION: '1.3.0',
+            REQUEST: 'GetFeatureInfo',
+            INFO_FORMAT: 'text/html',
+            LAYERS: 'unknown', // 'parent_layer',
+            QUERY_LAYERS: 'unknown', // 'parent_layer',
+            STYLE: "défaut",
+            CRS: "EPSG:2154",
+            BBOX: "599285.8893180595,6165210.947246418,944567.8298819406,6393414.528653582",
+            WIDTH: "870",
+            HEIGHT: "575",
+            FEATURE_COUNT: "10",
+            I: "436",
+            J: "290",
+            FI_POINT_TOLERANCE: "25",
+            FI_LINE_TOLERANCE: "10",
+            FI_POLYGON_TOLERANCE: "5",
+        });
+        let url = `/index.php/lizmap/service?${params}`;
+        let response = await request.get(url, {});
+        // check response
+        responseExpect(response).toBeXml(400);
+    });
 });
