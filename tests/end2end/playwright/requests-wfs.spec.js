@@ -1784,6 +1784,7 @@ test.describe('WFS Requests filter_layer_by_user @requests @readonly ', () => {
         delete form['FORCE_QGIS'];
         form['RESULTTYPE'] = 'hits';
         response = await request.post(url, {
+            headers: headers,
             form: form,
         });
         // check response
@@ -1839,6 +1840,7 @@ test.describe('WFS Requests filter_layer_by_user @requests @readonly ', () => {
         delete form['FORCE_QGIS'];
         form['RESULTTYPE'] = 'hits';
         response = await request.post(url, {
+            headers: headers,
             form: form,
         });
         // check response
@@ -1895,6 +1897,7 @@ test.describe('WFS Requests filter_layer_by_user @requests @readonly ', () => {
         delete form['FORCE_QGIS'];
         form['RESULTTYPE'] = 'hits';
         response = await request.post(url, {
+            headers: headers,
             form: form,
         });
         // check response
@@ -1945,12 +1948,116 @@ test.describe('WFS Requests filter_layer_by_user @requests @readonly ', () => {
         delete form['FORCE_QGIS'];
         form['RESULTTYPE'] = 'hits';
         response = await request.post(url, {
+            headers: headers,
             form: form,
         });
         // check response
         responseExpect(response).toBeGeoJson();
         // check body
         await responseExpect(response).toHaveGeoJsonNumberOfFeatures(3);
+    });
+
+    test('WFS GetFeature blue_filter_layer_by_user mixing users', async({ request }) => {
+        // first admin
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'filter_layer_by_user',
+        });
+        let url = `/index.php/lizmap/service?${params}`;
+        /** @type {{[key: string]: string}} */
+        let headers = {
+            authorization: "Basic " + btoa("admin:admin")
+        };
+        /** @type {{[key: string]: string | number | boolean}} */
+        let form = {
+            SERVICE: 'WFS',
+            VERSION: '1.0.0',
+            REQUEST: 'GetFeature',
+            TYPENAME: 'blue_filter_layer_by_user',
+            OUTPUTFORMAT: 'GeoJSON',
+        };
+        let response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(3);
+
+        // second anonymous
+        headers = {};
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(0);
+
+        // third admin
+        headers = {
+            authorization: "Basic " + btoa("admin:admin")
+        };
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(3);
+
+        // forth user in group a
+        headers = {
+            authorization: "Basic " + btoa("user_in_group_a:admin")
+        };
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(1);
+
+        // fifth admin
+        headers = {
+            authorization: "Basic " + btoa("admin:admin")
+        };
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(3);
+
+        // sixth user in group b
+        headers = {
+            authorization: "Basic " + btoa("user_in_group_b:admin")
+        };
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(1);
+
+        // last anonymous
+        headers = {};
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(0);
     });
 });
 
@@ -1997,6 +2104,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         delete form['FORCE_QGIS'];
         form['RESULTTYPE'] = 'hits';
         response = await request.post(url, {
+            headers: headers,
             form: form,
         });
         // check response
@@ -2060,6 +2168,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         delete form['FORCE_QGIS'];
         form['RESULTTYPE'] = 'hits';
         response = await request.post(url, {
+            headers: headers,
             form: form,
         });
         // check response
@@ -2127,6 +2236,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         delete form['FORCE_QGIS'];
         form['RESULTTYPE'] = 'hits';
         response = await request.post(url, {
+            headers: headers,
             form: form,
         });
         // check response
@@ -2176,6 +2286,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         delete form['FORCE_QGIS'];
         form['RESULTTYPE'] = 'hits';
         response = await request.post(url, {
+            headers: headers,
             form: form,
         });
         // check response
@@ -2239,6 +2350,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         delete form['FORCE_QGIS'];
         form['RESULTTYPE'] = 'hits';
         response = await request.post(url, {
+            headers: headers,
             form: form,
         });
         // check response
@@ -2308,6 +2420,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         delete form['FORCE_QGIS'];
         form['RESULTTYPE'] = 'hits';
         response = await request.post(url, {
+            headers: headers,
             form: form,
         });
         // check response
@@ -2357,6 +2470,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         delete form['FORCE_QGIS'];
         form['RESULTTYPE'] = 'hits';
         response = await request.post(url, {
+            headers: headers,
             form: form,
         });
         // check response
@@ -2420,6 +2534,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         delete form['FORCE_QGIS'];
         form['RESULTTYPE'] = 'hits';
         response = await request.post(url, {
+            headers: headers,
             form: form,
         });
         // check response
@@ -2483,6 +2598,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         delete form['FORCE_QGIS'];
         form['RESULTTYPE'] = 'hits';
         response = await request.post(url, {
+            headers: headers,
             form: form,
         });
         // check response

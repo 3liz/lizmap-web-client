@@ -187,6 +187,23 @@ class mediaCtrl extends jController
             );
         }
 
+        $rep = $this->processGetMedia($rep);
+        Checker::logoutCredentials($_SERVER);
+
+        return $rep;
+    }
+
+    /**
+     * Process get a media file (image, html, csv, pdf, etc.) store in the repository.
+     * Used to display media in the popup, via the information icon, etc.
+     *
+     * @param jResponseBinary $rep The prepared response
+     *
+     * @return jResponseBinary|jResponseJson object The media
+     */
+    protected function processGetMedia($rep)
+    {
+
         // Get repository data
         $repository = $this->param('repository');
 
