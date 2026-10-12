@@ -23,9 +23,9 @@ test.describe('Overview',
                 'LAYERS': 'Overview',
                 'CRS': 'EPSG:2154',
                 'STYLES': '',
-                'WIDTH': '232',
+                'WIDTH': '242',
                 'HEIGHT': '110',
-                'BBOX': /758432.36\d*,6273694.3\d*,782221.64\d*,6284973.7\d*/,
+                'BBOX': /757919.66\d*,6273694.3\d*,782734.34\d*,6284973.7\d*/,
             }
             requestExpect(request).toContainParametersInUrl(expectedParameters);
             await request.response();
@@ -47,9 +47,9 @@ test.describe('Overview',
                 'LAYERS': 'overview',
                 'CRS': 'EPSG:4326',
                 'STYLES': '',
-                'WIDTH': '232',
+                'WIDTH': '242',
                 'HEIGHT': '110',
-                'BBOX': /43.559491\d*,3.765259\d*,43.659592\d*,3.976380\d*/,
+                'BBOX': /43.559491\d*,3.760709\d*,43.659592\d*,3.980930\d*/,
             }
             requestExpect(request).toContainParametersInUrl(expectedParameters);
             await request.response();
@@ -70,9 +70,9 @@ test.describe('Overview',
                 'LAYERS': 'Overview_1',
                 'CRS': 'EPSG:3857',
                 'STYLES': '',
-                'WIDTH': '232',
+                'WIDTH': '242',
                 'HEIGHT': '110',
-                'BBOX': /411699.32\d*,5396012.89\d*,450848.73\d*,5414575.11\d*/,
+                'BBOX': /410855.58\d*,5396012.89\d*,451692.46\d*,5414575.11\d*/,
             }
             requestExpect(request).toContainParametersInUrl(expectedParameters);
             await request.response();
