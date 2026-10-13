@@ -16,6 +16,14 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
+-- Data for Name: BAD designed table; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects."BAD designed table" (id, "BAD column name is'nt it ?", action, geom) FROM stdin;
+\.
+
+
+--
 -- Data for Name: attribute_table; Type: TABLE DATA; Schema: tests_projects; Owner: -
 --
 
@@ -6030,6 +6038,13 @@ COPY tests_projects.xss (id, geom, description) FROM stdin;
 1	01010000206A0800000D9D9921FD822741B3C56B7B4DF45741	<script>alert('XSS')</script>
 2	01010000206A0800003C971843589327416B44F41A5BF45741	<iframe width="300" height="200" src="https://www.openstreetmap.org/export/embed.html?bbox=-0.004017949104309083%2C51.47612752641776%2C0.00030577182769775396%2C51.478569861898606&layer=mapnik"></iframe>
 \.
+
+
+--
+-- Name: BAD designed table_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects."BAD designed table_id_seq"', 1, false);
 
 
 --
