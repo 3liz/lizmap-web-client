@@ -13,6 +13,22 @@ use PHPUnit\Framework\TestCase;
  */
 class WMSRequestTest extends TestCase
 {
+    protected function tearDown(): void
+    {
+        $this->setLizmapServices(null);
+    }
+
+    /**
+     * Set the services used by the WMS request to log the metrics.
+     *
+     * @param null|lizmapServices $services
+     */
+    protected function setLizmapServices($services): void
+    {
+        $instance = new ReflectionProperty(lizmap::class, 'lizmapServicesInstance');
+        $instance->setValue(null, $services);
+    }
+
     public function testParameters(): void
     {
         $params = array(
@@ -252,6 +268,104 @@ class WMSRequestTest extends TestCase
         list($useCache, $wmsClient) = $wms->useCacheForTests($configLayer, $params, '');
         $this->assertEquals($expectedUseCache, $useCache);
         $this->assertEquals($expectedWmsClient, $wmsClient);
+    }
+
+    public static function getTileCacheMimeData()
+    {
+        return array(
+            array('image/png', 'image/png'),
+            array('image/png; mode=8bit', 'image/png'),
+            array('image/webp', 'image/webp'),
+            array('image/jpeg', 'image/jpeg'),
+        );
+    }
+
+    /**
+     * @dataProvider getTileCacheMimeData
+     *
+     * @param mixed $format
+     * @param mixed $expectedMime
+     */
+    #[DataProvider('getTileCacheMimeData')]
+    public function testGetTileCacheMime($format, $expectedMime): void
+    {
+        $this->setLizmapServices(new lizmapServices(array(), (object) array(), false, '', null));
+        $testContext = new ContextForTests();
+        $wms = new WMSRequestForTests(new ProjectForOGCForTests($testContext), array(), null);
+        $params = array('service' => 'WMS', 'request' => 'GetMap', 'format' => $format);
+
+        // The tile is not in cache: the cache key is returned
+        $key = $wms->getTileCache($params, 'tiles', true, false);
+        $this->assertIsString($key);
+
+        $testContext->setCache($key, 'tile content', null, 'tiles');
+        $this->assertEquals(
+            array('tile content', $expectedMime, 200, true),
+            $wms->getTileCache($params, 'tiles', true, false)
+        );
+    }
+
+    public static function getImageDataData()
+    {
+        return array(
+            array('image/png', 'image/png', true),
+            array('image/png; mode=8bit', 'image/png', true),
+            array('image/webp', 'image/webp', true),
+            array('image/jpeg', 'image/jpeg', false),
+        );
+    }
+
+    /**
+     * @dataProvider getImageDataData
+     *
+     * @param mixed $format
+     * @param mixed $expectedMime
+     * @param mixed $expectedTransparency
+     */
+    #[DataProvider('getImageDataData')]
+    public function testGetImageData($format, $expectedMime, $expectedTransparency): void
+    {
+        if (!extension_loaded('gd') || ($expectedMime == 'image/webp' && !function_exists('imagewebp'))) {
+            $this->markTestSkipped('gd is not able to handle '.$expectedMime);
+        }
+
+        // The image returned by QGIS Server: a tile of 256px with a buffer of 5px,
+        // fully transparent except an opaque square in the top left corner
+        $metatile = imagecreatetruecolor(266, 266);
+        imagealphablending($metatile, false);
+        imagesavealpha($metatile, true);
+        imagefill($metatile, 0, 0, imagecolorallocatealpha($metatile, 0, 0, 0, 127));
+        imagefilledrectangle($metatile, 0, 0, 132, 132, imagecolorallocate($metatile, 255, 0, 0));
+        ob_start();
+        if ($expectedMime == 'image/png') {
+            imagepng($metatile);
+        } elseif ($expectedMime == 'image/webp') {
+            imagewebp($metatile);
+        } else {
+            imagejpeg($metatile);
+        }
+        $data = ob_get_clean();
+
+        $this->setLizmapServices(new lizmapServices(array(), (object) array(), false, '', null));
+        $wms = new WMSRequestForTests(new ProjectForOGCForTests(new ContextForTests()), array(), null);
+        $tile = $wms->getImageDataForTests(
+            $data,
+            array('format' => $format),
+            array('width' => 256, 'height' => 256),
+            0,
+            0
+        );
+
+        // The tile is cropped and keeps the requested image format
+        $tileInfo = getimagesizefromstring($tile);
+        $this->assertEquals($expectedMime, $tileInfo['mime']);
+        $this->assertEquals(256, $tileInfo[0]);
+        $this->assertEquals(256, $tileInfo[1]);
+
+        // The transparency is kept if the image format supports it
+        $image = imagecreatefromstring($tile);
+        $this->assertEquals(0, (imagecolorat($image, 10, 10) >> 24) & 0x7F);
+        $this->assertEquals($expectedTransparency ? 127 : 0, (imagecolorat($image, 200, 200) >> 24) & 0x7F);
     }
 
     public function testRegexpMediaUrls(): void
