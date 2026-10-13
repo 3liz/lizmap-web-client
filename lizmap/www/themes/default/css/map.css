@@ -991,7 +991,7 @@ lizmap-feature-toolbar button.btn:hover,
   margin: 0;
 }
 
-edition-form-container > div > h3 {
+#edition-form-container > div > h3 {
   font-size: 1.5em;
 }
 
