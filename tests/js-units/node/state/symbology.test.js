@@ -937,6 +937,123 @@ describe('LayerSymbolsSymbology', function () {
             expect(error).to.be.instanceOf(ValidationError)
         }
     })
+
+    it('expressionFilter', function () {
+        const legend = JSON.parse(readFileSync('./tests/js-units/data/montpellier_tree-legend.json', 'utf8'));
+        const getNode = (name) => structuredClone(legend.nodes.find(node => node.name === name));
+
+        // Categorized renderer
+        const categorized = new LayerSymbolsSymbology(getNode('points_of_interest'))
+        expect(categorized.children[0].expression).to.be.eq('"type" = 1')
+        // Everything is checked
+        expect(categorized.expressionFilter).to.be.null
+        categorized.children[1].checked = false
+        expect(categorized.expressionFilter).to.be.eq('( "type" = 1 ) OR ( "type" = 3 ) OR ( "type" = 4 )')
+        categorized.children[0].checked = false
+        categorized.children[2].checked = false
+        expect(categorized.expressionFilter).to.be.eq('( "type" = 4 )')
+        // Nothing is checked, the layer is not visible
+        categorized.children[3].checked = false
+        expect(categorized.expressionFilter).to.be.null
+        categorized.children[1].checked = true
+        expect(categorized.expressionFilter).to.be.eq('( "type" = 2 )')
+
+        // Rule renderer with nested rules
+        const ruled = new LayerSymbolsSymbology(getNode('SousQuartiers'))
+        expect(ruled.expressionFilter).to.be.null
+        // Unchecking a parent rule removes its children rules
+        ruled.children[0].checked = false
+        expect(ruled.children[0].title).to.be.eq('CV')
+        expect(ruled.expressionFilter).to.not.contain(`'CV'`)
+        expect(ruled.expressionFilter)
+            .to.contain(`( "quartmno" = 'CX' ) OR ( ("libsquart" = 'Pas du Loup') AND ("quartmno" = 'CX') ) OR `)
+            .that.contain(` OR ( "quartmno" = 'PR' )`)
+        // The features of an unchecked child rule are still drawn with the parent rule symbol
+        ruled.children[0].checked = true
+        ruled.children[0].children[1].checked = false
+        expect(ruled.children[0].children[1].title).to.be.eq('Alco')
+        expect(ruled.expressionFilter).to.not.contain(`'Alco'`)
+        expect(ruled.expressionFilter)
+            .to.contain(`( "quartmno" = 'CV' ) OR ( ("libsquart" = 'LES CEVENNES') AND ("quartmno" = 'CV') ) OR `)
+
+        // Rule renderer with groups of rules without symbol and ELSE rule
+        const icon = legend.nodes[0].symbols[0].icon
+        const grouped = new LayerSymbolsSymbology({
+            "symbols":[{
+                "title":"group",
+                "ruleKey":"{group}",
+                "checked":true,
+                "parentRuleKey":"{root}",
+                "expression":""
+            },{
+                "icon":icon,
+                "title":"category 1",
+                "ruleKey":"{cat1}",
+                "checked":true,
+                "parentRuleKey":"{group}",
+                "expression":"\"category\" = 1"
+            },{
+                "icon":icon,
+                "title":"",
+                "ruleKey":"{else}",
+                "checked":true,
+                "parentRuleKey":"{group}",
+                "expression":"NOT (\"category\" = 1)"
+            }],
+            "title":"layer_legend_ruled",
+            "type":"layer",
+            "name":"layer_legend_ruled"
+        })
+        expect(grouped.expressionFilter).to.be.null
+        grouped.children[0].children[0].checked = false
+        expect(grouped.expressionFilter).to.be.eq('( NOT ("category" = 1) )')
+        grouped.children[0].children[0].checked = true
+        grouped.children[0].children[1].checked = false
+        expect(grouped.expressionFilter).to.be.eq('( "category" = 1 )')
+
+        // Expressions based on the map scale cannot be used out of a map rendering
+        const scaled = new LayerSymbolsSymbology({
+            "symbols":[{
+                "icon":icon,
+                "title":"category 1",
+                "ruleKey":"{cat1}",
+                "checked":true,
+                "parentRuleKey":"{root}",
+                "expression":"(\"category\" = 1) AND ((@map_scale <= 100000) AND (@map_scale >= 1))"
+            },{
+                "icon":icon,
+                "title":"category 2",
+                "ruleKey":"{cat2}",
+                "checked":false,
+                "parentRuleKey":"{root}",
+                "expression":"(\"category\" = 2) AND ((@map_scale <= 100000) AND (@map_scale >= 1))"
+            }],
+            "title":"layer_legend_ruled",
+            "type":"layer",
+            "name":"layer_legend_ruled"
+        })
+        expect(scaled.expressionFilter).to.be.null
+
+        // Expressions not provided by QGIS Server
+        const noExpression = new LayerSymbolsSymbology({
+            "symbols":[{
+                "icon":icon,
+                "title":"category 1",
+                "ruleKey":"0",
+                "checked":true
+            },{
+                "icon":icon,
+                "title":"category 2",
+                "ruleKey":"1",
+                "checked":false
+            }],
+            "title":"layer_legend_categorized",
+            "type":"layer",
+            "name":"layer_legend_categorized"
+        })
+        expect(noExpression.children[0].expression).to.be.eq('')
+        expect(noExpression.expressionFilter).to.be.null
+    })
 })
 
 describe('LayerGroupSymbology', function () {
