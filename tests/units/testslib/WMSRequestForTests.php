@@ -19,6 +19,11 @@ class WMSRequestForTests extends WMSRequest
         return $this->useCache($configLayer, $params, $profile);
     }
 
+    public function getImageDataForTests($data, $params, $originalParams, $xFactor, $yFactor)
+    {
+        return $this->getImageData($data, $params, $originalParams, $xFactor, $yFactor);
+    }
+
     public function getRegexpMediaUrlsForTests()
     {
         return self::$regexp_media_urls;
