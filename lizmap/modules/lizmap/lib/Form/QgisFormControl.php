@@ -158,7 +158,7 @@ class QgisFormControl
         'smallint' => 'integer',
         '_int' => 'integer[]',
 
-         // PostgreSQL floating point arrays
+        // PostgreSQL floating point arrays
         '_float' => 'decimal[]',
         '_float4' => 'decimal[]',
         '_float8' => 'decimal[]',
