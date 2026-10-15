@@ -3128,6 +3128,16 @@ img.ui-datepicker-trigger {
   width:0;
 }
 
+/* Checkboxes and radios are sized in em from the dock font (12px),
+   which left them too small next to the other controls */
+#edition-form-container .form-check-input,
+#edition-modal .form-check-input {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.4em;
+  vertical-align: -0.2rem;
+}
+
 #edition-segment-length, #edition-segment-angle {
   line-height: 30px;
 }
