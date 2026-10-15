@@ -449,7 +449,12 @@ test.describe('Copy-paste geometry — feature picker popup',
                 // (may include features from previous failed test runs if cleanup didn't run)
                 await expect(popup.locator('.feature-row')).not.toHaveCount(0);
 
-                // Row must show the layer name
+                // Row must show the feature display name and the layer name
+                // Display name
+                await expect(
+                    popup.locator('.feature-row', { hasText: 'tc11-source-displayName' })
+                ).toHaveCount(1);
+                // Layer name
                 await expect(popup.locator('.feature-row td').first())
                     .toContainText(LAYERS.polygon.name);
 
