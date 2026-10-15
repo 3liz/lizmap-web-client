@@ -512,8 +512,13 @@ class WMSRequest extends OGCRequest
         $toHtml = ($this->param('info_format') == 'text/html');
         if ($toHtml) {
             $this->params['info_format'] = 'text/xml';
-            // Request the feature display name (QGIS layer display expression), available since QGIS Server 3.32
+        }
+
+        // Request the feature display name only when the client asks for it
+        if ($this->param('with_display_name') === 'true') {
             $this->params['with_display_name'] = 'true';
+        } else {
+            unset($this->params['with_display_name']);
         }
 
         // force layers

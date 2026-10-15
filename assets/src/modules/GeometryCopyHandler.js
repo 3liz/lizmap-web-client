@@ -187,7 +187,8 @@ export default class GeometryCopyHandler {
             J: Math.round(pixelPosition.y),
             FI_POINT_TOLERANCE: 25,
             FI_LINE_TOLERANCE: 10,
-            FI_POLYGON_TOLERANCE: 5
+            FI_POLYGON_TOLERANCE: 5,
+            WITH_DISPLAY_NAME: 'true'
         };
 
         if (filterTokens.length) {
