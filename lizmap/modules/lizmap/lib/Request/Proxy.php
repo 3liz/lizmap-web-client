@@ -14,8 +14,9 @@
 namespace Lizmap\Request;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\NetworkException;
 use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\ResponseException;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
@@ -349,7 +350,12 @@ class Proxy
         }
 
         if (isset($options['loginFilteredOverride'])) {
-            $options['headers']['X-Lizmap-Override-Filter'] = $options['loginFilteredOverride'];
+            // convert boolean to string for the header
+            if (is_bool($options['loginFilteredOverride'])) {
+                $options['headers']['X-Lizmap-Override-Filter'] = $options['loginFilteredOverride'] ? 'true' : 'false';
+            } else {
+                $options['headers']['X-Lizmap-Override-Filter'] = ''.$options['loginFilteredOverride'];
+            }
         }
 
         return array($url, $options);
@@ -478,17 +484,17 @@ class Proxy
         try {
             // Send request
             $response = $client->send($request, $requestOptions);
-        } catch (ConnectException $e) {
+        } catch (NetworkException $e) {
             // Handle connection timeout
             \lizmap::getLogger()->error('Connection failed: '.$e->getMessage());
             $response = new Response(504, array(), null, '1.1', 'HTTP/1.1 504 Gateway Timeout');
-        } catch (RequestException $e) {
-            // Handle transfer timeout
+        } catch (ResponseException $e) {
             // throwing exceptions on an HTTP protocol errors (i.e., 4xx and 5xx responses) has been disabled
             \lizmap::getLogger()->error('Request failed: '.$e->getMessage());
-            if ($e->hasResponse()) {
-                $response = $e->getResponse();
-            }
+            $response = $e->getResponse();
+        } catch (RequestException $e) {
+            // Handle transfer timeout
+            \lizmap::getLogger()->error('Request failed: '.$e->getMessage());
             $response = new Response(504, array(), null, '1.1', 'HTTP/1.1 504 Gateway Timeout');
         }
 
