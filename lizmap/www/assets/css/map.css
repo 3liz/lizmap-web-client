@@ -686,6 +686,9 @@ button.btn-primary:hover > [class*=" icon-"] {
   padding-bottom:2px;
   height: 26px;
   box-sizing: border-box;
+
+  /* Bootstrap 5 .form-control forces 1rem, keep the header font size */
+  font-size: inherit;
 }
 
 #headermenu .navbar-search .search-icon {
