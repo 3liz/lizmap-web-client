@@ -35,6 +35,12 @@
                     </div>
                 </div>
                 <div class="tab-pane" id="tabdigitization">
+                    <lizmap-digitizing
+                        context="edition"
+                        selected-tool="point"
+                        available-tools="point"
+                        measure
+                    ></lizmap-digitizing>
                     <div id="edition-geomtool-container" class="btn-group"
                         style="display:none;">
                         <button id="edition-geomtool-nodetool" class="btn btn-sm"
@@ -57,15 +63,7 @@
                             data-bs-toggle="tooltip" data-bs-title="{@view~edition.geomtool.splitfeatures.title@}">
                             <i class="icon-none qgis_sprite mActionSplitFeatures"></i>
                         </button>
-                        <lizmap-reverse-geom class="btn btn-sm"
-                            data-bs-toggle="tooltip" data-bs-title="{@view~edition.geomtool.reversegeom.title@}">
-                        </lizmap-reverse-geom>
                     </div>
-                    <button id="edition-geomtool-restart-drawing" class="btn btn-sm"
-                        data-bs-toggle="tooltip" data-bs-title="{@view~edition.geomtool.restartdrawing.title@}">
-                        <i class="icon-refresh"></i>
-                    </button>
-                    <lizmap-paste-geom></lizmap-paste-geom>
                     <lizmap-paste-stored-geom style="display:none;" data-bs-toggle="tooltip" data-bs-title="{@view~edition.geomtool.pastegeom.title@}"></lizmap-paste-stored-geom>
                     <form id="edition-point-coord-form" class="form-horizontal">
                         <fieldset>
@@ -100,20 +98,6 @@
                                         <div class="controls col">
                                             <input name="coord-y" id="edition-point-coord-y"
                                                 class="jforms-ctrl-input form-control form-control-sm" value="" type="text">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row g-0 mb-2 hidden">
-                                        <label
-                                            class="jforms-label form-label col-auto">{@view~edition.segment.length.label@}</label>
-                                        <div class="controls col">
-                                            <label id="edition-segment-length"></label>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row g-0 mb-2 hidden">
-                                        <label
-                                            class="jforms-label form-label col-auto">{@view~edition.segment.angle.label@}</label>
-                                        <div class="controls col">
-                                            <label id="edition-segment-angle"></label>
                                         </div>
                                     </div>
                                     <div class="form-group row g-0 mb-2">
