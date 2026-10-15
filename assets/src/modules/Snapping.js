@@ -5,11 +5,16 @@
  * @license MPL-2.0
  */
 
-import { mainEventDispatcher } from '../modules/Globals.js';
+import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import Edition from './Edition.js';
 import { MapLayerLoadStatus, MapRootState } from './state/MapLayer.js';
 import { TreeRootState } from './state/LayerTree.js';
-import WFS from './WFS.js';
+
+import { Snap } from 'ol/interaction.js';
+import { Vector as VectorSource } from 'ol/source.js';
+import { Vector as VectorLayer } from 'ol/layer.js';
+import { Circle, Fill, Stroke, Style } from 'ol/style.js';
+import GeoJSON from 'ol/format/GeoJSON.js';
 
 /**
  * @class
@@ -32,7 +37,6 @@ export default class Snapping {
         this._lizmap3 = lizmap3;
 
         this._active = false;
-        this._snapLayersRefreshable = false;
 
         this._maxFeatures = 1000;
         this._restrictToMapExtent = true;
@@ -42,36 +46,38 @@ export default class Snapping {
         this._snapLayers = [];
         this._snapOnStart = false;
         this._pendingMapReadyListener = null;
-        this._wfsErrorNotified = false;
 
-        // Create layer to store snap features
-        const snapLayer = new OpenLayers.Layer.Vector('snaplayer', {
-            visibility: false,
-            styleMap: new OpenLayers.StyleMap({
-                pointRadius: 2,
-                fill: false,
-                stroke: false,
-                strokeWidth: 3,
-                strokeColor: 'red',
-                strokeOpacity: 0.8
+        // Create OL6 snap source and layer with a subtle solid style
+        this._snapSource = new VectorSource();
+        this._snapLayer = new VectorLayer({
+            source: this._snapSource,
+            visible: false,
+            style: new Style({
+                stroke: new Stroke({
+                    color: 'rgba(255, 140, 0, 0.7)',
+                    width: 1.5
+                }),
+                fill: new Fill({
+                    color: 'rgba(255, 140, 0, 0.05)'
+                }),
+                image: new Circle({
+                    radius: 4,
+                    fill: new Fill({ color: 'rgba(255, 140, 0, 0.4)' }),
+                    stroke: new Stroke({ color: 'rgba(255, 140, 0, 0.8)', width: 1 })
+                })
             })
         });
+        this._snapLayer.setProperties({ name: 'snaplayer' });
 
-        this._lizmap3.map.addLayer(snapLayer);
-        this._snapLayer = snapLayer;
+        // Will be added to map once mainLizmap.map is ready
+        this._snapInteraction = null;
+        this._mapReady = false;
 
-        const snapControl = new OpenLayers.Control.Snapping({
-            layer: this._edition.editLayer,
-            targets: [{
-                layer: snapLayer
-            }]
-        });
-        this._lizmap3.map.addControls([snapControl]);
-        this._lizmap3.controls['snapControl'] = snapControl;
-
-        this._setSnapLayersRefreshable = () => {
-            if(this._active){
-                this.snapLayersRefreshable = true;
+        // OL6 Snap source feeds off in-memory features; reload them after the
+        // map view moves so off-extent geometry comes into snap range.
+        this._refreshSnapDataOnMoveEnd = () => {
+            if (this._active) {
+                this.getSnappingData();
             }
         }
 
@@ -87,7 +93,6 @@ export default class Snapping {
                 config.snap_enabled = this._snapEnabled;
 
                 this.config = config;
-                this.snapLayersRefreshable = true;
 
                 // dispatch an event, it might be useful to know when the list of visible layer for snap changed
                 mainEventDispatcher.dispatch('snapping.layer.visibility.changed');
@@ -108,9 +113,19 @@ export default class Snapping {
             this._snapLayers = visibleLayers.concat(snapLayers);
         }
 
+        // Ensure snap layer is added to map when available
+        this._ensureMapReady = () => {
+            if (!this._mapReady && mainLizmap.map) {
+                mainLizmap.map.addToolLayer(this._snapLayer);
+                this._mapReady = true;
+            }
+        };
+
         // Activate snap when a layer is edited
         mainEventDispatcher.addListener(
             () => {
+                this._ensureMapReady();
+
                 // Get snapping configuration for edited layer
                 for (const editionLayer in this._lizmap3.config.editionLayers) {
                     if (this._lizmap3.config.editionLayers.hasOwnProperty(editionLayer)) {
@@ -150,21 +165,8 @@ export default class Snapping {
                 }
 
                 if (this._config !== undefined){
-                    // Configure snapping
-                    const snapControl = this._lizmap3.controls.snapControl;
-
-                    // Set edition layer as main layer
-                    snapControl.setLayer(this._edition.editLayer);
-
-                    snapControl.targets[0].node = this._config.snap_vertices;
-                    snapControl.targets[0].vertex = this._config.snap_intersections;
-                    snapControl.targets[0].edge = this._config.snap_segments;
-                    snapControl.targets[0].nodeTolerance = this._config.snap_vertices_tolerance;
-                    snapControl.targets[0].vertexTolerance = this._config.snap_intersections_tolerance;
-                    snapControl.targets[0].edgeTolerance = this._config.snap_segments_tolerance;
-
                     // Listen to moveend event and to layers visibility changes to able data refreshing
-                    this._lizmap3.map.events.register('moveend', this, this._setSnapLayersRefreshable);
+                    mainLizmap.map.on('moveend', this._refreshSnapDataOnMoveEnd);
                     this._rootMapGroup.addListener(
                         this._setSnapLayersVisibility,
                         ['layer.visibility.changed','group.visibility.changed']
@@ -191,11 +193,13 @@ export default class Snapping {
                     this._pendingMapReadyListener = null;
                 }
                 this.active = false;
-                this._snapLayer.destroyFeatures();
+                this._snapSource.clear();
                 this.config = undefined;
 
-                // Remove listener to moveend event to layers visibility event
-                this._lizmap3.map.events.unregister('moveend', this, this._setSnapLayersRefreshable);
+                // Remove listener to moveend event and layers visibility event
+                if (mainLizmap.map) {
+                    mainLizmap.map.un('moveend', this._refreshSnapDataOnMoveEnd);
+                }
                 this._rootMapGroup.removeListener(
                     this._setSnapLayersVisibility,
                     ['layer.visibility.changed','group.visibility.changed']
@@ -244,97 +248,43 @@ export default class Snapping {
         }
     }
 
-    /**
-     * Log a WFS snap failure and surface a user-visible message, once per refresh batch.
-     * Called from both the rejection and the "no valid FeatureCollection" path.
-     * @param {string}              layerName - the layer whose WFS request failed
-     * @param {Error|object|string}  detail    - the error or payload that triggered the notice
-     * @private
-     */
-    _notifySnapWfsError(layerName, detail) {
-        console.warn('Snapping: WFS request failed for layer', layerName, detail);
-        if (this._wfsErrorNotified) return;
-        this._wfsErrorNotified = true;
-        const msg = lizDict['snapping.message.wfs_error']
-            || 'Snapping: failed to load data for some layers — snap may be incomplete.';
-        this._lizmap3.addMessage(msg, 'error', true, 7000);
-    }
-
     getSnappingData () {
-        // Empty snapping layer first
-        this._snapLayer.destroyFeatures();
-
-        // Reset the once-per-refresh error notification flag so a new batch of
-        // requests can re-surface a user-visible message if WFS still fails.
-        this._wfsErrorNotified = false;
+        // Empty snapping source first
+        this._snapSource.clear();
 
         // filter only visible layers and toggled layers on the the snap list
         const currentSnapLayers = this._snapLayers.filter(
             (layerId) => this._snapEnabled[layerId] && this._snapToggled[layerId]
         );
 
-        // Request the map projection so QGIS Server reprojects server-side with full
-        // PROJ accuracy (including datum grid shifts). This prevents the ~cm coordinate
-        // drift that occurs when OL2 performs a client-side EPSG:4326 → map-projection
-        // transform using a simplified Helmert approximation instead of an NTv2 grid.
-        const mapProjection = this._lizmap3.map.getProjection();
-        const mapExtent = this._restrictToMapExtent ? this._lizmap3.map.getExtent() : null;
-        const wfs = new WFS();
-        const gFormat = new OpenLayers.Format.GeoJSON({ ignoreExtraDims: true });
+        const mapProjection = mainLizmap.map.getView().getProjection().getCode();
 
+        // TODO : group async calls with Promises
         for (const snapLayer of currentSnapLayers) {
-            const layerConfigById = this._lizmap3.getLayerConfigById(snapLayer);
-            if (!layerConfigById || !layerConfigById[0]) continue;
 
-            const layerName = layerConfigById[0];
-            const layerConf = this._lizmap3.config.layers[layerName];
-            if (!layerConf) continue;
+            lizMap.getFeatureData(this._lizmap3.getLayerConfigById(snapLayer)[0], null, null, 'geom', this._restrictToMapExtent, null, this._maxFeatures,
+                (fName, fFilter, fFeatures) => {
 
-            // Resolve typename (same logic as getVectorLayerWfsUrl)
-            let typeName = layerName.split(' ').join('_');
-            if (layerConf.hasOwnProperty('shortname') && layerConf['shortname']) typeName = layerConf['shortname'];
-            else if (layerConf.hasOwnProperty('typename') && layerConf['typename']) typeName = layerConf['typename'];
+                    // Transform features
+                    const snapLayerConfig = lizMap.config.layers[fName];
+                    let snapLayerCrs = snapLayerConfig['featureCrs'];
+                    if (!snapLayerCrs) {
+                        snapLayerCrs = snapLayerConfig['crs'];
+                    }
 
-            const wfsOptions = {
-                VERSION: '1.1.0',
-                TYPENAME: typeName,
-                SRSNAME: mapProjection,
-                MAXFEATURES: this._maxFeatures,
-            };
+                    const gFormat = new GeoJSON();
+                    const tfeatures = gFormat.readFeatures(
+                        { type: 'FeatureCollection', features: fFeatures },
+                        {
+                            dataProjection: snapLayerCrs,
+                            featureProjection: mapProjection
+                        }
+                    );
 
-            // Apply existing layer filter if present (e.g. login-based filter)
-            if (layerConf.hasOwnProperty('request_params') && layerConf['request_params'].hasOwnProperty('filter')) {
-                const layerFilter = layerConf['request_params']['filter'];
-                if (layerFilter) {
-                    wfsOptions['EXP_FILTER'] = layerFilter.replace(layerName + ':', '');
-                }
-            }
-
-            // Append CRS code so the server interprets the extent in the map projection
-            if (mapExtent) {
-                wfsOptions['BBOX'] = [mapExtent.left, mapExtent.bottom, mapExtent.right, mapExtent.top].join(',') + ',' + mapProjection;
-            }
-
-            wfs.getFeature(wfsOptions).then(data => {
-                if (!data || !Array.isArray(data.features)) {
-                    // The WFS endpoint returned something (no rejection) but not a
-                    // FeatureCollection — most likely an OGC ExceptionReport wrapped as
-                    // JSON. Treat as a failure so the user sees that snap may be incomplete.
-                    this._notifySnapWfsError(layerName, data);
-                    return;
-                }
-                // Features are already in map projection — no client-side reprojection needed.
-                const tfeatures = gFormat.read({
-                    type: 'FeatureCollection',
-                    features: data.features
+                    // Add features
+                    this._snapSource.addFeatures(tfeatures);
                 });
-                this._snapLayer.addFeatures(tfeatures);
-            }).catch(err => {
-                this._notifySnapWfsError(layerName, err);
-            });
         }
-
-        this.snapLayersRefreshable = false;
     }
 
     toggle(){
@@ -382,16 +332,6 @@ export default class Snapping {
         config.snap_on_layers = this._snapToggled;
 
         this.config = config;
-        this.snapLayersRefreshable = true;
-    }
-
-    get snapLayersRefreshable(){
-        return this._snapLayersRefreshable;
-    }
-
-    set snapLayersRefreshable(refreshable) {
-        this._snapLayersRefreshable = refreshable;
-        mainEventDispatcher.dispatch('snapping.refreshable');
     }
 
     get active() {
@@ -401,20 +341,66 @@ export default class Snapping {
     set active(active) {
         this._active = active;
 
-        // (de)activate snap control
+        // (de)activate snap interaction
         if (this._active) {
             this.getSnappingData();
-            this._lizmap3.controls.snapControl.activate();
+            this._createSnapInteraction();
         } else {
-            // Disable refresh button when snapping is inactive
-            this.snapLayersRefreshable = false;
-            this._lizmap3.controls.snapControl.deactivate();
+            this._removeSnapInteraction();
         }
 
-        // Set snap layer visibility
-        this._snapLayer.setVisibility(this._active);
+        // Show snap layer when active so users can see snappable features
+        this._snapLayer.setVisible(this._active);
 
         mainEventDispatcher.dispatch('snapping.active');
+    }
+
+    /**
+     * Create and add the OL6 Snap interaction to the map
+     * @private
+     */
+    _createSnapInteraction() {
+        this._removeSnapInteraction();
+
+        if (!this._config || !mainLizmap.map) return;
+
+        this._snapInteraction = new Snap({
+            source: this._snapSource,
+            vertex: this._config.snap_vertices || this._config.snap_intersections,
+            edge: this._config.snap_segments,
+            pixelTolerance: Math.max(
+                parseInt(this._config.snap_vertices_tolerance) || 10,
+                parseInt(this._config.snap_segments_tolerance) || 10
+            )
+        });
+
+        mainLizmap.map.addInteraction(this._snapInteraction);
+    }
+
+    /**
+     * Remove the OL6 Snap interaction from the map
+     * @private
+     */
+    _removeSnapInteraction() {
+        if (this._snapInteraction && mainLizmap.map) {
+            mainLizmap.map.removeInteraction(this._snapInteraction);
+            this._snapInteraction = null;
+        }
+    }
+
+    /**
+     * Re-add the Snap interaction so it sits at the top of the map's
+     * interactions list, which means OL processes it *before* whatever
+     * Draw / Modify / Translate was just added by another module.
+     *
+     * Callers (e.g. the Digitizing module) invoke this after adding a new
+     * drawing interaction so snapping continues to work against the latest
+     * interaction in the stack. No-op when snapping is inactive.
+     */
+    reorderSnapInteraction() {
+        if (this._active && mainLizmap.map && this._config) {
+            this._createSnapInteraction();
+        }
     }
 
     get config() {
@@ -423,6 +409,11 @@ export default class Snapping {
 
     set config(config) {
         this._config = config;
+
+        // Re-create snap interaction with updated config when active
+        if (this._active && this._config) {
+            this._createSnapInteraction();
+        }
 
         mainEventDispatcher.dispatch('snapping.config');
     }
