@@ -18,7 +18,7 @@ const tableName = 'point';
  * @param {Position} to the end position
  */
 const moveEdition = async (project, from, to) => {
-    await project.mapOl2.hover()
+    await project.map.hover()
     await project.page.mouse.move(from.x, from.y)
     await project.page.mouse.down()
     await project.page.waitForTimeout(10)
@@ -39,7 +39,7 @@ const moveEdition = async (project, from, to) => {
     await project.page.mouse.move(to.x, to.y)
     await project.page.waitForTimeout(10)
     await project.page.mouse.up()
-    await project.mapOl2.hover()
+    await project.map.hover()
 }
 
 test.describe('Form edition all field type', function () {
@@ -247,8 +247,8 @@ test.describe('Form edition all field type', function () {
 
         // Intercept getData query to wait for its end
         let getDataRequestPromise = page.waitForRequest(/jelix\/forms\/getdata/);
-        // Click on the map over Zone A1
-        project.clickOnMapLegacy(530-150, 375-50);
+        // Click on OL6 map since edition drawing was migrated from OL2 to OL6
+        project.clickOnMap(530-150, 375-50);
         // Wait for getData query ends, check request parameters and response
         let getDataRequest = await getDataRequestPromise;
         let getDataExpectedParameters = {
