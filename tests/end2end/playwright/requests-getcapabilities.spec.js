@@ -378,6 +378,47 @@ test.describe('GetCapabilities Requests - anonymous - @requests @readonly', () =
         expect(xmlBody.attr).toHaveProperty('version', '1.0.0');
     });
 
+    test('WMTS GetCapabilities for project in CRS with ft-us units', async({ request }) => {
+        // Issue Github 7262
+        // Bug : Project in a US survey feet CRS (+units=us-ft) fails to load: division by zero in lizmapTiler::getTileMatrixSetList
+        // So requesting WMTS GetCapabilities for this project fails with a division by zero in lizmapTiler::getTileMatrixSetList
+        // It responses with an error 500
+        // Fixing this issue will provide a valid XML response with an HTTP 200
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'texas_2278',
+            SERVICE: 'WMTS',
+            REQUEST: 'GetCapabilities',
+        });
+        let url = `/index.php/lizmap/service?${params}`;
+        let response = await request.get(url, {});
+        // check response
+        responseExpect(response).toBeXml();
+
+        let xmlBody = new XmlDocument(await response.text());
+        expect(xmlBody.name).toBe('Capabilities');
+        expect(xmlBody.attr).toHaveProperty('version', '1.0.0');
+
+        expect(xmlBody.childNamed('Contents')).not.toBeUndefined();
+        const contentsElem = xmlBody.childNamed('Contents');
+        if (contentsElem !== undefined) {
+            expect(contentsElem.childrenNamed('Layer')).toHaveLength(0);
+
+            expect(contentsElem.childrenNamed('TileMatrixSet')).toHaveLength(3);
+            let tileMatrixSetElem = contentsElem.childrenNamed('TileMatrixSet')[0];
+            expect(tileMatrixSetElem.childNamed('ows:Identifier')).not.toBeUndefined();
+            expect(tileMatrixSetElem.childNamed('ows:Identifier')?.val).toBe('EPSG:4326');
+
+            tileMatrixSetElem = contentsElem.childrenNamed('TileMatrixSet')[1];
+            expect(tileMatrixSetElem.childNamed('ows:Identifier')).not.toBeUndefined();
+            expect(tileMatrixSetElem.childNamed('ows:Identifier')?.val).toBe('EPSG:3857');
+
+            tileMatrixSetElem = contentsElem.childrenNamed('TileMatrixSet')[2];
+            expect(tileMatrixSetElem.childNamed('ows:Identifier')).not.toBeUndefined();
+            expect(tileMatrixSetElem.childNamed('ows:Identifier')?.val).toBe('EPSG:2278');
+        }
+    });
+
     test('WFS 1.0.0 GetCapabilities', async({ request }) => {
         let params = new URLSearchParams({
             repository: 'testsrepository',
