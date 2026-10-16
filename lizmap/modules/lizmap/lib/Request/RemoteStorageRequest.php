@@ -15,6 +15,7 @@ namespace Lizmap\Request;
 
 use GuzzleHttp\Client as GuzzleHttpClient;
 use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\ResponseException;
 use GuzzleHttp\Psr7\Utils as Psr7Utils;
 
 class RemoteStorageRequest
@@ -65,11 +66,12 @@ class RemoteStorageRequest
                     $response = $client->request('PUT', $storageUrl, $opt);
                     $returnUrl = $storageUrl;
                     $http_code = $response->getStatusCode();
-                } catch (RequestException $e) {
+                } catch (ResponseException $e) {
+                    $http_code = $e->getResponse()->getStatusCode();
                     $message = 'Error on file upload '.$e->getMessage();
-                    if ($e->hasResponse()) {
-                        $http_code = $e->getResponse()->getStatusCode();
-                    }
+                } catch (RequestException $e) {
+                    $http_code = 500;
+                    $message = 'Error on file upload '.$e->getMessage();
                 } catch (\Exception $e) {
                     $http_code = 500;
                     $message = 'Error on file upload '.$e->getMessage();
@@ -113,11 +115,12 @@ class RemoteStorageRequest
                     try {
                         $response = $client->request('DELETE', $storageUrl.$fileName);
                         $http_code = $response->getStatusCode();
+                    } catch (ResponseException $e) {
+                        $http_code = $e->getResponse()->getStatusCode();
+                        $message = 'Error on file upload '.$e->getMessage();
                     } catch (RequestException $e) {
+                        $http_code = 500;
                         $message = 'Error on deleting remote file '.$e->getMessage();
-                        if ($e->hasResponse()) {
-                            $http_code = $e->getResponse()->getStatusCode();
-                        }
                     } catch (\Exception $e) {
                         $http_code = 500;
                         $message = 'Error on deleting remote file '.$e->getMessage();
