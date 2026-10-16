@@ -65,6 +65,18 @@ class QgisFormForTests extends Form\QgisForm
     }
 
     /**
+     * Expose protected resolveFieldNames for unit tests.
+     *
+     * @param string[] $names
+     *
+     * @return string[]
+     */
+    public function resolveFieldNamesForTests($names)
+    {
+        return $this->resolveFieldNames($names);
+    }
+
+    /**
      * Recorded calls to evaluateExpression: each entry is ['expressions' => ..., 'form_feature' => ...].
      *
      * @var array[]
