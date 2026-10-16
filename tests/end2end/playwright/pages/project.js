@@ -850,14 +850,11 @@ export class ProjectPage extends BasePage {
                 .toHaveText(labelText);
         }
         const input = this.editionForm.locator(`input[id='jforms_view_edition_${fieldName}']`);
-        let value;
-        if (trim) {
-            value = (await input.inputValue()).replace(/\s+/g,' ').trim();
-        } else {
-            value = await input.inputValue();
-        }
-
-        expect(value).toBe(fieldValue);
+        // Retry: text widgets are refreshed asynchronously after the form is displayed
+        await expect.poll(async () => {
+            const value = await input.inputValue();
+            return trim ? value.replace(/\s+/g,' ').trim() : value;
+        }).toBe(fieldValue);
     }
 
     /**
