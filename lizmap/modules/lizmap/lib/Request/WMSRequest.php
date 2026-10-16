@@ -514,6 +514,13 @@ class WMSRequest extends OGCRequest
             $this->params['info_format'] = 'text/xml';
         }
 
+        // Request the feature display name only when the client asks for it
+        if ($this->param('with_display_name') === 'true') {
+            $this->params['with_display_name'] = 'true';
+        } else {
+            unset($this->params['with_display_name']);
+        }
+
         // force layers
         $this->params['query_layers'] = implode(',', $qgisQueryLayers);
         $this->params['layers'] = implode(',', $qgisQueryLayers);
@@ -797,9 +804,12 @@ class WMSRequest extends OGCRequest
             $hiddenGeometry = '';
             $featureToolbarExtent = '';
             $maptipValue = null;
+            $displayName = '';
 
             foreach ($feature->Attribute as $attribute) {
-                if ($attribute['name'] == 'maptip') {
+                if ($attribute['name'] == 'displayName') {
+                    $displayName = (string) $attribute['value'];
+                } elseif ($attribute['name'] == 'maptip') {
                     // first replace all "media/bla/bla/media.ext" by full url
                     $maptipValue = preg_replace_callback(
                         self::$regexp_media_urls,
@@ -881,6 +891,7 @@ class WMSRequest extends OGCRequest
 
             $content[] = $this->getViewTpl('view~popup', $layerName, $layerId, $layerTitle, array(
                 'featureId' => $id,
+                'featureDisplayName' => $displayName,
                 'popupContent' => $hiddenFeatureId.$hiddenGeometry.$featureToolbar.$finalContent,
             ));
         } // loop features
@@ -926,7 +937,7 @@ class WMSRequest extends OGCRequest
             $values = array();
             foreach ($featureAttributes as $attribute) {
                 $name = (string) $attribute['name'];
-                if ($name === 'geometry' || $name === 'maptip') {
+                if ($name === 'geometry' || $name === 'maptip' || $name === 'displayName') {
                     continue;
                 }
                 $value = (string) $attribute['value'];
