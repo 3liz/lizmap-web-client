@@ -300,8 +300,17 @@ class lizmapTiler
 
                 $extent = array($destMinPt->x, $destMinPt->y, $destMaxPt->x, $destMaxPt->y);
 
-                preg_match('/ \+units=(?P<unit>\w+) /', $projection->proj4, $matches);
-                $unit = $matches['unit'];
+                $unit = null;
+                if (preg_match('/ \+units=(?:ind-|us-)?(?P<unit>\w+) /', $projection->proj4, $matches)) {
+                    // us/indian feet/inch will be matched
+                    $unit = $matches['unit'];
+                } elseif (preg_match('/ \+to_meter=(?P<toMeter>[\d.]+)/', $projection->proj4, $matches)) {
+                    // the unit is defined by its length in meters
+                    $unit = 'to_meter';
+                    $INCHES_PER_UNIT[$unit] = (float) $matches['toMeter'] * $INCHES_PER_UNIT['m'];
+                } else {
+                    trigger_error('unit not found for projection', E_USER_ERROR);
+                }
 
                 // $res = 0.28E-3 * $scales[0] / $METERS_PER_INCH / $INCHES_PER_UNIT[ $unit ];
                 $res = $scales[0] / ($INCHES_PER_UNIT[$unit] * 96.0);
