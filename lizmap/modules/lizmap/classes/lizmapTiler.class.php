@@ -195,6 +195,8 @@ class lizmapTiler
         $INCHES_PER_UNIT['in'] = $INCHES_PER_UNIT['inches'];
         $INCHES_PER_UNIT['degrees'] = $INCHES_PER_UNIT['dd'];
         $INCHES_PER_UNIT['nmi'] = 1852 * $INCHES_PER_UNIT['m'];
+        // US survey foot: 1200/3937 m, exactly 12 of the 39.37 inches per metre above.
+        $INCHES_PER_UNIT['us-ft'] = $INCHES_PER_UNIT['ft'];
 
         $tileWidth = 256.0;
         $tileHeight = 256.0;
@@ -300,7 +302,7 @@ class lizmapTiler
 
                 $extent = array($destMinPt->x, $destMinPt->y, $destMaxPt->x, $destMaxPt->y);
 
-                preg_match('/ \+units=(?P<unit>\w+) /', $projection->proj4, $matches);
+                preg_match('/ \+units=(?P<unit>[\w-]+) /', $projection->proj4, $matches);
                 $unit = $matches['unit'];
 
                 // $res = 0.28E-3 * $scales[0] / $METERS_PER_INCH / $INCHES_PER_UNIT[ $unit ];
@@ -395,6 +397,8 @@ class lizmapTiler
         $INCHES_PER_UNIT['in'] = $INCHES_PER_UNIT['inches'];
         $INCHES_PER_UNIT['degrees'] = $INCHES_PER_UNIT['dd'];
         $INCHES_PER_UNIT['nmi'] = 1852 * $INCHES_PER_UNIT['m'];
+        // US survey foot: 1200/3937 m, exactly 12 of the 39.37 inches per metre above.
+        $INCHES_PER_UNIT['us-ft'] = $INCHES_PER_UNIT['ft'];
 
         $tileWidth = 256.0;
         $tileHeight = 256.0;
