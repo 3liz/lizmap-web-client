@@ -335,7 +335,12 @@ class Proxy
         }
 
         if (isset($options['loginFilteredOverride'])) {
-            $options['headers']['X-Lizmap-Override-Filter'] = $options['loginFilteredOverride'];
+            // convert boolean to string for the header
+            if (is_bool($options['loginFilteredOverride'])) {
+                $options['headers']['X-Lizmap-Override-Filter'] = $options['loginFilteredOverride'] ? 'true' : 'false';
+            } else {
+                $options['headers']['X-Lizmap-Override-Filter'] = ''.$options['loginFilteredOverride'];
+            }
         }
 
         return array($url, $options);
