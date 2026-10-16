@@ -516,18 +516,154 @@ test.describe('GetFeatureInfo Requests - anonymous - @requests @readonly', () =>
         popupExpect(secondDiv).toBeLizmapPopupSingleFeature();
         popupExpect(secondDiv).toHaveLizmapPopupTitle('children_layer');
         popupExpect(secondDiv).toBeLizmapPopupSingleFeature();
-        popupExpect(secondDiv).toHaveLizmapPopupTitle('children_layer');
         popupExpect(secondDiv).not.toHaveLizmapPopupSpatialInfo();
         popupExpect(secondDiv).toHaveLizmapPopupTable();
         popupExpect(secondDiv).toHaveLizmapFeatureId('children_layer', '3');
 
-        let thirdDiv = htmlElements[1];
+        let thirdDiv = htmlElements[2];
         popupExpect(thirdDiv).toBeLizmapPopupSingleFeature();
         popupExpect(thirdDiv).toHaveLizmapPopupTitle('children_layer');
         popupExpect(thirdDiv).not.toHaveLizmapPopupSpatialInfo();
         popupExpect(thirdDiv).toHaveLizmapPopupTable();
-        popupExpect(thirdDiv).toHaveLizmapFeatureId('children_layer', '3');
+        popupExpect(thirdDiv).toHaveLizmapFeatureId('children_layer', '2');
     });
+
+    test('Click on map with 2 features and display name', async({ request }) => {
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'feature_toolbar',
+            SERVICE: 'WMS',
+            VERSION: '1.3.0',
+            REQUEST: 'GetFeatureInfo',
+            INFO_FORMAT: 'text/html',
+            LAYERS: 'parent_layer',
+            QUERY_LAYERS: 'parent_layer',
+            STYLE: "défaut",
+            CRS: "EPSG:2154",
+            BBOX: "599285.8893180595,6165210.947246418,944567.8298819406,6393414.528653582",
+            WIDTH: "870",
+            HEIGHT: "575",
+            FEATURE_COUNT: "10",
+            I: "436",
+            J: "290",
+            FI_POINT_TOLERANCE: "25",
+            FI_LINE_TOLERANCE: "10",
+            FI_POLYGON_TOLERANCE: "5",
+            WITH_DISPLAY_NAME: "true",
+        });
+        let url = `/index.php/lizmap/service?${params}`;
+        let response = await request.get(url, {});
+        // check response
+        responseExpect(response).toBeHtml();
+
+        let htmlRoot = parseHtml(await response.text());
+        let htmlElements = htmlRoot.childNodes.filter(n => n.nodeType === 1);
+        expect(htmlElements).toHaveLength(3);
+
+        // displayName is not a column of the compact table
+        let firstDiv = htmlElements[0];
+        popupExpect(firstDiv).toBePopupAllFeaturesCompact();
+        expect(
+            firstDiv.querySelectorAll('thead tr th').map(th => th.textContent)
+        ).not.toContain('displayName');
+
+        // The display expression of parent_layer is "id"
+        for (const featureId of ['1', '2']) {
+            let featureDiv = (htmlRoot.querySelector(
+                `div.lizmapPopupSingleFeature[data-feature-id="${featureId}"]`
+            ));
+            expect(featureDiv).not.toBeNull();
+            popupExpect(featureDiv).toBeLizmapPopupSingleFeature();
+            popupExpect(featureDiv).toHaveLizmapPopupTable();
+            expect(featureDiv.getAttribute('data-feature-display-name')).toBe(featureId);
+            // displayName is not a row of the popup table
+            expect(featureDiv.querySelectorAll('tr[data-field-name="displayName"]')).toHaveLength(0);
+        }
+    });
+
+    test('Filter with 2 features and display name', async({ request }) => {
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'feature_toolbar',
+            SERVICE: 'WMS',
+            VERSION: '1.3.0',
+            REQUEST: 'GetFeatureInfo',
+            INFO_FORMAT: 'text/html',
+            LAYERS: 'children_layer',
+            QUERY_LAYERS: 'children_layer',
+            STYLE: "",
+            FEATURE_COUNT: "10",
+            FILTER: 'children_layer:"parent_id" = \'1\'',
+            WITH_DISPLAY_NAME: "true",
+        });
+        let url = `/index.php/lizmap/service?${params}`;
+        let response = await request.get(url, {});
+        // check response
+        responseExpect(response).toBeHtml();
+
+        let htmlRoot = parseHtml(await response.text());
+        /** @type {parseHtml.HTMLElement[]} htmlElements */
+        let htmlElements = htmlRoot.childNodes.filter(n => n.nodeType === 1);
+        expect(htmlElements).toHaveLength(3);
+
+        // The display expression of children_layer is "comment"
+        const expectedDisplayNames = {
+            '2': 'first comment',
+            '3': 'second comment',
+        };
+        for (const [featureId, displayName] of Object.entries(expectedDisplayNames)) {
+            let featureDiv = htmlRoot.querySelector(
+                `div.lizmapPopupSingleFeature[data-feature-id="${featureId}"]`
+            );
+            expect(featureDiv).not.toBeNull();
+            popupExpect(featureDiv).toBeLizmapPopupSingleFeature();
+            expect(featureDiv?.getAttribute('data-feature-display-name')).toBe(displayName);
+            expect(featureDiv?.querySelectorAll('tr[data-field-name="displayName"]')).toHaveLength(0);
+        }
+    });
+
+    // The display name is only requested when WITH_DISPLAY_NAME is "true"
+    for (const withDisplayName of [null, 'false']) {
+        test(`Click on map without display name - WITH_DISPLAY_NAME: ${withDisplayName}`, async({ request }) => {
+            let params = new URLSearchParams({
+                repository: 'testsrepository',
+                project: 'feature_toolbar',
+                SERVICE: 'WMS',
+                VERSION: '1.3.0',
+                REQUEST: 'GetFeatureInfo',
+                INFO_FORMAT: 'text/html',
+                LAYERS: 'parent_layer',
+                QUERY_LAYERS: 'parent_layer',
+                STYLE: "défaut",
+                CRS: "EPSG:2154",
+                BBOX: "599285.8893180595,6165210.947246418,944567.8298819406,6393414.528653582",
+                WIDTH: "870",
+                HEIGHT: "575",
+                FEATURE_COUNT: "10",
+                I: "436",
+                J: "290",
+                FI_POINT_TOLERANCE: "25",
+                FI_LINE_TOLERANCE: "10",
+                FI_POLYGON_TOLERANCE: "5",
+            });
+            if (withDisplayName !== null) {
+                params.set('WITH_DISPLAY_NAME', withDisplayName);
+            }
+            let url = `/index.php/lizmap/service?${params}`;
+            let response = await request.get(url, {});
+            // check response
+            responseExpect(response).toBeHtml();
+
+            let htmlRoot = parseHtml(await response.text());
+            let featureDivs = htmlRoot.querySelectorAll('div.lizmapPopupSingleFeature');
+            expect(featureDivs).toHaveLength(2);
+            for (const featureDiv of featureDivs) {
+                popupExpect(featureDiv).toBeLizmapPopupSingleFeature();
+                expect(featureDiv.hasAttribute('data-feature-display-name')).toBe(false);
+                expect(featureDiv.querySelectorAll('tr[data-field-name="displayName"]')).toHaveLength(0);
+            }
+        });
+    }
 
     test('Error: Layer not in project', async({ request }) => {
         let params = new URLSearchParams({
