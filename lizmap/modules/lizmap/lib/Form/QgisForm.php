@@ -246,23 +246,26 @@ class QgisForm implements QgisFormControlsInterface
         $attributeEditorForm = $this->getAttributesEditorForm();
         if ($attributeEditorForm) {
             $groupVisibilities = $attributeEditorForm->getGroupVisibilityExpressions();
-            $qgis_groupDependencies = \qgisExpressionUtils::getCriteriaFromExpressions($groupVisibilities);
+            $qgis_groupDependencies = $this->resolveFieldNames(\qgisExpressionUtils::getCriteriaFromExpressions($groupVisibilities));
             $privateData['qgis_groupDependencies'] = array_intersect($qgis_groupDependencies, array_keys($this->dbFieldsInfo->dataFields));
         } else {
             $privateData['qgis_groupDependencies'] = array();
         }
 
+        $textWidgets = $attributeEditorForm ? $attributeEditorForm->getTextWidgetFields() : array();
         $privateData['qgis_defaultExpressions'] = array(
-            'dependencies' => \qgisExpressionUtils::getCriteriaFromExpressions($this->dynamicDefaultExpressions),
+            'dependencies' => $this->resolveFieldNames(\qgisExpressionUtils::getCriteriaFromExpressions(
+                array_merge($this->dynamicDefaultExpressions, array_column($textWidgets, 'value'))
+            )),
             'applyOnUpdate' => $this->defaultApplyOnUpdateMap,
             'fields' => array_keys($this->dynamicDefaultExpressions),
+            'textWidgets' => array_keys($textWidgets),
         );
 
         // adding text widget fields to the form
         if ($attributeEditorForm) {
-            $textWidgetFields = $attributeEditorForm->getTextWidgetFields();
-            if (count($textWidgetFields) > 0) {
-                foreach ($textWidgetFields as $textName => $textProp) {
+            if (count($textWidgets) > 0) {
+                foreach ($textWidgets as $textName => $textProp) {
                     // use jFormsControlOutput instance
                     $textCtrl = new \jFormsControlOutput($textName);
                     $textCtrl->label = $textProp['label'];
@@ -2275,5 +2278,29 @@ class QgisForm implements QgisFormControlsInterface
             $expression,
             $form_feature
         );
+    }
+
+    /**
+     * Resolve names referenced in expressions to field names, as QGIS does:
+     * exact name, then case-insensitive name, then case-insensitive alias.
+     *
+     * @param string[] $names
+     *
+     * @return string[]
+     */
+    protected function resolveFieldNames($names)
+    {
+        $aliases = $this->layer->getAliasFields();
+        $fields = array_keys($aliases);
+        $lowerFields = array_change_key_case(array_combine($fields, $fields));
+        $lowerAliases = array_change_key_case(array_flip($aliases));
+
+        $resolved = array();
+        foreach ($names as $name) {
+            $lower = strtolower($name);
+            $resolved[] = array_key_exists($name, $aliases) ? $name : ($lowerFields[$lower] ?? $lowerAliases[$lower] ?? $name);
+        }
+
+        return array_values(array_unique($resolved));
     }
 }

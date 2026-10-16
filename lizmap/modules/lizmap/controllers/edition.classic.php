@@ -686,7 +686,8 @@ class editionCtrl extends jController
      * @urlparam string $repository
      * @urlparam string $project
      * @urlparam string $layerId
-     * POST: values (JSON object), geometry (WKT string), fields (JSON array, optional)
+     * POST: values (JSON object), geometry (WKT string), fields (JSON array, optional),
+     * texts (JSON array of text widget names, optional)
      *
      * @return jResponseHtmlFragment|jResponseJson
      */
@@ -706,9 +707,11 @@ class editionCtrl extends jController
             $values = array();
         }
         $wkt = trim((string) $this->param('geometry', ''));
-        $only = json_decode($this->param('fields', '[]'), true);
-        if (!is_array($only)) {
-            $only = array();
+        // Without the fields parameter, all default values are evaluated
+        $only = json_decode($this->param('fields', 'null'), true);
+        $texts = json_decode($this->param('texts', '[]'), true);
+        if (!is_array($texts)) {
+            $texts = array();
         }
 
         $geom = ($wkt && WktTools::check($wkt)) ? WktTools::parse($wkt) : null;
@@ -721,7 +724,7 @@ class editionCtrl extends jController
         $defs = $this->layer->getDefaultValueDefinitions();
         $expressions = array();
         foreach ($defs as $field => $def) {
-            if ($only && !in_array($field, $only, true)) {
+            if (is_array($only) && !in_array($field, $only, true)) {
                 continue;
             }
             $expression = $def['expression'];
@@ -735,11 +738,24 @@ class editionCtrl extends jController
             $expressions[$field] = $expression;
         }
 
-        $results = qgisExpressionUtils::evaluateExpressions($this->layer, $expressions, $formFeature);
+        $results = $expressions ? (array) qgisExpressionUtils::evaluateExpressions($this->layer, $expressions, $formFeature) : array();
+
+        // Text widgets: templates are read from the project, never from the request
+        $templates = array();
+        $xmlLayer = $texts ? $this->layer->getXmlLayer() : null;
+        foreach ($xmlLayer ? $xmlLayer->xpath('.//attributeEditorTextElement') : array() as $node) {
+            if (in_array((string) $node['name'], $texts, true)) {
+                $templates[(string) $node['name']] = (string) $node;
+            }
+        }
+        if ($templates) {
+            $json = qgisExpressionUtils::replaceExpressionText($this->layer, $templates, $formFeature);
+            $results += (array) ($json->features[0]->properties ?? array());
+        }
 
         /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
-        $rep->data = $results ? (array) $results : new stdClass();
+        $rep->data = $results ?: new stdClass();
 
         return $rep;
     }
