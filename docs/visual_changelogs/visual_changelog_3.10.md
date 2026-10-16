@@ -131,6 +131,14 @@ The list of permalinks is visible in the administration interface ([#6765](https
 
   *Developed by [meyerlor](https://github.com/meyerlor)*
 
+* When copying a geometry, the feature picker now shows the **feature display name** defined in QGIS in addition to the layer name, so you can tell overlapping features apart
+
+  ([#7210](https://github.com/3liz/lizmap-web-client/pull/7210))
+
+  ![img_display_name_feature_picker](media/3.10/display_name_feature_picker.png)
+
+  *Funded by 3Liz - Developed by [Eliott Yvetot](https://github.com/Elioooooott)*
+
 * The **background color** defined in QGIS for form tabs
   is now used in the Lizmap form
   ([#6342](https://github.com/3liz/lizmap-web-client/pull/6342))
