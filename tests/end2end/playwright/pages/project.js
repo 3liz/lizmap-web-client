@@ -820,6 +820,31 @@ export class ProjectPage extends BasePage {
     }
 
     /**
+     * getEditionFormTextFieldValue function
+     * get the given text input or text widget value
+     * @param {string} fieldName The name of the input/text widget field
+     * @param {null|string} labelText The label text, optional if only input value should be checked
+     * @param {boolean} trim trim the text widget value (only for text widget checks)
+     *
+     * @returns {Promise<string>} The input value
+     */
+    async getEditionFormTextFieldValue(fieldName, labelText = null, trim = false){
+        if (labelText !== null) {
+            await expect(this.editionForm.locator(`label[id='jforms_view_edition_${fieldName}_label']`))
+                .toHaveText(labelText);
+        }
+        const input = this.editionForm.locator(`input[id='jforms_view_edition_${fieldName}']`);
+        let value;
+        if (trim) {
+            value = (await input.inputValue()).replace(/\s+/g,' ').trim();
+        } else {
+            value = await input.inputValue();
+        }
+
+        return value;
+    }
+
+    /**
      * checkEditionFormTextField function
      * check the given text input or text widget value
      * @param {string} fieldName The name of the input/text widget field
