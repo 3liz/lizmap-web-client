@@ -639,7 +639,7 @@ test.describe(
             await expect(project.editionForm.locator('div.tab-pane').nth(0).locator('div.form-group')).toHaveCount(5);
             await project.checkEditionFormTextField('id', '1', 'id');
             await project.checkEditionFormTextField('Constant', 'text string', 'Constant', true);
-            await project.checkEditionFormTextField('Geometry X', '3.860212606866182', 'Geometry X', true);
+            await project.checkEditionFormTextField('Geometry X', '3.8602126068661824', 'Geometry X', true);
             await project.checkEditionFormTextField('id check', '1', 'id check', true);
             await project.checkEditionFormTextField('point_name', 'Widget_test', 'Name');
 
@@ -664,7 +664,7 @@ test.describe(
 
             await project.checkEditionFormTextField('id', '1', 'id');
             await project.checkEditionFormTextField('Constant', 'text string', 'Constant', true);
-            await project.checkEditionFormTextField('Geometry X', '3.860212606866182', 'Geometry X', true);
+            await project.checkEditionFormTextField('Geometry X', '3.8602126068661824', 'Geometry X', true);
             await project.checkEditionFormTextField('id check', '1', 'id check', true);
             await project.checkEditionFormTextField('point_name', 'text modified', 'Name');
             wrongExpressionValue = await project.getEditionFormTextFieldValue('Wrong expression', 'Wrong expression', true);
