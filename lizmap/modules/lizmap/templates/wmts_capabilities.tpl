@@ -98,7 +98,7 @@
         <TileMatrix>
             <ows:Identifier>{$k}</ows:Identifier>
             <ScaleDenominator>{$tileMatrix->scaleDenominator|number_format:16,'.',''}</ScaleDenominator>
-            <TopLeftCorner>{$tileMatrix->left} {$tileMatrix->top}</TopLeftCorner>
+            <TopLeftCorner>{$tileMatrix->left|number_format:10,'.',''} {$tileMatrix->top|number_format:10,'.',''}</TopLeftCorner>
             <TileWidth>256</TileWidth>
             <TileHeight>256</TileHeight>
             <MatrixWidth>{$tileMatrix->col}</MatrixWidth>
