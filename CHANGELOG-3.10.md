@@ -8,6 +8,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Added
+
+* Edition - Copy-paste geometry: display the QGIS feature display name in the feature picker https://github.com/3liz/lizmap-web-client/pull/7210
+
 ### Fixed
 
 * Tooltip - Do not apply the light popup table style inside the dark map tooltip, which made the text unreadable https://github.com/3liz/lizmap-web-client/issues/7163
