@@ -187,7 +187,8 @@ export default class GeometryCopyHandler {
             J: Math.round(pixelPosition.y),
             FI_POINT_TOLERANCE: 25,
             FI_LINE_TOLERANCE: 10,
-            FI_POLYGON_TOLERANCE: 5
+            FI_POLYGON_TOLERANCE: 5,
+            WITH_DISPLAY_NAME: 'true'
         };
 
         if (filterTokens.length) {
@@ -277,6 +278,8 @@ export default class GeometryCopyHandler {
                 // Extract layer ID and feature ID from data attributes
                 const layerId = $featureDiv.attr('data-layer-id') || '';
                 const featureId = $featureDiv.attr('data-feature-id') || 'Unknown';
+                // Feature display name, from the QGIS layer display expression
+                const displayName = $featureDiv.attr('data-feature-display-name') || '';
 
                 // Extract geometry WKT from hidden input
                 const geometryWKT = $featureDiv.find('.lizmap-popup-layer-feature-geometry').val();
@@ -306,7 +309,7 @@ export default class GeometryCopyHandler {
                 features.push({
                     layerName: layerName,
                     layerId: layerId,
-                    featureLabel: featureId,
+                    featureLabel: displayName || featureId,
                     geometryType: geometryType,
                     geometry: ol2Geometry,
                     feature: ol2Feature
