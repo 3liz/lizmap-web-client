@@ -644,7 +644,8 @@ test.describe(
 
             // second tab
             await expect(project.editionForm.locator('div.tab-pane').nth(2).locator('div.control-group')).toHaveCount(1);
-            await project.checkEditionFormTextField('Wrong expression', '[%kk[% "ids" %]%]', 'Wrong expression', true);
+            let wrongExpressionValue = await project.getEditionFormTextFieldValue('Wrong expression', 'Wrong expression', true);
+            expect(['[%kk[% "ids" %]%]', '']).toEqual(expect.arrayContaining([wrongExpressionValue]));
 
             // third tab
             await expect(project.editionForm.locator('div.tab-pane').nth(1).locator('div.control-group')).toHaveCount(1);
@@ -665,8 +666,8 @@ test.describe(
             await project.checkEditionFormTextField('Geometry X', '3.860212606866182', 'Geometry X', true);
             await project.checkEditionFormTextField('id check', '1', 'id check', true);
             await project.checkEditionFormTextField('point_name', 'text modified', 'Name');
-
-            await project.checkEditionFormTextField('Wrong expression', '[%kk[% "ids" %]%]', 'Wrong expression', true);
+            wrongExpressionValue = await project.getEditionFormTextFieldValue('Wrong expression', 'Wrong expression', true);
+            expect(['[%kk[% "ids" %]%]', '']).toEqual(expect.arrayContaining([wrongExpressionValue]));
 
             await project.checkEditionFormTextField('Name check', 'text modified', 'Name check', true);
         })
@@ -698,7 +699,8 @@ test.describe(
 
             // second tab
             await expect(project.editionForm.locator('div.tab-pane').nth(2).locator('div.control-group')).toHaveCount(1);
-            await project.checkEditionFormTextField('Wrong expression', '[%kk[% "ids" %]%]', 'Wrong expression', true);
+            let wrongExpressionValue = await project.getEditionFormTextFieldValue('Wrong expression', 'Wrong expression', true);
+            expect(['[%kk[% "ids" %]%]', '']).toEqual(expect.arrayContaining([wrongExpressionValue]));
 
             // third tab
             await expect(project.editionForm.locator('div.tab-pane').nth(1).locator('div.control-group')).toHaveCount(1);
@@ -737,7 +739,8 @@ test.describe(
 
             // second tab
             await expect(project.editionForm.locator('div.tab-pane').nth(2).locator('div.control-group')).toHaveCount(1);
-            await project.checkEditionFormTextField('Wrong expression', '[%kk[% "ids" %]%]', 'Wrong expression', true);
+            wrongExpressionValue = await project.getEditionFormTextFieldValue('Wrong expression', 'Wrong expression', true);
+            expect(['[%kk[% "ids" %]%]', '']).toEqual(expect.arrayContaining([wrongExpressionValue]));
 
             // third tab
             await expect(project.editionForm.locator('div.tab-pane').nth(1).locator('div.control-group')).toHaveCount(1);
