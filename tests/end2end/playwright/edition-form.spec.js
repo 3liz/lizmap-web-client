@@ -551,16 +551,6 @@ test.describe('Multiple geometry layers', () => {
     })
 })
 
-/*
-==== IMPORTANT NOTE ====
-NOTE: this test is disabled because its assumptions are wrong: QGIS fail silently when replacing
-text with expression evaluation and return the template expression instead issuing an error
-
-Security fixes in Lizmap server does not allow to fail silently and return an error 400 Bad Request
-on expression failure
-
-This test must be fixed accordingly and LWC must handle the error correctly.
-=========================
 test.describe(
     'Text widget in a form',
     {
@@ -900,7 +890,6 @@ test.describe(
             await project.checkEditionFormTextField('Name check', '', 'Name check', true);
         });
     });
-*/
 
 test.describe('Form upload file widget @readonly',() => {
 
