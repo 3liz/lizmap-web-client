@@ -220,10 +220,43 @@ class ProxyTest extends TestCase
             'X-Lizmap-User' => '',
             'X-Lizmap-User-Groups' => '',
         );
+        $options4 = array(
+            'method' => 'post',
+            'headers' => array(),
+            'body' => 'not empty',
+            'loginFilteredOverride' => true,
+        );
+        $expectedHeaders4 = array(
+            'Connection' => 'close',
+            'User-Agent' => ini_get('user_agent') ?: 'Lizmap',
+            'Accept' => '*/*',
+            'Content-type' => 'application/x-www-form-urlencoded',
+            'X-Lizmap-Override-Filter' => 'true',
+            'X-Lizmap-User' => '',
+            'X-Lizmap-User-Groups' => '',
+        );
+        $options5 = array(
+            'method' => 'post',
+            'headers' => array(),
+            'body' => 'not empty',
+            'loginFilteredOverride' => 0,
+        );
+        $expectedHeaders5 = array(
+            'Connection' => 'close',
+            'User-Agent' => ini_get('user_agent') ?: 'Lizmap',
+            'Accept' => '*/*',
+            'Content-type' => 'application/x-www-form-urlencoded',
+            'X-Lizmap-Override-Filter' => '0',
+            'X-Lizmap-User' => '',
+            'X-Lizmap-User-Groups' => '',
+        );
+
         return array(
             array($options1, $expectedHeaders1, ''),
             array($options2, $expectedHeaders2, 'test=test', 'http://localhost'),
             array($options3, $expectedHeaders3, 'not empty'),
+            array($options4, $expectedHeaders4, 'not empty'),
+            array($options5, $expectedHeaders5, 'not empty'),
         );
     }
 
