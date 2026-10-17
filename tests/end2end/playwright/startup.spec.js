@@ -28,6 +28,35 @@ test.describe('Startup', () => {
         });
     });
 
+    test('Zoom to features extent and filter them with trigger_filter=yes', async ({ page }) => {
+        // The permalink project has sousquartiers in the attribute table tool
+        const project = new ProjectPage(page, 'permalink');
+        const getFilterTokenRequestPromise = project.waitForGetFilterTokenRequest();
+        await project.openWithExtraParams({
+            'layer': 'sousquartiers',
+            'filter': '"quartmno" = \'PA\' OR "quartmno" = \'HO\'',
+            'trigger_filter': 'yes',
+        });
+
+        // The startup features are filtered
+        const getFilterTokenRequest = await getFilterTokenRequestPromise;
+        requestExpect(getFilterTokenRequest).toContainParametersInPostData({
+            'service': 'WMS',
+            'request': 'GETFILTERTOKEN',
+            'typename': 'sousquartiers',
+            'filter': /^sousquartiers:"id" IN \( [0-9 ,]+ \) $/,
+        });
+
+        // Once the GetFilterToken is received, the map is refreshed with the filter token
+        const getMapRequestPromise = project.waitForGetMapRequest();
+        await getFilterTokenRequest.response();
+        const getMapRequest = await getMapRequestPromise;
+        requestExpect(getMapRequest).toContainParametersInUrl({
+            'LAYERS': 'sousquartiers',
+            'FILTERTOKEN': /^[a-zA-Z0-9]{32}$/,
+        });
+    });
+
     test('Zoom to features extent - error', async ({ page }) => {
         const project = new ProjectPage(page, 'startup');
         const getMapPromise = project.waitForGetMapRequest();
