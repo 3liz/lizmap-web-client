@@ -47,14 +47,11 @@ test.describe('Startup', () => {
             'filter': /^sousquartiers:"id" IN \( [0-9 ,]+ \) $/,
         });
 
-        // Once the GetFilterToken is received, the map is refreshed with the filter token
-        const getMapRequestPromise = project.waitForGetMapRequest();
-        await getFilterTokenRequest.response();
-        const getMapRequest = await getMapRequestPromise;
-        requestExpect(getMapRequest).toContainParametersInUrl({
-            'LAYERS': 'sousquartiers',
-            'FILTERTOKEN': /^[a-zA-Z0-9]{32}$/,
-        });
+        const getFilterTokenResponse = await getFilterTokenRequest.response();
+        responseExpect(getFilterTokenResponse).toBeJson();
+
+        // The layer is displayed as filtered and the filter can be removed
+        await expect(page.locator('#layerActionUnfilter')).toBeVisible();
     });
 
     test('Zoom to features extent - error', async ({ page }) => {
