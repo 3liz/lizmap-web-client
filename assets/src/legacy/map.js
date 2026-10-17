@@ -3643,11 +3643,39 @@ window.lizMap = function() {
          * Removes waiter and display getFeatureInfo, if requested
          * @param {Object} getFeatureInfo
          * @param {Object} [startupFeatures] - GeoJSON startup features to re-highlight after popup display
+         * and to filter if requested
          * @returns {void}
          */
         waitEnd: (getFeatureInfo, startupFeatures)=>{
             $('body').css('cursor', 'auto');
             $('#loading').dialog('close');
+
+            // Filter the startup features (attribute table filter) if requested
+            const urlParameters = (new URL(document.location)).searchParams;
+            const triggerFilter = ['yes', 'true'].includes(urlParameters.get('trigger_filter')?.toLowerCase());
+            if (triggerFilter && startupFeatures?.features?.length) {
+                const filterStartupFeatures = () => {
+                    const typeName = urlParameters.get('layer');
+                    const featureType = getNameByTypeName(typeName) ?? getNameByShortName(typeName) ?? typeName;
+                    if (!config.attributeLayers?.[featureType] || !config.layers?.[featureType]) {
+                        console.warn(`The layer "${typeName}" must be configured in the attribute table tool to be filtered at startup.`);
+                        return;
+                    }
+                    // Select the startup features then filter the layer from the selection
+                    config.layers[featureType]['selectedFeatures'] = startupFeatures.features.map(
+                        feature => String(feature.id).split('.').pop()
+                    );
+                    lizMap.events.triggerEvent('layerfeaturefilterselected',
+                        {'featureType': featureType}
+                    );
+                };
+                // layers state is complete once modules are initialized
+                if (lizMap.mainLizmap?.popup) {
+                    filterStartupFeatures();
+                } else {
+                    lizMap.mainEventDispatcher.subscribe(filterStartupFeatures, 'lizmap.modules.initialized');
+                }
+            }
 
             // Display getFeatureInfo if requested
             if(getFeatureInfo){
