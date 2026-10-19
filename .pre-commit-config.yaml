@@ -14,7 +14,7 @@ repos:
       - id: check-merge-conflict
       - id: mixed-line-ending
       - id: check-added-large-files
-
+        args: ["--maxkb=5000"]
   - repo: https://github.com/thibaudcolas/pre-commit-stylelint
     rev: v16.25.0
     hooks:
