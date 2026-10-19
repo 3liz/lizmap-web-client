@@ -32,6 +32,7 @@ import Message from './components/Message.js';
 import TypeAHead from './components/TypeAHead.js';
 import GroupPopupByLayer from './components/GroupPopupByLayer.js';
 import Panoramax from './components/Panoramax.js';
+import FeatureButton from './components/FeatureButton.js';
 
 import { mainLizmap, mainEventDispatcher } from './modules/Globals.js';
 import executeJSFromServer from './modules/ExecuteJSFromServer.js';
@@ -113,7 +114,7 @@ const definedCustomElements = () => {
     window.customElements.define('lizmap-typeahead', TypeAHead);
     window.customElements.define('lizmap-group-popup-layer', GroupPopupByLayer);
     window.customElements.define('lizmap-panoramax', Panoramax);
-
+    window.customElements.define('lizmap-feature-button', FeatureButton);
     /**
          * At this point the user interface is fully loaded.
          * External javascripts can subscribe to this event to perform post load
