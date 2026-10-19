@@ -402,6 +402,7 @@ class ProjectInfo extends BaseQgisXmlObject
                         'height' => $item->height,
                         'grid' => $item->grid,
                         'overviewMap' => $item->overviewMap,
+                        'extent' => $item->extent,
                     );
 
                     // store mapping between uuid and id

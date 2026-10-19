@@ -27,6 +27,7 @@ use Lizmap\Project\Qgis;
  * @property string      $uuid
  * @property bool        $grid
  * @property null|string $overviewMap
+ * @property null|array  $extent
  */
 class LayoutItemMap extends Qgis\BaseQgisObject
 {
@@ -41,6 +42,7 @@ class LayoutItemMap extends Qgis\BaseQgisObject
         'uuid',
         'grid',
         'overviewMap',
+        'extent',
     );
 
     /** @var array<string> The not null properties */
