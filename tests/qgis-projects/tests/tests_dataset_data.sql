@@ -475,6 +475,7 @@ COPY tests_projects.form_filter (id, label, category, event_date, geom) FROM std
 4	monuments 2	heritage	1990-11-30	01010000206A080000BA9926EC46DC9140DD5B3AA4A0AD80C0
 \.
 
+
 --
 -- Data for Name: form_filter_child_bus_stops; Type: TABLE DATA; Schema: tests_projects; Owner: -
 --
