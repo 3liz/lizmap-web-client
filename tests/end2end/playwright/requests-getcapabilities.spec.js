@@ -262,6 +262,28 @@ test.describe('GetCapabilities Requests - anonymous - @requests @readonly', () =
             expect(tileMatrixSetElem.childNamed('ows:Identifier')?.val).toBe('EPSG:3857');
             expect(tileMatrixSetElem.childrenNamed('TileMatrix')).toHaveLength(17);
 
+            // TileMatrix content for 3857
+            const tileMatrixElements = tileMatrixSetElem.childrenNamed('TileMatrix');
+            for (let i = 0; i < tileMatrixElements.length; i++) {
+                const tileMatrixElem = tileMatrixSetElem.childrenNamed('TileMatrix')[i];
+                expect(tileMatrixElem.childNamed('ows:Identifier')).not.toBeUndefined();
+                expect(tileMatrixElem.childNamed('ows:Identifier')?.val).toBe(''+i);
+                // ScaleDenominator has 16 decimals
+                expect(tileMatrixElem.childNamed('ScaleDenominator')).not.toBeUndefined();
+                expect(tileMatrixElem.childNamed('ScaleDenominator')?.val).toMatch(/^\d+\.\d{16}$/);
+                // TopLeftCorner has 10 decimals
+                expect(tileMatrixElem.childNamed('TopLeftCorner')).not.toBeUndefined();
+                expect(tileMatrixElem.childNamed('TopLeftCorner')?.val).toMatch(/^-?\d+\.\d{10} -?\d+\.\d{10}$/);
+                expect(tileMatrixElem.childNamed('TileWidth')).not.toBeUndefined();
+                expect(tileMatrixElem.childNamed('TileWidth')?.val).toBe('256');
+                expect(tileMatrixElem.childNamed('TileHeight')).not.toBeUndefined();
+                expect(tileMatrixElem.childNamed('TileHeight')?.val).toBe('256');
+                expect(tileMatrixElem.childNamed('MatrixWidth')).not.toBeUndefined();
+                expect(tileMatrixElem.childNamed('MatrixWidth')?.val).toBe(''+Math.pow(2, i));
+                expect(tileMatrixElem.childNamed('MatrixHeight')).not.toBeUndefined();
+                expect(tileMatrixElem.childNamed('MatrixHeight')?.val).toBe(''+Math.pow(2, i));
+            }
+
             expect(layerElem.childNamed('TileMatrixSetLink')).not.toBeUndefined();
             const tileMatrixSetLinkElem = layerElem.childNamed('TileMatrixSetLink');
             if (tileMatrixSetLinkElem !== undefined) {
@@ -347,7 +369,42 @@ test.describe('GetCapabilities Requests - anonymous - @requests @readonly', () =
             const tileMatrixSetElem = contentsElem.childrenNamed('TileMatrixSet')[0];
             expect(tileMatrixSetElem.childNamed('ows:Identifier')).not.toBeUndefined();
             expect(tileMatrixSetElem.childNamed('ows:Identifier')?.val).toBe('EPSG:3857');
+            expect(tileMatrixSetElem.childNamed('ows:SupportedCRS')).not.toBeUndefined();
+            expect(tileMatrixSetElem.childNamed('ows:SupportedCRS')?.val).toBe('EPSG:3857');
             expect(tileMatrixSetElem.childrenNamed('TileMatrix')).toHaveLength(17);
+
+            // TileMatrix content for 3857
+            const tileMatrixElements = tileMatrixSetElem.childrenNamed('TileMatrix');
+            let topLeftCorner = '';
+            let scaleDenominator = -1;
+            for (let i = 0; i < tileMatrixElements.length; i++) {
+                const tileMatrixElem = tileMatrixSetElem.childrenNamed('TileMatrix')[i];
+                expect(tileMatrixElem.childNamed('ows:Identifier')).not.toBeUndefined();
+                expect(tileMatrixElem.childNamed('ows:Identifier')?.val).toBe(''+i);
+                // ScaleDenominator has 16 decimals
+                expect(tileMatrixElem.childNamed('ScaleDenominator')).not.toBeUndefined();
+                expect(tileMatrixElem.childNamed('ScaleDenominator')?.val).toMatch(/^\d+\.\d{16}$/);
+                // TopLeftCorner has 10 decimals
+                expect(tileMatrixElem.childNamed('TopLeftCorner')).not.toBeUndefined();
+                expect(tileMatrixElem.childNamed('TopLeftCorner')?.val).toMatch(/^-?\d+\.\d{10} -?\d+\.\d{10}$/);
+                expect(tileMatrixElem.childNamed('TileWidth')).not.toBeUndefined();
+                expect(tileMatrixElem.childNamed('TileWidth')?.val).toBe('256');
+                expect(tileMatrixElem.childNamed('TileHeight')).not.toBeUndefined();
+                expect(tileMatrixElem.childNamed('TileHeight')?.val).toBe('256');
+                expect(tileMatrixElem.childNamed('MatrixWidth')).not.toBeUndefined();
+                expect(tileMatrixElem.childNamed('MatrixWidth')?.val).toBe(''+Math.pow(2, i));
+                expect(tileMatrixElem.childNamed('MatrixHeight')).not.toBeUndefined();
+                expect(tileMatrixElem.childNamed('MatrixHeight')?.val).toBe(''+Math.pow(2, i));
+                if (i === 0) {
+                    topLeftCorner = tileMatrixElem.childNamed('TopLeftCorner')?.val ?? '';
+                    const scaleDenominatorVal = tileMatrixElem.childNamed('ScaleDenominator')?.val;
+                    scaleDenominator = scaleDenominatorVal ? parseFloat(scaleDenominatorVal) : -1;
+                } else {
+                    expect(tileMatrixElem.childNamed('TopLeftCorner')?.val).toBe(topLeftCorner);
+                    const scaleDenominatorVal = tileMatrixElem.childNamed('ScaleDenominator')?.val;
+                    expect(scaleDenominatorVal ? parseFloat(scaleDenominatorVal) : -1).toBeLessThanOrEqual(scaleDenominator / Math.pow(2, i));
+                }
+            }
 
             expect(layerElem.childNamed('TileMatrixSetLink')).not.toBeUndefined();
             const tileMatrixSetLinkElem = layerElem.childNamed('TileMatrixSetLink');
@@ -416,6 +473,39 @@ test.describe('GetCapabilities Requests - anonymous - @requests @readonly', () =
             tileMatrixSetElem = contentsElem.childrenNamed('TileMatrixSet')[2];
             expect(tileMatrixSetElem.childNamed('ows:Identifier')).not.toBeUndefined();
             expect(tileMatrixSetElem.childNamed('ows:Identifier')?.val).toBe('EPSG:2278');
+
+            // TileMatrix content for 2278
+            const tileMatrixElements = tileMatrixSetElem.childrenNamed('TileMatrix');
+            let topLeftCorner = '';
+            let scaleDenominator = -1;
+            for (let i = 0; i < tileMatrixElements.length; i++) {
+                const tileMatrixElem = tileMatrixSetElem.childrenNamed('TileMatrix')[i];
+                expect(tileMatrixElem.childNamed('ows:Identifier')).not.toBeUndefined();
+                expect(tileMatrixElem.childNamed('ows:Identifier')?.val).toBe(''+i);
+                // ScaleDenominator has 16 decimals
+                expect(tileMatrixElem.childNamed('ScaleDenominator')).not.toBeUndefined();
+                expect(tileMatrixElem.childNamed('ScaleDenominator')?.val).toMatch(/^\d+\.\d{16}$/);
+                // TopLeftCorner has 10 decimals
+                expect(tileMatrixElem.childNamed('TopLeftCorner')).not.toBeUndefined();
+                expect(tileMatrixElem.childNamed('TopLeftCorner')?.val).toMatch(/^-?\d+\.\d{10} -?\d+\.\d{10}$/);
+                expect(tileMatrixElem.childNamed('TileWidth')).not.toBeUndefined();
+                expect(tileMatrixElem.childNamed('TileWidth')?.val).toBe('256');
+                expect(tileMatrixElem.childNamed('TileHeight')).not.toBeUndefined();
+                expect(tileMatrixElem.childNamed('TileHeight')?.val).toBe('256');
+                expect(tileMatrixElem.childNamed('MatrixWidth')).not.toBeUndefined();
+                expect(tileMatrixElem.childNamed('MatrixWidth')?.val).toMatch(/\d+/);
+                expect(tileMatrixElem.childNamed('MatrixHeight')).not.toBeUndefined();
+                expect(tileMatrixElem.childNamed('MatrixHeight')?.val).toMatch(/\d+/);
+                if (i === 0) {
+                    topLeftCorner = tileMatrixElem.childNamed('TopLeftCorner')?.val ?? '';
+                    const scaleDenominatorVal = tileMatrixElem.childNamed('ScaleDenominator')?.val;
+                    scaleDenominator = scaleDenominatorVal ? parseFloat(scaleDenominatorVal) : -1;
+                } else {
+                    expect(tileMatrixElem.childNamed('TopLeftCorner')?.val).toBe(topLeftCorner);
+                    const scaleDenominatorVal = tileMatrixElem.childNamed('ScaleDenominator')?.val;
+                    expect(scaleDenominatorVal ? parseFloat(scaleDenominatorVal) : -1).toBeLessThanOrEqual(scaleDenominator / Math.pow(2, i));
+                }
+            }
         }
     });
 
