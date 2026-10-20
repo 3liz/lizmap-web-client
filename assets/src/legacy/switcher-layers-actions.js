@@ -197,6 +197,7 @@ var lizLayerActionButtons = function() {
                 if (initialConfig.hasAttributeLayers) {
                     const attrLayersConfig = initialConfig.attributeLayers;
                     const attrLayerConfigs = attrLayersConfig.layerConfigs;
+                    const attrLayerConfig = attrLayerConfigs.find(layer => layer.id === layerConfig.id);
                     const attrLayerConfigsWithExport = attrLayerConfigs.filter(attr => attr.exportEnabled);
                     // If some layers have export disabled, we have to check if the current layer is in the list
                     if (attrLayerConfigs.length != attrLayerConfigsWithExport.length) {
@@ -204,14 +205,14 @@ var lizLayerActionButtons = function() {
                         // If the layer is not in the list, export is disabled
                         // else export is available as definde in attribute layer config
                         exportEnabled = (attrLayerConfigWithExport !== undefined);
-                        // Build export options
-                        if (exportEnabled) {
-                            attrLayerConfigWithExport.getEffectiveExportFormats(
-                                initialConfig.vectorLayerResultFormat
-                            ).forEach(format => {
-                                options += `<option value="${format}">${format}</option>`;
-                            });
-                        }
+                    }
+                    // Build export options
+                    if (exportEnabled) {
+                        attrLayerConfig.getEffectiveExportFormats(
+                            initialConfig.vectorLayerResultFormat
+                        ).forEach(format => {
+                            options += `<option value="${format}">${format}</option>`;
+                        });
                     }
                 }
                 if (exportEnabled && options == '') {
