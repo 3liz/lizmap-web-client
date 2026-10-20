@@ -397,10 +397,30 @@ export default class Print extends HTMLElement {
 
         // Overview map
         if (this._overviewMapId) {
-            let extent = mainLizmap.config.options.bbox;
+            // Use the extent defined in the layout, it is in the map item CRS
+            let extent = this._overviewMapExtent;
 
-            if(projectProjection != mapProjection){
-                extent = transformExtent(extent, mapProjection, projectProjection);
+            if (!extent) {
+                extent = mainLizmap.config.options.bbox.map(Number);
+
+                if(projectProjection != mapProjection){
+                    extent = transformExtent(extent, mapProjection, projectProjection);
+                }
+            }
+
+            // Expand the extent to the overview map item ratio
+            // QGIS Server resizes the map item to fit the extent ratio otherwise
+            if (this._overviewMapRatio) {
+                const [minX, minY, maxX, maxY] = extent;
+                const width = maxX - minX;
+                const height = maxY - minY;
+                if (width / height > this._overviewMapRatio) {
+                    const delta = (width / this._overviewMapRatio - height) / 2;
+                    extent = [minX, minY - delta, maxX, maxY + delta];
+                } else {
+                    const delta = (height * this._overviewMapRatio - width) / 2;
+                    extent = [minX - delta, minY, maxX + delta, maxY];
+                }
             }
             wmsParams[this._overviewMapId + ':EXTENT'] = extent.join(',');
         }
@@ -493,6 +513,11 @@ export default class Print extends HTMLElement {
         const templateMap = templateMaps.filter(map => map.id == this._mainMapID)?.[0]
         this._maskWidth = templateMap?.width / 1000 * INCHES_PER_METER * DOTS_PER_INCH;
         this._maskHeight = templateMap?.height / 1000 * INCHES_PER_METER * DOTS_PER_INCH;
+
+        // Keep overview map extent and ratio to request it as defined in the layout
+        const overviewMap = templateMaps.filter(map => map.id == this._overviewMapId)?.[0];
+        this._overviewMapExtent = overviewMap?.extent;
+        this._overviewMapRatio = overviewMap?.height ? overviewMap.width / overviewMap.height : undefined;
 
         mainLizmap.map.getView().changed();
 
