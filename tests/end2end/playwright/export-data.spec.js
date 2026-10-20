@@ -13,17 +13,30 @@ test.describe('Export data @readonly', () => {
         await project.open();
     });
 
+    test('Check the export data button and available formats', async ({ page }) => {
+        const project = new ProjectPage(page, 'feature_toolbar');
+        const tableName = 'parent_layer';
+
+        // Open attribute table and maximize it
+        let datatablesRequest = await project.openAttributeTable(tableName, true);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+
+        let exportGroup = project.attributeTableExportGroup(tableName);
+        await expect(exportGroup).toHaveCount(1);
+        await expect(exportGroup).toBeVisible();
+
+        await expect(exportGroup.locator('button.btn-export-attributeTable')).toHaveCount(12);
+    });
+
     test('should export the features of a spatial layer depending on the selection or filter', async ({ page }) => {
         const project = new ProjectPage(page, 'feature_toolbar');
         const tableName = 'parent_layer';
 
-        // Open attribute table
-        let datatablesRequest = await project.openAttributeTable(tableName);
+        // Open attribute table and maximize it
+        let datatablesRequest = await project.openAttributeTable(tableName, true);
         let datatablesResponse = await datatablesRequest.response();
         responseExpect(datatablesResponse).toBeJson();
-
-        // full sized bottom dock
-        await page.locator('#bottom-dock-window-buttons .btn-bottomdock-size').click();
 
         // Check table lines
         const tableHtml = project.attributeTableHtml(tableName);
@@ -44,12 +57,8 @@ test.describe('Export data @readonly', () => {
         requestExpect(getFeatureRequest).toContainParametersInPostData(expectedParameters);
         let getFeatureResponse = await getFeatureRequest.response();
         responseExpect(getFeatureResponse).toBeGeoJson();
-
-        // Check body
-        let body = await getFeatureResponse?.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(2);
+        // Check Body is well formed with 2 features
+        responseExpect(getFeatureResponse).toHaveGeoJsonFeaturesLength(2);
 
         // Use line with id 2
         let tr2 = tableHtml.locator('tbody tr[id="2"]');
@@ -75,12 +84,11 @@ test.describe('Export data @readonly', () => {
         requestExpect(getFeatureRequest).toContainParametersInPostData(expectedParameters);
         getFeatureResponse = await getFeatureRequest.response();
         responseExpect(getFeatureResponse).toBeGeoJson();
+        // Check Body is well formed with 1 feature
+        responseExpect(getFeatureResponse).toHaveGeoJsonFeaturesLength(1);
 
-        // Check body
-        body = await getFeatureResponse?.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(1);
+        // Check feature properties
+        let body = await getFeatureResponse?.json();
         let feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', `${tableName}.2`);
@@ -110,12 +118,11 @@ test.describe('Export data @readonly', () => {
         requestExpect(getFeatureRequest).toContainParametersInPostData(expectedParameters);
         getFeatureResponse = await getFeatureRequest.response();
         responseExpect(getFeatureResponse).toBeGeoJson();
+        // Check Body is well formed with 1 feature
+        responseExpect(getFeatureResponse).toHaveGeoJsonFeaturesLength(1);
 
         // Check body
         body = await getFeatureResponse?.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(1);
         feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', tableName+'.2');
@@ -135,29 +142,29 @@ test.describe('Export data @readonly', () => {
         requestExpect(getFeatureRequest).toContainParametersInPostData(expectedParameters);
         getFeatureResponse = await getFeatureRequest.response();
         responseExpect(getFeatureResponse).toBeGeoJson();
-
-        // Check body
-        body = await getFeatureResponse?.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(2);
+        // Check Body is well formed with 2 features
+        responseExpect(getFeatureResponse).toHaveGeoJsonFeaturesLength(2);
     });
 
     test('should export the features of a non spatial layer depending on the selection or filter', async ({ page }) => {
         const project = new ProjectPage(page, 'feature_toolbar');
         const tableName = 'data_uids';
 
-        // Open attribute table
-        let datatablesRequest = await project.openAttributeTable(tableName);
+        // Open attribute table and maximize it
+        let datatablesRequest = await project.openAttributeTable(tableName, true);
         let datatablesResponse = await datatablesRequest.response();
         responseExpect(datatablesResponse).toBeJson();
-
-        // full sized bottom dock
-        await page.locator('#bottom-dock-window-buttons .btn-bottomdock-size').click();
 
         // Check table lines
         const tableHtml = project.attributeTableHtml(tableName);
         await expect(tableHtml.locator('tbody tr')).toHaveCount(5);
+
+        // Check export buttons
+        let exportGroup = project.attributeTableExportGroup(tableName);
+        await expect(exportGroup).toHaveCount(1);
+        await expect(exportGroup).toBeVisible();
+
+        await expect(exportGroup.locator('button.btn-export-attributeTable')).toHaveCount(12);
 
         // launch export
         let getFeatureRequest = await project.launchExport(tableName,'GeoJSON');
@@ -174,12 +181,8 @@ test.describe('Export data @readonly', () => {
         requestExpect(getFeatureRequest).toContainParametersInPostData(expectedParameters);
         let getFeatureResponse = await getFeatureRequest.response();
         responseExpect(getFeatureResponse).toBeGeoJson();
-
-        // Check body
-        let body = await getFeatureResponse?.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(5);
+        // Check Body is well formed with 5 features
+        responseExpect(getFeatureResponse).toHaveGeoJsonFeaturesLength(5);
 
         // Use line with id 2
         let tr2 = tableHtml.locator('tbody tr[id="2"]');
@@ -201,12 +204,11 @@ test.describe('Export data @readonly', () => {
         requestExpect(getFeatureRequest).toContainParametersInPostData(expectedParameters);
         getFeatureResponse = await getFeatureRequest.response();
         responseExpect(getFeatureResponse).toBeGeoJson();
+        // Check Body is well formed with 1 feature
+        responseExpect(getFeatureResponse).toHaveGeoJsonFeaturesLength(1);
 
         // Check body
-        body = await getFeatureResponse?.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(1);
+        let body = await getFeatureResponse?.json();
         let feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', `${tableName}.2`);
@@ -230,12 +232,11 @@ test.describe('Export data @readonly', () => {
         requestExpect(getFeatureRequest).toContainParametersInPostData(expectedParameters);
         getFeatureResponse = await getFeatureRequest.response();
         responseExpect(getFeatureResponse).toBeGeoJson();
+        // Check Body is well formed with 1 feature
+        responseExpect(getFeatureResponse).toHaveGeoJsonFeaturesLength(1);
 
         // Check body
         body = await getFeatureResponse?.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(1);
         feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', tableName+'.2');
@@ -254,12 +255,8 @@ test.describe('Export data @readonly', () => {
         requestExpect(getFeatureRequest).toContainParametersInPostData(expectedParameters);
         getFeatureResponse = await getFeatureRequest.response();
         responseExpect(getFeatureResponse).toBeGeoJson();
-
-        // Check body
-        body = await getFeatureResponse?.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(5);
+        // Check Body is well formed with 5 features
+        responseExpect(getFeatureResponse).toHaveGeoJsonFeaturesLength(5);
 
         // select feature 2 and 4
         // click to select 2
@@ -285,12 +282,11 @@ test.describe('Export data @readonly', () => {
         requestExpect(getFeatureRequest).toContainParametersInPostData(expectedParameters);
         getFeatureResponse = await getFeatureRequest.response();
         responseExpect(getFeatureResponse).toBeGeoJson();
+        // Check Body is well formed with 2 features
+        responseExpect(getFeatureResponse).toHaveGeoJsonFeaturesLength(2);
 
         // Check body
         body = await getFeatureResponse?.json();
-        expect(body).toHaveProperty('type', 'FeatureCollection');
-        expect(body).toHaveProperty('features');
-        expect(body.features).toHaveLength(2);
         feature = body.features[0];
         expect(feature).toHaveProperty('type', 'Feature');
         expect(feature).toHaveProperty('id', tableName+'.2');
@@ -339,6 +335,13 @@ test.describe('Export data @readonly', () => {
         await (await getFilterTokenRequestPromise).response();
 
         await expect(tableHtml.locator('tbody tr')).toHaveCount(1);
+
+        // Check export buttons
+        let exportGroup = project.attributeTableExportGroup(tableName);
+        await expect(exportGroup).toHaveCount(1);
+        await expect(exportGroup).toBeVisible();
+
+        await expect(exportGroup.locator('button.btn-export-attributeTable')).toHaveCount(12);
 
         // Launch export. EXP_FILTER must NOT carry the 'quartiers:' prefix.
         const getFeatureRequest = await project.launchExport(tableName, 'GeoJSON');
