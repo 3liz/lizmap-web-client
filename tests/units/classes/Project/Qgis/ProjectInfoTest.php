@@ -182,6 +182,8 @@ Data is licensed under ODbl, OpenStreetMap contributors',
         $this->assertEquals(297, $layouts[0]['width']);
         $this->assertEquals(210, $layouts[0]['height']);
         $this->assertCount(2, $layouts[0]['maps']);
+        $this->assertCount(4, $layouts[0]['maps'][0]['extent']);
+        $this->assertCount(4, $layouts[0]['maps'][1]['extent']);
         $this->assertCount(2, $layouts[0]['labels']);
         $this->assertFalse($layouts[0]['atlas']['enabled']);
         $this->assertEquals('District card', $layouts[1]['title']);

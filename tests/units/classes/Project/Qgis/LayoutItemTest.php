@@ -253,6 +253,12 @@ class LayoutItemTest extends TestCase
             'height' => 45,
             'grid' => false,
             'overviewMap' => '{a228885d-4d7a-4ae0-af9b-02a4fe7cd814}',
+            'extent' => array(
+                415256.69628775410819799,
+                5392381.09543511364609003,
+                448907.96636085514910519,
+                5417374.24027335178107023,
+            ),
         );
         foreach ($data as $prop => $value) {
             $this->assertEquals($value, $item->{$prop}, $prop);
