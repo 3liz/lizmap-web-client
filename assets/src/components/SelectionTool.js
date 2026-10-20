@@ -136,8 +136,6 @@ export default class SelectionTool extends HTMLElement {
                 <span class="caret"></span>
                 </button>
                 <ul class="selectiontool-export-formats dropdown-menu dropdown-menu-right" role="menu">
-                    <li><a href="#" class="btn-export-selection">GeoJSON</a></li>
-                    <li><a href="#" class="btn-export-selection">GML</a></li>
                     ${mainLizmap.selectionTool.exportFormats.map(
                         (format) => html`<li><a href="#" class="btn-export-selection">${format}</a></li>`
                     )}

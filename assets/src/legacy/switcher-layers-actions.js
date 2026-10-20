@@ -134,6 +134,8 @@ var lizLayerActionButtons = function() {
                 isBaselayer = 'baselayer';
             }
 
+            let options = '';
+
             // Styles
             if( metadatas.styles ){
                 const layer = lizmapState.rootMapGroup.getMapLayerByName(aName);
@@ -186,11 +188,7 @@ var lizLayerActionButtons = function() {
                 && featureTypes != null
                 && featureTypes.length != 0
                 && layerConfig.typename != undefined) {
-                const exportFormats = initialConfig.vectorLayerResultFormat;
-                var options = '';
-                for ( const format of exportFormats ) {
-                    options += '<option value="'+format+'">'+format+'</option>';
-                }
+                options = '';
                 // Check export enabled
                 // By default, export is enabled for all layers with typename
                 let exportEnabled = true;
@@ -199,6 +197,7 @@ var lizLayerActionButtons = function() {
                 if (initialConfig.hasAttributeLayers) {
                     const attrLayersConfig = initialConfig.attributeLayers;
                     const attrLayerConfigs = attrLayersConfig.layerConfigs;
+                    const attrLayerConfig = attrLayerConfigs.find(layer => layer.id === layerConfig.id);
                     const attrLayerConfigsWithExport = attrLayerConfigs.filter(attr => attr.exportEnabled);
                     // If some layers have export disabled, we have to check if the current layer is in the list
                     if (attrLayerConfigs.length != attrLayerConfigsWithExport.length) {
@@ -207,6 +206,23 @@ var lizLayerActionButtons = function() {
                         // else export is available as definde in attribute layer config
                         exportEnabled = (attrLayerConfigWithExport !== undefined);
                     }
+                    // Build export options
+                    if (exportEnabled) {
+                        attrLayerConfig.getEffectiveExportFormats(
+                            initialConfig.vectorLayerResultFormat
+                        ).forEach(format => {
+                            options += `<option value="${format}">${format}</option>`;
+                        });
+                    }
+                }
+                if (exportEnabled && options == '') {
+                    ['GeoJSON', 'GML'].concat(
+                        initialConfig.vectorLayerResultFormat.filter(format => {
+                            return ['gml2', 'gml3', 'geojson'].indexOf(format.toLowerCase()) == -1;
+                        })
+                    ).forEach(format => {
+                        options += `<option value="${format}">${format}</option>`;
+                    });
                 }
                 // Export layer
                 if( options != '' && exportEnabled) {
