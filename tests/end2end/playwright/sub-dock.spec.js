@@ -283,6 +283,9 @@ test.describe('Sub dock @readonly', () => {
         await expect(page.locator('#sub-dock .sub-metadata .menu-content dt').nth(5)).toHaveText('Export');
         await expect(page.locator('#sub-dock .sub-metadata .menu-content dd select.exportLayer')).toHaveCount(1);
         await expect(page.locator('#sub-dock .sub-metadata .menu-content dd button.exportLayer')).toHaveCount(1);
+
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dd select.exportLayer option')).toHaveCount(12);
+
         await page.locator('#sub-dock .sub-metadata .menu-content dd select.exportLayer').selectOption('GeoJSON');
         const getFeatureRequestPromise = project.waitForGetFeatureRequest();
         await page.locator('#sub-dock .sub-metadata .menu-content dd button.exportLayer').click();
@@ -371,6 +374,9 @@ test.describe('Sub dock @readonly', () => {
         await expect(page.locator('#sub-dock .sub-metadata .menu-content dt').nth(5)).toHaveText('Export');
         await expect(page.locator('#sub-dock .sub-metadata .menu-content dd select.exportLayer')).toHaveCount(1);
         await expect(page.locator('#sub-dock .sub-metadata .menu-content dd button.exportLayer')).toHaveCount(1);
+
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dd select.exportLayer option')).toHaveCount(12);
+
         await page.locator('#sub-dock .sub-metadata .menu-content dd select.exportLayer').selectOption('GeoJSON');
         const getFeatureRequestPromise = project.waitForGetFeatureRequest();
         await page.locator('#sub-dock .sub-metadata .menu-content dd button.exportLayer').click();
@@ -390,6 +396,34 @@ test.describe('Sub dock @readonly', () => {
         expect(response?.status()).toBe(200);
         // check content-type header
         expect(response?.headers()['content-type']).toContain('application/vnd.geo+json');
+    });
+
+    test('Export layer with limit export format', async ({ page }) => {
+        // Catch GetProjectConfig to override export_enabled for selection layer
+        await page.route('**/service/getProjectConfig*', async route => {
+            const response = await route.fetch();
+            const json = await response.json();
+            json.attributeLayers['sousquartiers']['export_formats']  = ['xlsx', 'csv', 'ods'];
+            await route.fulfill({ response, json });
+        });
+
+        const project = new ProjectPage(page, 'permalink');
+        await project.open();
+
+        // Remove catching GetProjectConfig
+        await page.unroute('**/service/getProjectConfig*');
+
+        // Display sub dock metadata
+        await page.getByTestId('sousquartiers').hover();
+        await page.getByTestId('sousquartiers').locator('.icon-info-sign').click();
+        await expect(page.locator('#sub-dock')).toBeVisible();
+
+        // Export
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dt').nth(5)).toHaveText('Export');
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dd select.exportLayer')).toHaveCount(1);
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dd button.exportLayer')).toHaveCount(1);
+
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dd select.exportLayer option')).toHaveCount(3);
     });
 
     test('Metadata one on two layers in WFS with export disable in attribute table config', async ({ page }) => {
