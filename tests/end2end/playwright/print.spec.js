@@ -1023,6 +1023,65 @@ test.describe('Print 3857', () => {
     });
 });
 
+test.describe('Print 2278', () => {
+
+    const locale = 'en-US';
+
+    test.beforeEach(async ({ page }) => {
+        const printPage = new PrintPage(page, 'texas_2278');
+        await printPage.open();
+        await printPage.openPrintPanel();
+    });
+
+    test('Print UI', async ({ page }) => {
+        // Scales
+        await expect(page.locator('#print-scale > option')).toHaveCount(10);
+        await expect(page.locator('#print-scale > option')).toContainText([
+            '10,000,000', '5,000,000', '2,500,000',
+            '1,000,000', '500,000', '250,000',
+            '100,000', '50,000', '25,000',
+            '10,000',
+        ]);
+        // Templates
+        await expect(page.locator('#print-template > option')).toHaveCount(1);
+        await expect(page.locator('#print-template > option')).toContainText(['A4-portrait']);
+
+        // Format and DPI are not displayed as there is only one value
+        await expect(page.locator('#print-format')).toHaveCount(0);
+        await expect(page.locator('.print-dpi')).toHaveCount(0);
+    });
+
+    test('Print scales linked to zoom', async ({ page }) => {
+        // Check scale
+        await expect(page.locator('#overview-bar .ol-scale-text')).toHaveText('1 : ' + (10000000).toLocaleString(locale));
+
+        // Check selected print scale
+        await expect(page.locator('#print-scale')).toHaveValue('10000000');
+
+        // Close print panel
+        const printPage = new PrintPage(page, 'texas_2278');
+        await printPage.closePrintPanel();
+
+        // Zoom in
+        printPage.zoomIn();
+
+        // Check scale
+        await expect(page.locator('#overview-bar .ol-scale-text')).toHaveText('1 : ' + (5000000).toLocaleString(locale));
+
+        // Zoom in
+        printPage.zoomIn();
+
+        // Check scale
+        await expect(page.locator('#overview-bar .ol-scale-text')).toHaveText('1 : ' + (2500000).toLocaleString(locale));
+
+        // Open print panel
+        await printPage.openPrintPanel();
+
+        // Check selected print scale
+        await expect(page.locator('#print-scale')).toHaveValue('2500000');
+    });
+});
+
 test.describe('Print base layers', () => {
     test.beforeEach(async ({ page }) => {
         // Catch openstreetmap requests to mock them
