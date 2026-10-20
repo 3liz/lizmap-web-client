@@ -394,6 +394,21 @@ export class ProjectPage extends BasePage {
     }
 
     /**
+     * Waits for a request evaluating default values and text widgets of the edition form
+     * @param {string|undefined} value A form value the request should contain, optional
+     * @returns {Promise<Request>} The evaluateDefaultExpressions request
+     */
+    async waitForEvaluateDefaultExpressionsRequest(value = undefined) {
+        return this.page.waitForRequest(
+            request => request.method() === 'POST' &&
+            request.url().includes('evaluateDefaultExpressions') === true &&
+            (value === undefined || Object.values(
+                JSON.parse(new URLSearchParams(request.postData() ?? '').get('values') ?? '{}')
+            ).includes(value))
+        );
+    }
+
+    /**
      * Waits for a datatables request
      * @returns {Promise<Request>} The datatables request
      */
