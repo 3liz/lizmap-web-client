@@ -604,22 +604,22 @@ var lizAttributeTable = function() {
 
                 // Export tools
                 if ( attrLayerConfig.exportEnabled ) {
-                    html+= '<div class="export-formats dropdown float-end" role="group" >';
-                    html+= '    <button type="button" class="btn btn-sm dropdown-toggle exportLayer" data-bs-toggle="dropdown" aria-expanded="false">';
-                    html+= lizDict['attributeLayers.toolbar.btn.data.export.title'];
-                    html+= '    </button>';
-                    html+= '    <ul class="dropdown-menu" role="menu">';
-                    html+= '        <li><button type="button" class="dropdown-item btn-export-attributeTable">GeoJSON</button></li>';
-                    html+= '        <li><button type="button" class="dropdown-item btn-export-attributeTable">GML</button></li>';
-                    var exportFormats = initialConfig.vectorLayerResultFormat;
-                    for ( var i=0, len=exportFormats.length; i<len; i++ ) {
-                        var format = exportFormats[i].toLowerCase();
-                        if ( format != 'gml2' && format != 'gml3' && format != 'geojson' ) {
-                            html += '        <li><button type="button" class="dropdown-item btn-export-attributeTable">'+format+'</button></li>';
-                        }
+                    // Get the list of effective format for file export
+                    const exportFormats = attrLayerConfig.getEffectiveExportFormats(
+                        initialConfig.vectorLayerResultFormat
+                    );
+                    if (exportFormats) {
+                        html+= '<div class="export-formats dropdown float-end" role="group" >';
+                        html+= '    <button type="button" class="btn btn-sm dropdown-toggle exportLayer" data-bs-toggle="dropdown" aria-expanded="false">';
+                        html+= lizDict['attributeLayers.toolbar.btn.data.export.title'];
+                        html+= '    </button>';
+                        html+= '    <ul class="dropdown-menu" role="menu">';
+                        exportFormats.forEach(format => {
+                            html += `        <li><button type="button" class="dropdown-item btn-export-attributeTable">${format}</button></li>`;
+                        });
+                        html+= '    </ul>';
+                        html+= '</div>';
                     }
-                    html+= '    </ul>';
-                    html+= '</div>';
                 }
 
                 // Atlas print button for selected features

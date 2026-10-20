@@ -248,9 +248,23 @@ export default class SelectionTool {
 
     // List of WFS format
     get exportFormats() {
-        return this._initialConfig.vectorLayerResultFormat.filter(
-            format => !['GML2', 'GML3', 'GEOJSON'].includes(format.toUpperCase())
-        );
+        if (this.isExportable) {
+            const layerName = this._allFeatureTypeSelected[0];
+            const layerConfig = this._initialConfig.layers.getLayerConfigByLayerName(layerName);
+            const attrLayerConfig = this._initialConfig.attributeLayers.layerConfigs.find(
+                layer => layer.id === layerConfig.id
+            );
+            if (attrLayerConfig !== undefined) {
+                return attrLayerConfig.getEffectiveExportFormats(
+                    this._initialConfig.vectorLayerResultFormat
+                );
+            }
+        }
+        return ['GeoJSON', 'GML'].concat(
+            this._initialConfig.vectorLayerResultFormat.filter(format => {
+                return ['gml2', 'gml3', 'geojson'].indexOf(format.toLowerCase()) == -1;
+            })
+        )
     }
 
     // Selection is exportable if :
