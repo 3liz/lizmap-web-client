@@ -350,7 +350,7 @@ test.describe('Sub dock @readonly', () => {
 
     test('Export layer without attribute table config', async ({ page }) => {
         // Remove attribute table config
-        await ('**/service/getProjectConfig*', async route => {
+        await page.route('**/service/getProjectConfig*', async route => {
             const response = await route.fetch();
             const json = await response.json();
             json.attributeLayers = {};
@@ -359,6 +359,8 @@ test.describe('Sub dock @readonly', () => {
 
         const project = new ProjectPage(page, 'permalink');
         await project.open();
+
+        await page.unroute('**/service/getProjectConfig*');
 
         // Display sub dock metadata
         await page.getByTestId('sousquartiers').hover();
