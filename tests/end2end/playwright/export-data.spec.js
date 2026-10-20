@@ -367,6 +367,34 @@ test.describe('Export data @readonly', () => {
         expect(body.features).toHaveLength(1);
         expect(body.features[0]).toHaveProperty('id', typeName + '.2');
     });
+
+    test('Limit available formats', async ({ page }) => {
+        const tableName = 'parent_layer';
+
+        // Catch GetProjectConfig to override export_formats for selection layer
+        await page.route('**/service/getProjectConfig*', async route => {
+            const response = await route.fetch();
+            const json = await response.json();
+            json.attributeLayers[tableName]['export_formats']  = ['xlsx', 'csv', 'ods'];
+            await route.fulfill({ response, json });
+        });
+        const project = new ProjectPage(page, 'feature_toolbar');
+        await project.open();
+
+        // Remove catching GetProjectConfig
+        await page.unroute('**/service/getProjectConfig*');
+
+        // Open attribute table and maximize it
+        let datatablesRequest = await project.openAttributeTable(tableName, true);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+
+        let exportGroup = project.attributeTableExportGroup(tableName);
+        await expect(exportGroup).toHaveCount(1);
+        await expect(exportGroup).toBeVisible();
+
+        await expect(exportGroup.locator('button.btn-export-attributeTable')).toHaveCount(3);
+    });
 });
 
 // NOTE: do not put "@readonly" in this describe title. `--grep` matches the full
