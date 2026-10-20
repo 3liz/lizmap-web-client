@@ -18,11 +18,11 @@ use Lizmap\Project\Qgis;
 /**
  * QGIS Layout item.
  *
- * @property int $type
- * @property int $width
- * @property int $height
- * @property int $x
- * @property int $y
+ * @property int   $type
+ * @property float $width
+ * @property float $height
+ * @property float $x
+ * @property float $y
  */
 class LayoutItem extends Qgis\BaseQgisXmlObject
 {
@@ -50,7 +50,7 @@ class LayoutItem extends Qgis\BaseQgisXmlObject
      *
      * @param \XMLReader $oXmlReader An XMLReader instance at an element
      *
-     * @return array{'type': int, 'width': int, 'height': int, 'x': int, 'y': int} the element attributes as keys / values
+     * @return array{'type': int, 'width': float, 'height': float, 'x': float, 'y': float} the element attributes as keys / values
      */
     protected static function getAttributes($oXmlReader)
     {
@@ -58,10 +58,10 @@ class LayoutItem extends Qgis\BaseQgisXmlObject
         $position = explode(',', $oXmlReader->getAttribute('position'));
         $data = array(
             'type' => (int) $oXmlReader->getAttribute('type'),
-            'width' => (int) $size[0],
-            'height' => (int) $size[1],
-            'x' => (int) $position[0],
-            'y' => (int) $position[1],
+            'width' => (float) $size[0],
+            'height' => (float) $size[1],
+            'x' => (float) $position[0],
+            'y' => (float) $position[1],
         );
 
         if ($data['type'] === 65638) {
