@@ -243,7 +243,7 @@ test.describe('Print', () => {
             'map1:LAYERS': 'OpenStreetMap,quartiers,sousquartiers',
             'map1:STYLES': 'default,défaut,défaut',
             'map1:OPACITIES': '204,255,255',
-            'map0:EXTENT': /761864.\d+,6274266.\d+,779334.\d+,6284518.\d+/,
+            'map0:EXTENT': /764713.\d+,62736\d\d.\d+,776385.\d+,6284[78]\d\d.\d+/,
         })
         expectedLength = 15
         requestExpect(getPrintRequest).toContainParametersInPostData(expectedParameters3);

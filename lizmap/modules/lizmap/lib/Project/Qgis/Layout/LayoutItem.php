@@ -123,6 +123,10 @@ class LayoutItem extends Qgis\BaseQgisXmlObject
                 }
                 unset($data['ComposerMapGrid']);
             }
+            if (array_key_exists('Extent', $data)) {
+                $data['extent'] = $data['Extent'];
+                unset($data['Extent']);
+            }
 
             return new LayoutItemMap($data);
         }
@@ -138,5 +142,13 @@ LayoutItem::registerChildParser('ComposerMapOverview', function ($oXmlReader) {
 LayoutItem::registerChildParser('ComposerMapGrid', function ($oXmlReader) {
     return array(
         LayoutItemMapGrid::fromXmlReader($oXmlReader),
+    );
+});
+LayoutItem::registerChildParser('Extent', function ($oXmlReader) {
+    return array(
+        (float) $oXmlReader->getAttribute('xmin'),
+        (float) $oXmlReader->getAttribute('ymin'),
+        (float) $oXmlReader->getAttribute('xmax'),
+        (float) $oXmlReader->getAttribute('ymax'),
     );
 });
