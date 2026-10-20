@@ -121,7 +121,7 @@ test.describe('Print', () => {
         // Extend GetPrint parameters
         const expectedParameters1 = Object.assign({}, expectedParameters, {
             'FORMAT_OPTIONS': 'TEXT_RENDER_FORMAT:AlwaysText',
-            'map0:EXTENT': /759249.\d+,6271892.\d+,781949.\d+,6286892.\d+/,
+            'map0:EXTENT': /759228.\d+,6271883.\d+,781970.\d+,6286900.\d+/,
             'map0:SCALE': '100000',
             'map0:LAYERS': 'OpenStreetMap,quartiers,sousquartiers',
             'map0:STYLES': 'default,défaut,défaut',
@@ -151,7 +151,7 @@ test.describe('Print', () => {
         const expectedParameters3 = Object.assign({}, expectedParameters, {
             'TEMPLATE': 'print_overview',
             'FORMAT_OPTIONS': 'TEXT_RENDER_FORMAT:AlwaysText',
-            'map1:EXTENT': /757949.\d+,6270842.\d+,783249.\d+,6287942.\d+/,
+            'map1:EXTENT': /757917.\d+,6270794.\d+,783281.\d+,6287989.\d+/,
             'map1:SCALE': '100000',
             'map1:LAYERS': 'OpenStreetMap,quartiers,sousquartiers',
             'map1:STYLES': 'default,défaut,défaut',
@@ -179,7 +179,7 @@ test.describe('Print', () => {
             'FORMAT': 'jpeg',
             'DPI': '200',
             'TEMPLATE': 'print_map',
-            'map0:EXTENT': /765699.\d+,6271792.\d+,775499.\d+,6286992.\d+/,
+            'map0:EXTENT': /765690.\d+,6271775.\d+,775509.\d+,6287009.\d+/,
             'map0:SCALE': '100000',
             'map0:LAYERS': 'OpenStreetMap,quartiers,sousquartiers',
             'map0:STYLES': 'default,défaut,défaut',
@@ -227,7 +227,7 @@ test.describe('Print', () => {
         const expectedParameters4 = Object.assign({}, expectedParameters, {
             'TEMPLATE': 'print_labels',
             'FORMAT_OPTIONS': 'TEXT_RENDER_FORMAT:AlwaysText',
-            'map0:EXTENT': /759249.\d+,6271892.\d+,781949.\d+,6286892.\d+/,
+            'map0:EXTENT': /759228.\d+,6271883.\d+,781970.\d+,6286900.\d+/,
             'map0:SCALE': '100000',
             'map0:LAYERS': 'OpenStreetMap,quartiers,sousquartiers',
             'map0:STYLES': 'default,défaut,défaut',
@@ -333,7 +333,7 @@ test.describe('Print', () => {
             'DPI': '100',
             'TEMPLATE': 'print_labels',
             'FORMAT_OPTIONS': 'TEXT_RENDER_FORMAT:AlwaysText',
-            'map0:EXTENT': /759249.\d+,6271892.\d+,781949.\d+,6286892.\d+/,
+            'map0:EXTENT': /759228.\d+,6271883.\d+,781970.\d+,6286900.\d+/,
             'map0:SCALE': '100000',
             'map0:LAYERS': 'OpenStreetMap,quartiers,sousquartiers',
             'map0:STYLES': 'default,défaut,défaut',
@@ -428,7 +428,7 @@ test.describe('Print', () => {
             'DPI': '100',
             'TEMPLATE': 'print_labels',
             'FORMAT_OPTIONS': 'TEXT_RENDER_FORMAT:AlwaysText',
-            'map0:EXTENT': /759249.\d+,6271892.\d+,781949.\d+,6286892.\d+/,
+            'map0:EXTENT': /759228.\d+,6271883.\d+,781970.\d+,6286900.\d+/,
             'map0:SCALE': '100000',
             'map0:LAYERS': 'OpenStreetMap,quartiers,sousquartiers',
             'map0:STYLES': 'default,défaut,défaut',
@@ -493,7 +493,7 @@ test.describe(
                 'DPI': '100',
                 'TEMPLATE': 'test',
                 'FORMAT_OPTIONS': 'TEXT_RENDER_FORMAT:AlwaysText',
-                'map0:EXTENT': /425189.\d+,5401412.\d+,439539.\d+,5411262.\d+/,
+                'map0:EXTENT': /425181.\d+,5401407.\d+,439546.\d+,5411267.\d+/,
                 'map0:SCALE': '50000',
                 'map0:LAYERS': mapLayers.join(','),
                 'map0:STYLES': 'default,default,default,default,default',
@@ -554,7 +554,7 @@ test.describe(
                 'DPI': '100',
                 'TEMPLATE': 'test',
                 'FORMAT_OPTIONS': 'TEXT_RENDER_FORMAT:AlwaysText',
-                'map0:EXTENT': /425189.\d+,5401412.\d+,439539.\d+,5411262.\d+/,
+                'map0:EXTENT': /425181.\d+,5401407.\d+,439546.\d+,5411267.\d+/,
                 'map0:SCALE': '50000',
                 'map0:LAYERS': mapLayers.join(','),
                 'map0:STYLES': 'default,default,default,default,default',
@@ -794,7 +794,7 @@ test.describe('Print 3857', () => {
         // Extend GetPrint parameters
         const expectedParameters1 = Object.assign({}, expectedParameters, {
             'FORMAT_OPTIONS': 'TEXT_RENDER_FORMAT:AlwaysText',
-            'map0:EXTENT': /423093.\d+,5399873.\d+,439487.\d+,5410707.\d+/,
+            'map0:EXTENT': /423077.\d+,5399867.\d+,439503.\d+,5410713.\d+/,
             'map0:SCALE': '72224',
             'map0:LAYERS': 'OpenStreetMap,quartiers,sousquartiers',
             'map0:STYLES': 'default,défaut,défaut',
@@ -822,7 +822,7 @@ test.describe('Print 3857', () => {
             'FORMAT': 'jpeg',
             'DPI': '200',
             'TEMPLATE': 'print_map',
-            'map0:EXTENT': /427751.\d+,5399801.\d+,434829.\d+,5410779.\d+/,
+            'map0:EXTENT': /427744.\d+,5399789.\d+,434836.\d+,5410791.\d+/,
             'map0:SCALE': '72224',
             'map0:LAYERS': 'OpenStreetMap,quartiers,sousquartiers',
             'map0:STYLES': 'default,défaut,défaut',
@@ -883,7 +883,7 @@ test.describe('Print 3857', () => {
          * Block of SLD
         **/
         const expectedParameters1 = Object.assign({}, expectedParameters, {
-            'map0:EXTENT': /423093.\d+,5399873.\d+,439487.\d+,5410707.\d+/,
+            'map0:EXTENT': /423077.\d+,5399867.\d+,439503.\d+,5410713.\d+/,
             'map0:SCALE': '72224',
             'map0:LAYERS': 'OpenStreetMap,quartiers,sousquartiers',
             'map0:STYLES': 'default,défaut,défaut',
@@ -950,7 +950,7 @@ test.describe('Print 3857', () => {
 
         // Expected GetPrint parameters
         const expectedParameters2 = Object.assign({}, expectedParameters, {
-            'map0:EXTENT': /423093.\d+,5399873.\d+,439487.\d+,5410707.\d+/,
+            'map0:EXTENT': /423077.\d+,5399867.\d+,439503.\d+,5410713.\d+/,
             'map0:SCALE': '72224',
             'map0:LAYERS': 'OpenStreetMap,quartiers,sousquartiers',
             'map0:STYLES': 'default,défaut,défaut',
@@ -997,7 +997,7 @@ test.describe('Print 3857', () => {
 
         // Expected GetPrint parameters
         const expectedParameters3 = Object.assign({}, expectedParameters, {
-            'map0:EXTENT': /423093.\d+,5399873.\d+,439487.\d+,5410707.\d+/,
+            'map0:EXTENT': /423077.\d+,5399867.\d+,439503.\d+,5410713.\d+/,
             'map0:SCALE': '72224',
             'map0:LAYERS': 'OpenStreetMap,quartiers,sousquartiers',
             'map0:STYLES': 'default,défaut,défaut',
