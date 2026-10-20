@@ -94,6 +94,10 @@ class LayoutItemTest extends TestCase
         $data = array(
             'type' => 65641,
             'typeName' => 'label',
+            'width' => 278.374,
+            'height' => 7.59424,
+            'x' => 8.10892,
+            'y' => 303.121,
             'id' => '',
             'htmlState' => false,
             'text' => 'Tram stops in the district',
@@ -245,7 +249,7 @@ class LayoutItemTest extends TestCase
             'type' => 65639,
             'typeName' => 'map',
             'uuid' => '{a50537f9-5e73-4610-955e-31b092d81b94}',
-            'width' => 60,
+            'width' => 60.5889,
             'height' => 45,
             'grid' => false,
             'overviewMap' => '{a228885d-4d7a-4ae0-af9b-02a4fe7cd814}',
@@ -328,10 +332,10 @@ class LayoutItemTest extends TestCase
 
         $data = array(
             'type' => 65642,
-            'width' => 85,
-            'height' => 130,
-            'x' => 252,
-            'y' => 84,
+            'width' => 85.35,
+            'height' => 130.9,
+            'x' => 252.331,
+            'y' => 84.0089,
         );
         foreach ($data as $prop => $value) {
             $this->assertEquals($value, $item->{$prop}, $prop);
