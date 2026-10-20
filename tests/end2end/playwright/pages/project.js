@@ -189,6 +189,15 @@ export class ProjectPage extends BasePage {
         this.page.locator(`#attribute-layer-${name} .attribute-layer-action-bar`);
 
     /**
+     * Attribute table export group for the given layer name
+     * it contains the export dropdown button with available formats
+     * @param {string} name Name of the layer
+     * @returns {Locator} Locator for attribute table export group
+     */
+    attributeTableExportGroup = (name) =>
+        this.page.locator(`#attribute-layer-${name} .export-formats`);
+
+    /**
      * Editing field for the given field in the panel
      * @param {string} name Name of the field
      * @returns {Locator} Locator for the field (input, select, textarea)
