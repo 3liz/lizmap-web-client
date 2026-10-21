@@ -12,6 +12,7 @@ import GeoJSON from 'ol/format/GeoJSON.js';
 import Point from 'ol/geom/Point.js';
 import { fromExtent } from 'ol/geom/Polygon.js';
 import WKT from 'ol/format/WKT.js';
+import { Utils } from './Utils.js';
 
 /**
  * @class
@@ -488,7 +489,8 @@ export default class Action {
                     // Display the HTML message if given
                     const message_html = featureProperties?.message_html?.trim();
                     if (message_html) {
-                        document.getElementById('action-message-html').innerHTML = message_html;
+                        // Sanitize action-provided HTML before DOM insertion
+                        document.getElementById('action-message-html').innerHTML = Utils.sanitizeHTMLContent(message_html);
                     }
                 }
             }

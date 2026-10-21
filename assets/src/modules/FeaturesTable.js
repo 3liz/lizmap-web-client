@@ -128,7 +128,9 @@ export default class FeaturesTable {
         $.get(globalThis['lizUrls'].service, wmsOptions, function(data) {
             // Display the popup in the target element
             if (targetElement) {
-                targetElement.innerHTML = data;
+                // Sanitize the GetFeatureInfo HTML before insertion (maptip/attribute
+                // values are user-controlled and can carry stored XSS payloads)
+                targetElement.innerHTML = Utils.sanitizeHTMLContent(data);
             }
 
             // Launch callback
