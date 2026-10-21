@@ -73,7 +73,10 @@ export default class Print extends HTMLElement {
 
                     const dpi = ADJUSTED_DPI;
                     const inchesPerMeter = 1000 / 25.4;
-                    this._printScales = mainLizmap.map.getView().getResolutions().map((r) => {return Math.round(r * inchesPerMeter * dpi);})
+                    const metersPerUnit = mainLizmap.map.getView().getProjection().getMetersPerUnit();
+                    this._printScales = mainLizmap.map.getView().getResolutions().map(
+                        r => {return Math.round(r * metersPerUnit * inchesPerMeter * dpi);}
+                    );
                     this._printScale = this._printScales[0];
 
                     //this._printScales = Array.from(mainLizmap.config.options.mapScales);
@@ -195,7 +198,8 @@ export default class Print extends HTMLElement {
     }
 
     _updateScaleFromResolution() {
-        const mapScale = mainLizmap.map.getView().getResolution() * (1000 / 25.4) * ADJUSTED_DPI;
+        const metersPerUnit = mainLizmap.map.getView().getProjection().getMetersPerUnit();
+        const mapScale = mainLizmap.map.getView().getResolution() * metersPerUnit * (1000 / 25.4) * ADJUSTED_DPI;
         for (const printScale of this._printScales) {
             if (mapScale > printScale) {
                 this._printScale = printScale;
@@ -207,8 +211,10 @@ export default class Print extends HTMLElement {
     _launch(){
         const center = mainLizmap.map.getView().getCenter();
 
-        const deltaX = (this._maskWidth * this._printScale) / 2 / INCHES_PER_METER / DOTS_PER_INCH;
-        const deltaY = (this._maskHeight * this._printScale) / 2 / INCHES_PER_METER / DOTS_PER_INCH;
+        const metersPerUnit = mainLizmap.map.getView().getProjection().getMetersPerUnit();
+        const deltaX = (this._maskWidth * this._printScale) / 2 / INCHES_PER_METER / DOTS_PER_INCH / metersPerUnit;
+        const deltaY = (this._maskHeight * this._printScale) / 2 / INCHES_PER_METER / DOTS_PER_INCH / metersPerUnit;
+
         let extent = [center[0] - deltaX, center[1] - deltaY, center[0] + deltaX, center[1] + deltaY];
         const mapProjection = mainLizmap.config.options.projection.ref;
         const projectProjection = mainLizmap.config.options.qgisProjectProjection.ref ? mainLizmap.config.options.qgisProjectProjection.ref : mapProjection;

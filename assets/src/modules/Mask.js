@@ -95,9 +95,10 @@ export default class Mask extends Layer {
         const width = size[0];
         const scale = this.getScale(frameState);
         const resolution = frameState.viewState.resolution;
+        const metersPerUnit = frameState.viewState.projection.getMetersPerUnit();
 
-        const extentHalfWidth = ((width / DOTS_PER_INCH / INCHES_PER_METER) * scale) / resolution / 2;
-        const extentHalfHeight = ((height / DOTS_PER_INCH / INCHES_PER_METER) * scale) / resolution / 2;
+        const extentHalfWidth = ((width / DOTS_PER_INCH / INCHES_PER_METER) * scale) / metersPerUnit / resolution / 2;
+        const extentHalfHeight = ((height / DOTS_PER_INCH / INCHES_PER_METER) * scale) / metersPerUnit / resolution / 2;
 
         const rotation = this.getRotation !== undefined ? toRadians(this.getRotation()) : 0;
 
