@@ -520,18 +520,24 @@ var lizLayerActionButtons = function() {
                     }
                 );
 
+                if (lizmapPermalink === null) {
+                    lizmapPermalink = lizMap.mainLizmap.permalink;
+                }
+                const urlParameters = (new URL(document.location)).searchParams;
+                // The URL already defines the layers state: a permalink in the hash
+                // or a map theme in the parameters. It must win over the first map theme.
+                const permalinkInUrl = window.location.hash !== ''
+                    && (!initialConfig.options.short_link_permalink || !!lizmapPermalink?.currentPermalinkProperties);
+                const layersStateInUrl = permalinkInUrl || urlParameters.has('mapTheme');
+
                 // Activate first map theme on load
-                if (initialConfig.options.activateFirstMapTheme) {
+                if (initialConfig.options.activateFirstMapTheme && !layersStateInUrl) {
                     // Prevent permalink from writing until after first theme is applied
-                    if (lizmapPermalink === null) {
-                        lizmapPermalink = lizMap.mainLizmap.permalink;
-                    }
                     if (lizmapPermalink) {
                         lizmapPermalink._suspendInitialWrite = true;
                     }
                     document.querySelector('#theme-selector .dropdown-menu button:nth-child(1)').click();
                 }
-                const urlParameters = (new URL(document.location)).searchParams;
                 if (urlParameters.has('mapTheme')) {
                     const urlMapTheme = urlParameters.get('mapTheme');
                     document.querySelector('#theme-selector button[data-theme="'+urlMapTheme+'"]').click();
