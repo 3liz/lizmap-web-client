@@ -725,11 +725,10 @@ class editionCtrl extends jController
                 continue;
             }
             $expression = $def['expression'];
-            // Skip literal / numeric defaults already resolved at form open
+            // Skip numeric defaults already resolved at form open.
+            // Literal strings are not checked here: the client only asks for the
+            // dynamic fields listed by QgisForm, which has already excluded them.
             if (is_numeric($expression)) {
-                continue;
-            }
-            if (preg_match("/^'.*'$/", $expression)) {
                 continue;
             }
             $expressions[$field] = $expression;
