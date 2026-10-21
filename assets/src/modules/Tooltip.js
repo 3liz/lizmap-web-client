@@ -6,6 +6,7 @@
  */
 import { mainEventDispatcher, mainLizmap } from '../modules/Globals.js';
 import { TooltipLayersConfig } from './config/Tooltip.js';
+import { Utils } from './Utils.js';
 import WMS from '../modules/WMS.js';
 import GeoJSON from 'ol/format/GeoJSON.js';
 import VectorLayer from 'ol/layer/Vector.js';
@@ -244,7 +245,9 @@ export default class Tooltip {
                 const tooltipHTML = feature.get('tooltip');
                 if (feature !== currentFeature && tooltip) {
                     tooltip.style.visibility = 'visible';
-                    tooltip.innerHTML = tooltipHTML;
+                    // Sanitize: tooltip HTML is rendered from QGIS maptip templates
+                    // interpolating user-controlled attribute values
+                    tooltip.innerHTML = Utils.sanitizeHTMLContent(tooltipHTML);
                 }
             } else {
                 tooltip.style.visibility = 'hidden';

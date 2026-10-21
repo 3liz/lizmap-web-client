@@ -329,11 +329,12 @@ export class Utils {
     }
 
     /**
-     * Sanitize the GetFeatureInfo content
+     * Sanitize HTML content before inserting it in DOM
+     * @static
      * @param {string} content - The content to sanitize
      * @returns {string} The sanitized content
      */
-    static sanitizeGFIContent(content) {
+    static sanitizeHTMLContent(content) {
         // Register the iframe-sandboxing hook only once. DOMPurify is a singleton, so
         // re-adding the hook on every call would stack duplicate hooks indefinitely.
         if (!SANITIZE_HTML_HOOK_ADDED) {
@@ -358,6 +359,17 @@ export class Utils {
                 attributeNameCheck: /crs|bbox|edition-restricted|layerid|layertitle|uniquefield|expressionfilter|withgeometry|sortingfield|sortingorder|draggable/,
             }
         });
+    }
+
+    /**
+     * Sanitize the GetFeatureInfo content - alias of sanitizaHTMLContent
+     * @static
+     * @param {string} content - The content to sanitize
+     * @returns {string} The sanitized content
+     * @see sanitizaHTMLContent
+     */
+    static sanitizeGFIContent(content) {
+        return Utils.sanitizeHTMLContent(content);
     }
 
     /**
