@@ -403,6 +403,21 @@ export class ProjectPage extends BasePage {
     }
 
     /**
+     * Waits for a request evaluating default values and text widgets of the edition form
+     * @param {string|undefined} value A form value the request should contain, optional
+     * @returns {Promise<Request>} The evaluateDefaultExpressions request
+     */
+    async waitForEvaluateDefaultExpressionsRequest(value = undefined) {
+        return this.page.waitForRequest(
+            request => request.method() === 'POST' &&
+            request.url().includes('evaluateDefaultExpressions') === true &&
+            (value === undefined || Object.values(
+                JSON.parse(new URLSearchParams(request.postData() ?? '').get('values') ?? '{}')
+            ).includes(value))
+        );
+    }
+
+    /**
      * Waits for a datatables request
      * @returns {Promise<Request>} The datatables request
      */
@@ -884,14 +899,11 @@ export class ProjectPage extends BasePage {
                 .toHaveText(labelText);
         }
         const input = this.editionForm.locator(`input[id='jforms_view_edition_${fieldName}']`);
-        let value;
-        if (trim) {
-            value = (await input.inputValue()).replace(/\s+/g,' ').trim();
-        } else {
-            value = await input.inputValue();
-        }
-
-        expect(value).toBe(fieldValue);
+        // Retry: text widgets are refreshed asynchronously after the form is displayed
+        await expect.poll(async () => {
+            const value = await input.inputValue();
+            return trim ? value.replace(/\s+/g,' ').trim() : value;
+        }).toBe(fieldValue);
     }
 
     /**
