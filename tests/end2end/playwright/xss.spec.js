@@ -22,7 +22,10 @@ test.describe('XSS', () => {
             const formRequest = await project.openEditingFormWithLayer('xss_layer');
             await formRequest.response();
 
-            await project.editingField('description').fill('<script>alert("XSS")</script>');
+            // Use a payload that actually executes when inserted via innerHTML.
+            // A bare <script> tag does not run through innerHTML, so it would not
+            // catch a missing sanitization; an <img onerror> does.
+            await project.editingField('description').fill('<img src=x onerror="alert(\'XSS\')">');
 
             await project.editingSubmitForm();
 
