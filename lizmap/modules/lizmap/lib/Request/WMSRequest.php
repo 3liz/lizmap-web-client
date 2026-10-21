@@ -476,6 +476,20 @@ class WMSRequest extends OGCRequest
 
         // External WMS
         foreach ($externalWMSConfigLayers as $configLayer) {
+            // Check the external URL
+            $url = $configLayer->externalAccess->url;
+            // Mitigate SSRF: only fetch external WMS layers from safe public URLs.
+            // The URL comes from the project configuration, which is not necessarily
+            // authored by the server operator.
+            if (!Proxy::isAllowedRemoteUrl($url)) {
+                Proxy::getAppContext()->logMessage(
+                    'Refused external WMS GetFeatureInfo access to an unsafe URL: '.$url,
+                    'lizmapadmin'
+                );
+
+                continue;
+            }
+            // Build external WMS request
             $externalWMSLayerParams = array_merge(array(), $this->params);
             if (array_key_exists('map', $externalWMSLayerParams)) {
                 unset($externalWMSLayerParams['map']);
@@ -495,7 +509,6 @@ class WMSRequest extends OGCRequest
             $externalWMSLayerParams['info_format'] = 'application/vnd.ogc.gml';
 
             // build Query string
-            $url = $configLayer->externalAccess->url;
             if (!preg_match('/\?/', $url)) {
                 $url .= '?';
             } elseif (!preg_match('/&$/', $url)) {
@@ -503,8 +516,8 @@ class WMSRequest extends OGCRequest
             }
             $querystring = Proxy::constructUrl($externalWMSLayerParams, $this->services, $url);
 
-            // Query external WMS layers
-            list($data, $mime, $code) = Proxy::getRemoteData($querystring);
+            // Query external WMS layers (do not follow redirects to avoid SSRF bypass)
+            list($data, $mime, $code) = Proxy::getRemoteData($querystring, array('allow_redirects' => false));
 
             $rep .= $this->gfiGmlToHtml($data, $configLayer);
         }

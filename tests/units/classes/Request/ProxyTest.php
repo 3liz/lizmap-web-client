@@ -148,6 +148,42 @@ class ProxyTest extends TestCase
         $this->assertEquals($expectedUrl, $result);
     }
 
+    public static function getIsAllowedRemoteUrlData()
+    {
+        return array(
+            // Allowed: public and private (RFC1918) hosts over http(s).
+            // Private ranges stay allowed because internal WMS servers are legitimate.
+            array('https://8.8.8.8/wms', true),
+            array('http://10.0.0.5/wms', true),
+            array('https://192.168.1.10/ows', true),
+            array('http://172.16.5.5/', true),
+            // Refused scheme
+            array('file:///etc/passwd', false),
+            array('ftp://8.8.8.8/', false),
+            array('gopher://8.8.8.8/', false),
+            // Refused: loopback, link-local (cloud metadata), unspecified
+            array('http://127.0.0.1/', false),
+            array('http://[::1]/', false),
+            array('http://169.254.169.254/latest/meta-data/', false),
+            array('http://0.0.0.0/', false),
+            // Malformed input
+            array('not a url', false),
+            array('', false),
+        );
+    }
+
+    /**
+     * @dataProvider getIsAllowedRemoteUrlData
+     *
+     * @param mixed $url
+     * @param mixed $expected
+     */
+    #[DataProvider('getIsAllowedRemoteUrlData')]
+    public function testIsAllowedRemoteUrl($url, $expected): void
+    {
+        $this->assertSame($expected, Request\Proxy::isAllowedRemoteUrl($url));
+    }
+
     public static function getBuildOptionsData()
     {
         $optionsStr = 'proxyHttp';
