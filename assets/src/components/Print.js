@@ -221,6 +221,11 @@ export default class Print extends HTMLElement {
         const deltaY = (this._maskHeight * this._printScale) / 2 / INCHES_PER_METER / DOTS_PER_INCH / metersPerUnit;
 
         let extent = [center[0] - deltaX, center[1] - deltaY, center[0] + deltaX, center[1] + deltaY];
+        const axisOrientation = mainLizmap.map.getView().getProjection().getAxisOrientation();
+        if (axisOrientation === 'neu') {
+            // invert extent axis
+            extent = [extent[1], extent[0], extent[3], extent[2]];
+        }
         const mapProjection = mainLizmap.config.options.projection.ref;
         const projectProjection = mainLizmap.config.options.qgisProjectProjection.ref ? mainLizmap.config.options.qgisProjectProjection.ref : mapProjection;
 
@@ -432,6 +437,10 @@ export default class Print extends HTMLElement {
                     const delta = (height * this._overviewMapRatio - width) / 2;
                     extent = [minX - delta, minY, maxX + delta, maxY];
                 }
+            }
+            if (axisOrientation === 'neu') {
+                // invert extent axis
+                extent = [extent[1], extent[0], extent[3], extent[2]];
             }
             wmsParams[this._overviewMapId + ':EXTENT'] = extent.join(',');
         }
