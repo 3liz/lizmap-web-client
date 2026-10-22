@@ -263,6 +263,7 @@ const symbolIconProperties = {
 const symbolIconOptionalProperties = {
     'ruleKey': {type: 'string', default: ''},
     'checked': {type: 'boolean', default: true},
+    'expression': {type: 'string', default: ''},
 }
 /**
  * Class representing the symbol icon symbology
@@ -277,6 +278,7 @@ export class SymbolIconSymbology extends BaseIconSymbology {
      * @param {string}  node.title   - the node title
      * @param {string}  node.ruleKey - the node rule key for filtering
      * @param {boolean} node.checked - the node is checked by default
+     * @param {string}  [node.expression] - the QGIS expression matching the features drawn with the symbol
      */
     constructor(node) {
         if (!node.hasOwnProperty('type')) {
@@ -299,6 +301,13 @@ export class SymbolIconSymbology extends BaseIconSymbology {
         this._checked;
 
         /**
+         * The private QGIS expression matching the features drawn with the symbol
+         * @type {string}
+         * @private
+         */
+        this._expression;
+
+        /**
          * The private children rules
          * @type {BaseIconSymbology[]}
          * @private
@@ -312,6 +321,15 @@ export class SymbolIconSymbology extends BaseIconSymbology {
      */
     get ruleKey() {
         return this._ruleKey;
+    }
+
+    /**
+     * The QGIS expression matching the features drawn with the symbol
+     * It is empty if QGIS Server does not provide it
+     * @type {string}
+     */
+    get expression() {
+        return this._expression;
     }
 
     /**
@@ -792,6 +810,34 @@ export class LayerSymbolsSymbology extends BaseSymbolsSymbology {
             params['LEGEND_OFF'] = wmsName+':'+keyUnchecked.join();
         }
         return params;
+    }
+
+    /**
+     * The QGIS expression matching the features drawn on the map, based on
+     * the checked symbols. Used for requests like OGC WFS which do not
+     * support LEGEND_ON and LEGEND_OFF parameters.
+     * @type {?string} null if the features have not to be restricted or if
+     * the expression cannot be built
+     */
+    get expressionFilter() {
+        // A rule without icon, like a group of rules, draws nothing by itself
+        const symbols = this._icons.filter(
+            symbol => symbol.type !== 'image' && symbol._icon !== base64pngNullData
+        );
+        const symbolsOn = symbols.filter(symbol => symbol.legendOn);
+        if (symbolsOn.length === 0 || symbolsOn.length === symbols.length) {
+            return null;
+        }
+        const expressions = [];
+        for (const symbol of symbolsOn) {
+            // The expression is not provided or cannot be evaluated out of
+            // a map rendering context
+            if (symbol.expression === '' || symbol.expression.includes('@map_scale')) {
+                return null;
+            }
+            expressions.push('( ' + symbol.expression + ' )');
+        }
+        return expressions.join(' OR ');
     }
 }
 

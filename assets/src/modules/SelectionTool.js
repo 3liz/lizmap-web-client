@@ -8,6 +8,7 @@ import { mainEventDispatcher } from '../modules/Globals.js';
 import Digitizing from './Digitizing.js';
 import { Config } from './Config.js';
 import { State } from './State.js';
+import { LayerSymbolsSymbology } from './state/Symbology.js';
 
 import {
     LinearRing,
@@ -520,6 +521,13 @@ export default class SelectionTool {
         let eFilter = lConfig?.request_params?.exp_filter;
         if( eFilter ){
             spatialFilter = eFilter +' AND '+ spatialFilter;
+        }
+
+        // Restrict to the features drawn on the map when some symbology
+        // categories or rules are unchecked in the legend
+        const symbology = this._lizmapState.layersAndGroupsCollection.getLayerByName(targetFeatureType)?.symbology;
+        if (symbology instanceof LayerSymbolsSymbology && symbology.expressionFilter) {
+            spatialFilter = '( ' + symbology.expressionFilter + ' ) AND ' + spatialFilter;
         }
 
         const wfs = new WFS();
