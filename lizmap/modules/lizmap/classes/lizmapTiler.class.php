@@ -181,20 +181,20 @@ class lizmapTiler
      */
     public static function getTileMatrixSetList($project, $wms_xml)
     {
-        $DOTS_PER_INCH = 72;
+        $DOTS_PER_INCH = 72.0;
         $METERS_PER_INCH = 0.02540005080010160020;
         $INCHES_PER_UNIT = array(
             'inches' => 1.0,
             'ft' => 12.0,
             'mi' => 63360.0,
             'm' => 39.37,
-            'km' => 39370,
-            'dd' => 4374754,
-            'yd' => 36,
+            'km' => 39370.0,
+            'dd' => 4374754.0,
+            'yd' => 36.0,
         );
         $INCHES_PER_UNIT['in'] = $INCHES_PER_UNIT['inches'];
         $INCHES_PER_UNIT['degrees'] = $INCHES_PER_UNIT['dd'];
-        $INCHES_PER_UNIT['nmi'] = 1852 * $INCHES_PER_UNIT['m'];
+        $INCHES_PER_UNIT['nmi'] = 1852.0 * $INCHES_PER_UNIT['m'];
         // US survey foot: 1200/3937 m, exactly 12 of the 39.37 inches per metre above.
         $INCHES_PER_UNIT['us-ft'] = $INCHES_PER_UNIT['ft'];
 
@@ -242,40 +242,44 @@ class lizmapTiler
                 $minScale = $scales[count($scales) - 1];
 
                 $tileMatrixList = array();
-                $scale = $scaleDenominator;
+                $scale = 1.0 * $scaleDenominator;
                 $res = 0.28E-3 * $scale / $METERS_PER_INCH / $INCHES_PER_UNIT[$unit];
                 // $res = $scale / ($INCHES_PER_UNIT[ $unit ] * 96.0);
-                $col = round(($extent[2] - $extent[0]) / ($tileWidth * $res));
-                $row = round(($extent[3] - $extent[1]) / ($tileHeight * $res));
+                $col = ceil(($extent[2] - $extent[0]) / ($tileWidth * $res));
+                $row = ceil(($extent[3] - $extent[1]) / ($tileHeight * $res));
                 $left = ($extent[0] + ($extent[2] - $extent[0]) / 2) - ($col / 2) * ($tileWidth * $res);
                 $top = ($extent[1] + ($extent[3] - $extent[1]) / 2) + ($row / 2) * ($tileHeight * $res);
+
+                // Fixed the top left corner
+                $left = max($left, $extent[0]);
+                $top = min($top, $extent[3]);
 
                 $tileMatrixList[] = (object) array(
                     'resolution' => $res,
                     'scaleDenominator' => $scale,
                     'col' => $col,
                     'row' => $row,
-                    'left' => max($left, $extent[0]),
-                    'top' => min($top, $extent[3]),
+                    'left' => $left,
+                    'top' => $top,
                 );
 
-                while ($scaleDenominator > $minScale) {
-                    $scaleDenominator /= 2;
-                    $scale = $scaleDenominator;
+                while ($scale > $minScale) {
+                    $scale /= 2;
                     $res = 0.28E-3 * $scale / $METERS_PER_INCH / $INCHES_PER_UNIT[$unit];
                     // $res = $scale / ($INCHES_PER_UNIT[ $unit ] * 96.0);
-                    $col = round(($extent[2] - $extent[0]) / ($tileWidth * $res));
-                    $row = round(($extent[3] - $extent[1]) / ($tileHeight * $res));
-                    $left = ($extent[0] + ($extent[2] - $extent[0]) / 2) - ($col / 2) * ($tileWidth * $res);
-                    $top = ($extent[1] + ($extent[3] - $extent[1]) / 2) + ($row / 2) * ($tileHeight * $res);
+                    // Because scale is divided by 2
+                    // col and row is multiplied by 2
+                    $col *= 2;
+                    $row *= 2;
 
+                    // Reuse the previous top left corner
                     $tileMatrixList[] = (object) array(
                         'resolution' => $res,
                         'scaleDenominator' => $scale,
                         'col' => $col,
                         'row' => $row,
-                        'left' => max($left, $extent[0]),
-                        'top' => min($top, $extent[3]),
+                        'left' => $left,
+                        'top' => $top,
                     );
                 }
 
@@ -315,23 +319,24 @@ class lizmapTiler
                 $right = ($extent[0] + ($extent[2] - $extent[0]) / 2) + ($col / 2) * ($tileWidth * $res);
                 $bottom = ($extent[1] + ($extent[3] - $extent[1]) / 2) - ($row / 2) * ($tileHeight * $res);
 
+                // Reuse the same extent for all scales
                 $extent = array($left, $bottom, $right, $top);
 
                 $tileMatrixList = array();
                 foreach ($scales as $scale) {
                     $res = $scale / ($INCHES_PER_UNIT[$unit] * 96.0);
                     $scale = $res * $METERS_PER_INCH * $INCHES_PER_UNIT[$unit] / 0.28E-3;
-                    $col = round(($extent[2] - $extent[0]) / ($tileWidth * $res));
-                    $row = round(($extent[3] - $extent[1]) / ($tileHeight * $res));
-                    $left = ($extent[0] + ($extent[2] - $extent[0]) / 2) - ($col / 2) * ($tileWidth * $res);
-                    $top = ($extent[1] + ($extent[3] - $extent[1]) / 2) + ($row / 2) * ($tileHeight * $res);
+                    // The extent is fixed for all scales
+                    $col = ceil(($right - $left) / ($tileWidth * $res));
+                    $row = ceil(($top - $bottom) / ($tileHeight * $res));
+                    // Reuse the top left corner for all scales
                     $tileMatrixList[] = (object) array(
                         'resolution' => $res,
                         'scaleDenominator' => $scale,
                         'col' => $col,
                         'row' => $row,
-                        'left' => max($left, $extent[0]),
-                        'top' => min($top, $extent[3]),
+                        'left' => $left,
+                        'top' => $top,
                     );
                 }
 
@@ -383,20 +388,20 @@ class lizmapTiler
      */
     public static function getLayerTileInfo($layerName, $project, $wms_xml, $tileMatrixSetList)
     {
-        $DOTS_PER_INCH = 72;
+        $DOTS_PER_INCH = 72.0;
         $METERS_PER_INCH = 0.02540005080010160020;
         $INCHES_PER_UNIT = array(
             'inches' => 1.0,
             'ft' => 12.0,
             'mi' => 63360.0,
             'm' => 39.37,
-            'km' => 39370,
-            'dd' => 4374754,
-            'yd' => 36,
+            'km' => 39370.0,
+            'dd' => 4374754.0,
+            'yd' => 36.0,
         );
         $INCHES_PER_UNIT['in'] = $INCHES_PER_UNIT['inches'];
         $INCHES_PER_UNIT['degrees'] = $INCHES_PER_UNIT['dd'];
-        $INCHES_PER_UNIT['nmi'] = 1852 * $INCHES_PER_UNIT['m'];
+        $INCHES_PER_UNIT['nmi'] = 1852.0 * $INCHES_PER_UNIT['m'];
         // US survey foot: 1200/3937 m, exactly 12 of the 39.37 inches per metre above.
         $INCHES_PER_UNIT['us-ft'] = $INCHES_PER_UNIT['ft'];
 
