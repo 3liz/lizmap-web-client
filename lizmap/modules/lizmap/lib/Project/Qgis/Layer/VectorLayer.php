@@ -186,6 +186,9 @@ class VectorLayer extends Qgis\BaseQgisObject
      */
     public function getFieldEditable($fieldName)
     {
+        if ($this->editable === null) {
+            return true;
+        }
         if (count($this->editable) == 0) {
             return true;
         }
