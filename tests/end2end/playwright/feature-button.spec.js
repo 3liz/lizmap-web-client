@@ -61,7 +61,7 @@ async function listenFeatureButtonEvents(page) {
                 layerId: evt.layerId,
                 featureId: evt.featureId,
             }),
-            ['featurebutton.popup.displayed', 'featurebutton.edition.launched']
+            ['featurebutton.popup.displayed', 'featurebutton.edition.launched', 'featurebutton.creation.launched']
         );
     });
 }
@@ -99,6 +99,13 @@ test.describe('lizmap-feature-button', {
             mode: 'edit',
         });
         await expect(editButton.locator('button')).toHaveText('Edit');
+
+        // Default label in create mode
+        const createButton = await addFeatureButton(page, 'fb-create', {
+            targetLayerId: PARENT_LAYER_ID,
+            mode: 'create',
+        });
+        await expect(createButton.locator('button')).toHaveText('Create');
 
         // Custom label and description
         const customButton = await addFeatureButton(page, 'fb-custom', {
@@ -159,6 +166,20 @@ test.describe('lizmap-feature-button', {
             mode: 'edit',
         });
         await expect(notEditable.locator('button')).toBeDisabled();
+
+        // Missing feature id in edit mode
+        const editNoFeatureId = await addFeatureButton(page, 'fb-edit-no-feature', {
+            targetLayerId: PARENT_LAYER_ID,
+            mode: 'edit',
+        });
+        await expect(editNoFeatureId.locator('button')).toBeDisabled();
+
+        // Create mode on a layer which is not editable
+        const notCreatable = await addFeatureButton(page, 'fb-not-creatable', {
+            targetLayerId: NOT_EDITABLE_LAYER_ID,
+            mode: 'create',
+        });
+        await expect(notCreatable.locator('button')).toBeDisabled();
     });
 
     test('should enable the edit button without popup nor primary key field', async ({ page }) => {
@@ -297,6 +318,53 @@ test.describe('lizmap-feature-button', {
             type: 'featurebutton.edition.launched',
             layerId: PARENT_LAYER_ID,
             featureId: '2',
+        }]);
+
+        // Cancel the edition
+        page.on('dialog', dialog => dialog.accept());
+        await page.locator('#jforms_view_edition__submit_cancel').click();
+    });
+
+    test('should launch the feature creation', async ({ page }) => {
+        await listenFeatureButtonEvents(page);
+        // The feature id and the zoom are ignored in create mode
+        const button = await addFeatureButton(page, 'fb-create', {
+            targetLayerId: PARENT_LAYER_ID,
+            targetFeatureId: '2',
+            targetZoomToFeature: 'true',
+            mode: 'create',
+        });
+
+        let getFeatureRequested = false;
+        page.on('request', request => {
+            if (request.method() === 'POST' && request.postData()?.includes('GetFeature')) {
+                getFeatureRequested = true;
+            }
+        });
+
+        const createFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/createFeature/);
+        await button.locator('button').click();
+        const createFeatureRequest = await createFeatureRequestPromise;
+        await createFeatureRequest.response();
+
+        // Check the request: no feature id
+        requestExpect(createFeatureRequest).toContainParametersInUrl({
+            layerId: PARENT_LAYER_ID,
+        });
+        expect(new URL(createFeatureRequest.url()).searchParams.has('featureId')).toBe(false);
+
+        // The form is opened for a new feature
+        await expect(page.locator('#edition-form-container form')).toBeVisible();
+        await expect(page.locator('#jforms_view_edition_id')).toHaveValue('');
+
+        // The feature geometry is not requested
+        expect(getFeatureRequested).toBe(false);
+
+        // Check the event
+        await expect.poll(() => page.evaluate(() => globalThis.featureButtonEvents)).toEqual([{
+            type: 'featurebutton.creation.launched',
+            layerId: PARENT_LAYER_ID,
+            featureId: undefined,
         }]);
 
         // Cancel the edition
