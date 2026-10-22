@@ -1,0 +1,513 @@
+{
+    "nodes": [
+        {
+            "symbols": [
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAACXBIWXMAAA9hAAAPYQGoP6dpAAABTklEQVRIib3WwQ7BQBAG4FkqUs4kIhx65RE48ArCQbyE8CZuzh6hj+EBHNzFwcFZ6ndoGqU72xltTNKk3Z3utzvbpEv05zDSRABwDmSMaKzcpDxIC7OdWkgKWxuLYi4001AWxqEfD2VjNtSzZgBE67V+5NmMaDyW5eI7PA+Iafm132eGSSJxKuwMGg39Cn0\/N6WSrC7T02rpQcckPwxrDUYjfUkHA2A+B3Y7Z1nt4GKhB9PX4WAF+T3sdPQlTcf5bG3mwW63GNhuK8HhsBgYBHyfdQ+v19\/3r1oFLhflRwMAQSBHplOgVovvl0v3V8qi260M6\/eB5xO434HTCYgiN8aCx6MM3GzYIrEgi65WbqzZjFelxVjwdgMmE8CYLNbrAWGoWp38B\/x4EEVR6k1DVK+zk3+nOX7AuagyREeMslDVIaoI\/PMxUQtLD8J\/jxdqF9GmouAWJgAAAABJRU5ErkJggg==",
+                    "title": "caf\u00e9",
+                    "ruleKey": "0",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"type\" = 1"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAACXBIWXMAAA9hAAAPYQGoP6dpAAABCklEQVRIid2WvQ3CMBCFv0MUqaIMQAFb0CBlFiZgA2CDTMAskWjYAgoGiKjShcooJubs\/Eu8Ls9nfzn5xTFMLAktrKqqUhcSCVrLW+QDtQX\/HGwLCgU7zb4wDdowNFhBScbN8g5sSYiCodaDr7MHBRsyy7tzYE2iTbOgC7VyBH2AQ+2bS\/W15+lwzO6MDGPpGiwoKSgb\/pNXkAeQEDnTK3W60YmcM7n3rTUdSTmR2jARmS+lfwt07qEWmh0Xy7uyZ0XcqHWFRkTEmdJfCXNpRew92upaGHLwjI4yjPlCM2aXs\/4trNCIiGjnakLE8ev08IVL\/QEbTXrFGAra6hLVB9z5mtgWPMW33ElviuBhWOAd5qgAAAAASUVORK5CYII=",
+                    "title": "pharmacy",
+                    "ruleKey": "1",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"type\" = 2"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAACXBIWXMAAA9hAAAPYQGoP6dpAAACJUlEQVRIic2WPWgUQRiGnz3vcjFEgmJEJWjAoEWMiAERKwPaGO0MomAjYlKIKBb2gkgUsdAiYmGjRVAL01j4c6DgD4pRc0kj0UhULIyH5swZI\/dZrHO3PzO7O4ohLyzLzHzzPfPu7nyzMMtykgaKiEQmcpxEuWKD4kC2YOOgLSgpOG2CvXoHVx7A1LQdaGE97O9wc+igoQ4RkR8z0NQDE5PV\/kvdsHWdHnI5ByeuV9vrm2Hw9B9AAOpzqB7j6Cc\/DKAuC\/W1emBtxt9+MQbTM5DNhJ366AqYH4e2Y7CkAbo2mUFBTRSh\/yFMlqB0tboQL7DiUPeR9B+BLa3JYEobW+DgRX+f12UqavLaFXYwgLaYOSm1AvvUdlKMSIf\/Q3ML+PGLfcIPMXO0lUbpQB8c3p58W3z+Br03\/wH4dBT2nU8GS6pI4I52aFoEuWHo2WaOKwucGXBr6L08PH79l8BTe2H1Mmg\/Di1LzXG\/yrCyEU7ugRtPYNfZGKDjOI5uL+4+B4sXQOE73BkyJykLjLyHnb3wckwfoypNpcZ5gV+nYHm3\/dGk1NwIby6A95wIAYPQgWfQdxtuDbrtjlZIGTZRoQjP38L8GujcAEc7YfOaMCwkCahQFKHLvUo\/g6NV5fJuzKpD+nEvw\/fRBN9lNgM1aUjPg3REiWio89+DOc0zNU7vDoncHzG7U7r2SGR43OyssoAoaOzKImRyNnd+E23BSX+EZ12\/AXKRQ1CDPZa2AAAAAElFTkSuQmCC",
+                    "title": "bus stop",
+                    "ruleKey": "2",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"type\" = 3"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAACXBIWXMAAA9hAAAPYQGoP6dpAAACmElEQVRIic2WTUsbYRCAn82KH42FVrC9pVZQetQc6k0v6X8QNHjyEDwK+QtqvAheVAxC9JRD40V6kOJBkCo2UIkfMdUYaFWKadjU6K5J9u2hGE12s4naSgf2sDOz87wz8zI78MgiVesohBCWgSSpqlgVnSqB7goua7wrqFqwqfKhMCuorRJMzav3Bpod3GbloGQVej\/1Vgy88XMDX9THzOEM6Wy6IrTIeFtGd0cFQcR6cr3UVJDZw1lBkMLjXHYKXehFPqYZlho0XWMiNgHA2N6Y6QFj5zF8UV+RLpwKM30wjS500ywNPbyWwFGAU\/UUgMXjRfZ\/7RfZ3Rtu2j+0G\/QAnrCHro9dKFnFYLOZZacLnfHoeNn33fQuC4mFcmcFYDO1yeTXycL7NcM0w9D3ELHzWJFuPjHPiXoCQJ1ch1TFkEpkEgadKXAsauyZpmtM7P\/paau9FfcrtyWsXq7H+8ZbGahkFbJ61jTI2dUZANvpbZZOliyBal5lLj5XGXiZvzSU81oiSgQAz2cPyaukJRBgZG+ELWXLGrjyY4WcnjMNcHx5zE56p3B7q5FSXwOwsaYRTddMP07n0jTVNjHQMlAVrMXeQk9zT5FOgpsrq+ZVOpc7AWh72kY8EyeiRHC9dCGEIHYeo7u5m8DbAFMHU6wl13C9cLF6too\/7gcg\/C6MP+5HlmSG24dxPHHcwG4PcyGEyOt5kdNzhZE0FB4SBBGhb6GCTstrhvHm\/eIVBBH29\/ayI9C0pDbJhizJlmWqtdUadKlsCoCL3EXZdhiA1a4IZhLPxAEQCI4yRwb77dg1VoH6Hf10POvA+dxpCRx8PUifow+ABrnB0teQ1d\/62xcAJZV79BXj\/1iiHgK+95p4V\/BDbvk\/ld\/x2rlL018KAQAAAABJRU5ErkJggg==",
+                    "title": "park",
+                    "ruleKey": "3",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"type\" = 4"
+                }
+            ],
+            "title": "Points of interest",
+            "type": "layer",
+            "name": "points_of_interest",
+            "layerName": "points_of_interest"
+        },
+        {
+            "symbols": [
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADAy\/Gf4T4kBTJS6YOANGAXDAgAAn84CBk1SM5QAAAAASUVORK5CYII=",
+                    "title": "easy",
+                    "ruleKey": "0",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"difficulty\" = '1'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADD+\/8\/wnxIDmCh1wcAbMAqGBQAAZzEDBdPkLQsAAAAASUVORK5CYII=",
+                    "title": "normal",
+                    "ruleKey": "1",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"difficulty\" = '2'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADD+Z2D4T4kBTJS6YOANGAXDAgAAoM0CBuYhqkkAAAAASUVORK5CYII=",
+                    "title": "difficult",
+                    "ruleKey": "2",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"difficulty\" = '3'"
+                }
+            ],
+            "title": "Bicycle rides",
+            "type": "layer",
+            "name": "edition_line",
+            "layerName": "edition_line"
+        },
+        {
+            "symbols": [
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAKUlEQVQ4jWNMWtj4jIECwMLAwMAwL+7fKXINYKLE9lEDRg0YNYCKBgAAi6sFUBuENXUAAAAASUVORK5CYII=",
+                    "title": "checked",
+                    "ruleKey": "0",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"checked\" = '0'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAKUlEQVQ4jWNcWJ70jIECwMLAwMAQd2\/eKXINYKLE9lEDRg0YNYCKBgAA6m4FJnbMmwIAAAAASUVORK5CYII=",
+                    "title": "not checked",
+                    "ruleKey": "1",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"checked\" = '1'"
+                }
+            ],
+            "title": "Areas of interest",
+            "type": "layer",
+            "name": "areas_of_interest",
+            "layerName": "areas_of_interest"
+        },
+        {
+            "icon": "iVBORw0KGgoAAAANSUhEUgAAABIAAAAQCAYAAAAbBi9cAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAA90lEQVQ4ja3STStFURTG8R\/X6EopRd0IMTOTkhnJnIEZn8JEGRr6CChT34EMvIwNTOhOFFJyB1KSvAwcOraz9znJU3uy1rP+a6+1N\/+ktki8E9MYRz9quMYZ9tEKC2oFkGUcYBRHuMEVHrCATbzhsOxGLVziHo9Bro4uTKCBu8hEenEbS+Z0gql8oD0wDOOiAug880ZBQ2hWADUz77c6AsMAXtBdAnrFYMqwiveKZytfGI72padEs+cM9ENFoG2MJEBzWAuD4Y5gXrDIQBvo8\/nDk6AezCZAk0XBELSDMSxhxu+fDXs4xXqiGVjEsfhD7GKlDPJnfQAnaDEx\/aSbQQAAAABJRU5ErkJggg==",
+            "title": "bus_stops",
+            "type": "layer",
+            "name": "bus_stops",
+            "layerName": "bus_stops"
+        },
+        {
+            "symbols": [
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADBON1\/4nxIDmCh1wcAbMAqGBQAA18MCdniucKkAAAAASUVORK5CYII=",
+                    "title": "La navette",
+                    "ruleKey": "0",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"name\" = 'La navette'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADAekDf6T4kBTJS6YOANGAXDAgAA0n4CGMuFs78AAAAASUVORK5CYII=",
+                    "title": "La Ronde",
+                    "ruleKey": "1",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"name\" = 'La Ronde'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 11",
+                    "ruleKey": "2",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"name\" = 'Ligne 11'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADB+azj2nxIDmCh1wcAbMAqGBQAAEx8DQ9xAw4oAAAAASUVORK5CYII=",
+                    "title": "Ligne 12",
+                    "ruleKey": "3",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"name\" = 'Ligne 12'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 14",
+                    "ruleKey": "4",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"name\" = 'Ligne 14'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADAeuCT6nxIDmCh1wcAbMAqGBQAAdH8Crkgc2v8AAAAASUVORK5CYII=",
+                    "title": "Ligne 15",
+                    "ruleKey": "5",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"name\" = 'Ligne 15'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADC+k5zxnxIDmCh1wcAbMAqGBQAAXeICppb8hjgAAAAASUVORK5CYII=",
+                    "title": "Ligne 16",
+                    "ruleKey": "6",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"name\" = 'Ligne 16'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADA+++TxnxIDmCh1wcAbMAqGBQAAxYIDJ9hC0HMAAAAASUVORK5CYII=",
+                    "title": "Ligne 17",
+                    "ruleKey": "7",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"name\" = 'Ligne 17'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 18",
+                    "ruleKey": "8",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"name\" = 'Ligne 18'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 20",
+                    "ruleKey": "9",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"name\" = 'Ligne 20'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 21",
+                    "ruleKey": "10",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"name\" = 'Ligne 21'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 22",
+                    "ruleKey": "11",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"name\" = 'Ligne 22'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 23",
+                    "ruleKey": "12",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"name\" = 'Ligne 23'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 24",
+                    "ruleKey": "13",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"name\" = 'Ligne 24'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 25",
+                    "ruleKey": "14",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"name\" = 'Ligne 25'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 29",
+                    "ruleKey": "15",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"name\" = 'Ligne 29'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 30",
+                    "ruleKey": "16",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"name\" = 'Ligne 30'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 31",
+                    "ruleKey": "17",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"name\" = 'Ligne 31'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 32",
+                    "ruleKey": "18",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"name\" = 'Ligne 32'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 33",
+                    "ruleKey": "19",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"name\" = 'Ligne 33'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 34",
+                    "ruleKey": "20",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"name\" = 'Ligne 34'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 35",
+                    "ruleKey": "21",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"name\" = 'Ligne 35'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 36",
+                    "ruleKey": "22",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"name\" = 'Ligne 36'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 37",
+                    "ruleKey": "23",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"name\" = 'Ligne 37'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 38",
+                    "ruleKey": "24",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"name\" = 'Ligne 38'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADD+3sv5nxIDmCh1wcAbMAqGBQAAvTACyBLzjsEAAAAASUVORK5CYII=",
+                    "title": "Ligne 5",
+                    "ruleKey": "25",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"name\" = 'Ligne 5'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADAyLAv4T4kBTJS6YOANGAXDAgAAhm0B\/cJJ\/UIAAAAASUVORK5CYII=",
+                    "title": "Ligne 6",
+                    "ruleKey": "26",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"name\" = 'Ligne 6'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADBunnD+PyUGMFHqgoE3YBQMCwAAncoDGTpN\/XcAAAAASUVORK5CYII=",
+                    "title": "Ligne 7",
+                    "ruleKey": "27",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"name\" = 'Ligne 7'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADAu8tT6T4kBTJS6YOANGAXDAgAA3YwCHGdZRXcAAAAASUVORK5CYII=",
+                    "title": "Ligne 8",
+                    "ruleKey": "28",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"name\" = 'Ligne 8'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADCmHY\/8T4kBTJS6YOANGAXDAgAAF\/gCjRUY+NsAAAAASUVORK5CYII=",
+                    "title": "Ligne 9",
+                    "ruleKey": "29",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"name\" = 'Ligne 9'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAH0lEQVQ4jWNgGAXDADAyMDD8p8QAJkpdMPAGjIJhAQDZagEHwzuUIgAAAABJRU5ErkJggg==",
+                    "title": "",
+                    "ruleKey": "30",
+                    "checked": true,
+                    "parentRuleKey": "",
+                    "expression": "\"name\" = ''"
+                }
+            ],
+            "title": "Bus lines",
+            "type": "layer",
+            "name": "bus",
+            "layerName": "bus"
+        },
+        {
+            "icon": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAACXBIWXMAAA9hAAAPYQGoP6dpAAABgklEQVQ4jc2TPYtTQRiFn3PnGlQCEfxgwZQSvJOARRC1WWx0QQR\/h63Y+QME0cJfYJXKTjtBBMFCdBtJ5sKKWlgta+EHJJAweS0Mcvfe2V218sA058w5zHlnBv43KEUOBoOry+XyFtA2sxGwkHQNOA48DSHcPzDIe98GtoGjwHfgupktgLuSLgNkWbYxHo+fVX1ZPSjGeBo4DNxwzl1wzu3kef41z\/ObwEVgK8ZY1H15nWi1Wooxfg4hPEnV9t6\/SDVpnGiFY9771h7aqRTZONEKHWDTe\/+hSppZB1gHXv5pEMBgtX5DSl4ysHe1v0YjaD6fG7Aws0vA44r0Mcuyc2b2DrADg5xzn4Bvks6ye7DtGGMhqQO8rvuSpYuiuCJpBJxMyLdDCA\/qZHLYkr7w62W\/qklnJC2TnjoxHA4PTafTt8CoLMt7Va3f7583s+dmNizL8n1Va8xoNpvdkfSjLMvGx5xMJm8kPZT0KOXdhV6vd6Lb7R7ZZ4vz3q8Bbt+gf8VPZdhvHvwef0QAAAAASUVORK5CYII=",
+            "title": "Tram stops",
+            "type": "layer",
+            "name": "tramstop",
+            "layerName": "tramstop"
+        },
+        {
+            "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAHklEQVQ4jWNgGAWjgIGBkYGB4T8lBjBRySGjYIQDAI9GAQOJBA80AAAAAElFTkSuQmCC",
+            "title": "Tram lines [10]",
+            "type": "layer",
+            "name": "tramway",
+            "layerName": "tramway"
+        },
+        {
+            "icon": "iVBORw0KGgoAAAANSUhEUgAAABYAAAAUCAYAAACJfM0wAAAACXBIWXMAAA9hAAAPYQGoP6dpAAABUklEQVQ4je2QzypEYRjGf+9xxnCOsRiRlAUZBxti6wIsLRwrF2DjCrgAF2A5N8C5CWVD2cqfUtRQQqLMMDiPxXymkTRNsVCezfP2+57v+Xo\/+CVZs8BEt0bSN2IgFvQaJJaydVix3ZaLx7tV0CuxjBiY+ubuOZAgNo\/Ltv+leAZlKiE9VSPvp8zLWAQmm23ySeLUjMREYsZl9ZE7G81p1lJ2WipqJiP2frSwQb6lPBjsCfJAQXDlwRmAYBAYcKveONYHDAElgwvHhoFe4MjgXnBbfyHq0kIUSmOBNuos1HoUSlGopToLtByFUhRorSFXdLm5D\/ZrX\/Ff\/F\/8VQYQBVrFWAM6gBeg6s7bgQzwDLw65gNZl3lxLOv4k0TxpGwrVshq2PM5cKU\/oTdg2s88U3oK6PcMAbR5qM3N\/nXNM9T8CuS7+cPbQZ1uzjnfrpX\/Mb0Ds6hyazeez+0AAAAASUVORK5CYII=",
+            "title": "public buildings",
+            "type": "layer",
+            "name": "publicbuildings",
+            "layerName": "publicbuildings"
+        },
+        {
+            "symbols": [
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAJ0lEQVQ4jWNUVVH7z0ABYGFgYGAo1t1KtgFMlNg+asCoAaMGUNEAACHTAuWL92xvAAAAAElFTkSuQmCC",
+                    "title": "CV",
+                    "ruleKey": "{22ecac7e-c787-409f-9368-9e8e5718177a}",
+                    "checked": true,
+                    "parentRuleKey": "{dc07f240-06e7-40c5-8e65-713938d5faa3}",
+                    "expression": "\"quartmno\" = 'CV'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAJ0lEQVQ4jWNUVlP9z0ABYGFgYGBQ2t9BtgFMlNg+asCoAaMGUNEAAGlUAvgj5mTSAAAAAElFTkSuQmCC",
+                    "title": "LES CEVENNES",
+                    "ruleKey": "{e7adaf60-5730-43b4-a958-23422e82ff2a}",
+                    "checked": true,
+                    "parentRuleKey": "{22ecac7e-c787-409f-9368-9e8e5718177a}",
+                    "expression": "(\"libsquart\" = 'LES CEVENNES') AND (\"quartmno\" = 'CV')"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAJ0lEQVQ4jWNUUVf5z0ABYGFgYGCwPuFCtgFMlNg+asCoAaMGUNEAAO0AAtfDo8U7AAAAAElFTkSuQmCC",
+                    "title": "Alco",
+                    "ruleKey": "{913bbd1c-3774-404f-92f7-a452e928cdc8}",
+                    "checked": true,
+                    "parentRuleKey": "{22ecac7e-c787-409f-9368-9e8e5718177a}",
+                    "expression": "(\"libsquart\" = 'Alco') AND (\"quartmno\" = 'CV')"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAJ0lEQVQ4jWNUVVf9z0ABYGFgYGBI3F9JtgFMlNg+asCoAaMGUNEAACuNAyulC0t1AAAAAElFTkSuQmCC",
+                    "title": "La Martelle",
+                    "ruleKey": "{6da5ec1f-7697-4b19-ad74-dd07a9c8e9be}",
+                    "checked": true,
+                    "parentRuleKey": "{22ecac7e-c787-409f-9368-9e8e5718177a}",
+                    "expression": "(\"libsquart\" = 'La Martelle') AND (\"quartmno\" = 'CV')"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAJ0lEQVQ4jWNUU1b7z0ABYGFgYGCYyrqCbAOYKLF91IBRA0YNoKIBANoJAtI4216hAAAAAElFTkSuQmCC",
+                    "title": "La Chamberte",
+                    "ruleKey": "{61cc231b-6f8c-4f26-b1dd-1b792ef7d5ed}",
+                    "checked": true,
+                    "parentRuleKey": "{22ecac7e-c787-409f-9368-9e8e5718177a}",
+                    "expression": "(\"libsquart\" = 'La Chamberte') AND (\"quartmno\" = 'CV')"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAJ0lEQVQ4jWNUVlP\/z0ABYGFgYGBg3HOIbAOYKLF91IBRA0YNoKIBAMRZAxCcBr77AAAAAElFTkSuQmCC",
+                    "title": "CX",
+                    "ruleKey": "{837f16f5-b98e-4fb2-b6c1-12840318b4ff}",
+                    "checked": true,
+                    "parentRuleKey": "{dc07f240-06e7-40c5-8e65-713938d5faa3}",
+                    "expression": "\"quartmno\" = 'CX'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAJ0lEQVQ4jWNUUVP+z0ABYGFgYGAw2v2HbAOYKLF91IBRA0YNoKIBAEmDA3eZcSzbAAAAAElFTkSuQmCC",
+                    "title": "Pas du Loup",
+                    "ruleKey": "{c7660853-0f47-4591-957c-50fa2fcf7302}",
+                    "checked": true,
+                    "parentRuleKey": "{837f16f5-b98e-4fb2-b6c1-12840318b4ff}",
+                    "expression": "(\"libsquart\" = 'Pas du Loup') AND (\"quartmno\" = 'CX')"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAJ0lEQVQ4jWNUVlX\/z0ABYGFgYGAQrT9KtgFMlNg+asCoAaMGUNEAADCGAunCXqilAAAAAElFTkSuQmCC",
+                    "title": "Lemasson",
+                    "ruleKey": "{8ad19073-e614-4c50-8f6f-e198966230d2}",
+                    "checked": true,
+                    "parentRuleKey": "{837f16f5-b98e-4fb2-b6c1-12840318b4ff}",
+                    "expression": "(\"libsquart\" = 'Lemasson') AND (\"quartmno\" = 'CX')"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAJ0lEQVQ4jWNUV1b5z0ABYGFgYGA4xK9LtgFMlNg+asCoAaMGUNEAANUzAo13fPAjAAAAAElFTkSuQmCC",
+                    "title": "Estanove",
+                    "ruleKey": "{6d86c99a-2439-4a40-b013-55ec619d46c6}",
+                    "checked": true,
+                    "parentRuleKey": "{837f16f5-b98e-4fb2-b6c1-12840318b4ff}",
+                    "expression": "(\"libsquart\" = 'Estanove') AND (\"quartmno\" = 'CX')"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAJ0lEQVQ4jWNUVVH7z0ABYGFgYGDIcd9AtgFMlNg+asCoAaMGUNEAAFbPAvOZ6o13AAAAAElFTkSuQmCC",
+                    "title": "CROIX D'ARGENT",
+                    "ruleKey": "{123a006a-20a4-49d1-b803-523706598a53}",
+                    "checked": true,
+                    "parentRuleKey": "{837f16f5-b98e-4fb2-b6c1-12840318b4ff}",
+                    "expression": "(\"libsquart\" = 'CROIX D''ARGENT') AND (\"quartmno\" = 'CX')"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAJ0lEQVQ4jWNUUVP9z0ABYGFgYGDw2ZRBtgFMlNg+asCoAaMGUNEAAGJSAvabZEV3AAAAAElFTkSuQmCC",
+                    "title": "HO",
+                    "ruleKey": "{f55d211e-cfcf-468e-949e-dcaa605fa29b}",
+                    "checked": true,
+                    "parentRuleKey": "{dc07f240-06e7-40c5-8e65-713938d5faa3}",
+                    "expression": "\"quartmno\" = 'HO'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAJ0lEQVQ4jWNUV1b7z0ABYGFgYGA4oTqXbAOYKLF91IBRA0YNoKIBAO7tAxvRduF5AAAAAElFTkSuQmCC",
+                    "title": "MC",
+                    "ruleKey": "{cf39eb90-4c6b-4ad8-b25e-ce4379bb8bbb}",
+                    "checked": true,
+                    "parentRuleKey": "{dc07f240-06e7-40c5-8e65-713938d5faa3}",
+                    "expression": "\"quartmno\" = 'MC'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAJ0lEQVQ4jWNUU1P5z0ABYGFgYGBY2u9BtgFMlNg+asCoAaMGUNEAALoiAw38HLIPAAAAAElFTkSuQmCC",
+                    "title": "MI",
+                    "ruleKey": "{2e1503a1-a991-493d-9229-a509ca1f138e}",
+                    "checked": true,
+                    "parentRuleKey": "{dc07f240-06e7-40c5-8e65-713938d5faa3}",
+                    "expression": "\"quartmno\" = 'MI'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAJ0lEQVQ4jWNUUVX7z0ABYGFgYGDwiF9LtgFMlNg+asCoAaMGUNEAAB3mAuSvkcJMAAAAAElFTkSuQmCC",
+                    "title": "PA",
+                    "ruleKey": "{45582e7b-1e66-45db-acb4-15af6980dc82}",
+                    "checked": true,
+                    "parentRuleKey": "{dc07f240-06e7-40c5-8e65-713938d5faa3}",
+                    "expression": "\"quartmno\" = 'PA'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAJ0lEQVQ4jWNUVVP5z0ABYGFgYGCoWRFMtgFMlNg+asCoAaMGUNEAAKLyAweYO6a+AAAAAElFTkSuQmCC",
+                    "title": "PR",
+                    "ruleKey": "{8ed00a19-6de5-4600-9a2e-1189112a81af}",
+                    "checked": true,
+                    "parentRuleKey": "{dc07f240-06e7-40c5-8e65-713938d5faa3}",
+                    "expression": "\"quartmno\" = 'PR'"
+                }
+            ],
+            "title": "SousQuartiers",
+            "type": "layer",
+            "name": "SousQuartiers",
+            "layerName": "SousQuartiers"
+        }
+    ],
+    "title": ""
+}
