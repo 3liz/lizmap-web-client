@@ -1,46 +1,45 @@
 ARG REGISTRY_PREFIX=''
-FROM ${REGISTRY_PREFIX}alpine:3.22 AS build
+FROM ${REGISTRY_PREFIX}alpine:3.24 AS build
 
 COPY lizmap_web_client.zip .
 RUN unzip lizmap_web_client.zip
 
-FROM alpine:3.22
+FROM alpine:3.24
 LABEL org.opencontainers.image.authors="David Marteau <david.marteau@3liz.com>"
 LABEL Description="Lizmap web client" Vendor="3liz.org" Version="23.02.0"
 
 RUN apk update && apk upgrade && \
     apk --no-cache add git fcgi \
     icu-data-full \
-    php83 \
-    php83-ctype \
-    php83-curl \
-    php83-dom \
-    php83-exif \
-    php83-fileinfo \
-    php83-fpm \
-    php83-gd \
-    php83-gettext \
-    php83-iconv \
-    php83-intl \
-    php83-json \
-    php83-ldap \
-    php83-mbstring \
-    php83-opcache \
-    php83-openssl \
-    php83-pdo \
-    php83-pdo_sqlite \
-    php83-pdo_pgsql \
-    php83-pgsql \
-    php83-phar \
-    php83-redis \
-    php83-session \
-    php83-simplexml \
-    php83-sqlite3 \
-    php83-tokenizer \
-    php83-xml \
-    php83-xmlreader \
-    php83-xmlwriter \
-    php83-zip \
+    php85 \
+    php85-ctype \
+    php85-curl \
+    php85-dom \
+    php85-exif \
+    php85-fileinfo \
+    php85-fpm \
+    php85-gd \
+    php85-gettext \
+    php85-iconv \
+    php85-intl \
+    php85-json \
+    php85-ldap \
+    php85-mbstring \
+    php85-openssl \
+    php85-pdo \
+    php85-pdo_sqlite \
+    php85-pdo_pgsql \
+    php85-pgsql \
+    php85-phar \
+    php85-redis \
+    php85-session \
+    php85-simplexml \
+    php85-sqlite3 \
+    php85-tokenizer \
+    php85-xml \
+    php85-xmlreader \
+    php85-xmlwriter \
+    php85-zip \
     composer \
     shadow
 
@@ -64,7 +63,7 @@ COPY php-fpm-healthcheck /usr/local/bin/
 
 RUN chmod 755 /bin/lizmap-entrypoint.sh /bin/update-config.php /usr/local/bin/php-fpm-healthcheck
 
-ENV PHP_INI_DIR=/etc/php83
+ENV PHP_INI_DIR=/etc/php85
 
 HEALTHCHECK \
     --interval=30s \
@@ -75,4 +74,4 @@ HEALTHCHECK \
 
 WORKDIR /www
 ENTRYPOINT ["/bin/lizmap-entrypoint.sh"]
-CMD ["/usr/sbin/php-fpm83", "-F", "-O"]
+CMD ["/usr/sbin/php-fpm85", "-F", "-O"]
