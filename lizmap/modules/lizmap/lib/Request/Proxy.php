@@ -250,6 +250,66 @@ class Proxy
     }
 
     /**
+     * Check that a URL is safe to fetch server-side, to mitigate SSRF.
+     *
+     * Only http(s) is allowed, and the host must resolve exclusively to addresses
+     * that are not loopback, link-local or otherwise reserved. This blocks the most
+     * dangerous SSRF targets (e.g. 127.0.0.1, ::1 and the 169.254.169.254 cloud
+     * metadata endpoint) while still allowing private RFC1918 ranges, since internal
+     * WMS servers are a legitimate configuration. Hosts that cannot be resolved are
+     * refused (fail closed).
+     *
+     * @param string $url the URL to check
+     *
+     * @return bool true if the URL may be fetched
+     */
+    public static function isAllowedRemoteUrl($url)
+    {
+        $parts = parse_url($url);
+        if ($parts === false || !isset($parts['scheme']) || !isset($parts['host'])) {
+            return false;
+        }
+        if (!in_array(strtolower($parts['scheme']), array('http', 'https'), true)) {
+            return false;
+        }
+
+        $host = trim($parts['host'], '[]');
+
+        // Resolve the host to one or more IP addresses
+        $ips = array();
+        if (filter_var($host, FILTER_VALIDATE_IP)) {
+            $ips[] = $host;
+        } else {
+            $ipv4 = @gethostbynamel($host);
+            if (is_array($ipv4)) {
+                $ips = array_merge($ips, $ipv4);
+            }
+            $ipv6 = @dns_get_record($host, DNS_AAAA);
+            if (is_array($ipv6)) {
+                foreach ($ipv6 as $record) {
+                    if (isset($record['ipv6'])) {
+                        $ips[] = $record['ipv6'];
+                    }
+                }
+            }
+        }
+
+        // Could not resolve the host: refuse (fail closed)
+        if (count($ips) === 0) {
+            return false;
+        }
+
+        // Every resolved address must be outside loopback/link-local/reserved ranges
+        foreach ($ips as $ip) {
+            if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_RES_RANGE)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * @param null|array|string $options
      * @param string            $method
      * @param null|int          $debug
@@ -451,6 +511,13 @@ class Proxy
         $requestOptions['stream'] = false;
         if (array_key_exists('stream', $options) && $options['stream'] === true) {
             $requestOptions['stream'] = true;
+        }
+
+        // Allow callers to disable HTTP redirect following. Used to mitigate SSRF on
+        // user-influenced external URLs (a permitted host could otherwise redirect to
+        // an internal one). Defaults to Guzzle's behaviour when not set.
+        if (array_key_exists('allow_redirects', $options)) {
+            $requestOptions['allow_redirects'] = $options['allow_redirects'];
         }
 
         // Set proxy request options
