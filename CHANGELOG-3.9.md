@@ -8,11 +8,86 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* **[Le Grand Narbonne](https://www.legrandnarbonne.com/)**
+* **[Conseil Départemental du Calvados](https://www.calvados.fr/)**
+* **[WPD Onshore France](https://www.wpd.fr/)**
+* **[SMICA](https://www.smica.fr/)**
+* **[Communauté de communes du Val d'Argent](https://www.cc-valdargent.fr/)**
+* **[EBERL ZivilTechniker](https://www.zt-eberl.at/)**
+
+### Contributors
+
+* @meyerlor
+* @brown789
+* @guenterw
+* @geographit2
+
+### Added
+
+* Limit export formats per layer #7149
+
+### Fixed
+
+* JS: using initial config API in attribute table legacy #7144
+* JS: using initial config and other main Lizmap API in switcher layers #7150
+* JS selection tool : Selected features in visible layers and close message #7164
+* JS: Enhancing isExportable method in selection tool module #7169
+* PHP: Use sha1 to prevent long file/dir name in cache path #7140 **Needing cache to be rebuild**
+* PHP: Action parameter value not passed to lizmap_get_data if empty (or 0) #7141
+* Proxy - Increase client timeout for requests sent to QGIS Server #7174
+* JS Atlas: provide primary-key values in option elements #7179
+* PHP: New parser for layer datasources #7067
+* PHP: logout after HTTP Basic authentication #7226
+* Admin page : check if QGIS is reachable #7159
+* PHP: GetFeatureInfo Error 500 on unkown layer #7242
+* Edition - Make non editable date fields really non editable #7230
+* Store and serve WebP tiles as WebP in the server tile cache #7232 fixes #7225
+* PHP: request's headers has to be string - partial #7034
+* PHP: Project in a US survey feet CRS (+units=us-ft) fails to load: division by zero in lizmapTiler::getTileMatrixSetList #7272 fixes #7262
+* PHP: Keep decimal size and position of QGIS layout items #7285
+* PHP: WMTS GetCapabilities: TopLeftCorner is rounded to 14 significant digits (differs from internal value) #7271 fixes #7264
+* Print: request the overview map as defined in the layout #7286
+* Print scales are multiplied by 3.2808 in a feet CRS #7298 fixes #7263
+* PHP: editable fields could be null for old QGIS projects #7309
+* JS: selection tool selects features of unchecked legend symbols #7250
+* PHP: WMTS EPSG:4326 TileMatrix #7295
+* Printing map in projection with axis orientation neu #7320 fixes #4862 and #6164
+* PHP: Support PostgreSQL float arrays in edition forms with QGIS List widget #7209
+
 ### Security
 
+* Return error if selection token is unknown or expired - #7131
 * html editor (ckeditor): strengthens the validation of uploaded images to prevent security issues caused by improper
   configuration of web servers and PHP (for example web configuration allowing foo.php.jpg to be sent to PHP, or allowing
-  foo.jpg having php code into its content).
+  foo.jpg having php code into its content). #7155
+* SQL filters - Use a new algorithm with a stronger validation method #7186
+* sanitize HTML content before DOM insertion (XSS) #7306
+* block SSRF via external WMS layer URLs in getFeatureInfo requests #7307
+
+### Tests
+
+* e2e: enhancing WFS requests by using toBeGeoJson #7132
+* e2e: add method toHaveGeoJsonFeaturesLength to fixture expect response #7138
+* e2e: selection tool enhancing #7160
+* e2e: form filter enhancement #7211
+* end2end: New tests to check WMS GetFeatureInfo requests responses #7238
+* e2e: about wrong display expression in textwidget #7270
+* PHP Unit: Enhancing Proxy::buildHeader for checking X-Lizmap-Override-Filter #7277
+* e2e: enhancing export data - #7296
+* Update Playwright to 1.63
+* Update Chai to 6.3
+* Update Dotenv to 18.0
+* Update Mocha to 12.0
+* Update Styleint to 17.16
+* Update Undici to 8.11
+
+### Backend
+
+* Update sldreader to 2.1
+* Update flatgeobuf to 4.5
+* Update ol to 10.11
 
 ## 3.9.11 - 2026-09-09
 
