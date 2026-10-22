@@ -15,18 +15,22 @@ const FEATURE_REQUEST_TIMEOUT = 10000;
 /**
  * @summary A button to act on a specific feature of a specific layer:
  * open its popup or launch its edition, and optionally zoom to it.
+ * It can also launch the creation of a new feature in a layer.
  * @description
  * Data attributes:
  * - `data-target-layer-id` (required): the QGIS layer ID.
- * - `data-target-feature-id` (required): the value of the primary key for the feature.
- *   It is also used as the WFS feature ID for zoom and edition.
+ * - `data-target-feature-id` (required in `popup` and `edit` modes): the value of the primary key for the feature.
+ *   It is also used as the WFS feature ID for zoom and edition. Ignored in `create` mode.
  * - `data-target-layer-pk-field` (required in `popup` mode): the primary key field of the layer.
  *   It must be the primary key defined for the layer in QGIS, and a single-column key:
  *   composite keys and layers without a primary key are not supported.
  * - `data-mode` (optional, default `popup`): `popup` to open the feature popup
  *   (popup must be enabled for the layer), `edit` to launch the feature edition
- *   (the layer must be editable by the current user, with modification allowed).
+ *   (the layer must be editable by the current user, with modification allowed),
+ *   `create` to launch the creation of a new feature
+ *   (the layer must be editable by the current user, with creation allowed).
  * - `data-target-zoom-to-feature` (optional, default `false`): `true` to zoom to the feature.
+ *   Ignored in `create` mode.
  * - `data-label` (optional): the button text. Defaults to a translated label depending on the mode.
  * - `data-description` (optional): the button tooltip.
  *
@@ -34,6 +38,7 @@ const FEATURE_REQUEST_TIMEOUT = 10000;
  * @augments HTMLElement
  * @fires featureButtonPopupDisplayed
  * @fires featureButtonEditionLaunched
+ * @fires featureButtonCreationLaunched
  * @example <caption>Open the popup of a feature and zoom to it</caption>
  * <lizmap-feature-button
  *      data-target-layer-id="layer_id"
@@ -49,6 +54,11 @@ const FEATURE_REQUEST_TIMEOUT = 10000;
  *      data-target-layer-pk-field="id"
  *      data-mode="edit"
  *      data-label="Edit">
+ * </lizmap-feature-button>
+ * @example <caption>Launch the creation of a new feature</caption>
+ * <lizmap-feature-button
+ *      data-target-layer-id="layer_id"
+ *      data-mode="create">
  * </lizmap-feature-button>
  */
 export default class FeatureButton extends HTMLElement {
@@ -72,10 +82,10 @@ export default class FeatureButton extends HTMLElement {
         this.targetLayerId = this.dataset.targetLayerId;
         this.targetFeatureId = this.dataset.targetFeatureId;
         this.mode = this.dataset.mode || 'popup';
-        this.label = this.dataset.label
-            || lizDict[this.mode === 'edit' ? 'featureButton.edit.label' : 'featureButton.popup.label'];
+        this.label = this.dataset.label || lizDict[`featureButton.${this.mode}.label`];
         this.description = this.dataset.description;
-        this.zoomTo = this.dataset.targetZoomToFeature === "true";
+        // There is no feature to zoom to when creating a new one
+        this.zoomTo = this.dataset.targetZoomToFeature === "true" && this.mode !== 'create';
         this.targetLayerPkField = this.dataset.targetLayerPkField;
 
         try {
@@ -123,6 +133,10 @@ export default class FeatureButton extends HTMLElement {
             if (this.mode === "edit") {
                 lizMap.launchEdition(this.targetLayerId, this.targetFeatureId, null, null);
                 this._dispatch('featurebutton.edition.launched');
+            } else if (this.mode === "create") {
+                // Without feature id, the edition creates a new feature
+                lizMap.launchEdition(this.targetLayerId, null, null, null);
+                this._dispatch('featurebutton.creation.launched');
             } else if (this.mode === "popup") {
                 const anchor = geometry ? getCenter(geometry.getExtent()) : null;
                 const displayed = await mainLizmap.popup.displayFeaturePopup(
@@ -186,21 +200,23 @@ export default class FeatureButton extends HTMLElement {
 
     /**
      * Check the parameters depending on the mode:
-     * - common: the mode is known, the layer exists and the feature id is defined
+     * - common: the mode is known and the layer exists
+     * - popup and edit: the feature id is defined
      * - popup: the primary key field is defined and the popup is enabled for the layer
      * - edit: the layer is editable by the current user and its features can be modified
+     * - create: the layer is editable by the current user and features can be created
      * @returns {boolean} True if the parameters are valid, false otherwise
      */
     checkParameters() {
-        if (!['popup', 'edit'].includes(this.mode)) {
-            console.warn(`The mode is unknown, expected "popup" or "edit" : ${this.mode}`);
+        if (!['popup', 'edit', 'create'].includes(this.mode)) {
+            console.warn(`The mode is unknown, expected "popup", "edit" or "create" : ${this.mode}`);
             return false;
         }
         if (!this.targetLayerName) {
             console.warn(`The target layer is undefined or does not exist : ${this.targetLayerId}`);
             return false;
         }
-        if (!this.targetFeatureId) {
+        if (this.mode !== 'create' && !this.targetFeatureId) {
             console.warn(`The target feature id is undefined for the layer : ${this.targetLayerId}`);
             return false;
         }
@@ -216,7 +232,7 @@ export default class FeatureButton extends HTMLElement {
             }
         }
 
-        if (this.mode === 'edit') {
+        if (this.mode === 'edit' || this.mode === 'create') {
             // The config only contains the edition layers the current user is allowed to edit
             const config = mainLizmap.initialConfig;
             if (!config.hasEditionLayers || !config.editionLayers.layerIds.includes(this.targetLayerId)) {
@@ -224,8 +240,12 @@ export default class FeatureButton extends HTMLElement {
                 return false;
             }
             const capabilities = config.editionLayers.getLayerConfigByLayerId(this.targetLayerId).capabilities;
-            if (!capabilities.modifyAttribute && !capabilities.modifyGeometry) {
+            if (this.mode === 'edit' && !capabilities.modifyAttribute && !capabilities.modifyGeometry) {
                 console.warn(`The target layer features cannot be modified : ${this.targetLayerId}`);
+                return false;
+            }
+            if (this.mode === 'create' && !capabilities.createFeature) {
+                console.warn(`The target layer features cannot be created : ${this.targetLayerId}`);
                 return false;
             }
         }
@@ -239,15 +259,18 @@ export default class FeatureButton extends HTMLElement {
      * @param {string} type - The event type
      * @fires featureButtonPopupDisplayed
      * @fires featureButtonEditionLaunched
+     * @fires featureButtonCreationLaunched
      */
     _dispatch(type) {
         /**
          * When the button action has been performed
          * @event featureButtonPopupDisplayed
          * @event featureButtonEditionLaunched
-         * @property {string} type      featurebutton.popup.displayed or featurebutton.edition.launched
+         * @event featureButtonCreationLaunched
+         * @property {string} type      featurebutton.popup.displayed, featurebutton.edition.launched
+         *                              or featurebutton.creation.launched
          * @property {string} layerId   The target layer ID
-         * @property {string} featureId The target feature ID
+         * @property {string} featureId The target feature ID (undefined for featurebutton.creation.launched)
          * @example
          * lizMap.mainEventDispatcher.addListener((lizmapEvent) => {
          *         console.log(`Popup displayed for ${lizmapEvent.layerId} / ${lizmapEvent.featureId}`);
@@ -258,7 +281,7 @@ export default class FeatureButton extends HTMLElement {
         mainEventDispatcher.dispatch({
             type: type,
             layerId: this.targetLayerId,
-            featureId: this.targetFeatureId,
+            featureId: this.mode === 'create' ? undefined : this.targetFeatureId,
         });
     }
 }
