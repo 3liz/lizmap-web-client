@@ -4,7 +4,9 @@ import * as fs from 'fs/promises'
 import { existsSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
 import {ProjectPage} from "./pages/project";
+import { PrintPage } from "./pages/printpage";
 import { expect as requestExpect } from './fixtures/expect-request.js';
+import { expect as responseExpect } from './fixtures/expect-response.js';
 import { playwrightTestFile} from "./globals";
 
 // To update OSM and GeoPF tiles in the mock directory
@@ -20,15 +22,15 @@ test.describe('Axis Orientation',
             const project = new ProjectPage(page, 'axis_orientation_neu_3044');
             await project.open();
             await expect(await project.getDebugBarWarning()).toHaveCount(0);
-            await expect(await project.hasDebugBarWarnings(), (await project.getDebugBarWarningMessage())).toBe(false);
+            expect(await project.hasDebugBarWarnings(), (await project.getDebugBarWarningMessage())).toBe(false);
 
             // Get blank buffer
             let buffer = await page.screenshot({clip:{x:950/2-380/2, y:600/2-380/2, width:380, height:380}});
             const blankByteLength = buffer.byteLength;
-            await expect(blankByteLength).toBeGreaterThan(1000); // 1286
-            await expect(blankByteLength).toBeLessThan(1500) // 1286
+            expect(blankByteLength).toBeGreaterThan(1000); // 1286
+            expect(blankByteLength).toBeLessThan(1500) // 1286
 
-            const getMapPromise = page.waitForRequest(/GetMap/);
+            const getMapPromise = project.waitForGetMapRequest();
             await page.getByLabel('Bundesländer').check();
             const getMapRequest = await getMapPromise;
             const expectedParameters = {
@@ -47,9 +49,7 @@ test.describe('Axis Orientation',
             requestExpect(getMapRequest).toContainParametersInUrl(expectedParameters);
 
             const getMapResponse = await getMapRequest.response();
-            expect(getMapResponse).not.toBeNull();
-            expect(getMapResponse?.ok()).toBe(true);
-            expect(await getMapResponse?.headerValue('Content-Type')).toBe('image/png');
+            responseExpect(getMapResponse).toBeImagePng();
             // image size greater than transparent
             const contentLength = await getMapResponse?.headerValue('Content-Length');
             expect(parseInt(contentLength ? contentLength : '0')).toBeGreaterThan(5552);
@@ -120,10 +120,10 @@ test.describe('Axis Orientation',
             // Get blank buffer
             let buffer = await page.screenshot({clip:{x:950/2-380/2, y:600/2-380/2, width:380, height:380}});
             const blankByteLength = buffer.byteLength;
-            await expect(blankByteLength).toBeGreaterThan(1000); // 1286
-            await expect(blankByteLength).toBeLessThan(1500) // 1286
+            expect(blankByteLength).toBeGreaterThan(1000); // 1286
+            expect(blankByteLength).toBeLessThan(1500) // 1286
 
-            const getMapPromise = page.waitForRequest(/GetMap/);
+            const getMapPromise = project.waitForGetMapRequest();
             await page.getByLabel('județ').check();
             const getMapRequest = await getMapPromise;
             const expectedParameters = {
@@ -142,9 +142,7 @@ test.describe('Axis Orientation',
             requestExpect(getMapRequest).toContainParametersInUrl(expectedParameters);
 
             const getMapResponse = await getMapRequest.response();
-            expect(getMapResponse).not.toBeNull();
-            expect(getMapResponse?.ok()).toBe(true);
-            expect(await getMapResponse?.headerValue('Content-Type')).toBe('image/png');
+            responseExpect(getMapResponse).toBeImagePng();
             // image size greater than transparent
             const contentLength = await getMapResponse?.headerValue('Content-Length');
             expect(parseInt(contentLength ? contentLength : '0')).toBeGreaterThan(5552);
@@ -156,7 +154,7 @@ test.describe('Axis Orientation',
 
             buffer = await page.screenshot({clip:{x:950/2-380/2, y:600/2-380/2, width:380, height:380}});
             const judetByteLength = buffer.byteLength;
-            await expect(judetByteLength).toBeGreaterThan(blankByteLength);
+            expect(judetByteLength).toBeGreaterThan(blankByteLength);
 
             // Catch GetTile request
             /** @type {string[]} GetTiles - Array of tiles url string */
@@ -206,7 +204,70 @@ test.describe('Axis Orientation',
 
             buffer = await page.screenshot({clip:{x:950/2-380/2, y:600/2-380/2, width:380, height:380}});
             const osmByteLength = buffer.byteLength;
-            await expect(osmByteLength).toBeGreaterThan(blankByteLength);
-            await expect(osmByteLength).toBeGreaterThan(judetByteLength);
+            expect(osmByteLength).toBeGreaterThan(blankByteLength);
+            expect(osmByteLength).toBeGreaterThan(judetByteLength);
+        });
+
+        test('Axis Orientation NEU for EPSG:31254 (Austria)', async ({ page }) => {
+            const project = new ProjectPage(page, 'austria_31254');
+            await project.open();
+
+            const getMapPromise = project.waitForGetMapRequest();
+            await page.getByLabel('provinces').check();
+            const getMapRequest = await getMapPromise;
+            const getMapExpectedParameters = {
+                'SERVICE': 'WMS',
+                'VERSION': '1.3.0',
+                'REQUEST': 'GetMap',
+                'FORMAT': 'image/png',
+                'TRANSPARENT': /\b(\w*^true$\w*)\b/gmi,
+                'LAYERS': 'provinces',
+                'CRS': 'EPSG:31254',
+                'STYLES': 'défaut',
+                'WIDTH': '958',
+                'HEIGHT': '633',
+                'BBOX': /157457\.\d+,-67046\.\d+,324939\.\d+,186425\.\d+/,
+            }
+            requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
+
+            const getMapResponse = await getMapRequest.response();
+            responseExpect(getMapResponse).toBeImagePng();
+            // image size greater than transparent
+            const contentLength = await getMapResponse?.headerValue('Content-Length');
+            expect(parseInt(contentLength ? contentLength : '0')).toBeGreaterThan(5552);
+
+            // Check Print
+            await project.closeLeftDock();
+            const printPage = new PrintPage(page, 'austria_31254');
+            printPage.openPrintPanel();
+
+            // Wait for print request and launch it
+            const getPrintPromise = printPage.waitForGetPrintRequest();
+
+            // Launch print
+            await printPage.launchPrint();
+
+            const getPrintRequest = await getPrintPromise;
+            // Verify the custom scale value is used in the print request
+            const getPrintExpectedParameters = {
+                'SERVICE': 'WMS',
+                'REQUEST': 'GetPrint',
+                'VERSION': '1.3.0',
+                'FORMAT': 'pdf',
+                'TRANSPARENT': 'true',
+                'CRS': 'EPSG:31254',
+                'DPI': '100',
+                'TEMPLATE': 'A4-paysage',
+                "map1:EXTENT": /147198\.\d+,-66810\.\d+,335198\.\d+,186189\.\d+/,
+                "map1:SCALE": "1000000",
+                "map1:LAYERS": "provinces",
+                "map1:STYLES": "défaut",
+                "map1:OPACITIES": "255",
+                "map0:EXTENT": /-6139\.\d+,-75686\.\d+,593860\.\d+,524313\.\d+/
+            };
+            requestExpect(getPrintRequest).toContainParametersInPostData(getPrintExpectedParameters);
+
+            responseExpect(await getPrintRequest.response()).toBePdf();
+
         });
     });
