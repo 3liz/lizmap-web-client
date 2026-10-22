@@ -22,15 +22,15 @@ test.describe('Axis Orientation',
             const project = new ProjectPage(page, 'axis_orientation_neu_3044');
             await project.open();
             await expect(await project.getDebugBarWarning()).toHaveCount(0);
-            await expect(await project.hasDebugBarWarnings(), (await project.getDebugBarWarningMessage())).toBe(false);
+            expect(await project.hasDebugBarWarnings(), (await project.getDebugBarWarningMessage())).toBe(false);
 
             // Get blank buffer
             let buffer = await page.screenshot({clip:{x:950/2-380/2, y:600/2-380/2, width:380, height:380}});
             const blankByteLength = buffer.byteLength;
-            await expect(blankByteLength).toBeGreaterThan(1000); // 1286
-            await expect(blankByteLength).toBeLessThan(1500) // 1286
+            expect(blankByteLength).toBeGreaterThan(1000); // 1286
+            expect(blankByteLength).toBeLessThan(1500) // 1286
 
-            const getMapPromise = page.waitForRequest(/GetMap/);
+            const getMapPromise = project.waitForGetMapRequest();
             await page.getByLabel('Bundesländer').check();
             const getMapRequest = await getMapPromise;
             const expectedParameters = {
@@ -49,9 +49,7 @@ test.describe('Axis Orientation',
             requestExpect(getMapRequest).toContainParametersInUrl(expectedParameters);
 
             const getMapResponse = await getMapRequest.response();
-            expect(getMapResponse).not.toBeNull();
-            expect(getMapResponse?.ok()).toBe(true);
-            expect(await getMapResponse?.headerValue('Content-Type')).toBe('image/png');
+            responseExpect(getMapResponse).toBeImagePng();
             // image size greater than transparent
             const contentLength = await getMapResponse?.headerValue('Content-Length');
             expect(parseInt(contentLength ? contentLength : '0')).toBeGreaterThan(5552);
@@ -122,10 +120,10 @@ test.describe('Axis Orientation',
             // Get blank buffer
             let buffer = await page.screenshot({clip:{x:950/2-380/2, y:600/2-380/2, width:380, height:380}});
             const blankByteLength = buffer.byteLength;
-            await expect(blankByteLength).toBeGreaterThan(1000); // 1286
-            await expect(blankByteLength).toBeLessThan(1500) // 1286
+            expect(blankByteLength).toBeGreaterThan(1000); // 1286
+            expect(blankByteLength).toBeLessThan(1500) // 1286
 
-            const getMapPromise = page.waitForRequest(/GetMap/);
+            const getMapPromise = project.waitForGetMapRequest();
             await page.getByLabel('județ').check();
             const getMapRequest = await getMapPromise;
             const expectedParameters = {
@@ -144,9 +142,7 @@ test.describe('Axis Orientation',
             requestExpect(getMapRequest).toContainParametersInUrl(expectedParameters);
 
             const getMapResponse = await getMapRequest.response();
-            expect(getMapResponse).not.toBeNull();
-            expect(getMapResponse?.ok()).toBe(true);
-            expect(await getMapResponse?.headerValue('Content-Type')).toBe('image/png');
+            responseExpect(getMapResponse).toBeImagePng();
             // image size greater than transparent
             const contentLength = await getMapResponse?.headerValue('Content-Length');
             expect(parseInt(contentLength ? contentLength : '0')).toBeGreaterThan(5552);
@@ -158,7 +154,7 @@ test.describe('Axis Orientation',
 
             buffer = await page.screenshot({clip:{x:950/2-380/2, y:600/2-380/2, width:380, height:380}});
             const judetByteLength = buffer.byteLength;
-            await expect(judetByteLength).toBeGreaterThan(blankByteLength);
+            expect(judetByteLength).toBeGreaterThan(blankByteLength);
 
             // Catch GetTile request
             /** @type {string[]} GetTiles - Array of tiles url string */
@@ -208,8 +204,8 @@ test.describe('Axis Orientation',
 
             buffer = await page.screenshot({clip:{x:950/2-380/2, y:600/2-380/2, width:380, height:380}});
             const osmByteLength = buffer.byteLength;
-            await expect(osmByteLength).toBeGreaterThan(blankByteLength);
-            await expect(osmByteLength).toBeGreaterThan(judetByteLength);
+            expect(osmByteLength).toBeGreaterThan(blankByteLength);
+            expect(osmByteLength).toBeGreaterThan(judetByteLength);
         });
 
         test('Axis Orientation NEU for EPSG:31254 (Austria)', async ({ page }) => {
