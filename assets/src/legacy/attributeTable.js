@@ -259,7 +259,7 @@ var lizAttributeTable = function() {
                 lizMap.mainLizmap.map.on('moveend', () => {
                     document.querySelectorAll('.btn-filterbyextent-attributeTable.active').forEach((btn) => {
                         const layerId = btn.getAttribute('data-layerid');
-                        const dTable = new DataTable('table[data-layerid=' + layerId + ']');
+                        const dTable = new DataTable.Api('table[data-layerid=' + layerId + ']');
                         dTable.draw();
                     });
                 });
@@ -764,7 +764,7 @@ var lizAttributeTable = function() {
                 const moveSelectedToTopSelector = '#attribute-layer-' + cleanName + ' button.btn-moveselectedtotop-attributeTable';
                 document.querySelector(moveSelectedToTopSelector).addEventListener('click', (e) => {
                     const dTableSelector = '#attribute-layer-table-' + e.currentTarget.value;
-                    const dTable = new DataTable(dTableSelector);
+                    const dTable = new DataTable.Api(dTableSelector);
                     dTable.draw();
 
                     // Scroll to top
@@ -1159,7 +1159,7 @@ var lizAttributeTable = function() {
                 // Bind click on btn-filterbyextent button
                 document.querySelector('#attribute-layer-'+ cleanName + ' button.btn-filterbyextent-attributeTable').addEventListener('click', (e) => {
                     const layerId = e.currentTarget.getAttribute('data-layerid');
-                    const dTable = new DataTable('table[data-layerid=' + layerId + ']');
+                    const dTable = new DataTable.Api('table[data-layerid=' + layerId + ']');
                     dTable.draw();
                 });
             }
@@ -1790,7 +1790,7 @@ var lizAttributeTable = function() {
                     });
                 } else {
                     // Table already created, just redraw it
-                    const table = new DataTable(aTable);
+                    const table = new DataTable.Api(aTable);
                     table.draw();
                 }
 
@@ -1830,7 +1830,7 @@ var lizAttributeTable = function() {
                                 if(relateDataElement.length == 1){
                                     const dataFilterValue = relateDataElement.val();
                                     // get column on filter
-                                    const columnOnFilter = oTable.settings()[0].aoColumns.filter((f)=>{
+                                    const columnOnFilter = oTable.settings()[0].columns.filter((f)=>{
                                         return f.idx == +dataFilterValue;
                                     })
                                     if(columnOnFilter.length == 1){
@@ -2095,14 +2095,14 @@ var lizAttributeTable = function() {
 
                             if (lizMap.constants.MEDIA_REGEX.test(data)) {
                                 var rdata = data;
-                                var colMeta = meta.settings.aoColumns[meta.col];
+                                var colMeta = meta.settings.columns[meta.col];
                                 if (data.substring(0, 7) == '/media/')
                                     rdata = data.slice(1);
                                 return '<a href="' + mediaLinkPrefix + '&path=' + rdata + '" target="_blank">' + colMeta.title + '</a>';
                             }
                             else if (davConf && data.substring(0, 4) == globalThis['lizUrls'].resourceUrlReplacement.webdav) {
                                 var rdata = data;
-                                var colMeta = meta.settings.aoColumns[meta.col];
+                                var colMeta = meta.settings.columns[meta.col];
                                 return '<a href="' + mediaLinkPrefix + '&path=' + rdata + '" target="_blank">' + colMeta.title + '</a>';
 
                             }
@@ -2374,7 +2374,7 @@ var lizAttributeTable = function() {
                     }
 
                     // Bind events when drawing table
-                    const DTchildTable = new DataTable(childTable);
+                    const DTchildTable = new DataTable.APi(childTable);
                     DTchildTable.one('draw', function() {
 
                         if( canEdit ) {
@@ -3574,7 +3574,7 @@ var lizAttributeTable = function() {
                     // Update selected features in the table
                     const layerId = config.attributeLayers[e.featureType].layerId;
                     const selectedFeatures = config.layers[e.featureType].selectedFeatures;
-                    const table = new DataTable('table[data-layerid=' + layerId + ']');
+                    const table = new DataTable.Api('table[data-layerid=' + layerId + ']');
 
                     if (document.querySelector('.btn-moveselectedtotop-attributeTable.active[data-layerid="' + layerId + '"]')) {
                         table.draw();
@@ -3612,7 +3612,7 @@ var lizAttributeTable = function() {
 
                 layerFilterParamChanged: function(e) {
                     const layerId = config.layers[e.featureType]['id'];
-                    const dTable = new DataTable('table[data-layerid=' + layerId + ']');
+                    const dTable = new DataTable.Api('table[data-layerid=' + layerId + ']');
                     dTable.draw();
                 },
 
@@ -3628,12 +3628,12 @@ var lizAttributeTable = function() {
                     if (layerConfig[1].line_filter && key) {
                         layerConfig[1].line_filter += ` OR "${key}" = '${value}'`;
                     }
-                    const dTable = new DataTable('table[data-layerid=' + layerId + ']');
+                    const dTable = new DataTable.Api('table[data-layerid=' + layerId + ']');
                     dTable.draw();
                 },
 
                 lizmapeditionfeaturemodified: function(e){
-                    const dTable = new DataTable('table[data-layerid=' + e.layerId + ']');
+                    const dTable = new DataTable.Api('table[data-layerid=' + e.layerId + ']');
                     dTable.draw();
                 },
 
@@ -3656,7 +3656,7 @@ var lizAttributeTable = function() {
                             }
                             layerConfig[1].line_filter = newLineFilter;
                         }
-                        const dTable = new DataTable('table[data-layerid=' + layerId + ']');
+                        const dTable = new DataTable.Api('table[data-layerid=' + layerId + ']');
                         dTable.draw();
 
                         // Check if the map and tables must be refreshed after this deletion
