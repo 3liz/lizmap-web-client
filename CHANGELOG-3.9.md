@@ -59,6 +59,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 ### Security
 
 * Return error if selection token is unknown or expired - #7131
+* Docker image has been updated with PHP 8.3.36 to fix CVE-2026-109618 and CVE-2026-109619 in the PHP engine.
 * html editor (ckeditor): strengthens the validation of uploaded images to prevent security issues caused by improper
   configuration of web servers and PHP (for example web configuration allowing foo.php.jpg to be sent to PHP, or allowing
   foo.jpg having php code into its content). #7155
