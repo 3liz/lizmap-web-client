@@ -8,17 +8,28 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Fixed
+
+* PHP: request's headers has to be string - partial #7034
+
 ### Security
 
-* html editor (ckeditor): strengthens the validation of uploaded images to prevent security issues caused by improper 
+* Return error if selection token is unknown or expired - #7131
+* fix a security issue related to the html editor (ckeditor) used in some administration pages: malicious PHP files
+  disguised as image files could be uploaded and then executed #7126
+* html editor (ckeditor): strengthens the validation of uploaded images to prevent security issues caused by improper
   configuration of web servers and PHP (for example web configuration allowing foo.php.jpg to be sent to PHP, or allowing
-  foo.jpg having php code into its content).
+  foo.jpg having php code into its content). #7155
+
+### Tests
+
+* PHP Unit: Enhancing Proxy::buildHeader for checking X-Lizmap-Override-Filter #7277
 
 ## 3.8.20 - 2026-09-09
 
 ### Security
 
-* fix a security issue related to the html editor (ckeditor) used in some administration pages: malicious PHP files 
+* fix a security issue related to the html editor (ckeditor) used in some administration pages: malicious PHP files
   disguised as image files could be uploaded and then executed
 
 
