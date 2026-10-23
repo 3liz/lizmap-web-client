@@ -124,12 +124,19 @@ The list of permalinks is visible in the administration interface ([#6765](https
 
   *Developed by [meyerlor](https://github.com/meyerlor)*
 
-* Right-click allows you to **copy the geometry** of a visible feature and reuse it for the feature being created. ([#6405](https://github.com/3liz/lizmap-web-client/pull/6405),
-  copy/paste buttons merged in [#6613](https://github.com/3liz/lizmap-web-client/pull/6613))
+* A new tool allows you to **copy the geometry** of a visible feature and reuse it for the feature being created: click the copy button, then click the feature on the map. ([#6405](https://github.com/3liz/lizmap-web-client/pull/6405), copy/paste buttons merged in [#6613](https://github.com/3liz/lizmap-web-client/pull/6613))
 
   ![img_copy_paste_edition](media/3.10/copy_paste_edition.gif)
 
   *Developed by [meyerlor](https://github.com/meyerlor)*
+
+* When copying a geometry, the feature picker now shows the **feature display name** defined in QGIS in addition to the layer name, so you can tell overlapping features apart
+
+  ([#7210](https://github.com/3liz/lizmap-web-client/pull/7210))
+
+  ![img_display_name_feature_picker](media/3.10/display_name_feature_picker.png)
+
+  *Funded by 3Liz - Developed by [Eliott Yvetot](https://github.com/Elioooooott)*
 
 * The **background color** defined in QGIS for form tabs
   is now used in the Lizmap form
