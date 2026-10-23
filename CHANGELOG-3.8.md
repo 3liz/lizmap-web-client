@@ -14,6 +14,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Security
 
+* Docker image has been upgraded to Alpine 3.22 with PHP 8.3.36 to fix CVE-2026-109618 and CVE-2026-109619 in PHP engine.
 * Return error if selection token is unknown or expired - #7131
 * fix a security issue related to the html editor (ckeditor) used in some administration pages: malicious PHP files
   disguised as image files could be uploaded and then executed #7126
