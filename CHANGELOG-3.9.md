@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.9.12 - 2026-10-23
+
 ### Funders
 
 * **[Le Grand Narbonne](https://www.legrandnarbonne.com/)**
