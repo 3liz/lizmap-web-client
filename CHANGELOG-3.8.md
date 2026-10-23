@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.8.21 - 2026-09-09
+
 ### Fixed
 
 * PHP: request's headers has to be string - partial #7034
@@ -25,6 +27,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
 ### Tests
 
 * PHP Unit: Enhancing Proxy::buildHeader for checking X-Lizmap-Override-Filter #7277
+
+### Backend
+
+* Upgrade Jelix to version 1.8.28
 
 ## 3.8.20 - 2026-09-09
 
