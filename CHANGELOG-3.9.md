@@ -89,6 +89,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Update sldreader to 2.1
 * Update flatgeobuf to 4.5
 * Update ol to 10.11
+* Upgrade Jelix to version 1.8.28
 
 ## 3.9.11 - 2026-09-09
 
