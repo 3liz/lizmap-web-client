@@ -124,8 +124,7 @@ The list of permalinks is visible in the administration interface ([#6765](https
 
   *Developed by [meyerlor](https://github.com/meyerlor)*
 
-* Right-click allows you to **copy the geometry** of a visible feature and reuse it for the feature being created. ([#6405](https://github.com/3liz/lizmap-web-client/pull/6405),
-  copy/paste buttons merged in [#6613](https://github.com/3liz/lizmap-web-client/pull/6613))
+* A new tool allows you to **copy the geometry** of a visible feature and reuse it for the feature being created: click the copy button, then click the feature on the map. ([#6405](https://github.com/3liz/lizmap-web-client/pull/6405), copy/paste buttons merged in [#6613](https://github.com/3liz/lizmap-web-client/pull/6613))
 
   ![img_copy_paste_edition](media/3.10/copy_paste_edition.gif)
 
