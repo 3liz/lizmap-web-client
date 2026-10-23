@@ -1,5 +1,5 @@
 // @ts-check
-//import { expect } from '@playwright/test';
+import { expect } from '@playwright/test';
 import { ProjectPage } from './project';
 
 /**
@@ -97,6 +97,24 @@ export class FormFilterPage extends ProjectPage {
         if (await this.formFilterPanel.isVisible()) {
             await this.formFilterSwitcherButton.click();
         }
+    }
+
+    /**
+     * Pick a date in a filter form date field as a user would:
+     * open its datepicker, choose the year and the month, click the day.
+     * @param {string} selector - the date input
+     * @param {string} isoDate - yyyy-mm-dd
+     */
+    async pickDate(selector, isoDate) {
+        const [year, month, day] = isoDate.split('-');
+        await this.page.locator(selector).click();
+        const picker = this.page.locator('#ui-datepicker-div');
+        await expect(picker).toBeVisible();
+        await picker.locator('select.ui-datepicker-year').selectOption(year);
+        await picker.locator('select.ui-datepicker-month').selectOption(String(Number(month) - 1));
+        await picker.locator(`a[data-date="${Number(day)}"]`).click();
+        await expect(picker).toBeHidden();
+        await expect(this.page.locator(selector)).toHaveValue(isoDate);
     }
 
     /**

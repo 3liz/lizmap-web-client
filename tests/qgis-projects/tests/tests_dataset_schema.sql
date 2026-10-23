@@ -1419,6 +1419,8 @@ ALTER SEQUENCE tests_projects.form_edition_vr_point_id_seq OWNED BY tests_projec
 CREATE TABLE tests_projects.form_filter (
     id integer NOT NULL,
     label text,
+    category text,
+    event_date date,
     geom public.geometry(Point,2154)
 );
 
