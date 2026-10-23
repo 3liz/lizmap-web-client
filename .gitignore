@@ -25,6 +25,7 @@ assets/dist/
 # Config
 lizmap/var/config/lizmapConfig.ini.php
 lizmap/var/config/localconfig.ini.php
+lizmap/var/config/lizmapLogConfig.ini.php
 lizmap/var/config/liveconfig.ini.php
 lizmap/var/config/localframework.ini.php
 lizmap/var/config/profiles.ini.php
