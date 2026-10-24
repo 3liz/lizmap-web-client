@@ -128,6 +128,7 @@ describe('LayerConfig', function () {
         expect(layer1.cached).to.be.false
         expect(layer1.clientCacheExpiration).to.be.eq(300)
         expect(layer1.mutuallyExclusive).to.be.false
+        expect(layer1.dxfExportEnabled).to.be.true
 
         const layer2 = new LayerConfig({
             "abstract": "",
@@ -160,7 +161,8 @@ describe('LayerConfig', function () {
             "popupSource": "auto",
             "imageFormat": "image/png",
             "minScale": 1,
-            "layerType": 'vector'
+            "layerType": 'vector',
+            "dxfExportEnabled": false
         });
         expect(layer2.id).to.be.eq('france_parts_8d8d649f_7748_43cc_8bde_b013e17ede29')
         expect(layer2.name).to.be.eq('france_parts')
@@ -196,6 +198,7 @@ describe('LayerConfig', function () {
         expect(layer2.cached).to.be.false
         expect(layer2.clientCacheExpiration).to.be.eq(300)
         expect(layer2.mutuallyExclusive).to.be.false
+        expect(layer2.dxfExportEnabled).to.be.false
     })
 
     it('ValidationError', function () {
