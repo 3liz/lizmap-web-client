@@ -652,6 +652,21 @@ class serviceCtrl extends jController
                     return $this->serviceException();
                 }
             }
+
+            // Check that DXF export is not disabled for one of the requested layers
+            $layerNames = isset($this->params['layers']) ? explode(',', $this->params['layers']) : array();
+            foreach ($layerNames as $layerName) {
+                $configLayer = $this->project->findLayerByAnyName(trim($layerName));
+                if (!$configLayer || !property_exists($configLayer, 'dxfExportEnabled')) {
+                    continue;
+                }
+                $dxfExportEnabled = $configLayer->dxfExportEnabled;
+                if ($dxfExportEnabled === false || strtolower((string) $dxfExportEnabled) === 'false') {
+                    jMessage::add('DXF export is not enabled for the layer '.$layerName, 'Forbidden');
+
+                    return $this->serviceException();
+                }
+            }
         }
 
         $result = $wmsRequest->process();

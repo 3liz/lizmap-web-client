@@ -48,6 +48,7 @@ const optionalProperties = {
     'externalWmsToggle': {type: 'boolean', default: false},
     'externalAccess': {type: 'object'},
     'wmsLayer': {type: 'boolean', default: false},
+    'dxfExportEnabled': {type: 'boolean', default: true},
 };
 
 /**
@@ -92,6 +93,7 @@ export class LayerConfig extends BaseObjectConfig {
      * @param {boolean}  [cfg.mutuallyExclusive]   - the layer mutuallyExclusive (only group type)
      * @param {boolean}  [cfg.externalWmsToggle]   - the layer provides parameters for external access
      * @param {object}   [cfg.externalAccess]      - the layer external access
+     * @param {boolean}  [cfg.dxfExportEnabled]    - the layer can be exported to DXF
      */
     constructor(cfg) {
         super(cfg, requiredProperties, optionalProperties)
@@ -361,6 +363,14 @@ export class LayerConfig extends BaseObjectConfig {
      */
     get externalAccess() {
         return this._externalAccess;
+    }
+
+    /**
+     * The layer can be exported to DXF (layer only)
+     * @type {boolean}
+     */
+    get dxfExportEnabled() {
+        return this._dxfExportEnabled;
     }
 
     /**
