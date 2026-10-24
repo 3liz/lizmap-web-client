@@ -233,16 +233,17 @@ export default class DxfExport extends HTMLElement {
         const selectedBaseLayer = mainLizmap.state.baseLayers.selectedBaseLayer;
         if (selectedBaseLayer?.hasItemState &&
             selectedBaseLayer.itemState.wmsName &&
-            selectedBaseLayer.layerConfig?.typename !== undefined) {
+            selectedBaseLayer.layerConfig?.typename !== undefined &&
+            selectedBaseLayer.layerConfig.dxfExportEnabled !== false) {
             layers.push({
                 name: selectedBaseLayer.itemState.wmsName,
                 title: selectedBaseLayer.layerConfig.title || selectedBaseLayer.itemState.wmsName
             });
         }
 
-        // Add visible WFS-enabled layers
+        // Add visible WFS-enabled layers, unless DXF export is disabled for the layer
         mainLizmap.state.rootMapGroup.findExplodedMapLayers()
-            .filter(layer => layer.visibility)
+            .filter(layer => layer.visibility && layer.layerConfig?.dxfExportEnabled !== false)
             .forEach(layer => {
                 const layerName = layer.wmsName || layer.name;
                 if (wfsLayerNames.has(layerName)) {
