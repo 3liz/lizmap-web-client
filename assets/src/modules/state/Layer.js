@@ -950,22 +950,25 @@ export class LayerVectorState extends LayerLayerState {
                 return;
             }
 
-            const selectIds = token.selectedFeatures;
-            const oldSelectIds = this._selectedFeatures;
-            if (this._selectionToken === token.token
-                && oldSelectIds.every(item => selectIds.includes(item))
-                && selectIds.every(item => oldSelectIds.includes(item))) {
+            const selectIds = [...token.selectedFeatures];
+            const oldSelectIds = this.selectedFeatures;
+            const allOldInNew = oldSelectIds.every(item => selectIds.includes(item));
+            const allNewInOld = selectIds.every(item => oldSelectIds.includes(item));
+            if (this._selectionToken === token.token && allOldInNew && allNewInOld) {
+                // Nothing has changed, so do nothing
                 return;
             } else {
                 if (token.token == null || token.token === '') {
                     // Set filter token to null and not a string
                     this._selectionToken = null;
                 } else {
+                    // store the selection token
                     this._selectionToken = token.token;
                 }
-                if (!(oldSelectIds.every(item => selectIds.includes(item))
-                    && selectIds.every(item => oldSelectIds.includes(item)))) {
-                    this._selectedFeatures = token.selectedFeatures;
+                if (!(allOldInNew && allNewInOld)) {
+                    // The selected feature ids is not the same
+                    // Update and dispatched the selection changed event
+                    this._selectedFeatures = selectIds;
                     this.dispatch({
                         type: 'layer.selection.changed',
                         name: this.name,

@@ -544,6 +544,118 @@ describe('LayerGroupState', function () {
         })
     })
 
+    it('Selection changed event', function () {
+        const root = getRootLayerGroupState('montpellier');
+
+        const sousquartiers = root.children[3];
+        expect(sousquartiers).to.be.instanceOf(LayerVectorState);
+
+        let selectionChangedEvents = [];
+        let selectionTokenChangedEvents = [];
+        sousquartiers.addListener(evt => {
+            selectionChangedEvents.push(evt);
+        }, 'layer.selection.changed');
+        sousquartiers.addListener(evt => {
+            selectionTokenChangedEvents.push(evt);
+        }, 'layer.selection.token.changed');
+
+        // Set the selectionToken with selected feature ids
+        sousquartiers.selectionToken = {
+            selectedFeatures: ['1'],
+            token: 'token-for-id-1',
+        };
+        expect(sousquartiers.selectedFeatures).to.be.an('array').that.have.length(1)
+        expect(sousquartiers.selectionToken).to.be.eq('token-for-id-1')
+        expect(sousquartiers.hasSelectedFeatures).to.be.true
+        expect(selectionTokenChangedEvents).to.have.length(1)
+        expect(selectionChangedEvents).to.have.length(1)
+
+        // Reset events piles
+        selectionChangedEvents = [];
+        selectionTokenChangedEvents = [];
+
+        // Set the selectionToken with selected feature ids
+        sousquartiers.selectionToken = {
+            selectedFeatures: ['1', '2'],
+            token: 'token-for-id-1-and-2',
+        };
+        expect(sousquartiers.selectedFeatures).to.be.an('array').that.have.length(2)
+        expect(sousquartiers.selectionToken).to.be.eq('token-for-id-1-and-2')
+        expect(sousquartiers.hasSelectedFeatures).to.be.true
+        expect(selectionTokenChangedEvents).to.have.length(1)
+        expect(selectionChangedEvents).to.have.length(1)
+
+        // Reset events piles
+        selectionChangedEvents = [];
+        selectionTokenChangedEvents = [];
+
+        // Reset the selectionToken and selected feature ids
+        sousquartiers.selectionToken = {
+            selectedFeatures: [],
+            token: null,
+        }
+        expect(sousquartiers.selectedFeatures).to.be.an('array').that.have.length(0)
+        expect(sousquartiers.selectionToken).to.be.eq(null)
+        expect(sousquartiers.hasSelectedFeatures).to.be.false
+        expect(selectionTokenChangedEvents).to.have.length(1)
+        expect(selectionChangedEvents).to.have.length(1)
+
+        // Reset events piles
+        selectionChangedEvents = [];
+        selectionTokenChangedEvents = [];
+
+        // Set the selectionToken with selected feature ids
+        sousquartiers.selectionToken = {
+            selectedFeatures: ['1', '2'],
+            token: 'token-for-id-1-and-2',
+        };
+        expect(sousquartiers.selectedFeatures).to.be.an('array').that.have.length(2)
+        expect(sousquartiers.selectionToken).to.be.eq('token-for-id-1-and-2')
+        expect(sousquartiers.hasSelectedFeatures).to.be.true
+        expect(selectionTokenChangedEvents).to.have.length(1)
+        expect(selectionChangedEvents).to.have.length(1)
+
+        // Reset events piles
+        selectionChangedEvents = [];
+        selectionTokenChangedEvents = [];
+
+        // Reset the selected feature ids will reset the selectionToken to null
+        sousquartiers.selectedFeatures = null;
+        expect(sousquartiers.selectedFeatures).to.be.an('array').that.have.length(0)
+        expect(sousquartiers.selectionToken).to.be.eq(null)
+        expect(sousquartiers.hasSelectedFeatures).to.be.false
+        expect(selectionTokenChangedEvents).to.have.length(1)
+        expect(selectionChangedEvents).to.have.length(1)
+
+        // Reset events piles
+        selectionChangedEvents = [];
+        selectionTokenChangedEvents = [];
+
+        // Set the selectionToken with selected feature ids
+        sousquartiers.selectionToken = {
+            selectedFeatures: ['1', '2'],
+            token: 'token-for-id-1-and-2',
+        };
+        expect(sousquartiers.selectedFeatures).to.be.an('array').that.have.length(2)
+        expect(sousquartiers.selectionToken).to.be.eq('token-for-id-1-and-2')
+        expect(sousquartiers.hasSelectedFeatures).to.be.true
+        expect(selectionTokenChangedEvents).to.have.length(1)
+        expect(selectionChangedEvents).to.have.length(1)
+
+        // Reset events piles
+        selectionChangedEvents = [];
+        selectionTokenChangedEvents = [];
+
+        // Reset the selectionToken will not reset selected feature ids
+        sousquartiers.selectionToken = null;
+        expect(sousquartiers.selectedFeatures).to.be.an('array').that.have.length(2)
+        expect(sousquartiers.selectionToken).to.be.eq(null)
+        expect(sousquartiers.hasSelectedFeatures).to.be.true
+        expect(selectionTokenChangedEvents).to.have.length(1)
+        expect(selectionChangedEvents).to.have.length(0)
+
+    })
+
     it('Filter and parameters', function () {
         const root = getRootLayerGroupState('montpellier');
 
