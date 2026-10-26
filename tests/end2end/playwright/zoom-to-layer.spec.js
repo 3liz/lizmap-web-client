@@ -8,19 +8,32 @@ test.describe('Zoom to layer', () => {
     test('Projection EPSG:4326', async ({ page }) => {
         // Go to world 4326 project
         const project = new ProjectPage(page, 'world-4326');
-        let getMapRequestPromise = project.waitForGetMapRequest();
+        let worldGetMapRequestPromise = project.waitForGetMapRequest('world');
+        let rectangleGetMapRequestPromise = project.waitForGetMapRequest('rectangle');
         await project.open();
-        let getMapRequest = await getMapRequestPromise;
-        await getMapRequest.response();
-        getMapRequest = await getMapRequestPromise;
-        await getMapRequest.response();
+        let [
+            worldGetMapRequest, rectangleGetMapRequest
+        ] = await Promise.all([
+            worldGetMapRequestPromise, rectangleGetMapRequestPromise
+        ]);
+        responseExpect(await worldGetMapRequest.response()).toBeImagePng();
+        responseExpect(await rectangleGetMapRequest.response()).toBeImagePng();
+
+        // Open sub dock rectangle
+        await page.getByTestId('rectangle').hover();
+        await page.getByTestId('rectangle').locator('.icon-info-sign').click();
 
         // Zoom to 'rectangle' layer
-        getMapRequestPromise = project.waitForGetMapRequest();
-        await page.click('#node-rectangle ~ .node .layer-actions .icon-info-sign', { force: true });
+        worldGetMapRequestPromise = project.waitForGetMapRequest('world');
+        rectangleGetMapRequestPromise = project.waitForGetMapRequest('rectangle');
         await page.click('#sub-dock button.layerActionZoom');
-        getMapRequest = await getMapRequestPromise;
-        await getMapRequest.response();
+        [
+            worldGetMapRequest, rectangleGetMapRequest
+        ] = await Promise.all([
+            worldGetMapRequestPromise, rectangleGetMapRequestPromise
+        ]);
+        responseExpect(await worldGetMapRequest.response()).toBeImagePng();
+        responseExpect(await rectangleGetMapRequest.response()).toBeImagePng();
 
         // Click on the map to get a popup
         let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
@@ -35,13 +48,22 @@ test.describe('Zoom to layer', () => {
         const popupTitle = page.locator('#popupcontent div.lizmapPopupContent h4.lizmapPopupTitle');
         await expect(popupTitle).toHaveCount(1);
 
-        // Zoom to 'world' layer
-        getMapRequestPromise = project.waitForGetMapRequest();
+        // Open sub dock world
         await page.click('#button-switcher');
-        await page.click('#node-world ~ .node .layer-actions .icon-info-sign', { force: true });
+        await page.getByTestId('world').hover();
+        await page.getByTestId('world').locator('.icon-info-sign').click();
+
+        // Zoom to 'world' layer
+        worldGetMapRequestPromise = project.waitForGetMapRequest('world');
+        rectangleGetMapRequestPromise = project.waitForGetMapRequest('rectangle');
         await page.click('#sub-dock button.layerActionZoom');
-        getMapRequest = await getMapRequestPromise;
-        await getMapRequest.response();
+        [
+            worldGetMapRequest, rectangleGetMapRequest
+        ] = await Promise.all([
+            worldGetMapRequestPromise, rectangleGetMapRequestPromise
+        ]);
+        responseExpect(await worldGetMapRequest.response()).toBeImagePng();
+        responseExpect(await rectangleGetMapRequest.response()).toBeImagePng();
 
         // Click on the map to get no popup
         getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
@@ -58,19 +80,32 @@ test.describe('Zoom to layer', () => {
     test('Projection EPSG:3857', async ({ page }) => {
         // Go to world 3857 project
         const project = new ProjectPage(page, 'world-3857');
-        let getMapRequestPromise = project.waitForGetMapRequest();
+        let worldGetMapRequestPromise = project.waitForGetMapRequest('world');
+        let rectangleGetMapRequestPromise = project.waitForGetMapRequest('rectangle');
         await project.open();
-        let getMapRequest = await getMapRequestPromise;
-        await getMapRequest.response();
-        getMapRequest = await getMapRequestPromise;
-        await getMapRequest.response();
+        let [
+            worldGetMapRequest, rectangleGetMapRequest
+        ] = await Promise.all([
+            worldGetMapRequestPromise, rectangleGetMapRequestPromise
+        ]);
+        responseExpect(await worldGetMapRequest.response()).toBeImagePng();
+        responseExpect(await rectangleGetMapRequest.response()).toBeImagePng();
+
+        // Open sub dock rectangle
+        await page.getByTestId('rectangle').hover();
+        await page.getByTestId('rectangle').locator('.icon-info-sign').click();
 
         // Zoom to 'rectangle' layer
-        getMapRequestPromise = project.waitForGetMapRequest();
-        await page.click('#node-rectangle ~ .node .layer-actions .icon-info-sign', { force: true });
+        worldGetMapRequestPromise = project.waitForGetMapRequest('world');
+        rectangleGetMapRequestPromise = project.waitForGetMapRequest('rectangle');
         await page.click('#sub-dock button.layerActionZoom');
-        getMapRequest = await getMapRequestPromise;
-        await getMapRequest.response();
+        [
+            worldGetMapRequest, rectangleGetMapRequest
+        ] = await Promise.all([
+            worldGetMapRequestPromise, rectangleGetMapRequestPromise
+        ]);
+        responseExpect(await worldGetMapRequest.response()).toBeImagePng();
+        responseExpect(await rectangleGetMapRequest.response()).toBeImagePng();
 
         // Click on the map to get a popup
         let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
@@ -85,13 +120,22 @@ test.describe('Zoom to layer', () => {
         const popupTitle = page.locator('#popupcontent div.lizmapPopupContent h4.lizmapPopupTitle');
         await expect(popupTitle).toHaveCount(1);
 
-        // Zoom to 'world' layer
-        getMapRequestPromise = project.waitForGetMapRequest();
+        // Open sub dock world
         await page.click('#button-switcher');
-        await page.click('#node-world ~ .node .layer-actions .icon-info-sign', { force: true });
+        await page.getByTestId('world').hover();
+        await page.getByTestId('world').locator('.icon-info-sign').click();
+
+        // Zoom to 'world' layer
+        worldGetMapRequestPromise = project.waitForGetMapRequest('world');
+        rectangleGetMapRequestPromise = project.waitForGetMapRequest('rectangle');
         await page.click('#sub-dock button.layerActionZoom');
-        getMapRequest = await getMapRequestPromise;
-        await getMapRequest.response();
+        [
+            worldGetMapRequest, rectangleGetMapRequest
+        ] = await Promise.all([
+            worldGetMapRequestPromise, rectangleGetMapRequestPromise
+        ]);
+        responseExpect(await worldGetMapRequest.response()).toBeImagePng();
+        responseExpect(await rectangleGetMapRequest.response()).toBeImagePng();
 
         // Click on the map to get no popup
         getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
