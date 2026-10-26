@@ -16,6 +16,52 @@ import { LayerStyleConfig, LayerGeographicBoundingBoxConfig, LayerBoundingBoxCon
 import { buildLayerSymbology, LayerSymbolsSymbology, LayerIconSymbology, LayerGroupSymbology } from './Symbology.js';
 
 /**
+ * @import { EventDispatched } from './../../utils/EventDispatcher.js'
+ */
+
+/**
+ * Layer's selection changed event.
+ * This event is dispatched when the layer's selected features have changed.
+ * @event LayerSelectionChanged
+ * @type {EventDispatched}
+ * @property {string}   type             - layer.selection.changed
+ * @property {string}   name             - The layer's name
+ * @property {string[]} selectedFeatures - The selected features' ids
+ */
+
+/**
+ * Layer's selection token changed event.
+ * This event is dispatched when the layer's selection token has changed.
+ * @event LayerSelectionTokenChanged
+ * @type {EventDispatched}
+ * @property {string}   type             - layer.selection.token.changed
+ * @property {string}   name             - The layer's name
+ * @property {string}   selectionToken   - The selection token
+ * @property {string[]} selectedFeatures - The selected features' ids
+ */
+
+/**
+ * Layer's filter changed event.
+ * This event is dispatched when the layer's expression filter has changed.
+ * @event LayerFilterChanged
+ * @type {EventDispatched}
+ * @property {string} type             - layer.filter.changed
+ * @property {string} name             - The layer's name
+ * @property {string} expressionFilter - The expression filter
+ */
+
+/**
+ * Layer's filter token changed event.
+ * This event is dispatched when the layer's filter token has changed.
+ * @event LayerFilterTokenChanged
+ * @type {EventDispatched}
+ * @property {string} type             - layer.filter.token.changed
+ * @property {string} name             - The layer's name
+ * @property {string} filterToken      - The filter token
+ * @property {string} expressionFilter - The expression filter
+ */
+
+/**
  * Class representing a layer item state: could be group, vector or raster layer
  * @class
  * @augments EventDispatcher
@@ -922,7 +968,8 @@ export class LayerVectorState extends LayerLayerState {
 
     /**
      * Vector layer selection
-     * @type {?string}
+     * The selected feature ids
+     * @type {string[]}
      */
     get selectedFeatures() {
         return [...this._selectedFeatures];
@@ -930,7 +977,10 @@ export class LayerVectorState extends LayerLayerState {
 
     /**
      * Update vector layer selection
-     * @param {?string} selectIds - The selection Ids
+     * @param {?string[]} selectIds - The selection Ids
+     * @throws {ValidationError}
+     * @fires LayerSelectionChanged
+     * @fires LayerSelectionTokenChanged
      */
     set selectedFeatures(selectIds) {
         // Validate selectIds
@@ -978,7 +1028,10 @@ export class LayerVectorState extends LayerLayerState {
 
     /**
      * Update vector layer selection token
-     * @param {?string} token - The selection token
+     * @param {?(string | object)} token - The selection token
+     * @throws {ValidationError}
+     * @fires LayerSelectionTokenChanged
+     * @fires LayerSelectionChanged
      */
     set selectionToken(token) {
         // Validate selection token
@@ -1067,6 +1120,9 @@ export class LayerVectorState extends LayerLayerState {
     /**
      * Update vector layer expression filter
      * @param {?string} exp - The QGIS expression
+     * @throws {ValidationError}
+     * @fires LayerFilterChanged
+     * @fires LayerFilterTokenChanged
      */
     set expressionFilter(exp) {
         if (this._expressionFilter === exp) {
@@ -1111,6 +1167,9 @@ export class LayerVectorState extends LayerLayerState {
     /**
      * Update vector layer filter token
      * @param {?(string | object)} token - The filter token
+     * @throws {ValidationError}
+     * @fires LayerFilterTokenChanged
+     * @fires LayerFilterChanged
      */
     set filterToken(token) {
         // Validate filter token
