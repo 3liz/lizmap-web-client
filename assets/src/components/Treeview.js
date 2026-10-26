@@ -242,17 +242,25 @@ export default class Treeview extends HTMLElement {
     }
 
     set itemNameSelected(itemName) {
-        if (this._itemNameSelected === itemName) {
+        const oldItemnameSelected = this._itemNameSelected;
+        if (itemName === undefined && this._itemNameSelected !== undefined) {
+            itemName = ''+this._itemNameSelected;
+            this._itemNameSelected = undefined;
+        } else if (this._itemNameSelected === itemName) {
             this._itemNameSelected = undefined;
         } else {
             this._itemNameSelected = itemName;
         }
 
-        lizMap.events.triggerEvent("lizmapswitcheritemselected",
-            { 'name': itemName, 'selected': this._itemNameSelected !== undefined }
-        );
+        if (itemName !== undefined) {
+            lizMap.events.triggerEvent("lizmapswitcheritemselected",
+                { 'name': itemName, 'selected': this._itemNameSelected !== undefined }
+            );
+        }
 
-        this._onChange();
+        if (oldItemnameSelected !== this._itemNameSelected) {
+            this._onChange();
+        }
     }
 
     _isVisible(item) {
