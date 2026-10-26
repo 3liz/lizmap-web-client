@@ -69,6 +69,7 @@ cp -aR lizmap/var/config.dist/* lizmap/var/config
 [ ! -f lizmap/var/config/lizmapConfig.ini.php ] && cp lizmap/var/config/lizmapConfig.ini.php.dist lizmap/var/config/lizmapConfig.ini.php
 [ ! -f lizmap/var/config/localconfig.ini.php  ] && cp lizmap/var/config/localconfig.ini.php.dist  lizmap/var/config/localconfig.ini.php
 [ ! -f lizmap/var/config/profiles.ini.php     ] && cp lizmap/var/config/profiles.ini.php.dist     lizmap/var/config/profiles.ini.php
+[ ! -f lizmap/var/config/lizmapLogConfig.ini.php ] && cp lizmap/var/config/lizmapLogConfig.ini.php.dist     lizmap/var/config/lizmapLogConfig.ini.php
 
 # Copy static files
 # Note: static files needs to be resolved by external web server
