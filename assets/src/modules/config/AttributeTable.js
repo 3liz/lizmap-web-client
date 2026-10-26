@@ -19,6 +19,7 @@ const optionalProperties = {
     'hiddenFields': {type: 'string', default: ''},
     'export_enabled': {type: 'boolean', default: true},
     'export_formats': {type: 'array', contentType: 'string', default: []},
+    'export_max_features': {type: 'number', default: -1},
 };
 
 /**
@@ -86,11 +87,27 @@ export class AttributeLayerConfig extends BaseObjectLayerConfig {
     }
 
     /**
-     * The layer export is enabled
+     * The layer export formats
      * @type {string[]}
      */
     get exportFormats() {
         return [...this._export_formats];
+    }
+
+    /**
+     * The layer export max features
+     * @type {number}
+     */
+    get exportMaxFeatures() {
+        return this._export_max_features;
+    }
+
+    /**
+     * The layer export is limited by max features
+     * @type {boolean}
+     */
+    get exportLimited() {
+        return (this._export_max_features > 0);
     }
 
     /**
