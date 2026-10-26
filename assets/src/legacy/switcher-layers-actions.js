@@ -47,7 +47,6 @@ var lizLayerActionButtons = function() {
                 // Open link in a new window
                 window.open(windowLink);
             });
-
         $('#hide-sub-dock').click(function(){
             var itemName = $(this).val();
             var itemConfig = lizMap.config.layers[itemName];
@@ -270,10 +269,81 @@ var lizLayerActionButtons = function() {
      * @param selected
      */
     function toggleMetadataSubDock(layerName, selected){
+        // Layer config
+        const layerConfig = initialConfig.layers.getLayerConfigByLayerName(layerName);
+        // Layer state
+        const layerState = lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerOrGroupByName(layerName);
+        // Find the attribute layer config, can be undefined
+        const attrLayerConfig = initialConfig.hasAttributeLayers ? initialConfig.attributeLayers.layerConfigs.find(
+            layer => layer.id === layerConfig.id
+        ) : null;
+
+        /**
+         * Listener for `layer.selection.changed` to enable/disable the export layer button
+         * @param {LayerSelectionChanged} evt
+         */
+        const layerSelectionChanged = (evt) => {
+            if (evt.selectedFeatures.length > 0 && evt.selectedFeatures.length <= attrLayerConfig.exportMaxFeatures) {
+                $('#sub-dock button.exportLayer').prop('disabled', false);
+            } else {
+                $('#sub-dock button.exportLayer').prop('disabled', true);
+            }
+        }
+
+        /**
+         * Listener for `layer.filter.changed` to enable/disable not the export layer button
+         * @param {LayerFilterChanged} evt
+         */
+        const layerFilterChanged = (evt) => {
+            if (layerState.isFiltered) {
+                const filteredFeaturesLength = lizMap.config.layers[lname]['filteredFeatures'].length;
+                if (filteredFeaturesLength > 0 && filteredFeaturesLength <= attrLayerConfig.exportMaxFeatures) {
+                    $('#sub-dock button.exportLayer').prop('disabled', false);
+                } else {
+                    $('#sub-dock button.exportLayer').prop('disabled', true);
+                }
+            }
+        }
+
         if( selected ){
+            // Build layer metadata HTML
             var html = getLayerMetadataHtml( layerName );
+            // append HTML to DOM in sub-dock
             fillSubDock( html );
-        }else{
+
+            // manage export layer button
+            if (initialConfig.options.exportLayers && initialConfig.hasAttributeLayers) {
+                // Check if layer has export limited
+                if (attrLayerConfig && attrLayerConfig.exportLimited) {
+                    // Disable by default the export layer button because export is limited to some features.
+                    $('#sub-dock button.exportLayer').prop('disabled', true);
+                    // Check if there are already selected features to enable the export button
+                    if (layerState.selectedFeatures.length > 0 && layerState.selectedFeatures.length <= attrLayerConfig.exportMaxFeatures) {
+                            $('#sub-dock button.exportLayer').prop('disabled', false);
+                    }
+                    // Check if there are already filtered features to enable the export button
+                    if (layerState.isFiltered) {
+                        const filteredFeaturesLength = config.layers[lname]['filteredFeatures'].length;
+                        if (filteredFeaturesLength > 0 && filteredFeaturesLength <= attrLayerConfig.exportMaxFeatures) {
+                            $('#sub-dock button.exportLayer').prop('disabled', false);
+                        }
+                    }
+                    // Add listeners
+                    layerState.addListener(layerSelectionChanged, 'layer.selection.changed');
+                    layerState.addListener(layerFilterChanged, 'layer.filter.changed');
+                }
+            }
+
+        } else {
+            // manage listeners added to enable/disable export layer button
+            if (initialConfig.options.exportLayers && initialConfig.hasAttributeLayers) {
+                // Check if layer has export limited
+                if (attrLayerConfig && attrLayerConfig.exportLimited) {
+                    // Remove listeners
+                    layerState.removeListener(layerSelectionChanged, 'layer.selection.changed');
+                    layerState.removeListener(layerFilterChanged, 'layer.filter.changed');
+                }
+            }
             $('#sub-dock').hide().html( '' );
             return;
         }
