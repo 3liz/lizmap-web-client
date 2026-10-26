@@ -50,4 +50,19 @@ test.describe('Form relational values', () => {
         }
 
     });
+
+    test('Not editable relational values with multiple selections @readonly', async ({ page }) => {
+        const checkboxes = page.locator('#jforms_view_edition input[name="test_readonly[]"]');
+        await expect(checkboxes).toHaveCount(3);
+        for (const checkbox of await checkboxes.all()) {
+            await expect(checkbox).toHaveClass(/jforms-readonly/);
+            // The readonly attribute is ignored by browsers for checkboxes
+            await expect(checkbox).toBeDisabled();
+        }
+
+        // Editable relational values are not disabled
+        for (const checkbox of await page.locator('#jforms_view_edition input[name="test[]"]').all()) {
+            await expect(checkbox).toBeEnabled();
+        }
+    });
 });

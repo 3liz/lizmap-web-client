@@ -23,6 +23,12 @@ class checkboxes_htmlbootstrapFormWidget extends checkboxes_htmlFormWidget
 
         $attr['name'] = $this->ctrl->ref.'[]';
         unset($attr['title']);
+
+        // attribute readonly is not enough to make checkboxes readonly. Note that value won't be sent by submit but it is not a problem as it is readonly
+        if (array_key_exists('readonly', $attr)) {
+            $attr['disabled'] = 'disabled';
+        }
+
         if (is_array($value) && count($value) == 1) {
             $value = $value[0];
         }
