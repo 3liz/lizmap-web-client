@@ -63,7 +63,7 @@
     "shpjs": "^6.2.x",
     "stylelint": "^17.16.0",
     "stylelint-config-standard": "^40.0.x",
-    "undici": "^8.11.2",
+    "undici": "^8.12.2",
     "webpack-merge": "^6.0.x",
     "xmldoc": "^3.0.0"
   }
