@@ -772,6 +772,26 @@
             </config>
           </editWidget>
         </field>
+        <field configurationFlags="NoFlag" name="test_readonly">
+          <editWidget type="ValueRelation">
+            <config>
+              <Option type="Map">
+                <Option name="AllowMulti" value="true" type="bool"/>
+                <Option name="AllowNull" value="false" type="bool"/>
+                <Option name="FilterExpression" value="" type="QString"/>
+                <Option name="Key" value="code" type="QString"/>
+                <Option name="Layer" value="table_for_relationnal_value_dc724c81_0004_4aec_89bf_2fa1e80fccb8" type="QString"/>
+                <Option name="LayerName" value="table_for_relationnal_value" type="QString"/>
+                <Option name="LayerProviderName" value="postgres" type="QString"/>
+                <Option name="LayerSource" value="service='lizmapdb' sslmode=prefer key='gid' checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;table_for_relationnal_value&quot; sql=" type="QString"/>
+                <Option name="NofColumns" value="1" type="int"/>
+                <Option name="OrderByValue" value="true" type="bool"/>
+                <Option name="UseCompleter" value="false" type="bool"/>
+                <Option name="Value" value="label" type="QString"/>
+              </Option>
+            </config>
+          </editWidget>
+        </field>
       </fieldConfiguration>
       <aliases>
         <alias name="" field="gid" index="0"/>
@@ -779,6 +799,7 @@
         <alias name="" field="test" index="2"/>
         <alias name="Test constraint not null only" field="test_not_null_only" index="3"/>
         <alias name="Test with empty value only" field="test_empty_value_only" index="4"/>
+        <alias name="Test read only" field="test_readonly" index="5"/>
       </aliases>
       <splitPolicies>
         <policy field="gid" policy="Duplicate"/>
@@ -786,6 +807,7 @@
         <policy field="test" policy="Duplicate"/>
         <policy field="test_not_null_only" policy="Duplicate"/>
         <policy field="test_empty_value_only" policy="Duplicate"/>
+        <policy field="test_readonly" policy="Duplicate"/>
       </splitPolicies>
       <defaults>
         <default expression="" field="gid" applyOnUpdate="0"/>
@@ -793,6 +815,7 @@
         <default expression="" field="test" applyOnUpdate="0"/>
         <default expression="" field="test_not_null_only" applyOnUpdate="0"/>
         <default expression="" field="test_empty_value_only" applyOnUpdate="0"/>
+        <default expression="" field="test_readonly" applyOnUpdate="0"/>
       </defaults>
       <constraints>
         <constraint unique_strength="1" constraints="3" field="gid" exp_strength="0" notnull_strength="1"/>
@@ -800,6 +823,7 @@
         <constraint unique_strength="0" constraints="0" field="test" exp_strength="0" notnull_strength="0"/>
         <constraint unique_strength="0" constraints="1" field="test_not_null_only" exp_strength="0" notnull_strength="2"/>
         <constraint unique_strength="0" constraints="0" field="test_empty_value_only" exp_strength="0" notnull_strength="0"/>
+        <constraint unique_strength="0" constraints="0" field="test_readonly" exp_strength="0" notnull_strength="0"/>
       </constraints>
       <constraintExpressions>
         <constraint desc="" exp="" field="gid"/>
@@ -807,6 +831,7 @@
         <constraint desc="" exp="" field="test"/>
         <constraint desc="" exp="" field="test_not_null_only"/>
         <constraint desc="" exp="" field="test_empty_value_only"/>
+        <constraint desc="" exp="" field="test_readonly"/>
       </constraintExpressions>
       <expressionfields/>
       <attributeactions>
@@ -820,6 +845,7 @@
           <column name="test" width="-1" hidden="0" type="field"/>
           <column name="test_not_null_only" width="-1" hidden="0" type="field"/>
           <column name="test_empty_value_only" width="-1" hidden="0" type="field"/>
+          <column name="test_readonly" width="-1" hidden="0" type="field"/>
         </columns>
       </attributetableconfig>
       <conditionalstyles>
@@ -854,6 +880,7 @@ def my_form_open(dialog, layer, feature):
         <field name="test" editable="1"/>
         <field name="test_empty_value_only" editable="1"/>
         <field name="test_not_null_only" editable="1"/>
+        <field name="test_readonly" editable="0"/>
         <field name="titre" editable="1"/>
         <field name="type" editable="1"/>
       </editable>
@@ -862,6 +889,7 @@ def my_form_open(dialog, layer, feature):
         <field name="test" labelOnTop="0"/>
         <field name="test_empty_value_only" labelOnTop="0"/>
         <field name="test_not_null_only" labelOnTop="0"/>
+        <field name="test_readonly" labelOnTop="0"/>
         <field name="titre" labelOnTop="0"/>
         <field name="type" labelOnTop="0"/>
       </labelOnTop>
