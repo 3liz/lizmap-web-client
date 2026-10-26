@@ -1,6 +1,6 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
+use Jelix\UnitTests\UnitTestCase;
 
 require_once __DIR__.'/../../../../lizmap/modules/view/classes/lizmapMainViewItem.class.php';
 
@@ -9,8 +9,14 @@ require_once __DIR__.'/../../../../lizmap/modules/view/classes/lizmapMainViewIte
  *
  * @coversNothing
  */
-class lizmapMainViewItemTest extends TestCase
+class lizmapMainViewItemTest extends UnitTestCase
 {
+
+    protected function setUp(): void {
+        parent::setUp();
+        self::initJelixConfig();
+    }
+
     public function testConstructDefaults(): void
     {
         $item = new lizmapMainViewItem('montpellier', 'Montpellier');
