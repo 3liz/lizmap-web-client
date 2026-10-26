@@ -26,6 +26,7 @@ test.describe('Export data @readonly', () => {
         await expect(exportGroup).toHaveCount(1);
         await expect(exportGroup).toBeVisible();
 
+        await expect(exportGroup.locator('button.exportLayer')).toBeEnabled();
         await expect(exportGroup.locator('button.btn-export-attributeTable')).toHaveCount(12);
     });
 
@@ -164,6 +165,7 @@ test.describe('Export data @readonly', () => {
         await expect(exportGroup).toHaveCount(1);
         await expect(exportGroup).toBeVisible();
 
+        await expect(exportGroup.locator('button.exportLayer')).toBeEnabled();
         await expect(exportGroup.locator('button.btn-export-attributeTable')).toHaveCount(12);
 
         // launch export
@@ -341,6 +343,7 @@ test.describe('Export data @readonly', () => {
         await expect(exportGroup).toHaveCount(1);
         await expect(exportGroup).toBeVisible();
 
+        await expect(exportGroup.locator('button.exportLayer')).toBeEnabled();
         await expect(exportGroup.locator('button.btn-export-attributeTable')).toHaveCount(12);
 
         // Launch export. EXP_FILTER must NOT carry the 'quartiers:' prefix.
@@ -393,6 +396,7 @@ test.describe('Export data @readonly', () => {
         await expect(exportGroup).toHaveCount(1);
         await expect(exportGroup).toBeVisible();
 
+        await expect(exportGroup.locator('button.exportLayer')).toBeEnabled();
         await expect(exportGroup.locator('button.btn-export-attributeTable')).toHaveCount(3);
     });
 });
