@@ -4,6 +4,7 @@ import * as fs from 'fs/promises'
 import { existsSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
 import { expect as requestExpect } from './fixtures/expect-request.js';
+import { expect as responseExpect } from './fixtures/expect-response.js';
 import { playwrightTestFile } from './globals';
 import { ProjectPage } from "./pages/project";
 
@@ -433,6 +434,143 @@ test.describe('Sub dock @readonly', () => {
 
         await expect(page.locator('#sub-dock .sub-metadata .menu-content dd select.exportLayer option')).toHaveCount(3);
         await expect(page.locator('#sub-dock .sub-metadata .menu-content dd button.exportLayer')).toBeEnabled();
+    });
+
+    test('Export layer with max export features', async ({ page }) => {
+        // Catch GetProjectConfig to override export_max_features for sousquartiers layer
+        await page.route('**/service/getProjectConfig*', async route => {
+            const response = await route.fetch();
+            const json = await response.json();
+            json.attributeLayers['sousquartiers']['export_max_features'] = 2;
+            await route.fulfill({ response, json });
+        });
+
+        const project = new ProjectPage(page, 'permalink');
+        await project.open();
+
+        // Remove catching GetProjectConfig
+        await page.unroute('**/service/getProjectConfig*');
+
+        // Display sub dock metadata
+        await page.getByTestId('sousquartiers').hover();
+        await page.getByTestId('sousquartiers').locator('.icon-info-sign').click();
+        await expect(page.locator('#sub-dock')).toBeVisible();
+
+        // Export
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dt')).toHaveCount(6);
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dt').nth(5)).toHaveText('Export');
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dd select.exportLayer')).toHaveCount(1);
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dd button.exportLayer')).toHaveCount(1);
+
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dd select.exportLayer option')).toHaveCount(12);
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dd button.exportLayer')).toBeDisabled();
+
+        // Open attribute table
+        const tableName = 'sousquartiers'
+        let datatablesRequest = await project.openAttributeTable(tableName);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+
+        // Check table lines
+        const tableHtml = project.attributeTableHtml(tableName);
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(31);
+        await expect(tableHtml.locator('tbody tr.selected')).toHaveCount(0);
+
+        // Use line with id 2
+        let tr2 = tableHtml.locator('tbody tr[id="2"]');
+
+        // Select feature
+        // click on select Button
+        let getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
+        await tr2.locator('lizmap-feature-toolbar .feature-select').click();
+        let getSelectionTokenRequest = await getSelectionTokenRequestPromise;
+        // Once the GetSelectionToken is received, the map is refreshed
+        responseExpect(await getSelectionTokenRequest.response()).toBeJson();
+
+        // Export button enabled
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dd button.exportLayer')).toBeEnabled();
+
+        // Use line with id 3
+        let tr3 = tableHtml.locator('tbody tr[id="3"]');
+
+        // Select feature
+        // click on select Button
+        getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
+        await tr3.locator('lizmap-feature-toolbar .feature-select').click();
+        getSelectionTokenRequest = await getSelectionTokenRequestPromise;
+        // Once the GetSelectionToken is received, the map is refreshed
+        responseExpect(await getSelectionTokenRequest.response()).toBeJson();
+
+        // Export button still enabled
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dd button.exportLayer')).toBeEnabled();
+
+        // Use line with id 1
+        let tr1 = tableHtml.locator('tbody tr[id="1"]');
+
+        // Select feature
+        // click on select Button
+        getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
+        await tr1.locator('lizmap-feature-toolbar .feature-select').click();
+        getSelectionTokenRequest = await getSelectionTokenRequestPromise;
+        // Once the GetSelectionToken is received, the map is refreshed
+        responseExpect(await getSelectionTokenRequest.response()).toBeJson();
+
+        // Export button bakc disabled
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dd button.exportLayer')).toBeDisabled();
+
+        // Unselect feature 3
+        // click on select Button
+        getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
+        await tr3.locator('lizmap-feature-toolbar .feature-select').click();
+        getSelectionTokenRequest = await getSelectionTokenRequestPromise;
+        // Once the GetSelectionToken is received, the map is refreshed
+        responseExpect(await getSelectionTokenRequest.response()).toBeJson();
+
+        // Export button still enabled
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dd button.exportLayer')).toBeEnabled();
+
+        //close sub dock
+        await expect(page.locator('#hide-sub-dock')).toBeVisible();
+        await page.locator('#hide-sub-dock').click();
+        await expect(page.locator('#sub-dock')).toBeHidden();
+
+        // Display sub dock metadata for Les quartiers à Montpellier
+        await expect(page.locator('#sub-dock')).toBeHidden();
+        await page.getByTestId('Les quartiers à Montpellier').hover();
+        await page.getByTestId('Les quartiers à Montpellier').locator('.icon-info-sign').click();
+        await expect(page.locator('#sub-dock')).toBeVisible();
+
+        // Check sub dock metadata content
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dt')).toHaveCount(4);
+        // No export
+        await expect(
+            page.locator('#sub-dock .sub-metadata .menu-content dt').filter({ hasText: 'Export' })
+        ).toHaveCount(0);
+
+        //close sub dock
+        await expect(page.locator('#hide-sub-dock')).toBeVisible();
+        await page.locator('#hide-sub-dock').click();
+        await expect(page.locator('#sub-dock')).toBeHidden();
+
+        // Reopen sub dock metadata for sousquartiers
+        await page.getByTestId('sousquartiers').hover();
+        await page.getByTestId('sousquartiers').locator('.icon-info-sign').click();
+        await expect(page.locator('#sub-dock')).toBeVisible();
+
+        // Check sub dock metadata content
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dt')).toHaveCount(6);
+        // With export
+        await expect(
+            page.locator('#sub-dock .sub-metadata .menu-content dt').filter({ hasText: 'Export' })
+        ).toHaveCount(1);
+        // And export button still enabled
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dd button.exportLayer')).toBeEnabled();
+
+        // Unselect all
+        await project.attributeTableActionBar(tableName).locator('.btn-unselect-attributeTable').click();
+
+        // Export button still is disabled
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dd button.exportLayer')).toBeDisabled();
     });
 
     test('Metadata one on two layers in WFS with export disable in attribute table config', async ({ page }) => {
