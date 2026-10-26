@@ -5916,8 +5916,8 @@ COPY tests_projects.sousquartiers (id, quartmno, squartmno, libsquart, quartiers
 -- Data for Name: table_for_form; Type: TABLE DATA; Schema: tests_projects; Owner: -
 --
 
-COPY tests_projects.table_for_form (gid, titre, test, test_not_null_only, test_empty_value_only, geom) FROM stdin;
-1	test	{A06}	{A07}	{A08}	01010000206A080000BF599997AB39254116EA7038651D5841
+COPY tests_projects.table_for_form (gid, titre, test, test_not_null_only, test_empty_value_only, test_readonly, geom) FROM stdin;
+1	test	{A06}	{A07}	{A08}	{A06}	01010000206A080000BF599997AB39254116EA7038651D5841
 \.
 
 
