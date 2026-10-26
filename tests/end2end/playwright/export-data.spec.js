@@ -26,6 +26,7 @@ test.describe('Export data @readonly', () => {
         await expect(exportGroup).toHaveCount(1);
         await expect(exportGroup).toBeVisible();
 
+        await expect(exportGroup.locator('button.exportLayer')).toBeEnabled();
         await expect(exportGroup.locator('button.btn-export-attributeTable')).toHaveCount(12);
     });
 
@@ -41,6 +42,13 @@ test.describe('Export data @readonly', () => {
         // Check table lines
         const tableHtml = project.attributeTableHtml(tableName);
         await expect(tableHtml.locator('tbody tr')).toHaveCount(2);
+
+        // Check export available
+        let exportGroup = project.attributeTableExportGroup(tableName);
+        await expect(exportGroup.locator('button.exportLayer')).toBeEnabled();
+        await expect(
+            exportGroup.locator('button.btn-export-attributeTable').filter({ hasText: 'GeoJSON' })
+        ).toHaveCount(1);
 
         // launch export
         let getFeatureRequest = await project.launchExport(tableName,'GeoJSON');
@@ -70,9 +78,9 @@ test.describe('Export data @readonly', () => {
         let getSelectionTokenRequest = await getSelectionTokenRequestPromise;
         // Once the GetSelectionToken is received, the map is refreshed
         let getMapRequestPromise = project.waitForGetMapRequest();
-        await getSelectionTokenRequest.response();
+        responseExpect(await getSelectionTokenRequest.response()).toBeJson();
         let getMapRequest = await getMapRequestPromise;
-        await getMapRequest.response();
+        responseExpect(await getMapRequest.response()).toBeImagePng();
 
         // Check table
         await expect(tableHtml.locator('tbody tr')).toHaveCount(2);
@@ -106,7 +114,7 @@ test.describe('Export data @readonly', () => {
         getMapRequestPromise = project.waitForGetMapRequest();
         await getFilterTokenRequest.response();
         getMapRequest = await getMapRequestPromise;
-        await getMapRequest.response();
+        responseExpect(await getMapRequest.response()).toBeImagePng();
 
         // Check table
         await expect(tableHtml.locator('tbody tr')).toHaveCount(1);
@@ -164,7 +172,11 @@ test.describe('Export data @readonly', () => {
         await expect(exportGroup).toHaveCount(1);
         await expect(exportGroup).toBeVisible();
 
+        await expect(exportGroup.locator('button.exportLayer')).toBeEnabled();
         await expect(exportGroup.locator('button.btn-export-attributeTable')).toHaveCount(12);
+        await expect(
+            exportGroup.locator('button.btn-export-attributeTable').filter({ hasText: 'GeoJSON' })
+        ).toHaveCount(1);
 
         // launch export
         let getFeatureRequest = await project.launchExport(tableName,'GeoJSON');
@@ -192,7 +204,7 @@ test.describe('Export data @readonly', () => {
         let getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
         await tr2.locator('lizmap-feature-toolbar .feature-select').click();
         let getSelectionTokenRequest = await getSelectionTokenRequestPromise;
-        await getSelectionTokenRequest.response();
+        responseExpect(await getSelectionTokenRequest.response()).toBeJson();
 
         // Check table lines
         await expect(tableHtml.locator('tbody tr')).toHaveCount(5);
@@ -263,14 +275,14 @@ test.describe('Export data @readonly', () => {
         getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
         await tr2.locator('lizmap-feature-toolbar .feature-select').click();
         getSelectionTokenRequest = await getSelectionTokenRequestPromise;
-        await getSelectionTokenRequest.response();
+        responseExpect(await getSelectionTokenRequest.response()).toBeJson();
 
         // Use line with id 4
         let tr4 = tableHtml.locator('tbody tr[id="4"]');
         getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
         await tr4.locator('lizmap-feature-toolbar .feature-select').click();
         getSelectionTokenRequest = await getSelectionTokenRequestPromise;
-        await getSelectionTokenRequest.response();
+        responseExpect(await getSelectionTokenRequest.response()).toBeJson();
 
         // Check table lines
         await expect(tableHtml.locator('tbody tr')).toHaveCount(5);
@@ -341,6 +353,7 @@ test.describe('Export data @readonly', () => {
         await expect(exportGroup).toHaveCount(1);
         await expect(exportGroup).toBeVisible();
 
+        await expect(exportGroup.locator('button.exportLayer')).toBeEnabled();
         await expect(exportGroup.locator('button.btn-export-attributeTable')).toHaveCount(12);
 
         // Launch export. EXP_FILTER must NOT carry the 'quartiers:' prefix.
@@ -393,6 +406,7 @@ test.describe('Export data @readonly', () => {
         await expect(exportGroup).toHaveCount(1);
         await expect(exportGroup).toBeVisible();
 
+        await expect(exportGroup.locator('button.exportLayer')).toBeEnabled();
         await expect(exportGroup.locator('button.btn-export-attributeTable')).toHaveCount(3);
     });
 });
@@ -544,8 +558,15 @@ test.describe('Layer export permissions ACL', () => {
         let datatablesResponse = await datatablesRequest.response();
         responseExpect(datatablesResponse).toBeJson();
 
+        // Check export available
+        let exportGroup = project.attributeTableExportGroup(tableName);
+        await expect(exportGroup.locator('button.exportLayer')).toBeEnabled();
+        await expect(
+            exportGroup.locator('button.btn-export-attributeTable').filter({ hasText: 'GeoJSON' })
+        ).toHaveCount(1);
+
         // launch export
-        let getFeatureRequest = await project.launchExport('single_wms_points','GeoJSON');
+        let getFeatureRequest = await project.launchExport(tableName,'GeoJSON');
 
         /** @type {{[key: string]: string|RegExp}} */
         let expectedParameters = {
@@ -553,7 +574,7 @@ test.describe('Layer export permissions ACL', () => {
             'REQUEST': 'GetFeature',
             'VERSION': '1.0.0',
             'OUTPUTFORMAT': 'GeoJSON',
-            'TYPENAME': 'single_wms_points',
+            'TYPENAME': tableName,
             'dl': '1',
         }
 
@@ -568,7 +589,7 @@ test.describe('Layer export permissions ACL', () => {
         responseExpect(datatablesResponse).toBeJson();
 
         // launch export
-        getFeatureRequest = await project.launchExport('single_wms_points','GeoJSON');
+        getFeatureRequest = await project.launchExport(tableName,'GeoJSON');
 
         expectedParameters['BBOX'] = /3.7759\d+,43.55267\d+,3.98277\d+,43.6516\d+/;
 

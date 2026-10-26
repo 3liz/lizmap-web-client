@@ -283,11 +283,13 @@ test.describe('Sub dock @readonly', () => {
         await expect(page.locator('#sub-dock')).toBeVisible();
 
         // Export
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dt')).toHaveCount(6);
         await expect(page.locator('#sub-dock .sub-metadata .menu-content dt').nth(5)).toHaveText('Export');
         await expect(page.locator('#sub-dock .sub-metadata .menu-content dd select.exportLayer')).toHaveCount(1);
         await expect(page.locator('#sub-dock .sub-metadata .menu-content dd button.exportLayer')).toHaveCount(1);
 
         await expect(page.locator('#sub-dock .sub-metadata .menu-content dd select.exportLayer option')).toHaveCount(12);
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dd button.exportLayer')).toBeEnabled();
 
         await page.locator('#sub-dock .sub-metadata .menu-content dd select.exportLayer').selectOption('GeoJSON');
         const getFeatureRequestPromise = project.waitForGetFeatureRequest();
@@ -374,11 +376,13 @@ test.describe('Sub dock @readonly', () => {
         await expect(page.locator('#sub-dock')).toBeVisible();
 
         // Export
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dt')).toHaveCount(6);
         await expect(page.locator('#sub-dock .sub-metadata .menu-content dt').nth(5)).toHaveText('Export');
         await expect(page.locator('#sub-dock .sub-metadata .menu-content dd select.exportLayer')).toHaveCount(1);
         await expect(page.locator('#sub-dock .sub-metadata .menu-content dd button.exportLayer')).toHaveCount(1);
 
         await expect(page.locator('#sub-dock .sub-metadata .menu-content dd select.exportLayer option')).toHaveCount(12);
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dd button.exportLayer')).toBeEnabled();
 
         await page.locator('#sub-dock .sub-metadata .menu-content dd select.exportLayer').selectOption('GeoJSON');
         const getFeatureRequestPromise = project.waitForGetFeatureRequest();
@@ -422,11 +426,13 @@ test.describe('Sub dock @readonly', () => {
         await expect(page.locator('#sub-dock')).toBeVisible();
 
         // Export
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dt')).toHaveCount(6);
         await expect(page.locator('#sub-dock .sub-metadata .menu-content dt').nth(5)).toHaveText('Export');
         await expect(page.locator('#sub-dock .sub-metadata .menu-content dd select.exportLayer')).toHaveCount(1);
         await expect(page.locator('#sub-dock .sub-metadata .menu-content dd button.exportLayer')).toHaveCount(1);
 
         await expect(page.locator('#sub-dock .sub-metadata .menu-content dd select.exportLayer option')).toHaveCount(3);
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dd button.exportLayer')).toBeEnabled();
     });
 
     test('Metadata one on two layers in WFS with export disable in attribute table config', async ({ page }) => {
