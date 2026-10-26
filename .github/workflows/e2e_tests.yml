@@ -199,7 +199,7 @@ jobs:
           npx playwright install --with-deps chromium
 
       - name: Install Playwright dependencies
-        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         working-directory: tests/end2end
         run: |
           npx playwright install-deps
