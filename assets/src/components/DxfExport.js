@@ -221,37 +221,50 @@ export default class DxfExport extends HTMLElement {
     }
 
     /**
+     * Gets the selected base layer and the visible map layers to export:
+     * they must be published as WFS and not disabled for DXF export
+     * @private
+     * @returns {{baseLayer: ?object, mapLayers: Array<object>}} The exportable base layer and map layers
+     */
+    _getExportableItems() {
+        const wfsLayerNames = this._getWfsLayerNames();
+        const isExportable = (wmsName, layerConfig) =>
+            wfsLayerNames.has(wmsName) && layerConfig?.dxfExportEnabled !== false;
+
+        const selectedBaseLayer = mainLizmap.state.baseLayers.selectedBaseLayer;
+        const baseLayer = (selectedBaseLayer?.hasItemState &&
+            selectedBaseLayer.itemState.wmsName &&
+            isExportable(selectedBaseLayer.itemState.wmsName, selectedBaseLayer.layerConfig))
+            ? selectedBaseLayer : null;
+
+        const mapLayers = mainLizmap.state.rootMapGroup.findExplodedMapLayers()
+            .filter(layer => layer.visibility && isExportable(layer.wmsName || layer.name, layer.layerConfig));
+
+        return { baseLayer, mapLayers };
+    }
+
+    /**
      * Gets the list of layers that will be exported
      * @private
      * @returns {Array<{name: string, title: string}>} Array of exportable layers
      */
     _getExportableLayers() {
+        const { baseLayer, mapLayers } = this._getExportableItems();
         const layers = [];
-        const wfsLayerNames = this._getWfsLayerNames();
 
-        // Check base layer
-        const selectedBaseLayer = mainLizmap.state.baseLayers.selectedBaseLayer;
-        if (selectedBaseLayer?.hasItemState &&
-            selectedBaseLayer.itemState.wmsName &&
-            selectedBaseLayer.layerConfig?.typename !== undefined) {
+        if (baseLayer) {
             layers.push({
-                name: selectedBaseLayer.itemState.wmsName,
-                title: selectedBaseLayer.layerConfig.title || selectedBaseLayer.itemState.wmsName
+                name: baseLayer.itemState.wmsName,
+                title: baseLayer.layerConfig?.title || baseLayer.itemState.wmsName
             });
         }
 
-        // Add visible WFS-enabled layers
-        mainLizmap.state.rootMapGroup.findExplodedMapLayers()
-            .filter(layer => layer.visibility)
-            .forEach(layer => {
-                const layerName = layer.wmsName || layer.name;
-                if (wfsLayerNames.has(layerName)) {
-                    layers.push({
-                        name: layerName,
-                        title: layer.layerConfig?.title || layer.name
-                    });
-                }
+        mapLayers.forEach(layer => {
+            layers.push({
+                name: layer.wmsName || layer.name,
+                title: layer.layerConfig?.title || layer.name
             });
+        });
 
         return layers;
     }
@@ -388,44 +401,34 @@ export default class DxfExport extends HTMLElement {
             legendOff: []
         };
 
-        const wfsLayerNames = this._getWfsLayerNames();
+        const { baseLayer, mapLayers } = this._getExportableItems();
 
-        // Add base layer if compatible
-        const selectedBaseLayer = mainLizmap.state.baseLayers.selectedBaseLayer;
-        if (selectedBaseLayer?.hasItemState &&
-            selectedBaseLayer.itemState.wmsName &&
-            selectedBaseLayer.layerConfig) {
-            result.layers.push(selectedBaseLayer.itemState.wmsName);
-            result.styles.push(selectedBaseLayer.itemState.wmsSelectedStyleName || '');
+        if (baseLayer) {
+            result.layers.push(baseLayer.itemState.wmsName);
+            result.styles.push(baseLayer.itemState.wmsSelectedStyleName || '');
 
-            const baseOpacity = selectedBaseLayer.itemState.opacity || 1;
-            const configOpacity = selectedBaseLayer.layerConfig.opacity || 1;
+            const baseOpacity = baseLayer.itemState.opacity || 1;
+            const configOpacity = baseLayer.layerConfig?.opacity || 1;
             result.opacities.push(Math.round(255 * baseOpacity * configOpacity));
         }
 
-        // Add visible WFS-enabled layers
-        mainLizmap.state.rootMapGroup.findExplodedMapLayers()
-            .filter(layer => {
-                const layerName = layer.wmsName || layer.name;
-                return layer.visibility && wfsLayerNames.has(layerName);
-            })
-            .forEach(layer => {
-                const params = layer.wmsParameters;
+        mapLayers.forEach(layer => {
+            const params = layer.wmsParameters;
 
-                result.layers.push(params.LAYERS);
-                result.styles.push(params.STYLES);
+            result.layers.push(params.LAYERS);
+            result.styles.push(params.STYLES);
 
-                const opacity = layer.layerConfig?.opacity
-                    ? layer.calculateTotalOpacity() * layer.layerConfig.opacity
-                    : layer.calculateTotalOpacity();
-                result.opacities.push(Math.round(255 * opacity));
+            const opacity = layer.layerConfig?.opacity
+                ? layer.calculateTotalOpacity() * layer.layerConfig.opacity
+                : layer.calculateTotalOpacity();
+            result.opacities.push(Math.round(255 * opacity));
 
-                // Collect tokens
-                if (params.FILTERTOKEN) result.filterTokens.push(params.FILTERTOKEN);
-                if (params.SELECTIONTOKEN) result.selectionTokens.push(params.SELECTIONTOKEN);
-                if (params.LEGEND_ON) result.legendOn.push(params.LEGEND_ON);
-                if (params.LEGEND_OFF) result.legendOff.push(params.LEGEND_OFF);
-            });
+            // Collect tokens
+            if (params.FILTERTOKEN) result.filterTokens.push(params.FILTERTOKEN);
+            if (params.SELECTIONTOKEN) result.selectionTokens.push(params.SELECTIONTOKEN);
+            if (params.LEGEND_ON) result.legendOn.push(params.LEGEND_ON);
+            if (params.LEGEND_OFF) result.legendOff.push(params.LEGEND_OFF);
+        });
 
         return result;
     }
