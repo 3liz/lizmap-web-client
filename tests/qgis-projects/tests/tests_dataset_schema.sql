@@ -2308,6 +2308,7 @@ CREATE TABLE tests_projects.table_for_form (
     test text[],
     test_not_null_only text[],
     test_empty_value_only text[],
+    test_readonly text[],
     geom public.geometry(Point,2154)
 );
 
