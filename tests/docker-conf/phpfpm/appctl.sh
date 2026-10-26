@@ -162,8 +162,11 @@ function launch() {
     if [ ! -f $APPDIR/var/config/lizmapConfig.ini.php ]; then
         cp $ROOTDIR/tests/docker-conf/phpfpm/lizmapConfig.ini.php $APPDIR/var/config/lizmapConfig.ini.php
     fi
+    if [ ! -f $APPDIR/var/config/lizmapLogConfig.ini.php ]; then
+        cp $ROOTDIR/tests/docker-conf/phpfpm/lizmapLogConfig.ini.php $APPDIR/var/config/lizmapLogConfig.ini.php
+    fi
 
-    chown -R $APP_USER:$APP_GROUP $APPDIR/var/config/profiles.ini.php $APPDIR/var/config/localconfig.ini.php $APPDIR/var/config/lizmapConfig.ini.php
+    chown -R $APP_USER:$APP_GROUP $APPDIR/var/config/profiles.ini.php $APPDIR/var/config/localconfig.ini.php $APPDIR/var/config/lizmapConfig.ini.php $APPDIR/var/config/lizmapLogConfig.ini.php
 
     if [ ! -d $APPDIR/vendor ]; then
       composerInstall
