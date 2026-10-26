@@ -274,20 +274,26 @@ export default class SelectionTool {
     get isExportable(){
         const exportEnabled = (this._allFeatureTypeSelected.length === 1 && this.selectedFeaturesCount);
         if (!exportEnabled) {
+            // export is not enabled
             return exportEnabled;
         }
+        // export is enabled
+        // checks if something disabled export
         if (this._initialConfig.hasAttributeLayers) {
             const layerName = this._allFeatureTypeSelected[0];
             const layerConfig = this._initialConfig.layers.getLayerConfigByLayerName(layerName);
             const attrLayersConfig = this._initialConfig.attributeLayers;
             const attrLayerConfigs = attrLayersConfig.layerConfigs;
-            const attrLayerConfigsWithExport = attrLayerConfigs.filter(attr => attr.exportEnabled);
-            // If some layers have export disabled, we have to check if the current layer is in the list
-            if (attrLayerConfigs.length != attrLayerConfigsWithExport.length) {
-                const attrLayerConfigWithExport = attrLayerConfigsWithExport.find(layer => layer.id === layerConfig.id);
-                // If the layer is not in the list, export is disabled
-                // else export is available as definde in attribute layer config
-                return (attrLayerConfigWithExport !== undefined);
+            const attrLayerConfig = attrLayerConfigs.find(
+                layer => layer.id === layerConfig.id
+            );
+            // If the layer has not attribute layer config or if the attribute layer config has export disabled, export is disabled
+            if (attrLayerConfig === undefined || !attrLayerConfig.exportEnabled) {
+                return false;
+            }
+            // If the layer has limited export, we have to check if the current selection is under the max features exportable
+            if (attrLayerConfig.exportLimited && this.selectedFeaturesCount > attrLayerConfig.exportMaxFeatures) {
+                return false;
             }
         }
         return exportEnabled;
