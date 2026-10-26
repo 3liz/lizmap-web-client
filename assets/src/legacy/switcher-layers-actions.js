@@ -721,16 +721,20 @@ var lizLayerActionButtons = function() {
             var btValue = itemName;
             if( !itemSelected )
                 btValue = '';
-            $('#switcher-layers-actions button').val( btValue );
 
-            // Toggle buttons depending on itemType
+            const oldValue = $('#switcher-layers-actions button').val();
+            if (oldValue !== btValue) {
+                $('#switcher-layers-actions button').val( btValue );
 
-            // Zoom to layer
-            var zoomStatus = (!itemSelected || !('bbox' in itemConfig) );
-            $('button.layerActionZoom').attr( 'disable', zoomStatus ).toggleClass( 'disabled', zoomStatus );
+                // Toggle buttons depending on itemType
 
-            // Refresh sub-dock content
-            toggleMetadataSubDock(itemName, itemSelected);
+                // Zoom to layer
+                var zoomStatus = (!itemSelected || !('bbox' in itemConfig) );
+                $('button.layerActionZoom').attr( 'disable', zoomStatus ).toggleClass( 'disabled', zoomStatus );
+
+                // Refresh sub-dock content
+                toggleMetadataSubDock(itemName, itemSelected);
+            }
         }
     });
 }();
