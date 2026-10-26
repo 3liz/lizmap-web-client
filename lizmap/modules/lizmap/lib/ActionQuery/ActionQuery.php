@@ -145,7 +145,7 @@ class ActionQuery
                     [$validFilter, $block_items] = $this->validateActionParameterString($clientValue);
                     if (!$validFilter) {
                         $this->appContext->logMessage(
-                            'Invalid value given for the action '.$action->name.', parameter '.$key.' in project '.$this->repository.'/'.$this->project.
+                            'Invalid value given for the action '.($action->name ?? '').', parameter '.$key.' in project '.$this->repository.'/'.$this->project.
                             ', layer '.$this->layerId.
                             ', while using the given value : '.$clientValue.' → blocked items: '.implode(', ', $block_items),
                             'lizmapadmin'
