@@ -6,7 +6,7 @@
 {assign $idm = 0}
 {foreach $mapitems as $mi}
 {if $mi->type == 'rep'}
-<h2 class="liz-repository-title">{$mi->title}</h2>
+<h2 class="liz-repository-title">{$mi->title|strip_tags}</h2>
 <ul id="liz-repository-{$mi->id}" class="liz-repository-project-list" data-lizmap-repository="{$mi->id}">
   {foreach $mi->childItems as $p}
   {assign $idm = $idm + 1}
