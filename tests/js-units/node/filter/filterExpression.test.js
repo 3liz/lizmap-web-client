@@ -17,18 +17,22 @@ describe('combineFilters', function () {
         expect(combineFilters([null, '"a" = 1', ''])).to.be.eq('"a" = 1');
     });
 
-    it('Joins several filters with AND', function () {
-        expect(combineFilters(['"a" = 1', '"b" = 2'])).to.be.eq('"a" = 1 AND "b" = 2');
-        expect(combineFilters(['"a" = 1', '"b" = 2', '"c" = 3'])).to.be.eq('"a" = 1 AND "b" = 2 AND "c" = 3');
+    it('Joins several filters with AND, each one in parentheses', function () {
+        expect(combineFilters(['"a" = 1', '"b" = 2'])).to.be.eq('( "a" = 1 ) AND ( "b" = 2 )');
+        expect(combineFilters(['"a" = 1', '"b" = 2', '"c" = 3'])).to.be.eq('( "a" = 1 ) AND ( "b" = 2 ) AND ( "c" = 3 )');
+    });
+
+    it('Keeps an OR inside a fragment from taking precedence over the AND', function () {
+        expect(combineFilters(['"a" = 1 OR "b" = 2', '"c" = 3'])).to.be.eq('( "a" = 1 OR "b" = 2 ) AND ( "c" = 3 )');
     });
 
     it('Skips empty entries but keeps the order of the others', function () {
-        expect(combineFilters([null, '"a" = 1', '', '"b" = 2', undefined])).to.be.eq('"a" = 1 AND "b" = 2');
-        expect(combineFilters(['"b" = 2', '"a" = 1'])).to.be.eq('"b" = 2 AND "a" = 1');
+        expect(combineFilters([null, '"a" = 1', '', '"b" = 2', undefined])).to.be.eq('( "a" = 1 ) AND ( "b" = 2 )');
+        expect(combineFilters(['"b" = 2', '"a" = 1'])).to.be.eq('( "b" = 2 ) AND ( "a" = 1 )');
     });
 
     it('Does not trim the fragments it keeps', function () {
-        expect(combineFilters([' "a" = 1 ', '"b" = 2'])).to.be.eq(' "a" = 1  AND "b" = 2');
+        expect(combineFilters([' "a" = 1 ', '"b" = 2'])).to.be.eq('(  "a" = 1  ) AND ( "b" = 2 )');
     });
 
     it('Does not mutate its input', function () {
