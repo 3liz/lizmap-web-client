@@ -995,8 +995,9 @@ var lizLayerFilterTool = function () {
                 }
 
                 // Fields without filter push null: combineFilters() drops
-                // null and blank fragments, joins the others with AND,
-                // and returns null when nothing remains.
+                // null and blank fragments, wraps each of the others in
+                // parentheses and joins them with AND, and returns null
+                // when nothing remains.
                 var filter = combineFilters(afilter);
 
                 // Deactivate the filter if it is empty.
