@@ -409,6 +409,314 @@ test.describe('Export data @readonly', () => {
         await expect(exportGroup.locator('button.exportLayer')).toBeEnabled();
         await expect(exportGroup.locator('a.btn-export-attributeTable')).toHaveCount(3);
     });
+
+    test('Export layer with max export features / selection', async ({ page }) => {
+        const tableName = 'parent_layer';
+
+        // Catch GetProjectConfig to override export_max_features for layer
+        await page.route('**/service/getProjectConfig*', async route => {
+            const response = await route.fetch();
+            const json = await response.json();
+            json.attributeLayers[tableName]['export_max_features'] = 1;
+            await route.fulfill({ response, json });
+        });
+        const project = new ProjectPage(page, 'feature_toolbar');
+        await project.open();
+
+        // Remove catching GetProjectConfig
+        await page.unroute('**/service/getProjectConfig*');
+
+        // Open attribute table and maximize it
+        let getFeatureRequest = await project.openAttributeTable(tableName, true);
+        let getFeatureResponse = await getFeatureRequest.response();
+        responseExpect(getFeatureResponse).toBeGeoJson();
+
+        let exportGroup = project.attributeTableExportGroup(tableName);
+        await expect(exportGroup).toHaveCount(1);
+        await expect(exportGroup).toBeVisible();
+
+        await expect(exportGroup.locator('button.exportLayer')).toBeDisabled();
+        await expect(exportGroup.locator('a.btn-export-attributeTable')).toHaveCount(12);
+
+        // Check table lines
+        const tableHtml = project.attributeTableHtml(tableName);
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(2);
+        await expect(tableHtml.locator('tbody tr.selected')).toHaveCount(0);
+
+        // Use line with id 2
+        let tr2 = tableHtml.locator('tbody tr[id="2"]');
+
+        // Select feature
+        // click on select Button
+        let getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
+        await tr2.locator('lizmap-feature-toolbar .feature-select').click();
+        let getSelectionTokenRequest = await getSelectionTokenRequestPromise;
+        // Once the GetSelectionToken is received, the map is refreshed
+        let getMapRequestPromise = project.waitForGetMapRequest();
+        responseExpect(await getSelectionTokenRequest.response()).toBeJson();
+        let getMapRequest = await getMapRequestPromise;
+        responseExpect(await getMapRequest.response()).toBeImagePng();
+
+        // Check selection in table
+        await expect(tableHtml.locator('tbody tr.selected')).toHaveCount(1);
+
+        // Check that export button is enabled
+        await expect(exportGroup.locator('button.exportLayer')).toBeEnabled();
+
+        // Use line with id 1
+        let tr1 = tableHtml.locator('tbody tr[id="1"]');
+
+        // Select feature
+        // click on select Button
+        getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
+        await tr1.locator('lizmap-feature-toolbar .feature-select').click();
+        getSelectionTokenRequest = await getSelectionTokenRequestPromise;
+        // Once the GetSelectionToken is received, the map is refreshed
+        getMapRequestPromise = project.waitForGetMapRequest();
+        responseExpect(await getSelectionTokenRequest.response()).toBeJson();
+        getMapRequest = await getMapRequestPromise;
+        responseExpect(await getMapRequest.response()).toBeImagePng();
+
+        // Check selection in table
+        await expect(tableHtml.locator('tbody tr.selected')).toHaveCount(2);
+
+        // Check that export button is disabled
+        await expect(exportGroup.locator('button.exportLayer')).toBeDisabled();
+
+        // UnSelect feature 2
+        // click on select Button
+        getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
+        await tr2.locator('lizmap-feature-toolbar .feature-select').click();
+        getSelectionTokenRequest = await getSelectionTokenRequestPromise;
+        // Once the GetSelectionToken is received, the map is refreshed
+        getMapRequestPromise = project.waitForGetMapRequest();
+        responseExpect(await getSelectionTokenRequest.response()).toBeJson();
+        getMapRequest = await getMapRequestPromise;
+        responseExpect(await getMapRequest.response()).toBeImagePng();
+
+        // Check selection in table
+        await expect(tableHtml.locator('tbody tr.selected')).toHaveCount(1);
+
+        // Check that export button is enabled
+        await expect(exportGroup.locator('button.exportLayer')).toBeEnabled();
+
+        // Unselect feature 1
+        // click on select Button
+        getMapRequestPromise = project.waitForGetMapRequest();
+        await tr1.locator('lizmap-feature-toolbar .feature-select').click();
+        getMapRequest = await getMapRequestPromise;
+        responseExpect(await getMapRequest.response()).toBeImagePng();
+
+        // Check selection in table
+        await expect(tableHtml.locator('tbody tr.selected')).toHaveCount(0);
+
+        // Check that export button is disabled
+        await expect(exportGroup.locator('button.exportLayer')).toBeDisabled();
+    });
+
+    test('Export layer with max export features / filter', async ({ page }) => {
+        const tableName = 'parent_layer';
+
+        // Catch GetProjectConfig to override export_max_features for layer
+        await page.route('**/service/getProjectConfig*', async route => {
+            const response = await route.fetch();
+            const json = await response.json();
+            json.attributeLayers[tableName]['export_max_features'] = 1;
+            await route.fulfill({ response, json });
+        });
+        const project = new ProjectPage(page, 'feature_toolbar');
+        await project.open();
+
+        // Remove catching GetProjectConfig
+        await page.unroute('**/service/getProjectConfig*');
+
+        // Open attribute table and maximize it
+        let getFeatureRequest = await project.openAttributeTable(tableName, true);
+        let getFeatureResponse = await getFeatureRequest.response();
+        responseExpect(getFeatureResponse).toBeGeoJson();
+
+        let exportGroup = project.attributeTableExportGroup(tableName);
+        await expect(exportGroup).toHaveCount(1);
+        await expect(exportGroup).toBeVisible();
+
+        await expect(exportGroup.locator('button.exportLayer')).toBeDisabled();
+        await expect(exportGroup.locator('a.btn-export-attributeTable')).toHaveCount(12);
+
+        // Check table lines
+        const tableHtml = project.attributeTableHtml(tableName);
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(2);
+        await expect(tableHtml.locator('tbody tr.selected')).toHaveCount(0);
+
+        // Use line with id 2
+        let tr2 = tableHtml.locator('tbody tr[id="2"]');
+
+        // Select feature
+        // click on select Button
+        let getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
+        await tr2.locator('lizmap-feature-toolbar .feature-select').click();
+        let getSelectionTokenRequest = await getSelectionTokenRequestPromise;
+        // Once the GetSelectionToken is received, the map is refreshed
+        let getMapRequestPromise = project.waitForGetMapRequest();
+        responseExpect(await getSelectionTokenRequest.response()).toBeJson();
+        let getMapRequest = await getMapRequestPromise;
+        responseExpect(await getMapRequest.response()).toBeImagePng();
+
+        // Check selection in table
+        await expect(tableHtml.locator('tbody tr.selected')).toHaveCount(1);
+
+        // Check that export button is enabled
+        await expect(exportGroup.locator('button.exportLayer')).toBeEnabled();
+
+        // click on filter Button
+        let actionBar = project.attributeTableActionBar(tableName);
+        let getFilterTokenRequestPromise = project.waitForGetFilterTokenRequest();
+        await actionBar.locator('.btn-filter-attributeTable').click();
+        let getFilterTokenRequest = await getFilterTokenRequestPromise;
+
+        // Once the GetFilterToken is received, the map is refreshed
+        getMapRequestPromise = project.waitForGetMapRequest();
+        await getFilterTokenRequest.response();
+        getMapRequest = await getMapRequestPromise;
+        responseExpect(await getMapRequest.response()).toBeImagePng();
+
+        // Check table
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(1);
+
+        // Check that export button is enabled
+        await expect(exportGroup.locator('button.exportLayer')).toBeEnabled();
+
+        // Disable filter
+        getMapRequestPromise = project.waitForGetMapRequest();
+        await actionBar.locator('.btn-filter-attributeTable').click();
+        getMapRequest = await getMapRequestPromise;
+        responseExpect(await getMapRequest.response()).toBeImagePng();
+
+        // Check table lines
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(2);
+
+        // Check that export button is disabled
+        await expect(exportGroup.locator('button.exportLayer')).toBeDisabled();
+    });
+
+    test('Export layer with max export features / close and reopen', async ({ page }) => {
+        const tableName = 'parent_layer';
+
+        // Catch GetProjectConfig to override export_max_features for layer
+        await page.route('**/service/getProjectConfig*', async route => {
+            const response = await route.fetch();
+            const json = await response.json();
+            json.attributeLayers[tableName]['export_max_features'] = 1;
+            await route.fulfill({ response, json });
+        });
+        const project = new ProjectPage(page, 'feature_toolbar');
+        await project.open();
+
+        // Remove catching GetProjectConfig
+        await page.unroute('**/service/getProjectConfig*');
+
+        // Open attribute table and maximize it
+        let getFeatureRequest = await project.openAttributeTable(tableName, true);
+        let getFeatureResponse = await getFeatureRequest.response();
+        responseExpect(getFeatureResponse).toBeGeoJson();
+
+        let exportGroup = project.attributeTableExportGroup(tableName);
+        await expect(exportGroup).toHaveCount(1);
+        await expect(exportGroup).toBeVisible();
+
+        await expect(exportGroup.locator('button.exportLayer')).toBeDisabled();
+        await expect(exportGroup.locator('a.btn-export-attributeTable')).toHaveCount(12);
+
+        // Check table lines
+        const tableHtml = project.attributeTableHtml(tableName);
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(2);
+        await expect(tableHtml.locator('tbody tr.selected')).toHaveCount(0);
+
+        // Use line with id 2
+        let tr2 = tableHtml.locator('tbody tr[id="2"]');
+
+        // Select feature
+        // click on select Button
+        let getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
+        await tr2.locator('lizmap-feature-toolbar .feature-select').click();
+        let getSelectionTokenRequest = await getSelectionTokenRequestPromise;
+        // Once the GetSelectionToken is received, the map is refreshed
+        let getMapRequestPromise = project.waitForGetMapRequest();
+        responseExpect(await getSelectionTokenRequest.response()).toBeJson();
+        let getMapRequest = await getMapRequestPromise;
+        responseExpect(await getMapRequest.response()).toBeImagePng();
+
+        // Check selection in table
+        await expect(tableHtml.locator('tbody tr.selected')).toHaveCount(1);
+
+        // Check that export button is enabled
+        await expect(exportGroup.locator('button.exportLayer')).toBeEnabled();
+
+        // Close the attribute table tab
+        await project.closeLayerAttributeTable(tableName);
+
+        // Reopen attribute table and maximize it
+        getFeatureRequest = await project.openAttributeTable(tableName, true);
+        getFeatureResponse = await getFeatureRequest.response();
+        responseExpect(getFeatureResponse).toBeGeoJson();
+
+        // Check table lines
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(2);
+        await expect(tableHtml.locator('tbody tr.selected')).toHaveCount(1);
+
+        // Check export button
+        await expect(exportGroup.locator('button.exportLayer')).toBeEnabled();
+        await expect(exportGroup.locator('a.btn-export-attributeTable')).toHaveCount(12);
+
+        // Use line with id 1
+        let tr1 = tableHtml.locator('tbody tr[id="1"]');
+
+        // Select feature
+        // click on select Button
+        getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
+        await tr1.locator('lizmap-feature-toolbar .feature-select').click();
+        getSelectionTokenRequest = await getSelectionTokenRequestPromise;
+        // Once the GetSelectionToken is received, the map is refreshed
+        getMapRequestPromise = project.waitForGetMapRequest();
+        responseExpect(await getSelectionTokenRequest.response()).toBeJson();
+        getMapRequest = await getMapRequestPromise;
+        responseExpect(await getMapRequest.response()).toBeImagePng();
+
+        // Check selection in table
+        await expect(tableHtml.locator('tbody tr.selected')).toHaveCount(2);
+
+        // Check that export button is disabled
+        await expect(exportGroup.locator('button.exportLayer')).toBeDisabled();
+
+        // UnSelect feature 2
+        // click on select Button
+        getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
+        await tr2.locator('lizmap-feature-toolbar .feature-select').click();
+        getSelectionTokenRequest = await getSelectionTokenRequestPromise;
+        // Once the GetSelectionToken is received, the map is refreshed
+        getMapRequestPromise = project.waitForGetMapRequest();
+        responseExpect(await getSelectionTokenRequest.response()).toBeJson();
+        getMapRequest = await getMapRequestPromise;
+        responseExpect(await getMapRequest.response()).toBeImagePng();
+
+        // Check selection in table
+        await expect(tableHtml.locator('tbody tr.selected')).toHaveCount(1);
+
+        // Check that export button is enabled
+        await expect(exportGroup.locator('button.exportLayer')).toBeEnabled();
+
+        // Unselect feature 1
+        // click on select Button
+        getMapRequestPromise = project.waitForGetMapRequest();
+        await tr1.locator('lizmap-feature-toolbar .feature-select').click();
+        getMapRequest = await getMapRequestPromise;
+        responseExpect(await getMapRequest.response()).toBeImagePng();
+
+        // Check selection in table
+        await expect(tableHtml.locator('tbody tr.selected')).toHaveCount(0);
+
+        // Check that export button is disabled
+        await expect(exportGroup.locator('button.exportLayer')).toBeDisabled();
+    });
 });
 
 // NOTE: do not put "@readonly" in this describe title. `--grep` matches the full

@@ -519,6 +519,7 @@ var lizAttributeTable = function() {
                     return;
                 }
                 const attrLayerConfig = attrLayersConfig.getLayerConfigByLayerName(lname);
+                const layerState = lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(attrLayerConfig.name);
 
                 // Get layer config
                 var atConfig = config.attributeLayers[lname];
@@ -703,7 +704,38 @@ var lizAttributeTable = function() {
                     placement: 'bottom'
                 } );
 
+                /**
+                 * Listener for `layer.selection.changed` to enable/disable the export layer button
+                 * @param {LayerSelectionChanged} evt
+                 */
+                const layerSelectionChanged = (evt) => {
+                    if (evt.selectedFeatures.length > 0 && evt.selectedFeatures.length <= attrLayerConfig.exportMaxFeatures) {
+                        $('#attribute-layer-'+ cleanName + ' button.exportLayer').prop('disabled', false);
+                    } else {
+                        $('#attribute-layer-'+ cleanName + ' button.exportLayer').prop('disabled', true);
+                    }
+                }
+                /**
+                 * Listener for `layer.filter.changed` to enable/disable not the export layer button
+                 * @param {LayerFilterChanged} evt
+                 */
+                const layerFilterChanged = (evt) => {
+                    if (layerState.isFiltered) {
+                        const filteredFeaturesLength = config.layers[lname]['filteredFeatures'].length;
+                        if (filteredFeaturesLength > 0 && filteredFeaturesLength <= attrLayerConfig.exportMaxFeatures) {
+                            $('#attribute-layer-'+ cleanName + ' button.exportLayer').prop('disabled', false);
+                        } else {
+                            $('#attribute-layer-'+ cleanName + ' button.exportLayer').prop('disabled', true);
+                        }
+                    }
+                }
+
                 $('.btn-close-attribute-tab').click(function(){
+                    // Remove listeners about enable/disable export button
+                    if (attrLayerConfig.exportLimited) {
+                        layerState.removeListener(layerSelectionChanged, 'layer.selection.changed');
+                        layerState.removeListener(layerFilterChanged, 'layer.filter.changed');
+                    }
                     //there are multiple elements which has .closeTab icon so close the tab whose close icon is clicked
                     var tabContentId = $(this).parent().attr("href");
                     $(this).parent().parent().remove(); //remove li of tab
@@ -841,6 +873,25 @@ var lizAttributeTable = function() {
                             }
                             return false;
                         });
+                }
+
+                // Add listeners about enable/disable export button
+                if (attrLayerConfig.exportLimited) {
+                    // Disable by default the export layer button because export is limited to some features.
+                    $('#attribute-layer-'+ cleanName + ' button.exportLayer').prop('disabled', true);
+                    // Check if there are already selected features to enable the export button
+                    if (layerState.selectedFeatures.length > 0 && layerState.selectedFeatures.length <= attrLayerConfig.exportMaxFeatures) {
+                            $('#attribute-layer-'+ cleanName + ' button.exportLayer').prop('disabled', false);
+                    }
+                    // Check if there are already filtered features to enable the export button
+                    if (layerState.isFiltered) {
+                        const filteredFeaturesLength = config.layers[lname]['filteredFeatures'].length;
+                        if (filteredFeaturesLength > 0 && filteredFeaturesLength <= attrLayerConfig.exportMaxFeatures) {
+                            $('#attribute-layer-'+ cleanName + ' button.exportLayer').prop('disabled', false);
+                        }
+                    }
+                    layerState.addListener(layerSelectionChanged, 'layer.selection.changed');
+                    layerState.addListener(layerFilterChanged, 'layer.filter.changed');
                 }
 
                 // Bind click on export buttons
