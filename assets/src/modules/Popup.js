@@ -95,6 +95,51 @@ export default class Popup {
         return this._overlay;
     }
 
+    /**
+     * Display a feature popup for a given layer and feature id
+     *
+     * @param {string} layerId - The layer id
+     * @param {string} featureId - The feature id
+     * @param {string} pkField - The primary key field
+     * @param {number[]|null} [coordinate] - The popup anchor in the map projection, defaults to the map center
+     *
+     * @returns {Promise<boolean>} True if the popup was displayed, false otherwise
+     */
+    async displayFeaturePopup(layerId, featureId, pkField, coordinate = null) {
+        try {
+            const layerConfig = this._initialConfig.layers.getLayerConfigByLayerId(layerId);
+            const wmsName = layerConfig.shortname || layerConfig.name;
+            const escapedFeatureId = String(featureId).replaceAll("'", "''");
+
+            const html = await new WMS().getFeatureInfo({
+                LAYERS: wmsName,
+                QUERY_LAYERS: wmsName,
+                STYLES: '',
+                CRS: layerConfig.crs || 'EPSG:4326',
+                FEATURE_COUNT: 1,
+                FILTER: `${wmsName}:"${pkField}" = '${escapedFeatureId}'`,
+            });
+
+            if (!html) {
+                return false;
+            }
+
+            const anchor = coordinate ?? this._map.getView().getCenter();
+            const [x, y] = this._map.getPixelFromCoordinate(anchor);
+            lizMap.displayGetFeatureInfo(
+                Utils.sanitizeGFIContent(html),
+                { x, y },
+                anchor
+            );
+
+            return true;
+
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
+    }
+
     handleClickOnMap(evt) {
         const pointTolerance = this._pointTolerance;
         const lineTolerance = this._lineTolerance;
