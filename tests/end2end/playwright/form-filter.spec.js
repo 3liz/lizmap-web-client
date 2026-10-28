@@ -23,7 +23,7 @@ test.describe('Form filter  @readonly', () => {
         await expect(project.exportButton).toBeVisible();
         await expect(project.unfilterButton).toBeVisible();
 
-        await expect(project.formFilterPanel.locator('.liz-filter-field-box')).toHaveCount(3)
+        await expect(project.formFilterPanel.locator('.liz-filter-field-box')).toHaveCount(5)
     });
 
     test('Form filter with combobox', async ({ page }) => {
@@ -564,5 +564,88 @@ test.describe('Form filter  @readonly', () => {
 
         // Check table lines
         await expect(tableHtml.locator('tbody tr')).toHaveCount(4);
+    });
+
+    test('Form filter with checkboxes', async ({ page }) => {
+        const project = new FormFilterPage(page, 'form_filter');
+        await expect(project.countFeatureSpan).toHaveText('4');
+
+        const box = project.formFilterPanel.locator('#liz-filter-box-Categorie');
+        const heritage = box.locator('#liz-filter-field-Categorie-heritage');
+        const moderne = box.locator('#liz-filter-field-Categorie-moderne');
+
+        // One checkbox per distinct value of the column
+        await expect(box.locator('input.liz-filter-field-value')).toHaveCount(2);
+        await expect(heritage).toBeVisible();
+        await expect(moderne).toBeVisible();
+
+        // Check one value
+        await heritage.check();
+        await expect(project.countFeatureSpan).toHaveText('2');
+
+        // Check both values: no restriction anymore
+        await moderne.check();
+        await expect(project.countFeatureSpan).toHaveText('4');
+
+        // Uncheck one again
+        await heritage.uncheck();
+        await expect(project.countFeatureSpan).toHaveText('2');
+
+        // Reset the field
+        await box.locator('button.liz-filter-reset-field').click();
+        await expect(moderne).not.toBeChecked();
+        await expect(project.countFeatureSpan).toHaveText('4');
+    });
+
+    test('Form filter with date range', async ({ page }) => {
+        const project = new FormFilterPage(page, 'form_filter');
+        await expect(project.countFeatureSpan).toHaveText('4');
+
+        const box = project.formFilterPanel.locator('#liz-filter-box-Date');
+        const minInput = box.locator('#liz-filter-field-min-dateDate');
+        const maxInput = box.locator('#liz-filter-field-max-dateDate');
+
+        // Bounds are the min and max of the column
+        await expect(minInput).toHaveValue('1980-03-10');
+        await expect(maxInput).toHaveValue('2020-06-20');
+
+        // Narrow the upper bound: two features before 2000
+        await project.pickDate('#liz-filter-field-max-dateDate', '2000-01-01');
+        await expect(project.countFeatureSpan).toHaveText('2');
+
+        // Narrow the lower bound too: one feature left
+        await project.pickDate('#liz-filter-field-min-dateDate', '1985-01-01');
+        await expect(project.countFeatureSpan).toHaveText('1');
+
+        // Reset the field: bounds are restored
+        await box.locator('button.liz-filter-reset-field').click();
+        await expect(minInput).toHaveValue('1980-03-10');
+        await expect(maxInput).toHaveValue('2020-06-20');
+        await expect(project.countFeatureSpan).toHaveText('4');
+    });
+
+    test('Form filter combining fields', async ({ page }) => {
+        const project = new FormFilterPage(page, 'form_filter');
+        await expect(project.countFeatureSpan).toHaveText('4');
+
+        const categoryBox = project.formFilterPanel.locator('#liz-filter-box-Categorie');
+        const heritage = categoryBox.locator('#liz-filter-field-Categorie-heritage');
+        const maxInput = project.formFilterPanel.locator('#liz-filter-field-max-dateDate');
+
+        // Category AND date range
+        await heritage.check();
+        await expect(project.countFeatureSpan).toHaveText('2');
+        await project.pickDate('#liz-filter-field-max-dateDate', '1985-01-01');
+        await expect(project.countFeatureSpan).toHaveText('1');
+
+        // Resetting one field keeps the other one active
+        await categoryBox.locator('button.liz-filter-reset-field').click();
+        await expect(heritage).not.toBeChecked();
+        await expect(project.countFeatureSpan).toHaveText('1');
+
+        // Global reset clears everything
+        await project.unfilterButton.click();
+        await expect(project.countFeatureSpan).toHaveText('4');
+        await expect(maxInput).toHaveValue('2020-06-20');
     });
 });
