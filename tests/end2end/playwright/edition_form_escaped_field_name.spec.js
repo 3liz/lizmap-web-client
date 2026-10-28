@@ -2,10 +2,7 @@
 import { test, expect } from '@playwright/test';
 import { ProjectPage } from "./pages/project";
 
-test.describe('Bad designed table escaped field name in Form',
-    {
-        tag: ['@write'],
-    }, () => {
+test.describe('Bad designed table escaped field name in Form', { tag: ['@write'], }, () => {
     test.beforeEach(async ({ page }) => {
         const project = new ProjectPage(page, 'bad_designed__project');
         await project.open();
@@ -28,8 +25,5 @@ test.describe('Bad designed table escaped field name in Form',
         await expect(page.locator("#lizmap-edition-message li.jelix-msg-item-success"))
             .toHaveText("Data has been saved.");
         await page.locator("#lizmap-edition-message .btn-close").click();
-    })
-
- 
-
+    });
 });
