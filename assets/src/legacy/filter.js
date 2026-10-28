@@ -6,6 +6,7 @@
  */
 
 import DOMPurify from 'dompurify';
+import { combineFilters } from './../modules/filter/FilterExpression.js';
 
 var lizLayerFilterTool = function () {
 
@@ -990,20 +991,23 @@ var lizLayerFilterTool = function () {
                 var afilter = [];
                 for (var o in globalThis['filterConfig']) {
                     var field_item = globalThis['filterConfig'][o];
-                    if ('title' in field_item && field_item['filter'] && field_item.layerId == layerId) {
+                    if ('title' in field_item && field_item.layerId == layerId) {
                         afilter.push(field_item['filter']);
                     }
                 }
 
-                // We use AND clause between fields
-                var filter = afilter.join(' AND ');
+                // Fields without filter push null: combineFilters() drops
+                // null and blank fragments, wraps each of the others in
+                // parentheses and joins them with AND, and returns null
+                // when nothing remains.
+                var filter = combineFilters(afilter);
 
                 // Deactivate the filter if it is empty.
                 // It can occur when the user unchecks the only checkbox
                 // which was checked before,
                 // or resetted the field input with the reset button
                 // when only this field filter was active
-                if (afilter.length == 0 || filter.trim() == '') {
+                if (filter === null) {
                     deactivateFilter();
                     return true;
                 }

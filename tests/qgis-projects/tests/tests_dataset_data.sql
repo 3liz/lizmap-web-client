@@ -468,11 +468,11 @@ COPY tests_projects.form_edition_vr_point (id, code_without_exp, code_with_simpl
 -- Data for Name: form_filter; Type: TABLE DATA; Schema: tests_projects; Owner: -
 --
 
-COPY tests_projects.form_filter (id, label, geom) FROM stdin;
-1	simple label	01010000206A080000ABDA509923FA8340CA9A3B72843672C0
-2	Œuvres d'art et monuments de l'espace urbain	01010000206A0800000000000000B0844000000000004885C0
-3	monuments	01010000206A080000BC144539B49A9040D88E7FA8F0C072C0
-4	monuments 2	01010000206A080000BA9926EC46DC9140DD5B3AA4A0AD80C0
+COPY tests_projects.form_filter (id, label, category, event_date, geom) FROM stdin;
+1	simple label	moderne	2020-01-15	01010000206A080000ABDA509923FA8340CA9A3B72843672C0
+2	Œuvres d'art et monuments de l'espace urbain	moderne	2020-06-20	01010000206A0800000000000000B0844000000000004885C0
+3	monuments	heritage	1980-03-10	01010000206A080000BC144539B49A9040D88E7FA8F0C072C0
+4	monuments 2	heritage	1990-11-30	01010000206A080000BA9926EC46DC9140DD5B3AA4A0AD80C0
 \.
 
 
