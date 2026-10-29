@@ -403,6 +403,66 @@ test.describe('Sub dock @readonly', () => {
         expect(response?.headers()['content-type']).toContain('application/vnd.geo+json');
     });
 
+    test('Export layer with attribute table config but not for one with WFS', async ({ page }) => {
+        // [Bug]: TypeError: l is undefined` in switcher-layers-actions.js when opening
+        // the layer info (i) panel, if the project has attribute table layers
+        // https://github.com/3liz/lizmap-web-client/issues/7374
+        const project = new ProjectPage(page, 'feature_toolbar');
+        await project.open();
+
+        // Display sub dock metadata for tramway_stops - Attribute table config
+        await page.getByTestId('tramway_stops').hover();
+        await page.getByTestId('tramway_stops').locator('.icon-info-sign').click();
+        await expect(page.locator('#sub-dock')).toBeVisible();
+
+        // Export
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dt')).toHaveCount(5);
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dt').nth(4)).toHaveText('Export');
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dd select.exportLayer')).toHaveCount(1);
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dd button.exportLayer')).toHaveCount(1);
+
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dd select.exportLayer option')).toHaveCount(12);
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dd button.exportLayer')).toBeEnabled();
+
+        //close sub dock
+        await expect(page.locator('#hide-sub-dock')).toBeVisible();
+        await page.locator('#hide-sub-dock').click();
+        await expect(page.locator('#sub-dock')).toBeHidden();
+
+        // Display sub dock metadata for parent_layer_without_attribute_table - No Attribute table config but WFS
+        await page.getByTestId('parent_layer_without_attribute_table').hover();
+        await page.getByTestId('parent_layer_without_attribute_table').locator('.icon-info-sign').click();
+        await expect(page.locator('#sub-dock')).toBeVisible();
+
+        // Export
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dt')).toHaveCount(5);
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dt').nth(4)).toHaveText('Export');
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dd select.exportLayer')).toHaveCount(1);
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dd button.exportLayer')).toHaveCount(1);
+
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dd select.exportLayer option')).toHaveCount(12);
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dd button.exportLayer')).toBeEnabled();
+
+        //close sub dock
+        await expect(page.locator('#hide-sub-dock')).toBeVisible();
+        await page.locator('#hide-sub-dock').click();
+        await expect(page.locator('#sub-dock')).toBeHidden();
+
+        // Display sub dock metadata for parent_layer - Attribute table config
+        await page.getByTestId('parent_layer').hover();
+        await page.getByTestId('parent_layer').locator('.icon-info-sign').click();
+        await expect(page.locator('#sub-dock')).toBeVisible();
+
+        // Export
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dt')).toHaveCount(6);
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dt').nth(4)).toHaveText('Export');
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dd select.exportLayer')).toHaveCount(1);
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dd button.exportLayer')).toHaveCount(1);
+
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dd select.exportLayer option')).toHaveCount(12);
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dd button.exportLayer')).toBeEnabled();
+    });
+
     test('Export layer with limit export format', async ({ page }) => {
         // Catch GetProjectConfig to override export_enabled for selection layer
         await page.route('**/service/getProjectConfig*', async route => {
