@@ -27,3 +27,4 @@ jobs:
       - uses: actions/labeler@v7
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          configuration-path: "/home/runner/work/lizmap-web-client/lizmap-web-client/.github/labeler.yml"
