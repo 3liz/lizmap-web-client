@@ -21,6 +21,9 @@ jobs:
         run: sleep 5m
         shell: bash
 
+      - name: Checkout
+        uses: actions/checkout@v6
+
       - uses: actions/labeler@v7
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
