@@ -4,6 +4,15 @@ import { gotoMap, reloadMap, playwrightTestFile } from './globals';
 import { ProjectPage } from './pages/project';
 
 /**
+ * Name of the base layer visible in the OpenLayers map
+ * @param {import("@playwright/test").Page} page - The page
+ * @returns {Promise<string|undefined>} The visible base layer name, undefined if none
+ */
+const visibleOlBaseLayerName = async page => {
+    return await page.evaluate(() => lizMap.mainLizmap.map.getActiveBaseLayer()?.get('name'));
+};
+
+/**
  * Dedicated coverage for storing/restoring the selected base layer in a
  * permalink (the share link / geobookmark hash). The `base_layers` project
  * defines several base layers (`osm-mapnik` is the startup one), so we can
@@ -63,6 +72,9 @@ test.describe('Permalink base layer @readonly', () => {
 
         await reloadMap(page);
         await expect(project.baseLayerSelect).toHaveValue('quartiers_baselayer');
+        // The restored base layer must also be the one displayed by the map,
+        // not the project startup one
+        await expect.poll(() => visibleOlBaseLayerName(page)).toBe('quartiers_baselayer');
     });
 
     test('Base layer from a shared permalink URL is applied on load', async ({ page }) => {
@@ -78,6 +90,8 @@ test.describe('Permalink base layer @readonly', () => {
         const project = new ProjectPage(page, 'base_layers');
         // The shared base layer must be selected, not the project startup one
         await expect(project.baseLayerSelect).toHaveValue('quartiers_baselayer');
+        // and displayed by the map
+        await expect.poll(() => visibleOlBaseLayerName(page)).toBe('quartiers_baselayer');
     });
 
     test('Unknown base layer in the hash is ignored (falls back to startup)', async ({ page }) => {
@@ -91,6 +105,7 @@ test.describe('Permalink base layer @readonly', () => {
         await expect(page.locator('p.error-msg')).toHaveCount(0);
         const project = new ProjectPage(page, 'base_layers');
         await expect(project.baseLayerSelect).toHaveValue('osm-mapnik');
+        await expect.poll(() => visibleOlBaseLayerName(page)).toBe('osm-mapnik');
     });
 
 });
