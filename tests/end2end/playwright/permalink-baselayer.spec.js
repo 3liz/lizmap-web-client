@@ -94,6 +94,21 @@ test.describe('Permalink base layer @readonly', () => {
         await expect.poll(() => visibleOlBaseLayerName(page)).toBe('quartiers_baselayer');
     });
 
+    test('Base layer from a shared permalink URL is applied on load with the first map theme activated', async ({ page }) => {
+        // The `theme` project activates its first map theme on load, its startup
+        // base layer is `project-background-color` and `theme1` does not define
+        // any base layer, so the base layer from the hash must stay displayed.
+        const baseUrl = '/index.php/view/map?repository=testsrepository&project=theme';
+        const bbox = '3.730872,43.540386,4.017985,43.679557';
+        const url = baseUrl + '#' + bbox + '||||OpenStreetMap';
+
+        await gotoMap(url, page, true, 0, false);
+
+        const project = new ProjectPage(page, 'theme');
+        await expect(project.baseLayerSelect).toHaveValue('OpenStreetMap');
+        await expect.poll(() => visibleOlBaseLayerName(page)).toBe('OpenStreetMap');
+    });
+
     test('Unknown base layer in the hash is ignored (falls back to startup)', async ({ page }) => {
         const baseUrl = '/index.php/view/map?repository=testsrepository&project=base_layers';
         const bbox = '3.7980645260916805,43.59756940064654,3.904383263124536,43.672963842067254';
