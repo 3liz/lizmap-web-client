@@ -608,7 +608,9 @@ export default class map extends olMap {
                 baseLayer.getSource().setAttributions(attribution);
             }
 
-            const visible = initialConfig.baseLayers.startupBaselayerName === baseLayerState.name;
+            // Use the selected base layer from the state, not the startup one from the config:
+            // it may already have been restored from the permalink before the map was created
+            const visible = baseLayersState.selectedBaseLayerName === baseLayerState.name;
 
             baseLayer.setProperties({
                 name: baseLayerState.name,
