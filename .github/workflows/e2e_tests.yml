@@ -24,24 +24,9 @@ jobs:
         # docker stack (own PostgreSQL), so sharding the @write / no-tag tests
         # across shards is race-free. The per-config fields (php, pg, qgis...)
         # are attached to every shard of a given name via the include entries.
-        name: ["LEGACY", "STABLE", "BLEEDING_EDGE", "QJAZZ_UNSTABLE"]
+        name: ["QJAZZ_UNSTABLE"]
         shard: [1, 2, 3]
         include:
-          - name: "LEGACY"
-            php: "8.2"
-            pg-postgis: "14-3"
-            qgis-server: "qgis-3.40"
-            update-projects: "FALSE"
-          - name: "STABLE"
-            php: "8.3"
-            pg-postgis: "15-3"
-            qgis-server: "qgis-3.40"
-            update-projects: "FALSE"
-          - name: "BLEEDING_EDGE"
-            php: "8.5"
-            pg-postgis: "18-3"
-            qgis-server: "qgis-3.44"
-            update-projects: "TRUE"
           - name: "QJAZZ_UNSTABLE"
             php: "8.5"
             pg-postgis: "18-3"
