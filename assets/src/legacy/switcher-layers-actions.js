@@ -206,7 +206,7 @@ var lizLayerActionButtons = function() {
                         exportEnabled = (attrLayerConfigWithExport !== undefined);
                     }
                     // Build export options
-                    if (exportEnabled) {
+                    if (exportEnabled && attrLayerConfig) {
                         attrLayerConfig.getEffectiveExportFormats(
                             initialConfig.vectorLayerResultFormat
                         ).forEach(format => {
