@@ -2067,35 +2067,106 @@ var lizEdition = function() {
         }
     }
 
+    // Inputs of a field: one, or several for checkboxes (name[]) and dates (name[day], ...)
+    function fieldInputs( form, name ) {
+        return form.find('[name="' + name + '"], [name^="' + name + '["]');
+    }
+
+    // Fill a field with a refreshed default value, when forced or when the field is empty
+    function fillField( form, name, value, force ) {
+        var jCtrl = jFormsJQ.getForm(form.attr('id')).getControl(name);
+        var inputs = fieldInputs(form, name);
+        // Dates are split in year, month, day, hour, minutes and seconds inputs
+        if (jCtrl && jCtrl.multiFields) {
+            if (!force && jCtrl.getValue() != null) return;
+            var parts = String(value || '').match(/^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2}))?)?/) || [];
+            ['year', 'month', 'day', 'hour', 'minutes', 'seconds'].forEach(function(part, i) {
+                inputs.filter('[name="' + name + '[' + part + ']"]').val(parts[i + 1] || '');
+            });
+            return;
+        }
+        // Checkboxes and radio buttons: check the matching values, multiple values come as {a,b}.
+        // A single checkbox is never empty, so it is only filled when forced.
+        if (inputs.is(':checkbox, :radio')) {
+            var single = inputs.is('[name="' + name + '"]:checkbox');
+            if (!force && (single || inputs.is(':checked'))) return;
+            var values = (Array.isArray(value) ? value : String(value == null ? '' : value).replace(/^\{|\}$/g, '').split(',')).map(String);
+            inputs.each(function() {
+                this.checked = values.includes(this.value) || (single && ['true', '1'].includes(values[0]));
+            });
+            return;
+        }
+        if (!inputs.length || (!force && inputs.val() !== '' && inputs.val() != null)) return;
+        // Namespaced event avoids re-triggering the dependency listener (loop avoidance)
+        inputs.val(value).trigger('change.lizmap-default-fill');
+        // Widgets drawn over the field: combobox and HTML editor
+        inputs.next('.custom-combobox').find('input').val(inputs.find(':selected').text());
+        var editable = inputs.nextAll('.ck-editor').find('.ck-editor__editable').get(0);
+        if (editable && editable.ckeditorInstance) editable.ckeditorInstance.setData(value == null ? '' : String(value));
+    }
+
     function handleDefaultExpressions( form ) {
         var tForm = jFormsJQ.getForm(form.attr('id'));
         var info = tForm.qgis_defaultExpressions;
-        if (!info || !info.fields || !info.fields.length) return;
+        if (!info || !(info.fields.length || info.textWidgets.length)) return;
 
-        // info.dependencies is a flat array of field names referenced in default
-        // expressions. When any of them changes, re-evaluate all dynamic fields.
-        (info.dependencies || []).forEach(function(dep) {
-            var elt = form.find('#' + form.attr('id') + '_' + dep);
-            if (elt.length) {
-                elt.on('change.lizmap-default', debounce(function() {
-                    reevaluateDefaults(form, info.fields);
-                }, 150));
+        var refresh = debounce(function() {
+            reevaluateDefaults(form, info.fields);
+        }, 150);
+
+        // The HTML editor only updates its textarea when the form is submitted
+        form.on('focusout', '.ck-editor__editable', function() {
+            var editor = this.ckeditorInstance;
+            if (editor && editor.getData() !== $(editor.sourceElement).val()) {
+                editor.updateSourceElement();
+                $(editor.sourceElement).trigger('change');
             }
         });
 
-        $(document).on('lizmap.editionGeometryUpdated', debounce(function() {
-            reevaluateDefaults(form, info.fields);
-        }, 150));
+        // info.dependencies is a flat array of field names referenced in default
+        // expressions and text widgets. When any of them changes, re-evaluate them all.
+        (info.dependencies || []).forEach(function(dep) {
+            fieldInputs(form, dep).on('change.lizmap-default', refresh);
+
+            // The date picker fills the date inputs without a change event.
+            // It is initialized when the document is ready, so wrap its callback after it.
+            $(function() {
+                var picker = form.find('#' + form.attr('id') + '_' + dep + '_hidden.hasDatepicker');
+                if (!picker.length) return;
+                var onSelect = picker.datepicker('option', 'onSelect');
+                picker.datepicker('option', 'onSelect', function() {
+                    onSelect.apply(this, arguments);
+                    refresh();
+                });
+                picker.siblings('.ui-datepicker-reset').on('click', refresh);
+            });
+        });
+
+        $(document).on('lizmap.editionGeometryUpdated', refresh);
     }
 
     function reevaluateDefaults( form, fields ) {
-        var info = jFormsJQ.getForm(form.attr('id')).qgis_defaultExpressions;
+        var tForm = jFormsJQ.getForm(form.attr('id'));
+        var info = tForm.qgis_defaultExpressions;
         var url = form.attr('data-evaluate-defaults-action');
         if (!url) return;
-        var data = form.serializeArray().reduce(function(a, kv) {
-            a[kv.name] = kv.value;
-            return a;
-        }, {});
+        var data = {};
+        form.serializeArray().forEach(function(kv) {
+            var multiple = kv.name.match(/^(.+)\[\]$/);
+            if (multiple) {
+                (data[multiple[1]] = data[multiple[1]] || []).push(kv.value);
+            } else if (!kv.name.endsWith(']')) {
+                data[kv.name] = kv.value;
+            }
+        });
+        Object.keys(data).forEach(function(name) {
+            // Multiple values are saved as {a,b}
+            if (Array.isArray(data[name])) data[name] = '{' + data[name].join(',') + '}';
+        });
+        tForm.controls.forEach(function(ctrl) {
+            // jForms joins the date inputs
+            if (ctrl.multiFields) data[ctrl.name] = ctrl.getValue();
+        });
         var geomCol = data['liz_geometryColumn'];
         var wkt = (geomCol && data[geomCol]) ? data[geomCol] : '';
 
@@ -2105,16 +2176,15 @@ var lizEdition = function() {
             layerId:    data.liz_layerId,
             values:     JSON.stringify(data),
             geometry:   wkt,
-            fields:     JSON.stringify(fields)
+            fields:     JSON.stringify(fields),
+            texts:      JSON.stringify(info.textWidgets)
         }, function(resp) {
             Object.keys(resp || {}).forEach(function(f) {
-                var ctrl = form.find('[name="' + f + '"]');
-                if (!ctrl.length) return;
-                var applyOnUpdate = info.applyOnUpdate[f] === true;
-                var isEmpty = ctrl.val() === '' || ctrl.val() == null;
-                if (applyOnUpdate || isEmpty) {
-                    // Namespaced event avoids re-triggering the dependency listener (loop avoidance)
-                    ctrl.val(resp[f]).trigger('change.lizmap-default-fill');
+                // Text widgets are display-only: always refresh
+                if (info.textWidgets.includes(f)) {
+                    form.find('[name="' + f + '"]').val(resp[f]).next('.jforms-value').text(resp[f]);
+                } else {
+                    fillField(form, f, resp[f], info.applyOnUpdate[f] === true);
                 }
             });
         }, 'json');

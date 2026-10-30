@@ -35,6 +35,11 @@ class QgisLayerForTests extends qgisVectorLayer
         return true;
     }
 
+    public function setAliases($aliases)
+    {
+        $this->aliases = $aliases;
+    }
+
     public function setDefaultValues($default)
     {
         $this->defaultValues = $default;
