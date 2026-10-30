@@ -724,4 +724,19 @@ class QgisFormTest extends TestCase
         // 'foo' was already 'manual' — it must not be overwritten
         $this->assertEquals('manual', $form->getData('foo'));
     }
+
+    public function testResolveFieldNames(): void
+    {
+        $layer = new QgisLayerForTests();
+        $layer->setAliases(array('id' => 'id', 'point_name' => 'Name', 'Code' => 'Code'));
+
+        $formObj = new QgisFormForTests();
+        $formObj->setLayer($layer);
+
+        // exact name, alias, alias in another case, field name in another case, unknown name
+        $this->assertEquals(
+            array('id', 'point_name', 'Code', 'unknown'),
+            $formObj->resolveFieldNamesForTests(array('id', 'point_name', 'name', 'NAME', 'code', 'unknown'))
+        );
+    }
 }
