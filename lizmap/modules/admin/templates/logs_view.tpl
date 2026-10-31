@@ -49,7 +49,7 @@
 
       <textarea id="lizmap-admin-log" rows="{$lizmapLogTextArea}" style="width:90%;">
           {if $lizmapLog != 'toobig'}
-              {$lizmapLog}
+              {$lizmapLog|eschtml}
           {else}
               {@admin~admin.logs.file.too.big@}
           {/if}
@@ -67,7 +67,7 @@
 
           <textarea id="lizmap-error-log" rows="{$errorLogTextArea}"" style="width:90%;">
               {if $errorLog != 'toobig'}
-                  {$errorLog}
+                  {$errorLog|eschtml}
               {else}
                   {@admin~admin.logs.file.too.big@}
               {/if}
