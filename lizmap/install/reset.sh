@@ -127,6 +127,9 @@ if [ "$ACTION" = "install" ]; then
     if [ ! -f $LIZMAP/var/config/profiles.ini.php ]; then
         cp $LIZMAP/var/config/profiles.ini.php.dist $LIZMAP/var/config/profiles.ini.php
     fi
+    if [ ! -f $LIZMAP/var/config/lizmapLogConfig.ini.php ]; then
+        cp $LIZMAP/var/config/lizmapLogConfig.ini.php.dist $APPDIR/var/config/lizmapLogConfig.ini.php
+    fi
     if [ ! -f $LIZMAP/var/config/lizmapConfig.ini.php ]; then
         cp $LIZMAP/var/config/lizmapConfig.ini.php.dist $APPDIR/var/config/lizmapConfig.ini.php
     fi
