@@ -60,6 +60,12 @@ class aclCtrl extends jController
         /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
 
+        if (!$this->request->isPostMethod()) {
+            $rep->action = 'jauthdb_admin~default:index';
+
+            return $rep;
+        }
+
         $login = $this->param('user');
         $grpid = $this->param('grpid');
         if ($login == '') {
