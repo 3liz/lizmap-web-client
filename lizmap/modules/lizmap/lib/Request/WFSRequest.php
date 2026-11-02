@@ -798,17 +798,43 @@ class WFSRequest extends OGCRequest
      */
     protected function parseFeatureId($cnx, $params): string
     {
-        $featureid = '';
-        $typename = $this->requestedTypename();
-        $keys = explode(',', $this->datasource->key);
-        if (array_key_exists('featureid', $params)) {
-            $featureid = $params['featureid'];
+        // No FEATUREID parameter
+        if (!array_key_exists('featureid', $params)) {
+            return '';
         }
+
+        $featureid = $params['featureid'];
+        // No FEATUREID value
         if (empty($featureid)) {
             return '';
         }
 
+        $typename = $this->requestedTypename();
+        $keys = explode(',', $this->datasource->key);
         $fids = explode(',', $featureid);
+
+        // Single column primary key: use one IN () clause.
+        // A chain of "key = a OR key = b OR ..." forces PostgreSQL to evaluate one
+        // expression per feature id and per row, which does not scale when a large
+        // selection is exported.
+        if (count($keys) == 1) {
+            $values = array();
+            foreach ($fids as $fid) {
+                $exp = explode('.', $fid);
+                if (count($exp) == 2 and $exp[0] == $typename) {
+                    $pk = explode('@@', $exp[1])[0];
+                    $values[] = ctype_digit($pk) ? $pk : $cnx->quote($pk);
+                }
+            }
+
+            // A FEATUREID matching no feature must not widen the result set
+            if (count($values) == 0) {
+                return 'FALSE';
+            }
+
+            return $cnx->encloseName($keys[0]).' IN ('.implode(', ', $values).')';
+        }
+        // Multiple columns primary key: one parenthesized block per feature id
         $fidsSql = array();
         foreach ($fids as $fid) {
             $exp = explode('.', $fid);
@@ -834,8 +860,18 @@ class WFSRequest extends OGCRequest
                 }
             }
         }
+        // A FEATUREID matching no feature must not widen the result set
+        if (count($fidsSql) == 0) {
+            return 'FALSE';
+        }
 
-        // $this->appContext->logMessage(implode(' OR ', $fidsSql), 'error');
+        // The OR chain must be parenthesized as a whole, otherwise its members would
+        // escape every other AND condition of the WHERE clause: datasource filter,
+        // BBOX, EXP_FILTER, filter by login and filter by polygon.
+        if (count($fidsSql) == 1) {
+            return $fidsSql[0];
+        }
+
         return implode(' OR ', $fidsSql);
     }
 
