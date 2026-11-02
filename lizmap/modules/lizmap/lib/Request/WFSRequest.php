@@ -777,44 +777,58 @@ class WFSRequest extends OGCRequest
         return '';
     }
 
-    protected function parseFeatureId($cnx, $params)
+    /**
+     * Build the SQL condition matching the FEATUREID parameter.
+     *
+     * The returned condition is not a single self contained block, it has to be
+     * put under paranthesis with an AND operator before being used in a WHERE clause.
+     *
+     * @param \jDbConnection $cnx    The database connection
+     * @param array          $params The request parameters
+     *
+     * @return string The SQL condition or an empty string
+     */
+    protected function parseFeatureId($cnx, $params): string
     {
         $featureid = '';
-        $sql = '';
         $typename = $this->requestedTypename();
         $keys = explode(',', $this->datasource->key);
         if (array_key_exists('featureid', $params)) {
             $featureid = $params['featureid'];
         }
-        if (!empty($featureid)) {
-            $fids = explode(',', $featureid);
-            $fidsSql = array();
-            foreach ($fids as $fid) {
-                $exp = explode('.', $fid);
-                if (count($exp) == 2 and $exp[0] == $typename) {
-                    $fidSql = '(';
-                    $pks = explode('@@', $exp[1]);
-                    $i = 0;
-                    $v = '';
-                    foreach ($keys as $key) {
-                        $fidSql .= $v.$cnx->encloseName($key).' = ';
-                        if (ctype_digit($pks[$i])) {
-                            $fidSql .= $pks[$i];
-                        } else {
-                            $fidSql .= $cnx->quote($pks[$i]);
-                        }
-                        $v = ' AND ';
-                        ++$i;
+        if (empty($featureid)) {
+            return '';
+        }
+
+        $fids = explode(',', $featureid);
+        $fidsSql = array();
+        foreach ($fids as $fid) {
+            $exp = explode('.', $fid);
+            if (count($exp) == 2 and $exp[0] == $typename) {
+                $fidSql = '';
+                $pks = explode('@@', $exp[1]);
+                $i = 0;
+                $v = '';
+                foreach ($keys as $key) {
+                    $fidSql .= $v.$cnx->encloseName($key).' = ';
+                    if (ctype_digit($pks[$i])) {
+                        $fidSql .= $pks[$i];
+                    } else {
+                        $fidSql .= $cnx->quote($pks[$i]);
                     }
-                    $fidSql .= ')';
+                    $v = ' AND ';
+                    ++$i;
+                }
+                if ($i !== 1) {
+                    $fidsSql[] = '('.$fidSql.')';
+                } else {
                     $fidsSql[] = $fidSql;
                 }
             }
-            // $this->appContext->logMessage(implode(' OR ', $fidsSql), 'error');
-            $sql .= ' AND '.implode(' OR ', $fidsSql);
         }
 
-        return $sql;
+        // $this->appContext->logMessage(implode(' OR ', $fidsSql), 'error');
+        return implode(' OR ', $fidsSql);
     }
 
     protected function getQueryOrder($cnx, $params, $wfsFields)
@@ -930,7 +944,10 @@ class WFSRequest extends OGCRequest
         }
 
         // FEATUREID
-        $sql .= $this->parseFeatureId($cnx, $params);
+        $featureIdsFilter = $this->parseFeatureId($cnx, $params);
+        if ($featureIdsFilter) {
+            $sql .= 'AND ( '.$featureIdsFilter.' ) ';
+        }
 
         // ORDER BY
         $sql .= $this->getQueryOrder($cnx, $params, $wfsFields);
