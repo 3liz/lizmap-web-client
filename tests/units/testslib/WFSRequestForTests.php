@@ -39,6 +39,13 @@ class WFSRequestForTests extends WFSRequest
         return $this->parseExpFilter($cnx, $params);
     }
 
+    public function getWhereClauseForTests($cnx, $params)
+    {
+        $this->params = $params;
+
+        return $this->getWhereClause($cnx, $params);
+    }
+
     public function parseFeatureIdForTests($cnx, $params)
     {
         $this->params = $params;
