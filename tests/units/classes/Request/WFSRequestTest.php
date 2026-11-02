@@ -348,7 +348,7 @@ class WFSRequestTest extends TestCase
         $this->assertEquals($expectedSql, $result);
     }
 
-    public static function getParseFeatureData()
+    public static function getParseFeatureIdData()
     {
         return array(
             // No Feature ID
@@ -377,14 +377,14 @@ class WFSRequestTest extends TestCase
     }
 
     /**
-     * @dataProvider getParseFeatureData
+     * @dataProvider getParseFeatureIdData
      *
      * @param mixed $typename
      * @param mixed $featureId
      * @param mixed $keys
      * @param mixed $expectedSql
      */
-    #[DataProvider('getParseFeatureData')]
+    #[DataProvider('getParseFeatureIdData')]
     public function testParseFeatureId($typename, $featureId, $keys, $expectedSql): void
     {
         $params = array(
