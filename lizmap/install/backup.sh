@@ -19,6 +19,9 @@ if  [ -d $BACKUPDIR ]; then
     if [ -f $BACKUPDIR/config/lizmapConfig.ini.php.dist ]; then
       rm $BACKUPDIR/config/lizmapConfig.ini.php.dist
     fi
+    if [ -f $BACKUPDIR/config/lizmapLogConfig.ini.php.dist ]; then
+      rm $BACKUPDIR/config/lizmapLogConfig.ini.php.dist
+    fi
     if [ -f $BACKUPDIR/config/profiles.ini.php.dist ]; then
       rm $BACKUPDIR/config/profiles.ini.php.dist
     fi

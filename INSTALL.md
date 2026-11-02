@@ -37,14 +37,15 @@ You must build the application. Read [how to contribute](./CONTRIBUTING.md) to b
 
 ## Installation
 
-Create `lizmapConfig.ini.php`, `localconfig.ini.php` and `profiles.ini.php` and edit them
-to set parameters specific to your installation. You can modify `lizmapConfig.ini.php`
+Create `lizmapConfig.ini.php`, `lizmapLogConfig.ini.php`, `localconfig.ini.php` and `profiles.ini.php`
+and edit them to set parameters specific to your installation. You can modify `lizmapConfig.ini.php`
 to set the url of qgis map server and other things, and `profiles.ini.php` to store
 data in a database other than an sqlite database.
 
 ```bash
 cd lizmap/var/config
 cp lizmapConfig.ini.php.dist lizmapConfig.ini.php
+cp lizmapLogConfig.ini.php.dist lizmapLogConfig.ini.php
 cp localconfig.ini.php.dist localconfig.ini.php
 cp profiles.ini.php.dist profiles.ini.php
 ```

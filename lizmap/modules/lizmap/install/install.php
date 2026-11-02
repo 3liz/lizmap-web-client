@@ -21,6 +21,16 @@ class lizmapModuleInstaller extends jInstallerModule
             }
         }
 
+        $lizmapLogConfFile = jApp::varConfigPath('lizmapLogConfig.ini.php');
+        if (!file_exists($lizmapLogConfFile)) {
+            $lizmapLogConfFileDist = jApp::varConfigPath('lizmapLogConfig.ini.php.dist');
+            if (file_exists($lizmapLogConfFileDist)) {
+                copy($lizmapLogConfFileDist, $lizmapLogConfFile);
+            } else {
+                $this->copyFile('config/lizmapLogConfig.ini.php', $lizmapLogConfFile);
+            }
+        }
+
         $localConfig = jApp::varConfigPath('localconfig.ini.php');
         if (!file_exists($localConfig)) {
             $localConfigDist = jApp::varConfigPath('localconfig.ini.php.dist');
