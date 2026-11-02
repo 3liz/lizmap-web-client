@@ -351,10 +351,20 @@ class WFSRequestTest extends TestCase
     public static function getParseFeatureData()
     {
         return array(
+            // No Feature ID
             array('', '', '', ''),
-            array('type', 'type.test@@55', 'key,otherKey', ' AND ("key" = \'test\' AND "otherKey" = 55)'),
-            array('type', 'type.test@@55,you shall not pass,type.name@@42', 'key,otherKey', ' AND ("key" = \'test\' AND "otherKey" = 55) OR ("key" = \'name\' AND "otherKey" = 42)'),
-            array('', 'type.test@@55', 'key,otherKey', ' AND ("key" = \'test\' AND "otherKey" = 55)'),
+            array('type', '', '', ''),
+            array('type', '', 'key', ''),
+            array('type', '', 'key,otherKey', ''),
+            // Single column for feature ID
+            array('type', 'type.42', 'key', '"key" = 42'),
+            array('type', 'type.42,type.43,type.44', 'key', '"key" = 42 OR "key" = 43 OR "key" = 44'),
+            array('type', 'type.abc,you shall not pass,type.def', 'key', '"key" = \'abc\' OR "key" = \'def\''),
+            array('', 'type.42', 'key', '"key" = 42'),
+            // Multi columns for feature ID
+            array('type', 'type.test@@55', 'key,otherKey', '("key" = \'test\' AND "otherKey" = 55)'),
+            array('type', 'type.test@@55,you shall not pass,type.name@@42', 'key,otherKey', '("key" = \'test\' AND "otherKey" = 55) OR ("key" = \'name\' AND "otherKey" = 42)'),
+            array('', 'type.test@@55', 'key,otherKey', '("key" = \'test\' AND "otherKey" = 55)'),
         );
     }
 
