@@ -357,14 +357,22 @@ class WFSRequestTest extends TestCase
             array('type', '', 'key', ''),
             array('type', '', 'key,otherKey', ''),
             // Single column for feature ID
-            array('type', 'type.42', 'key', '"key" = 42'),
-            array('type', 'type.42,type.43,type.44', 'key', '"key" = 42 OR "key" = 43 OR "key" = 44'),
-            array('type', 'type.abc,you shall not pass,type.def', 'key', '"key" = \'abc\' OR "key" = \'def\''),
-            array('', 'type.42', 'key', '"key" = 42'),
+            array('type', 'type.42', 'key', '"key" IN (42)'),
+            array('type', 'type.42,type.43,type.44', 'key', '"key" IN (42, 43, 44)'),
+            array('type', 'type.abc,you shall not pass,type.def', 'key', '"key" IN (\'abc\', \'def\')'),
+            array('', 'type.42', 'key', '"key" IN (42)'),
             // Multi columns for feature ID
             array('type', 'type.test@@55', 'key,otherKey', '("key" = \'test\' AND "otherKey" = 55)'),
             array('type', 'type.test@@55,you shall not pass,type.name@@42', 'key,otherKey', '("key" = \'test\' AND "otherKey" = 55) OR ("key" = \'name\' AND "otherKey" = 42)'),
             array('', 'type.test@@55', 'key,otherKey', '("key" = \'test\' AND "otherKey" = 55)'),
+            // A FEATUREID matching no feature must not widen the result set
+            array('type', 'otherType', 'key', 'FALSE'),
+            array('type', 'otherType-42', 'key', 'FALSE'),
+            array('type', 'otherType.', 'key', 'FALSE'),
+            array('type', 'otherType.42', 'key', 'FALSE'),
+            array('type', 'otherType', 'key,otherKey', 'FALSE'),
+            array('type', 'otherType.test@@55', 'key,otherKey', 'FALSE'),
+
         );
     }
 
@@ -398,8 +406,8 @@ class WFSRequestTest extends TestCase
             // EXP_FILTER
             array(array('exp_filter' => '"filter" IN (3, 56, 12)'), ' WHERE True AND ( "filter" IN (3, 56, 12) )'),
             // Feature ID
-            array(array('featureid' => 'type.42'), ' WHERE True AND ( "key" = 42 )'),
-            array(array('featureid' => 'type.42,type.43'), ' WHERE True AND ( "key" = 42 OR "key" = 43 )'),
+            array(array('featureid' => 'type.42'), ' WHERE True AND ( "key" IN (42) )'),
+            array(array('featureid' => 'type.42,type.43'), ' WHERE True AND ( "key" IN (42, 43) )'),
             // Combinations
             array(
                 array('bbox' => '-5,-2,5,2', 'exp_filter' => '"filter" IN (3, 56, 12)'),
@@ -407,15 +415,15 @@ class WFSRequestTest extends TestCase
             ),
             array(
                 array('bbox' => '-5,-2,5,2', 'featureid' => 'type.42'),
-                ' WHERE True AND ST_Intersects("geom", ST_MakeEnvelope(-5,-2,5,2, SRID)) AND ( "key" = 42 )',
+                ' WHERE True AND ST_Intersects("geom", ST_MakeEnvelope(-5,-2,5,2, SRID)) AND ( "key" IN (42) )',
             ),
             array(
                 array('exp_filter' => '"filter" IN (3, 56, 12)', 'featureid' => 'type.42'),
-                ' WHERE True AND ( "filter" IN (3, 56, 12) ) AND ( "key" = 42 )',
+                ' WHERE True AND ( "filter" IN (3, 56, 12) ) AND ( "key" IN (42) )',
             ),
             array(
                 array('bbox' => '-5,-2,5,2', 'exp_filter' => '"filter" IN (3, 56, 12)', 'featureid' => 'type.42'),
-                ' WHERE True AND ST_Intersects("geom", ST_MakeEnvelope(-5,-2,5,2, SRID)) AND ( "filter" IN (3, 56, 12) ) AND ( "key" = 42 )',
+                ' WHERE True AND ST_Intersects("geom", ST_MakeEnvelope(-5,-2,5,2, SRID)) AND ( "filter" IN (3, 56, 12) ) AND ( "key" IN (42) )',
             ),
         );
     }
