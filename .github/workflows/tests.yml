@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 env:
-  PHP_VERSION: "8.1"
+  PHP_VERSION: "8.2"
 
 jobs:
   php-tests:
@@ -26,9 +26,9 @@ jobs:
           - php-version: "8.3"
             php-unit: "12.5.43"
           - php-version: "8.4"
-            php-unit: "12.5.43"
+            php-unit: "13.4.6"
           - php-version: "8.5"
-            php-unit: "12.5.43"
+            php-unit: "13.4.6"
     steps:
 
       - name: Check out repository
