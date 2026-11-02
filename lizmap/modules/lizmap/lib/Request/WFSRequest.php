@@ -885,11 +885,20 @@ class WFSRequest extends OGCRequest
         return $sql;
     }
 
+    /**
+     * Build the SQL ORDER BY clause for the request.
+     *
+     * @param \jDbConnection $cnx       The database connection
+     * @param array          $params    The request parameters
+     * @param array          $wfsFields The WFS fields
+     *
+     * @return string The SQL ORDER BY clause
+     */
     protected function getQueryOrder($cnx, $params, $wfsFields): string
     {
-        // séparé par virgule, et fini par espace + a ou d
-        // si pas de a ou d , c'est a
-        // SortBY=id a,name d
+        // separated by a comma, and ending with a space followed by “a” or “d” (ascending or descending)
+        // If there is no “a” or “d,” then it is “a” by default.
+        // For example: SortBY=id a,name d
         $sortby = '';
         $sql = '';
         if (array_key_exists('sortby', $params)) {
