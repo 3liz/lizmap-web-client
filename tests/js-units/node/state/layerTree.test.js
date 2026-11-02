@@ -203,6 +203,49 @@ describe('LayerTreeGroupState', function () {
         expect(areas.visibility).to.be.false
     })
 
+    it('isVisibile', function () {
+        const root = getRootLayerTreeGroupState('montpellier')
+        expect(root).to.be.instanceOf(LayerTreeGroupState)
+
+        const transports = root.children[1];
+        expect(transports).to.be.instanceOf(LayerTreeGroupState)
+        expect(transports.wmsMinScaleDenominator).to.be.eq(-1)
+        expect(transports.wmsMaxScaleDenominator).to.be.eq(-1)
+
+        const bus = transports.children[0];
+        expect(bus).to.be.instanceOf(LayerTreeGroupState)
+        expect(bus.wmsMinScaleDenominator).to.be.eq(-1)
+        expect(bus.wmsMaxScaleDenominator).to.be.eq(40001)
+
+
+        const busStops = bus.children[0];
+        expect(busStops).to.be.instanceOf(LayerTreeLayerState)
+        expect(busStops.wmsMinScaleDenominator).to.be.eq(0)
+        expect(busStops.wmsMaxScaleDenominator).to.be.eq(15000)
+
+        // Checked is false
+        expect(busStops.checked).to.be.false
+        // So visibility is false
+        expect(busStops.visibility).to.be.false
+        // is Visible always returns false
+        expect(busStops.isVisible(10000)).to.be.false
+        expect(busStops.isVisible(20000)).to.be.false
+        // Set checked to true
+        busStops.checked = true;
+        // So visibility is true
+        expect(busStops.visibility).to.be.true
+        // is visible will take into account the scale
+        expect(busStops.isVisible(10000)).to.be.true
+        expect(busStops.isVisible(20000)).to.be.false
+        expect(busStops.isVisible(5000)).to.be.true
+
+        // Group tests isVisible returns visibility
+        expect(bus.checked).to.be.true
+        expect(bus.visibility).to.be.true
+        expect(bus.isVisible(10000)).to.be.true
+        expect(bus.isVisible(50000)).to.be.true
+    })
+
     it('Icon', function () {
         const root = getRootLayerTreeGroupState('montpellier')
         expect(root).to.be.instanceOf(LayerTreeGroupState)
