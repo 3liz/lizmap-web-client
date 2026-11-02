@@ -1,6 +1,8 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 import { ProjectPage } from "./pages/project";
+import { expect as requestExpect } from './fixtures/expect-request.js';
+import { expect as responseExpect } from './fixtures/expect-response.js';
 
 test.describe('Treeview', () => {
 
@@ -471,4 +473,75 @@ test.describe('Treeview mocked', () => {
             // Stop listening to WMS requests
             await page.unroute('**/service*');
         });
+});
+
+test.describe('Treeview out of scales', () => {
+
+    const locale = 'en-US';
+
+    test('Layers not visible at stratup', async ({ page }) => {
+        const project = new ProjectPage(page, 'out_of_scales');
+        await project.open();
+
+        // Check scale
+        await expect(page.locator('#overview-bar .ol-scale-text')).toHaveText('1 : ' + (100000).toLocaleString(locale));
+
+        // Layer tree
+        await expect(page.locator('#switcher')).toBeVisible();
+        await expect(page.locator('#switcher lizmap-treeview li')).toHaveCount(2);
+        await expect(page.locator('#switcher lizmap-treeview li div.layer')).toHaveCount(2);
+
+        // All layers are not visible at stratup
+        await expect(page.locator('#switcher lizmap-treeview li.not-visible')).toHaveCount(2);
+
+        // One is checked
+        await expect(page.locator('#switcher lizmap-treeview li div.layer.checked')).toHaveCount(1);
+        await expect(page.locator('#switcher lizmap-treeview li div.layer.checked input')).toBeChecked();
+        // the other one is not checked
+        await expect(page.locator('#switcher lizmap-treeview li div.layer:not(.checked)')).toHaveCount(1);
+        await expect(page.locator('#switcher lizmap-treeview li div.layer:not(.checked) input')).not.toBeChecked();
+
+        // sousquartiers is the checked one
+        await expect(page.getByTestId('sousquartiers')).toHaveClass('not-visible');
+        await expect(page.getByTestId('sousquartiers').locator('div.layer.checked')).toHaveCount(1);
+        await expect(page.getByTestId('sousquartiers').locator('div.layer.checked input')).toBeChecked();
+
+        let getMapRequestPromise = project.waitForGetMapRequest();
+        // Zoom in
+        await page.locator('#navbar button.btn.zoom-in').click();
+        // Check scale
+        await expect(page.locator('#overview-bar .ol-scale-text')).toHaveText('1 : ' + (50000).toLocaleString(locale));
+        // Zoom in
+        await page.locator('#navbar button.btn.zoom-in').click();
+        // Check scale
+        await expect(page.locator('#overview-bar .ol-scale-text')).toHaveText('1 : ' + (25000).toLocaleString(locale));
+        // Zoom in
+        await page.locator('#navbar button.btn.zoom-in').click();
+        // Check scale
+        await expect(page.locator('#overview-bar .ol-scale-text')).toHaveText('1 : ' + (10000).toLocaleString(locale));
+        // Check request
+        let getMapRequest = await getMapRequestPromise;
+        /** @type {{[key: string]: string|RegExp}} */
+        let getMapExpectedParameters = {
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'REQUEST': 'GetMap',
+            'FORMAT': /^image\/png/,
+            'TRANSPARENT': /\b(\w*^true$\w*)\b/gmi,
+            'LAYERS': 'sousquartiers',
+            'CRS': 'EPSG:2154',
+            'WIDTH': '958',
+            'HEIGHT': '633',
+            'BBOX': /769332\.0\d+,6278554\.5\d+,771866\.7\d+,6280229\.3\d+/,
+        }
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
+        // Check response
+        responseExpect(await getMapRequest.response()).toBeImagePng();
+
+        // sousquartiers is well visible
+        await expect(page.getByTestId('sousquartiers')).not.toHaveClass('not-visible');
+        await expect(page.getByTestId('sousquartiers').locator('div.layer.checked')).toHaveCount(1);
+        await expect(page.getByTestId('sousquartiers').locator('div.layer.checked input')).toBeChecked();
+    });
+
 });

@@ -199,29 +199,36 @@ export default class Lizmap {
                         eventDispatcher.dispatch('lizmap.modules.initialized');
                     }
                 };
-                const visibleLayers = this.state.rootMapGroup.findMapLayers().filter(layer => layer.visibility);
-                if (visibleLayers.length == 0) {
-                    if (this.state.map.isReady) {
+                const waitForLoadingLayers = () => {
+                    const scaleDenominator = this.state.map.pointScaleDenominator;
+                    const visibleLayers = this.state.rootMapGroup.findMapLayers()
+                        .filter(layer => layer.isVisible(scaleDenominator));
+                    if (visibleLayers.length == 0) {
                         initOtherModules();
                     } else {
-                        this.state.map.addListener(initOtherModules, 'map.state.ready');
+                        const waitingLayers = visibleLayers.filter(layer => {
+                            return (
+                                layer.loadStatus == MapLayerLoadStatus.Loading ||
+                                layer.loadStatus == MapLayerLoadStatus.Undefined
+                            )
+                        });
+                        if (waitingLayers.length == 0) {
+                            initOtherModules();
+                        } else {
+                            this.state.rootMapGroup.addListener(
+                                evt => {
+                                    if (evt.loadStatus != MapLayerLoadStatus.Loading) {
+                                        initOtherModules();
+                                    }
+                                },
+                                'layer.load.status.changed');
+                        }
                     }
+                };
+                if (this.state.map.isReady) {
+                    waitForLoadingLayers();
                 } else {
-                    const waitingLayers = visibleLayers.filter(layer => {
-                        return ( layer.loadStatus == MapLayerLoadStatus.Loading ||
-                            layer.loadStatus == MapLayerLoadStatus.Undefined)
-                    });
-                    if (waitingLayers.length == 0) {
-                        initOtherModules();
-                    } else {
-                        this.state.rootMapGroup.addListener(
-                            evt => {
-                                if (evt.loadStatus != MapLayerLoadStatus.Loading) {
-                                    initOtherModules();
-                                }
-                            },
-                            'layer.load.status.changed');
-                    }
+                    this.state.map.addListener(waitForLoadingLayers, 'map.state.ready');
                 }
 
                 // Removed unusable button
