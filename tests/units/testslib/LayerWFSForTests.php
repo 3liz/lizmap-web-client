@@ -20,4 +20,9 @@ class LayerWFSForTests
     {
         return (object) $this->dtparams;
     }
+
+    public function getPolygonFilter($editing_context = false, $ttl = 60)
+    {
+        return '';
+    }
 }

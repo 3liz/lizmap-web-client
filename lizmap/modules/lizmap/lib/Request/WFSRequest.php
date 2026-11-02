@@ -765,13 +765,13 @@ class WFSRequest extends OGCRequest
             if (strpos($validFilter, '$id') !== false) {
                 $key = $this->datasource->key;
                 if (count(explode(',', $key)) == 1) {
-                    return ' AND ( '.str_replace('$id ', $cnx->encloseName($key).' ', $validFilter).' ) ';
+                    return ' AND ( '.str_replace('$id ', $cnx->encloseName($key).' ', $validFilter).' )';
                 }
 
                 return false;
             }
 
-            return ' AND ( '.$validFilter.' ) ';
+            return ' AND ( '.$validFilter.' )';
         }
 
         return '';
@@ -831,7 +831,53 @@ class WFSRequest extends OGCRequest
         return implode(' OR ', $fidsSql);
     }
 
-    protected function getQueryOrder($cnx, $params, $wfsFields)
+    /**
+     * Build the SQL WHERE clause for the request.
+     *
+     * It combines the datasource SQL filter, the BBOX parameter, the EXP_FILTER parameter,
+     * and the FEATUREID parameter
+     *
+     * @param \jDbConnection $cnx    The database connection
+     * @param array          $params The request parameters
+     *
+     * @return false|string The SQL Where clause if the expression filter is valid, false otherwise
+     */
+    protected function getWhereClause($cnx, $params)
+    {
+        // WHERE
+        $sql = ' WHERE True';
+
+        // Add datasource SQL filter
+        $sql .= $this->getDatasourceSql();
+
+        // BBOX
+        $sql .= $this->getbboxSql($params);
+
+        // EXP_FILTER
+        // This also include the filter by login, as done above in the function "parameters"
+        $expFilterSql = $this->parseExpFilter($cnx, $params);
+        if ($expFilterSql === false) {
+            // Do not use direct SQL query to PostgreSQL but a request to QGIS Server
+            return false;
+        }
+        $sql .= $expFilterSql;
+
+        // Filter by polygon
+        $polygonFilter = $this->qgisLayer->getPolygonFilter($this->editingContext, 5);
+        if ($polygonFilter) {
+            $sql .= ' AND ( '.$polygonFilter.' )';
+        }
+
+        // FEATUREID
+        $featureIdsFilter = $this->parseFeatureId($cnx, $params);
+        if ($featureIdsFilter) {
+            $sql .= ' AND ( '.$featureIdsFilter.' )';
+        }
+
+        return $sql;
+    }
+
+    protected function getQueryOrder($cnx, $params, $wfsFields): string
     {
         // séparé par virgule, et fini par espace + a ou d
         // si pas de a ou d , c'est a
@@ -919,35 +965,12 @@ class WFSRequest extends OGCRequest
         // Build SQL
         $sql = $this->buildQueryBase($cnx, $params, $wfsFields, $isHitsRequest);
 
-        // WHERE
-        $sql .= ' WHERE True';
-
-        // Add datasource SQL filter
-        $sql .= $this->getDatasourceSql();
-
-        // BBOX
-        $sql .= $this->getbboxSql($params);
-
-        // EXP_FILTER
-        // This also include the filter by login, as done above in the function "parameters"
-        $expFilterSql = $this->parseExpFilter($cnx, $params);
-        if ($expFilterSql === false) {
-            // Do not use direct SQL query to PostgreSQL but a request to QGIS Server
+        // WHERE clause
+        $whereClause = $this->getWhereClause($cnx, $params);
+        if ($whereClause === false) {
             return $this->getfeatureQgis();
         }
-        $sql .= $expFilterSql;
-
-        // Filter by polygon
-        $polygonFilter = $this->qgisLayer->getPolygonFilter($this->editingContext, 5);
-        if ($polygonFilter) {
-            $sql .= ' AND ( '.$polygonFilter.' ) ';
-        }
-
-        // FEATUREID
-        $featureIdsFilter = $this->parseFeatureId($cnx, $params);
-        if ($featureIdsFilter) {
-            $sql .= 'AND ( '.$featureIdsFilter.' ) ';
-        }
+        $sql .= $whereClause;
 
         // ORDER BY
         $sql .= $this->getQueryOrder($cnx, $params, $wfsFields);
