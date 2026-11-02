@@ -751,30 +751,38 @@ class WFSRequest extends OGCRequest
         return '';
     }
 
+    /**
+     * Parse the expression filter parameter.
+     *
+     * @param \jDbConnection $cnx    The database connection
+     * @param array          $params The request parameters
+     *
+     * @return false|string The SQL filter enclosed with parenthesis if the expression filter is valid, false otherwise
+     */
     protected function parseExpFilter($cnx, $params)
     {
-        $exp_filter = '';
-        if (array_key_exists('exp_filter', $params)) {
-            $exp_filter = $params['exp_filter'];
+        if (!array_key_exists('exp_filter', $params)) {
+            return '';
         }
-        if (!empty($exp_filter)) {
-            $validFilter = $this->validateFilter($exp_filter);
-            if (!$validFilter) {
-                return false;
-            }
-            if (strpos($validFilter, '$id') !== false) {
-                $key = $this->datasource->key;
-                if (count(explode(',', $key)) == 1) {
-                    return ' AND ( '.str_replace('$id ', $cnx->encloseName($key).' ', $validFilter).' )';
-                }
-
-                return false;
-            }
-
-            return ' AND ( '.$validFilter.' )';
+        $exp_filter = $params['exp_filter'];
+        if (empty($exp_filter)) {
+            return '';
         }
 
-        return '';
+        $validFilter = $this->validateFilter($exp_filter);
+        if (!$validFilter) {
+            return false;
+        }
+        if (strpos($validFilter, '$id') !== false) {
+            $key = $this->datasource->key;
+            if (count(explode(',', $key)) == 1) {
+                return ' AND ( '.str_replace('$id ', $cnx->encloseName($key).' ', $validFilter).' )';
+            }
+
+            return false;
+        }
+
+        return ' AND ( '.$validFilter.' )';
     }
 
     /**
