@@ -5,7 +5,7 @@ import requests
 
 from typing import Optional
 
-from pkg_resources.extern import packaging
+import packaging
 
 
 def parse_branch(branch: str, milestones_available: list) -> Optional[packaging.version.Version]:
