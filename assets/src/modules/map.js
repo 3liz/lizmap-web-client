@@ -85,7 +85,9 @@ export default class map extends olMap {
         this._lizmap3 = lizmap3;
         this._initialConfig = initialConfig;
         this._newOlMap = true;
-        
+
+        // Map loading indicator: visible while the map is loading data
+        // (pan, zoom, layer toggled on, filter applied...)
         const loadingElement = document.createElement('div');
         loadingElement.className = 'map-loading-indicator';
         loadingElement.setAttribute('aria-hidden', 'true');
@@ -93,10 +95,9 @@ export default class map extends olMap {
             element: loadingElement,
             target: 'map-content',
         }));
-        
         this.on('loadstart', () => loadingElement.classList.add('loading'));
         this.on('loadend', () => loadingElement.classList.remove('loading'));
-
+        
         // Zoom to box
         this._dragZoom = new DragZoom({
             condition: always
