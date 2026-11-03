@@ -10,6 +10,7 @@ import { Utils } from './Utils.js';
 import { Config } from './Config.js';
 import { MapState } from './state/Map.js';
 import { BaseLayersState, BaseLayerTypes } from './config/BaseLayer.js';
+import { WmtsBaseLayerState } from './state/BaseLayer.js';
 import { MapLayerLoadStatus, MapLayerState, MapRootState } from './state/MapLayer.js';
 import olMap from 'ol/Map.js';
 import View from 'ol/View.js';
@@ -1046,7 +1047,7 @@ export default class map extends olMap {
      * If the capabilities cannot be read by the browser (CORS, network, unknown layer)
      * the layer is fetched through QGIS Server instead.
      * @param {TileLayer}          baseLayer      - the OpenLayers base layer
-     * @param {import('./state/BaseLayer.js').WmtsBaseLayerState} baseLayerState - the WMTS base layer state
+     * @param {WmtsBaseLayerState} baseLayerState - the WMTS base layer state
      * @param {string}             url            - the WMTS url
      * @param {string}             serviceURL     - the lizmap service URL
      */
