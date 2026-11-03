@@ -482,11 +482,20 @@ export default class map extends olMap {
                     url = url.replaceAll('{key}', baseLayerState.key);
                 }
 
+                // The hardcoded EPSG:3857 tile grid and KVP requests on the layer url only
+                // fit KVP services in EPSG:3857. A tile matrix set in another CRS or a url
+                // pointing to a static capabilities document (RESTful services) needs the
+                // tile grid and the tile url template from the capabilities.
+                const useCapabilities = baseLayerState.hasLayerConfig
+                    && (baseLayerState.crs !== 'EPSG:3857'
+                        || new URL(url).pathname.toLowerCase().endsWith('.xml'));
+
                 baseLayer = new TileLayer({
                     minResolution: layerMinResolution,
                     maxResolution: layerMaxResolution,
                     source: new WMTS({
-                        url: url,
+                        // Without url no tile is requested until the capabilities are read
+                        url: useCapabilities ? undefined : url,
                         layer: baseLayerState.layer,
                         matrixSet: baseLayerState.matrixSet,
                         format: baseLayerState.format,
@@ -495,6 +504,10 @@ export default class map extends olMap {
                         style: baseLayerState.style
                     })
                 });
+
+                if (useCapabilities) {
+                    this._setWmtsSourceFromCapabilities(baseLayer, baseLayerState, url, serviceURL);
+                }
             } else if (baseLayerState.type === BaseLayerTypes.Bing) {
                 baseLayer = new TileLayer({
                     minResolution: layerMinResolution,
@@ -1026,6 +1039,64 @@ export default class map extends olMap {
      */
     get isDragZoomActive(){
         return this._dragZoom.getActive();
+    }
+
+    /**
+     * Replace the source of an external WMTS base layer by one built from its capabilities.
+     * If the capabilities cannot be read by the browser (CORS, network, unknown layer)
+     * the layer is fetched through QGIS Server instead.
+     * @param {TileLayer}          baseLayer      - the OpenLayers base layer
+     * @param {import('./state/BaseLayer.js').WmtsBaseLayerState} baseLayerState - the WMTS base layer state
+     * @param {string}             url            - the WMTS url
+     * @param {string}             serviceURL     - the lizmap service URL
+     */
+    async _setWmtsSourceFromCapabilities(baseLayer, baseLayerState, url, serviceURL) {
+        const placeholderSource = baseLayer.getSource();
+        let source;
+        try {
+            const capabilitiesUrl = new URL(url);
+            if (!capabilitiesUrl.pathname.toLowerCase().endsWith('.xml')) {
+                capabilitiesUrl.searchParams.set('SERVICE', 'WMTS');
+                capabilitiesUrl.searchParams.set('REQUEST', 'GetCapabilities');
+                capabilitiesUrl.searchParams.set('VERSION', '1.0.0');
+            }
+            const response = await fetch(capabilitiesUrl);
+            if (!response.ok) {
+                throw new Error(`${response.status} ${response.statusText}`);
+            }
+            const capabilities = new WMTSCapabilities().read(await response.text());
+            const options = optionsFromCapabilities(capabilities, {
+                layer: baseLayerState.layer,
+                matrixSet: baseLayerState.matrixSet,
+                format: baseLayerState.format,
+                style: baseLayerState.style,
+            });
+            if (!options) {
+                throw new Error(`layer ${baseLayerState.layer} with matrix set ${baseLayerState.matrixSet} not found`);
+            }
+            source = new WMTS(options);
+        } catch (error) {
+            console.warn(`WMTS capabilities of base layer ${baseLayerState.name} not loaded, use QGIS Server instead: ${error}`);
+            if (!baseLayerState.hasItemState) {
+                return;
+            }
+            source = new TileWMS({
+                url: serviceURL,
+                projection: this._lizmap3.map.getProjection(),
+                serverType: 'qgis',
+                tileGrid: this._useCustomTileWms ? this._customTileGrid : undefined,
+                params: {
+                    LAYERS: baseLayerState.itemState.wmsName,
+                    FORMAT: baseLayerState.layerConfig.imageFormat,
+                    DPI: 96,
+                    TILED: 'true'
+                },
+                wrapX: false,
+                hidpi: this._hidpi,
+            });
+        }
+        source.setAttributions(placeholderSource.getAttributions());
+        baseLayer.setSource(source);
     }
 
     /**
