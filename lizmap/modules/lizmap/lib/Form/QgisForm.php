@@ -763,9 +763,9 @@ class QgisForm implements QgisFormControlsInterface
                     // Classical disk storage
                     // We may need to calculate the target path with an expression
                     list($targetPath, $targetFullPath) = $this->getStoragePathForControl($this->getQgisControl($controlName), $values);
-
                     // if the target path to store the file is not valid: error
                     if ($targetFullPath == '' || !is_dir($targetFullPath) || !is_writable($targetFullPath)) {
+                        $check = false;
                         $form->setErrorOn($controlName, \jLocale::get('view~edition.message.error.upload.layer', array($dtParams->tablename)));
                     }
                 }
@@ -1043,23 +1043,26 @@ class QgisForm implements QgisFormControlsInterface
             }
             // Control is an upload control
             if ($jCtrl instanceof \jFormsControlUpload2 || $jCtrl instanceof \jFormsControlUpload) {
-                if (array_key_exists($ref, $this->formControls) && $this->formControls[$ref]->isWebDAV && isset($this->formControls[$ref]->webDavStorageUrl)) {
-                    // WEBDAV
-                    try {
+                try {
+                    $webdavUpload = array_key_exists($ref, $this->formControls)
+                        && $this->formControls[$ref]->isWebDAV
+                        && isset($this->formControls[$ref]->webDavStorageUrl);
+                    if ($webdavUpload) {
+                        // WEBDAV
                         $values[$ref] = $this->processWebDavUploadFile($form, $controlName);
-                    } catch (\Exception $e) {
-                        // Need to catch Exception if operation on remote storage fails
-                        $form->setErrorOn($ref, $e->getMessage());
-                        $this->logMessage($e->getMessage(), 'lizmapadmin');
-                        $this->appContext->logException($e, 'lizmapadmin');
-
-                        return false;
+                    } else {
+                        // Normal type of UPLOAD.
+                        // It can be a simple storage path, or a path calculated dynamically with a QGIS Expression
+                        // We must pass the other field values
+                        $values[$ref] = $this->processUploadedFile($form, $controlName, $databaseValues);
                     }
-                } else {
-                    // Normal type of UPLOAD.
-                    // It can be a simple storage path, or a path calculated dynamically with a QGIS Expression
-                    // We must pass the other field values
-                    $values[$ref] = $this->processUploadedFile($form, $controlName, $databaseValues);
+                } catch (\Exception $e) {
+                    // Need to catch Exception if operation fails
+                    $form->setErrorOn($ref, $e->getMessage());
+                    $this->logMessage($e->getMessage(), 'lizmapadmin');
+                    $this->appContext->logException($e, 'lizmapadmin');
+
+                    return false;
                 }
             }
         }
@@ -1292,10 +1295,8 @@ class QgisForm implements QgisFormControlsInterface
             && !is_file($targetFullPath.$newFilename)
             && !is_file($targetFullPath.$filename)
         ) {
-            // TODO : raise an exception or an error
-            // to let the user know the file has not been saved ?
-            // Or just a use a jMessage ?
-            return 'NULL';
+            // raise exception
+            throw new \Exception(\jLocale::get('view~edition.message.error.upload.file'));
         }
 
         if ($newFilename) {
