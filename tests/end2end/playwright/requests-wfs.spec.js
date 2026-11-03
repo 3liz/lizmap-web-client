@@ -1251,14 +1251,15 @@ test.describe('WFS Requests @requests @readonly', () => {
             project: 'selection',
         });
         let url = `/index.php/lizmap/service?${params}`;
+        const form = {
+            SERVICE: 'WFS',
+            VERSION: '1.0.0',
+            REQUEST: 'GetFeature',
+            FEATUREID: 'selection_polygon.1',
+            OUTPUTFORMAT: 'GeoJSON',
+        };
         let response = await request.post(url, {
-            form: {
-                SERVICE: 'WFS',
-                VERSION: '1.0.0',
-                REQUEST: 'GetFeature',
-                FEATUREID: 'selection_polygon.1',
-                OUTPUTFORMAT: 'GeoJSON',
-            }
+            form: form,
         });
         // check response
         responseExpect(response).toBeGeoJson();
@@ -1271,6 +1272,27 @@ test.describe('WFS Requests @requests @readonly', () => {
         expect(feature).toHaveProperty('id', 'selection_polygon.1');
         expect(feature).toHaveProperty('properties');
         expect(feature.properties).toHaveProperty('id', 1);
+
+        form['FEATUREID'] = 'selection_polygon.1,selection_polygon.2';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(2);
+        body = await response.json();
+        feature = body.features[0];
+        expect(feature).toHaveProperty('type', 'Feature');
+        expect(feature).toHaveProperty('id', 'selection_polygon.1');
+        expect(feature).toHaveProperty('properties');
+        expect(feature.properties).toHaveProperty('id', 1);
+        feature = body.features[1];
+        expect(feature).toHaveProperty('type', 'Feature');
+        expect(feature).toHaveProperty('id', 'selection_polygon.2');
+        expect(feature).toHaveProperty('properties');
+        expect(feature.properties).toHaveProperty('id', 2);
     });
 
     test('WFS GetFeature FEATUREID && BBOX', async({ request }) => {
@@ -1279,15 +1301,16 @@ test.describe('WFS Requests @requests @readonly', () => {
             project: 'selection',
         });
         let url = `/index.php/lizmap/service?${params}`;
+        const form = {
+            SERVICE: 'WFS',
+            VERSION: '1.0.0',
+            REQUEST: 'GetFeature',
+            FEATUREID: 'selection_polygon.1',
+            BBOX: '160786,900949,186133,925344',
+            OUTPUTFORMAT: 'GeoJSON',
+        };
         let response = await request.post(url, {
-            form: {
-                SERVICE: 'WFS',
-                VERSION: '1.0.0',
-                REQUEST: 'GetFeature',
-                FEATUREID: 'selection_polygon.1',
-                BBOX: '160786,900949,186133,925344',
-                OUTPUTFORMAT: 'GeoJSON',
-            }
+            form: form,
         });
         // check response
         responseExpect(response).toBeGeoJson();
@@ -1301,22 +1324,31 @@ test.describe('WFS Requests @requests @readonly', () => {
         expect(feature).toHaveProperty('properties');
         expect(feature.properties).toHaveProperty('id', 1);
 
+        form['FEATUREID'] = 'selection_polygon.2';
         response = await request.post(url, {
-            form: {
-                SERVICE: 'WFS',
-                VERSION: '1.0.0',
-                REQUEST: 'GetFeature',
-                TYPENAME: 'selection_polygon',
-                FEATUREID: 'selection_polygon.2',
-                BBOX: '160786,900949,186133,925344',
-                OUTPUTFORMAT: 'GeoJSON',
-            }
+            form: form,
         });
         // check response
         responseExpect(response).toBeGeoJson();
 
         // check body
         await responseExpect(response).toHaveGeoJsonFeaturesLength(0);
+
+        form['FEATUREID'] = 'selection_polygon.1,selection_polygon.2';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(1);
+        body = await response.json();
+        feature = body.features[0];
+        expect(feature).toHaveProperty('type', 'Feature');
+        expect(feature).toHaveProperty('id', 'selection_polygon.1');
+        expect(feature).toHaveProperty('properties');
+        expect(feature.properties).toHaveProperty('id', 1);
     });
 
     test('WFS GetFeature FEATUREID && BBOX && FORCE_QGIS', async({ request }) => {
@@ -1325,16 +1357,17 @@ test.describe('WFS Requests @requests @readonly', () => {
             project: 'selection',
         });
         let url = `/index.php/lizmap/service?${params}`;
+        const form = {
+            SERVICE: 'WFS',
+            VERSION: '1.0.0',
+            REQUEST: 'GetFeature',
+            FEATUREID: 'selection_polygon.1',
+            BBOX: '160786,900949,186133,925344',
+            OUTPUTFORMAT: 'GeoJSON',
+            FORCE_QGIS: 1,
+        };
         let response = await request.post(url, {
-            form: {
-                SERVICE: 'WFS',
-                VERSION: '1.0.0',
-                REQUEST: 'GetFeature',
-                FEATUREID: 'selection_polygon.1',
-                BBOX: '160786,900949,186133,925344',
-                OUTPUTFORMAT: 'GeoJSON',
-                FORCE_QGIS: 1,
-            }
+            form: form,
         });
         // check response
         responseExpect(response).toBeGeoJson();
@@ -1348,23 +1381,31 @@ test.describe('WFS Requests @requests @readonly', () => {
         expect(feature).toHaveProperty('properties');
         expect(feature.properties).toHaveProperty('id', 1);
 
+        form['FEATUREID'] = 'selection_polygon.2';
         response = await request.post(url, {
-            form: {
-                SERVICE: 'WFS',
-                VERSION: '1.0.0',
-                REQUEST: 'GetFeature',
-                TYPENAME: 'selection_polygon',
-                FEATUREID: 'selection_polygon.2',
-                BBOX: '160786,900949,186133,925344',
-                OUTPUTFORMAT: 'GeoJSON',
-                FORCE_QGIS: 1,
-            }
+            form: form,
         });
         // check response
         responseExpect(response).toBeGeoJson();
 
         // check body
         await responseExpect(response).toHaveGeoJsonFeaturesLength(0);
+
+        form['FEATUREID'] = 'selection_polygon.1,selection_polygon.2';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(1);
+        body = await response.json();
+        feature = body.features[0];
+        expect(feature).toHaveProperty('type', 'Feature');
+        expect(feature).toHaveProperty('id', 'selection_polygon.1');
+        expect(feature).toHaveProperty('properties');
+        expect(feature.properties).toHaveProperty('id', 1);
     });
 
     test('WFS GetFeature FEATUREID && BBOX && SRSNAME', async({ request }) => {

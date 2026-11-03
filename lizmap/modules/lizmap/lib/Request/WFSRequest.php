@@ -846,77 +846,190 @@ class WFSRequest extends OGCRequest
         return '';
     }
 
+    /**
+     * Parse the expression filter parameter.
+     *
+     * @param \jDbConnection $cnx    The database connection
+     * @param array          $params The request parameters
+     *
+     * @return false|string The SQL filter enclosed with parenthesis if the expression filter is valid, false otherwise
+     */
     protected function parseExpFilter($cnx, $params): false|string
     {
-        $exp_filter = '';
-        if (array_key_exists('exp_filter', $params)) {
-            $exp_filter = $params['exp_filter'];
+        if (!array_key_exists('exp_filter', $params)) {
+            return '';
         }
-        if (!empty($exp_filter)) {
-            $validFilter = $this->validateFilter($exp_filter);
-            if (!$validFilter) {
-                return false;
-            }
-            if (strpos($validFilter, '$id') !== false) {
-                $key = $this->datasource->key;
-                if (count(explode(',', $key)) == 1) {
-                    return ' AND ( '.str_replace('$id ', $cnx->encloseName($key).' ', $validFilter).' ) ';
-                }
-
-                return false;
-            }
-
-            return ' AND ( '.$validFilter.' ) ';
+        $exp_filter = $params['exp_filter'];
+        if (empty($exp_filter)) {
+            return '';
         }
 
-        return '';
+        $validFilter = $this->validateFilter($exp_filter);
+        if (!$validFilter) {
+            return false;
+        }
+        if (strpos($validFilter, '$id') !== false) {
+            $key = $this->datasource->key;
+            if (count(explode(',', $key)) == 1) {
+                return ' AND ( '.str_replace('$id ', $cnx->encloseName($key).' ', $validFilter).' )';
+            }
+
+            return false;
+        }
+
+        return ' AND ( '.$validFilter.' )';
     }
 
+    /**
+     * Build the SQL condition matching the FEATUREID parameter.
+     *
+     * The returned condition is not a single self contained block, it has to be
+     * put under paranthesis with an AND operator before being used in a WHERE clause.
+     *
+     * @param \jDbConnection $cnx    The database connection
+     * @param array          $params The request parameters
+     *
+     * @return string The SQL condition or an empty string
+     */
     protected function parseFeatureId($cnx, $params): string
     {
-        $featureid = '';
-        $sql = '';
+        // No FEATUREID parameter
+        if (!array_key_exists('featureid', $params)) {
+            return '';
+        }
+
+        $featureid = $params['featureid'];
+        // No FEATUREID value
+        if (empty($featureid)) {
+            return '';
+        }
+
         $typename = $this->requestedTypename();
         $keys = explode(',', $this->datasource->key);
-        if (array_key_exists('featureid', $params)) {
-            $featureid = $params['featureid'];
-        }
-        if (!empty($featureid)) {
-            $fids = explode(',', $featureid);
-            $fidsSql = array();
+        $fids = explode(',', $featureid);
+
+        // Single column primary key: use one IN () clause.
+        // A chain of "key = a OR key = b OR ..." forces PostgreSQL to evaluate one
+        // expression per feature id and per row, which does not scale when a large
+        // selection is exported.
+        if (count($keys) == 1) {
+            $values = array();
             foreach ($fids as $fid) {
                 $exp = explode('.', $fid);
                 if (count($exp) == 2 and $exp[0] == $typename) {
-                    $fidSql = '(';
-                    $pks = explode('@@', $exp[1]);
-                    $i = 0;
-                    $v = '';
-                    foreach ($keys as $key) {
-                        $fidSql .= $v.$cnx->encloseName($key).' = ';
-                        if (ctype_digit($pks[$i])) {
-                            $fidSql .= $pks[$i];
-                        } else {
-                            $fidSql .= $cnx->quote($pks[$i]);
-                        }
-                        $v = ' AND ';
-                        ++$i;
+                    $pk = explode('@@', $exp[1])[0];
+                    $values[] = ctype_digit($pk) ? $pk : $cnx->quote($pk);
+                }
+            }
+
+            // A FEATUREID matching no feature must not widen the result set
+            if (count($values) == 0) {
+                return 'FALSE';
+            }
+
+            return $cnx->encloseName($keys[0]).' IN ('.implode(', ', $values).')';
+        }
+        // Multiple columns primary key: one parenthesized block per feature id
+        $fidsSql = array();
+        foreach ($fids as $fid) {
+            $exp = explode('.', $fid);
+            if (count($exp) == 2 and $exp[0] == $typename) {
+                $fidSql = '';
+                $pks = explode('@@', $exp[1]);
+                $i = 0;
+                $v = '';
+                foreach ($keys as $key) {
+                    $fidSql .= $v.$cnx->encloseName($key).' = ';
+                    if (ctype_digit($pks[$i])) {
+                        $fidSql .= $pks[$i];
+                    } else {
+                        $fidSql .= $cnx->quote($pks[$i]);
                     }
-                    $fidSql .= ')';
+                    $v = ' AND ';
+                    ++$i;
+                }
+                if ($i !== 1) {
+                    $fidsSql[] = '('.$fidSql.')';
+                } else {
                     $fidsSql[] = $fidSql;
                 }
             }
-            // $this->appContext->logMessage(implode(' OR ', $fidsSql), 'error');
-            $sql .= ' AND '.implode(' OR ', $fidsSql);
+        }
+        // A FEATUREID matching no feature must not widen the result set
+        if (count($fidsSql) == 0) {
+            return 'FALSE';
+        }
+
+        // The OR chain must be parenthesized as a whole, otherwise its members would
+        // escape every other AND condition of the WHERE clause: datasource filter,
+        // BBOX, EXP_FILTER, filter by login and filter by polygon.
+        if (count($fidsSql) == 1) {
+            return $fidsSql[0];
+        }
+
+        return implode(' OR ', $fidsSql);
+    }
+
+    /**
+     * Build the SQL WHERE clause for the request.
+     *
+     * It combines the datasource SQL filter, the BBOX parameter, the EXP_FILTER parameter,
+     * and the FEATUREID parameter
+     *
+     * @param \jDbConnection $cnx    The database connection
+     * @param array          $params The request parameters
+     *
+     * @return false|string The SQL Where clause if the expression filter is valid, false otherwise
+     */
+    protected function getWhereClause($cnx, $params): false|string
+    {
+        // WHERE
+        $sql = ' WHERE True';
+
+        // Add datasource SQL filter
+        $sql .= $this->getDatasourceSql();
+
+        // BBOX
+        $sql .= $this->getbboxSql($params);
+
+        // EXP_FILTER
+        // This also include the filter by login, as done above in the function "parameters"
+        $expFilterSql = $this->parseExpFilter($cnx, $params);
+        if ($expFilterSql === false) {
+            // Do not use direct SQL query to PostgreSQL but a request to QGIS Server
+            return false;
+        }
+        $sql .= $expFilterSql;
+
+        // Filter by polygon
+        $polygonFilter = $this->qgisLayer->getPolygonFilter($this->editingContext, 5);
+        if ($polygonFilter) {
+            $sql .= ' AND ( '.$polygonFilter.' )';
+        }
+
+        // FEATUREID
+        $featureIdsFilter = $this->parseFeatureId($cnx, $params);
+        if ($featureIdsFilter) {
+            $sql .= ' AND ( '.$featureIdsFilter.' )';
         }
 
         return $sql;
     }
 
+    /**
+     * Build the SQL ORDER BY clause for the request.
+     *
+     * @param \jDbConnection $cnx       The database connection
+     * @param array          $params    The request parameters
+     * @param array          $wfsFields The WFS fields
+     *
+     * @return string The SQL ORDER BY clause
+     */
     protected function getQueryOrder($cnx, $params, $wfsFields): string
     {
-        // séparé par virgule, et fini par espace + a ou d
-        // si pas de a ou d , c'est a
-        // SortBY=id a,name d
+        // separated by a comma, and ending with a space followed by “a” or “d” (ascending or descending)
+        // If there is no “a” or “d,” then it is “a” by default.
+        // For example: SortBY=id a,name d
         $sortby = '';
         $sql = '';
         if (array_key_exists('sortby', $params)) {
@@ -998,32 +1111,12 @@ class WFSRequest extends OGCRequest
         // Build SQL
         $sql = $this->buildQueryBase($cnx, $params, $wfsFields, $isHitsRequest);
 
-        // WHERE
-        $sql .= ' WHERE True';
-
-        // Add datasource SQL filter
-        $sql .= $this->getDatasourceSql();
-
-        // BBOX
-        $sql .= $this->getbboxSql($params);
-
-        // EXP_FILTER
-        // This also include the filter by login, as done above in the function "parameters"
-        $expFilterSql = $this->parseExpFilter($cnx, $params);
-        if ($expFilterSql === false) {
-            // Do not use direct SQL query to PostgreSQL but a request to QGIS Server
+        // WHERE clause
+        $whereClause = $this->getWhereClause($cnx, $params);
+        if ($whereClause === false) {
             return $this->getfeatureQgis();
         }
-        $sql .= $expFilterSql;
-
-        // Filter by polygon
-        $polygonFilter = $this->qgisLayer->getPolygonFilter($this->editingContext, 5);
-        if ($polygonFilter) {
-            $sql .= ' AND ( '.$polygonFilter.' ) ';
-        }
-
-        // FEATUREID
-        $sql .= $this->parseFeatureId($cnx, $params);
+        $sql .= $whereClause;
 
         // ORDER BY
         $sql .= $this->getQueryOrder($cnx, $params, $wfsFields);
