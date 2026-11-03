@@ -441,6 +441,7 @@ class WFSRequestTest extends TestCase
         $wfs->datasource = (object) array(
             'key' => 'key',
             'geocol' => 'geom',
+            'sql' => '',
         );
         $wfs->qgisLayer = new LayerWFSForTests();
         // Needed for the invalid-SRSNAME code path which calls logMessage.
