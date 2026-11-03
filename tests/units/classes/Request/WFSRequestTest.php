@@ -308,12 +308,12 @@ class WFSRequestTest extends TestCase
             // Forbidden term
             array(array('exp_filter' => 'select'), '', false),
             // Correct syntax
-            array(array('exp_filter' => '"filter" IN (3, 56, 12)'), '', ' AND ( "filter" IN (3, 56, 12) ) '),
+            array(array('exp_filter' => '"filter" IN (3, 56, 12)'), '', ' AND ( "filter" IN (3, 56, 12) )'),
             // Check $id is replaced by the primary key field with double quotes
-            array(array('exp_filter' => '1 < 2 AND $id = 5'), 'key', ' AND ( 1 < 2 AND "key" = 5 ) '),
+            array(array('exp_filter' => '1 < 2 AND $id = 5'), 'key', ' AND ( 1 < 2 AND "key" = 5 )'),
             // Check we allow negative numbers (not only integers)
-            array(array('exp_filter' => '"a_field" BETWEEN -5678 AND 5.01'), '', ' AND ( "a_field" BETWEEN -5678 AND 5.01 ) '),
-            array(array('exp_filter' => '$id IN ( -9999999 )'), 'key', ' AND ( "key" IN ( -9999999 ) ) '),
+            array(array('exp_filter' => '"a_field" BETWEEN -5678 AND 5.01'), '', ' AND ( "a_field" BETWEEN -5678 AND 5.01 )'),
+            array(array('exp_filter' => '$id IN ( -9999999 )'), 'key', ' AND ( "key" IN ( -9999999 ) )'),
             // In the case of a multiple primary key, the expression is not valid
             array(array('exp_filter' => 'filter for test with $id = 5'), 'key,otherKey', false),
             // missing closing parenthesis
@@ -323,11 +323,11 @@ class WFSRequestTest extends TestCase
             // Complex query with forbidden words and comments
             array(array('exp_filter' => '"id" = 1 ) GROUP BY "v" UNION SELECT 99 AS "v" , 1 AS "c" --'), '', false),
             // Doubled single quote inside a string literal must be preserved
-            array(array('exp_filter' => "\"label\" IN ( 'O''Brian' )"), '', " AND ( \"label\" IN ( 'O''Brian' ) ) "),
+            array(array('exp_filter' => "\"label\" IN ( 'O''Brian' )"), '', " AND ( \"label\" IN ( 'O''Brian' ) )"),
             // Doubled double quote inside a field name must be preserved
-            array(array('exp_filter' => '"bad""label" = \'OK\''), '', ' AND ( "bad""label" = \'OK\' ) '),
+            array(array('exp_filter' => '"bad""label" = \'OK\''), '', ' AND ( "bad""label" = \'OK\' )'),
             // We must accept any UTF-8 character in a string literal, including non-ASCII characters
-            array(array('exp_filter' => '"label" = \'Œuvres, Café, crème brûlée, jalapeño, résumé\''), '', ' AND ( "label" = \'Œuvres, Café, crème brûlée, jalapeño, résumé\' ) '),
+            array(array('exp_filter' => '"label" = \'Œuvres, Café, crème brûlée, jalapeño, résumé\''), '', ' AND ( "label" = \'Œuvres, Café, crème brûlée, jalapeño, résumé\' )'),
         );
     }
 
@@ -348,25 +348,43 @@ class WFSRequestTest extends TestCase
         $this->assertEquals($expectedSql, $result);
     }
 
-    public static function getParseFeatureData()
+    public static function getParseFeatureIdData()
     {
         return array(
+            // No Feature ID
             array('', '', '', ''),
-            array('type', 'type.test@@55', 'key,otherKey', ' AND ("key" = \'test\' AND "otherKey" = 55)'),
-            array('type', 'type.test@@55,you shall not pass,type.name@@42', 'key,otherKey', ' AND ("key" = \'test\' AND "otherKey" = 55) OR ("key" = \'name\' AND "otherKey" = 42)'),
-            array('', 'type.test@@55', 'key,otherKey', ' AND ("key" = \'test\' AND "otherKey" = 55)'),
+            array('type', '', '', ''),
+            array('type', '', 'key', ''),
+            array('type', '', 'key,otherKey', ''),
+            // Single column for feature ID
+            array('type', 'type.42', 'key', '"key" IN (42)'),
+            array('type', 'type.42,type.43,type.44', 'key', '"key" IN (42, 43, 44)'),
+            array('type', 'type.abc,you shall not pass,type.def', 'key', '"key" IN (\'abc\', \'def\')'),
+            array('', 'type.42', 'key', '"key" IN (42)'),
+            // Multi columns for feature ID
+            array('type', 'type.test@@55', 'key,otherKey', '("key" = \'test\' AND "otherKey" = 55)'),
+            array('type', 'type.test@@55,you shall not pass,type.name@@42', 'key,otherKey', '("key" = \'test\' AND "otherKey" = 55) OR ("key" = \'name\' AND "otherKey" = 42)'),
+            array('', 'type.test@@55', 'key,otherKey', '("key" = \'test\' AND "otherKey" = 55)'),
+            // A FEATUREID matching no feature must not widen the result set
+            array('type', 'otherType', 'key', 'FALSE'),
+            array('type', 'otherType-42', 'key', 'FALSE'),
+            array('type', 'otherType.', 'key', 'FALSE'),
+            array('type', 'otherType.42', 'key', 'FALSE'),
+            array('type', 'otherType', 'key,otherKey', 'FALSE'),
+            array('type', 'otherType.test@@55', 'key,otherKey', 'FALSE'),
+
         );
     }
 
     /**
-     * @dataProvider getParseFeatureData
+     * @dataProvider getParseFeatureIdData
      *
      * @param mixed $typename
      * @param mixed $featureId
      * @param mixed $keys
      * @param mixed $expectedSql
      */
-    #[DataProvider('getParseFeatureData')]
+    #[DataProvider('getParseFeatureIdData')]
     public function testParseFeatureId($typename, $featureId, $keys, $expectedSql): void
     {
         $params = array(
@@ -377,6 +395,59 @@ class WFSRequestTest extends TestCase
         $wfs->datasource = (object) array('key' => $keys);
         $sql = $wfs->parseFeatureIdForTests(new jDbConnectionForTests(), $params);
         $this->assertEquals($expectedSql, $sql);
+    }
+
+    public static function getWhereClauseData()
+    {
+        return array(
+            array(array(), ' WHERE True'),
+            // BBOX
+            array(array('bbox' => '-5,-2,5,2'), ' WHERE True AND ST_Intersects("geom", ST_MakeEnvelope(-5,-2,5,2, SRID))'),
+            // EXP_FILTER
+            array(array('exp_filter' => '"filter" IN (3, 56, 12)'), ' WHERE True AND ( "filter" IN (3, 56, 12) )'),
+            // Feature ID
+            array(array('featureid' => 'type.42'), ' WHERE True AND ( "key" IN (42) )'),
+            array(array('featureid' => 'type.42,type.43'), ' WHERE True AND ( "key" IN (42, 43) )'),
+            // Combinations
+            array(
+                array('bbox' => '-5,-2,5,2', 'exp_filter' => '"filter" IN (3, 56, 12)'),
+                ' WHERE True AND ST_Intersects("geom", ST_MakeEnvelope(-5,-2,5,2, SRID)) AND ( "filter" IN (3, 56, 12) )',
+            ),
+            array(
+                array('bbox' => '-5,-2,5,2', 'featureid' => 'type.42'),
+                ' WHERE True AND ST_Intersects("geom", ST_MakeEnvelope(-5,-2,5,2, SRID)) AND ( "key" IN (42) )',
+            ),
+            array(
+                array('exp_filter' => '"filter" IN (3, 56, 12)', 'featureid' => 'type.42'),
+                ' WHERE True AND ( "filter" IN (3, 56, 12) ) AND ( "key" IN (42) )',
+            ),
+            array(
+                array('bbox' => '-5,-2,5,2', 'exp_filter' => '"filter" IN (3, 56, 12)', 'featureid' => 'type.42'),
+                ' WHERE True AND ST_Intersects("geom", ST_MakeEnvelope(-5,-2,5,2, SRID)) AND ( "filter" IN (3, 56, 12) ) AND ( "key" IN (42) )',
+            ),
+        );
+    }
+
+    /**
+     * @dataProvider getWhereClauseData
+     *
+     * @param mixed $params
+     * @param mixed $expectedSql
+     */
+    #[DataProvider('getWhereClauseData')]
+    public function testgetWhereClause($params, $expectedSql): void
+    {
+        $wfs = new WFSRequestForTests();
+        $wfs->datasource = (object) array(
+            'key' => 'key',
+            'geocol' => 'geom',
+        );
+        $wfs->qgisLayer = new LayerWFSForTests();
+        // Needed for the invalid-SRSNAME code path which calls logMessage.
+        $wfs->appContext = new ContextForTests();
+        $result = '';
+        $result = $wfs->getWhereClauseForTests(new jDbConnectionForTests(), $params);
+        $this->assertEquals($expectedSql, $result);
     }
 
     public static function getGetQueryOrderData()
