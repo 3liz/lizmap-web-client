@@ -97,7 +97,7 @@ export default class map extends olMap {
         }));
         this.on('loadstart', () => loadingElement.classList.add('loading'));
         this.on('loadend', () => loadingElement.classList.remove('loading'));
-        
+
         // Zoom to box
         this._dragZoom = new DragZoom({
             condition: always
