@@ -443,7 +443,6 @@ let lizDataviz = function () {
 
             // The data has been successfully fetched
             dv.plots[plot_id]['data_fetched'] = true;
-
             // Build plot
             // Pass plot_id to inherit custom configurations in child charts
             buildPlot(target_id, jsonData, plot_id);
@@ -770,7 +769,7 @@ let lizDataviz = function () {
                         new RegExp('\\$([0-9]+)', 'gm'),
                         '<div id="dataviz_plot_template_$1"></div>'
                     )
-                    $('#dataviz-content').append(dv.template);
+                    $('#dataviz-content').append(DOMPurify.sanitize(dv.template));
                 }
                 // Build all plots
                 getPlots();
