@@ -19,7 +19,6 @@ export default class GeometryCopyHandler {
     constructor(map) {
         this._map = map;
         this._active = false;
-        this._clickHandler = null;
         this._featurePickerPopup = new FeaturePickerPopup(map);
         this._drawControlWasActive = false;
 
@@ -29,6 +28,11 @@ export default class GeometryCopyHandler {
                 this.deactivate();
             }
         }, 'edition.formClosed');
+
+        mainEventDispatcher.addListener(()=>{
+            this._drawControlWasActive = false;
+            this.deactivate();
+        },'lizmap-edition-restart-drawing');
     }
 
     /**
@@ -52,7 +56,7 @@ export default class GeometryCopyHandler {
         $('#newOlMap').css('cursor', 'crosshair');
 
         // Register click handler
-        this._clickHandler = this._map.events.register('click', this, this._onMapClick);
+        this._map.events.register('click', this, this._onMapClick);
 
         // Dispatch event
         mainEventDispatcher.dispatch({
@@ -78,11 +82,7 @@ export default class GeometryCopyHandler {
         $('#map').css('cursor', 'default');
         $('#newOlMap').css('cursor', '');
 
-        // Unregister click handler
-        if (this._clickHandler) {
-            this._map.events.unregister('click', this, this._onMapClick);
-            this._clickHandler = null;
-        }
+        this._map.events.unregister('click', this, this._onMapClick);
 
         // Hide popup if open
         this._featurePickerPopup.hide();
@@ -500,25 +500,38 @@ export default class GeometryCopyHandler {
         const geomClone = geometry.clone();
         const feature = new OpenLayers.Feature.Vector(geomClone);
 
-        // Try to apply to draw control layer (for new features being drawn)
-        if (mainLizmap.edition.drawControl && mainLizmap.edition.drawControl.layer) {
-            mainLizmap.edition.drawControl.layer.removeAllFeatures();
-            mainLizmap.edition.drawControl.layer.addFeatures([feature]);
-        }
-
-        // Try to apply to modify control layer (for existing features being edited)
-        if (mainLizmap.edition.modifyFeatureControl &&
+        let featureAdded = false;
+        // detect if the feature is new or is a modified feature
+        // if draw control was active it means that the feature is new
+        if(this._drawControlWasActive) {
+            // apply to draw control layer (for new features being drawn)
+            if (mainLizmap.edition.drawControl && mainLizmap.edition.drawControl.layer) {
+                mainLizmap.edition.drawControl.layer.removeAllFeatures();
+                mainLizmap.edition.drawControl.layer.addFeatures([feature]);
+                featureAdded = true;
+            }
+            // force _drawControlWasActive to be false, this prevent to activate the drawControl
+            // when call deactivate function
+            this._drawControlWasActive = false;
+        } else if (
+            mainLizmap.edition.modifyFeatureControl &&
             mainLizmap.edition.modifyFeatureControl.active &&
             mainLizmap.edition.modifyFeatureControl.layer) {
+            // apply to modify control layer
             mainLizmap.edition.modifyFeatureControl.layer.destroyFeatures();
             mainLizmap.edition.modifyFeatureControl.layer.addFeatures([feature]);
+            featureAdded = true;
         }
 
+        if (featureAdded) return;
+
+        // keep fallback feature assignment
         // Try to find editLayer directly (legacy approach)
         const editLayers = this._map.getLayersByName('editLayer');
         if (editLayers && editLayers.length > 0) {
             editLayers[0].removeAllFeatures();
             editLayers[0].addFeatures([feature]);
+            this._drawControlWasActive = false;
         }
 
         // Update geometry field in form if available

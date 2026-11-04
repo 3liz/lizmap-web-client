@@ -48,7 +48,7 @@ export default class PasteStoredGeom extends HTMLElement {
         }
 
         // Add to appropriate layer
-        if(mainLizmap.edition?.drawControl){
+        if(mainLizmap.edition?.drawControl?.active){
             mainLizmap.edition.drawControl.layer.removeAllFeatures();
             mainLizmap.edition.drawControl.layer.addFeatures([new OpenLayers.Feature.Vector(ol2Geometry)]);
         } else if (mainLizmap.edition.modifyFeatureControl.active){
