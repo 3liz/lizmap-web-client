@@ -722,9 +722,16 @@ class editionCtrl extends jController
         );
 
         $defs = $this->layer->getDefaultValueDefinitions();
+        // The default value of an upload field only names the uploaded file
+        $uploadFields = Form\QgisForm::getUploadFieldNames(
+            $this->layer->getProject()->getCacheHandler()->getEditableLayerFormCache($this->layer->getId())
+        );
         $expressions = array();
         foreach ($defs as $field => $def) {
             if (is_array($only) && !in_array($field, $only, true)) {
+                continue;
+            }
+            if (in_array($field, $uploadFields, true)) {
                 continue;
             }
             $expression = $def['expression'];

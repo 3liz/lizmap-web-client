@@ -76,6 +76,12 @@ class QgisForm implements QgisFormControlsInterface
     protected $defaultApplyOnUpdateMap = array();
 
     /**
+     * @var string[] fields displayed as an upload control. Their default value
+     *               only names the uploaded file, see computeDefaultFilename()
+     */
+    protected $uploadFields = array();
+
+    /**
      * QgisForm constructor.
      *
      * @param \qgisVectorLayer $layer
@@ -120,13 +126,17 @@ class QgisForm implements QgisFormControlsInterface
         $cacheHandler = $layer->getProject()->getCacheHandler();
         $formInfos = $cacheHandler->getEditableLayerFormCache($layer->getId());
 
+        // The default value of an upload field is not a value of the form:
+        // it only names the uploaded file, see computeDefaultFilename()
+        $this->uploadFields = self::getUploadFieldNames($formInfos);
+
         // Classify default expressions once to avoid per-field HTTP calls.
         $staticDefaults = array();
         $dynamicExpressions = array();
         $applyOnUpdateMap = array();
         $allDefs = $layer->getDefaultValueDefinitions();
         foreach ($dataFields as $fieldName => $unusedProp) {
-            if (!isset($allDefs[$fieldName])) {
+            if (!isset($allDefs[$fieldName]) || in_array($fieldName, $this->uploadFields, true)) {
                 continue;
             }
             $expression = $allDefs[$fieldName]['expression'];
@@ -318,7 +328,31 @@ class QgisForm implements QgisFormControlsInterface
     }
 
     /**
+     * Get the names of the fields displayed as an upload control.
+     *
+     * The default value of these fields must not fill the form: it only names
+     * the uploaded file.
+     *
+     * @param null|array<string, QgisFormControlProperties> $formInfos the form controls properties of the layer
+     *
+     * @return string[]
+     */
+    public static function getUploadFieldNames($formInfos)
+    {
+        $uploadFields = array();
+        foreach ($formInfos ?: array() as $fieldName => $properties) {
+            if (QgisFormControl::isUploadEditType($properties->getFieldEditType())) {
+                $uploadFields[] = (string) $fieldName;
+            }
+        }
+
+        return $uploadFields;
+    }
+
+    /**
      * Collect the dynamic (non-literal) default expressions from the layer.
+     *
+     * Upload fields are skipped: their default value only names the uploaded file.
      *
      * @return array<string, string> field name => expression string
      */
@@ -326,6 +360,9 @@ class QgisForm implements QgisFormControlsInterface
     {
         $dynamic = array();
         foreach ($this->layer->getDefaultValueDefinitions() as $fieldName => $def) {
+            if (in_array($fieldName, $this->uploadFields, true)) {
+                continue;
+            }
             $expression = $def['expression'];
             if (trim($expression) === '') {
                 continue;
