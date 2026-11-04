@@ -45,6 +45,11 @@ class ProjectForTests extends Project\Project
         $this->cacheHandler = new ProjectCache($file, $modifiedTime, $cfgModifiedTime, $this->appContext);
     }
 
+    public function setPrintCapabilities($printCapabilities)
+    {
+        $this->printCapabilities = $printCapabilities;
+    }
+
     public function readProjectForTest()
     {
         $this->readProject();
