@@ -169,4 +169,45 @@ class qgisExpressionUtilsTest extends TestCase
         $exp = 'intersects(buffer(@current_geometry,50), $geometry )';
         $this->assertTrue(qgisExpressionUtils::hasCurrentGeometry($exp));
     }
+
+    public function testReplaceAtlasVariables(): void
+    {
+        $exp = "'Flstk_'||replace(attribute(@atlas_feature,'Flurstück') ,'/','-')";
+        $this->assertEquals(
+            "'Flstk_'||replace(attribute(@feature,'Flurstück') ,'/','-')",
+            qgisExpressionUtils::replaceAtlasVariables($exp, '"Flurstück"', 'parcels_id', 'Parcels')
+        );
+
+        $exp = "'Flstk_'||replace(@atlas_pagename,'/','-')";
+        $this->assertEquals(
+            "'Flstk_'||replace((\"Flurstück\"),'/','-')",
+            qgisExpressionUtils::replaceAtlasVariables($exp, '"Flurstück"', 'parcels_id', 'Parcels')
+        );
+        // Empty page name expression: QGIS uses the page number
+        $this->assertEquals(
+            "'Flstk_'||replace('1','/','-')",
+            qgisExpressionUtils::replaceAtlasVariables($exp, '', 'parcels_id', 'Parcels')
+        );
+
+        // Variables sharing the same prefix
+        $exp = "@atlas_featureid||'-'||@atlas_featurenumber||'-'||@atlas_totalfeatures||'-'||area(@atlas_geometry)";
+        $this->assertEquals(
+            "@id||'-'||1||'-'||1||'-'||area(@geometry)",
+            qgisExpressionUtils::replaceAtlasVariables($exp, '', 'parcels_id', 'Parcels')
+        );
+
+        // Layer variables are replaced by escaped string literals
+        $exp = '@atlas_layername||@atlas_layerid';
+        $this->assertEquals(
+            "'Owner''s parcels'||'parcels_id'",
+            qgisExpressionUtils::replaceAtlasVariables($exp, '', 'parcels_id', "Owner's parcels")
+        );
+
+        // Text in string literals and quoted field names is kept, unknown variables too
+        $exp = "'@atlas_pagename'||\"@atlas_feature\"||@atlas_filename||@project_title";
+        $this->assertEquals(
+            $exp,
+            qgisExpressionUtils::replaceAtlasVariables($exp, '"name"', 'parcels_id', 'Parcels')
+        );
+    }
 }
