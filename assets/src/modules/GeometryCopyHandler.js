@@ -173,13 +173,21 @@ export default class GeometryCopyHandler {
         const extent = this._map.getExtent();
         const projection = this._map.getProjection();
 
+        // consider axis orientation for WMS getFeatureInfo request
+        // assumes that the old ol2 map is rendered with the same crs of the new ol map
+        const axisOrientation = mainLizmap.map.getView().getProjection().getAxisOrientation();
+
+        // get bbox parameter
+        const bbox = axisOrientation == 'neu' ?
+            [extent.bottom, extent.left, extent.top, extent.right] : [extent.left, extent.bottom, extent.right, extent.top];
+
         const wmsParams = {
             QUERY_LAYERS: layersNames.join(','),
             LAYERS: layersNames.join(','),
             STYLE: layersStyles.join(','),
             INFO_FORMAT: 'text/html',
             CRS: projection,
-            BBOX: extent.toBBOX(),
+            BBOX: bbox,
             WIDTH: mapSize.w,
             HEIGHT: mapSize.h,
             FEATURE_COUNT: 100,
