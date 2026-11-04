@@ -847,6 +847,13 @@ class serviceCtrl extends jController
         $featureId = $ids[0];
         lizmap::getLogger()->debug("generateAtlasFilename: Single feature ID: {$featureId}");
 
+        // The feature ID is used in an expression filter
+        if (!preg_match('/^-?\d+$/', $featureId)) {
+            lizmap::getLogger()->debug('generateAtlasFilename: Feature ID is not an integer');
+
+            return null;
+        }
+
         // Get atlas configuration from the print template already read from the QGIS project
         $printTemplate = $this->project->getPrintTemplate($template);
         if (!$printTemplate) {
@@ -878,18 +885,16 @@ class serviceCtrl extends jController
         lizmap::getLogger()->debug('generateAtlasFilename: filenamePattern: '.($filenamePattern ?: 'NULL'));
         lizmap::getLogger()->debug('generateAtlasFilename: pageNameExpression: '.($pageNameExpression ?: 'NULL'));
 
-        if (!$filenamePattern || !$pageNameExpression) {
-            lizmap::getLogger()->debug('generateAtlasFilename: Missing filenamePattern or pageNameExpression');
+        if (!$filenamePattern) {
+            lizmap::getLogger()->debug('generateAtlasFilename: Missing filenamePattern');
 
             return null;
         }
 
         // Get the coverage layer ID from atlas config and use it to get layer config
         $coverageLayerId = isset($atlas['coverageLayer']) ? (string) $atlas['coverageLayer'] : null;
-        $coverageLayerName = isset($atlas['coverageLayerName']) ? (string) $atlas['coverageLayerName'] : null;
 
         lizmap::getLogger()->debug('generateAtlasFilename: Coverage Layer ID: '.($coverageLayerId ?: 'NULL'));
-        lizmap::getLogger()->debug('generateAtlasFilename: Coverage Layer Name: '.($coverageLayerName ?: 'NULL'));
 
         if (!$coverageLayerId) {
             lizmap::getLogger()->debug('generateAtlasFilename: No coverageLayer in atlas config');
@@ -899,78 +904,40 @@ class serviceCtrl extends jController
 
         // Get the layer config using the coverage layer ID from atlas
         $layerConfig = $this->project->getLayer($coverageLayerId);
-        if (!$layerConfig) {
-            lizmap::getLogger()->warning("generateAtlasFilename: Layer config not found for coverage layer ID '{$coverageLayerId}'");
+        if (!$layerConfig instanceof qgisVectorLayer) {
+            lizmap::getLogger()->warning("generateAtlasFilename: Vector layer not found for coverage layer ID '{$coverageLayerId}'");
 
             return null;
         }
         lizmap::getLogger()->debug('generateAtlasFilename: Got layer config from coverage layer ID');
 
-        // Fetch feature data via WFS to get the attribute value
+        // Evaluate the filename pattern with QGIS Server for the requested feature
         try {
-            // Use the built-in method to get the WFS typename
-            // This will use shortname if available (e.g., "Flurstucke"), otherwise name
-            /** @var qgisVectorLayer $layerConfig */
-            $typename = $layerConfig->getWfsTypeName();
-            lizmap::getLogger()->debug("generateAtlasFilename: WFS typename: {$typename}");
-
-            // FEATUREID format must be typename.id for WFS
-            $wfsFeatureId = $typename.'.'.$featureId;
-            lizmap::getLogger()->debug("generateAtlasFilename: WFS FeatureID: {$wfsFeatureId}");
-
-            $wfsParams = array(
-                'SERVICE' => 'WFS',
-                'VERSION' => '1.0.0',
-                'REQUEST' => 'GetFeature',
-                'TYPENAME' => $typename,
-                'OUTPUTFORMAT' => 'GeoJSON',
-                'FEATUREID' => $wfsFeatureId,
+            $expression = qgisExpressionUtils::replaceAtlasVariables(
+                $filenamePattern,
+                $pageNameExpression,
+                $coverageLayerId,
+                $layerConfig->getName()
             );
+            lizmap::getLogger()->debug("generateAtlasFilename: Expression to evaluate: {$expression}");
 
-            lizmap::getLogger()->debug('generateAtlasFilename: WFS request TYPENAME='.$typename.' FEATUREID='.$wfsFeatureId);
-
-            $wfsRequest = new WFSRequest(
-                $this->project,
-                $wfsParams,
-                lizmap::getServices()
+            $features = qgisExpressionUtils::virtualFields(
+                $layerConfig,
+                array('filename' => $expression),
+                '$id = '.$featureId,
+                'true',
+                '',
+                1
             );
-
-            $wfsResult = $wfsRequest->process();
-            $geojsonString = $wfsResult->getBodyAsString();
-            lizmap::getLogger()->debug('generateAtlasFilename: WFS response length: '.strlen($geojsonString));
-
-            $geojson = json_decode($geojsonString, true);
-
-            if (!$geojson || !isset($geojson['features']) || count($geojson['features']) === 0) {
-                lizmap::getLogger()->warning('generateAtlasFilename: No features returned from WFS');
-                lizmap::getLogger()->debug('generateAtlasFilename: GeoJSON response: '.substr($geojsonString, 0, 500));
+            if (!$features || !isset($features[0]->properties->filename)) {
+                lizmap::getLogger()->warning('generateAtlasFilename: Filename expression could not be evaluated');
 
                 return null;
             }
 
-            lizmap::getLogger()->debug('generateAtlasFilename: Got '.count($geojson['features']).' feature(s) from WFS');
-
-            $feature = $geojson['features'][0];
-            $properties = $feature['properties'];
-            lizmap::getLogger()->debug('generateAtlasFilename: Feature properties: '.implode(', ', array_keys($properties)));
-
-            // Clean up the page name expression (remove quotes)
-            $pageNameField = str_replace('"', '', $pageNameExpression);
-            lizmap::getLogger()->debug("generateAtlasFilename: Looking for field: '{$pageNameField}'");
-
-            if (!isset($properties[$pageNameField])) {
-                lizmap::getLogger()->warning("generateAtlasFilename: Field '{$pageNameField}' not found in feature properties");
-                lizmap::getLogger()->debug('generateAtlasFilename: Available fields: '.implode(', ', array_keys($properties)));
-
-                return null;
-            }
-
-            $pageNameValue = $properties[$pageNameField];
-            lizmap::getLogger()->debug("generateAtlasFilename: Page name value: '{$pageNameValue}'");
-
-            // Evaluate the filename pattern
-            // Replace @atlas_pagename with the actual value
-            $evaluatedFilename = $this->evaluateAtlasFilenamePattern($filenamePattern, $pageNameValue);
+            // Sanitize filename - remove/replace unsafe characters
+            $evaluatedFilename = trim((string) $features[0]->properties->filename);
+            $evaluatedFilename = preg_replace('/[\x00-\x1F<>:"\/\\\\|?*]/', '_', $evaluatedFilename);
             lizmap::getLogger()->debug("generateAtlasFilename: Evaluated filename: '{$evaluatedFilename}'");
 
             if ($evaluatedFilename) {
@@ -993,48 +960,6 @@ class serviceCtrl extends jController
         lizmap::getLogger()->debug('generateAtlasFilename: Reached end of function without generating filename');
 
         return null;
-    }
-
-    /**
-     * Evaluate atlas filename pattern with feature data.
-     *
-     * @param string $pattern  The filename pattern (e.g., "'Flstk_'||replace(@atlas_pagename ,'/','-')")
-     * @param string $pageName The page name value from the feature
-     *
-     * @return null|string The evaluated filename or null if cannot evaluate
-     */
-    protected function evaluateAtlasFilenamePattern($pattern, $pageName)
-    {
-        // Simple evaluation for common patterns
-        // This handles: 'Flstk_'||replace(@atlas_pagename ,'/','-')
-
-        // Replace @atlas_pagename with actual value
-        $evaluated = $pattern;
-
-        // Handle replace() function: replace(@atlas_pagename, '/', '-')
-        if (preg_match('/replace\s*\(\s*@atlas_pagename\s*,\s*[\'"]([^\'"]*)[\'"],\s*[\'"]([^\'"]*)[\'"].*\)/i', $evaluated, $matches)) {
-            $searchStr = $matches[1];
-            $replaceStr = $matches[2];
-            $replacedValue = str_replace($searchStr, $replaceStr, $pageName);
-            $evaluated = preg_replace('/replace\s*\([^)]+\)/i', "'{$replacedValue}'", $evaluated);
-        } else {
-            // Simple replacement without replace() function
-            $evaluated = str_replace('@atlas_pagename', "'{$pageName}'", $evaluated);
-        }
-
-        // Handle string concatenation with ||
-        $evaluated = preg_replace('/\'\s*\|\|\s*\'/', '', $evaluated);
-
-        // Remove remaining quotes
-        $evaluated = str_replace("'", '', $evaluated);
-
-        // Clean up the filename
-        $evaluated = trim($evaluated);
-
-        // Sanitize filename - remove/replace unsafe characters
-        $evaluated = preg_replace('/[<>:"|?*]/', '_', $evaluated);
-
-        return $evaluated ?: null;
     }
 
     /**
