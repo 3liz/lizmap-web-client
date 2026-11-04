@@ -1,0 +1,39 @@
+{
+    "pkuid": {
+        "editAttr": {
+            "editable": 1,
+            "fieldAlias": ""
+        },
+        "fieldEditType": "TextEdit",
+        "markup": "input",
+        "rendererCategories": []
+    },
+    "label": {
+        "editAttr": {
+            "editable": 1,
+            "fieldAlias": ""
+        },
+        "fieldEditType": "TextEdit",
+        "markup": "input",
+        "rendererCategories": []
+    },
+    "photo": {
+        "editAttr": {
+            "DefaultRoot": "../media/photos",
+            "StorageMode": 0,
+            "UploadImage": true,
+            "fieldAlias": ""
+        },
+        "fieldEditType": "ExternalResource",
+        "markup": "upload",
+        "rendererCategories": []
+    },
+    "document": {
+        "editAttr": {
+            "fieldAlias": ""
+        },
+        "fieldEditType": "ExternalResource",
+        "markup": "upload",
+        "rendererCategories": []
+    }
+}
