@@ -782,6 +782,24 @@ class Project
     }
 
     /**
+     * Get a print template read from the QGIS project by its layout name.
+     *
+     * @param string $title The layout name
+     *
+     * @return null|array The print template or null if not found
+     */
+    public function getPrintTemplate($title)
+    {
+        foreach ($this->printCapabilities as $printTemplate) {
+            if ($printTemplate['title'] === $title) {
+                return $printTemplate;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Lizmap < 3.7: return true:
      * - if print checkbox is checked and
      * - if there is at least one print layout which is not an atlas
