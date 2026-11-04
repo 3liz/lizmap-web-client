@@ -542,7 +542,8 @@ export default class GeometryCopyHandler {
     _getEditingGeometryType() {
         // Try to get from mainLizmap.edition.layerGeometry
         if (mainLizmap?.edition?.layerGeometry) {
-            return mainLizmap.edition.layerGeometry;
+            // layerGeometry is equal to "line" for linestrings
+            return mainLizmap.edition.layerGeometry.toLowerCase() == 'line' ? 'LineString' : mainLizmap.edition.layerGeometry;
         }
 
         // Try to get from layer config using layer ID
@@ -553,7 +554,8 @@ export default class GeometryCopyHandler {
             // We need to find the config where layerId matches
             for (const config of Object.values(lizMap.config.editionLayers)) {
                 if (config.layerId === layerId && config.geometryType) {
-                    return config.geometryType;
+                    // config.geometryType is equal to "line" for linestrings
+                    return config.geometryType.toLowerCase() == 'line' ? 'LineString' : config.geometryType;
                 }
             }
         }
