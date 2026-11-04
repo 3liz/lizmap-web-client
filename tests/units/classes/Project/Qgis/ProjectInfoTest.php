@@ -192,6 +192,9 @@ Data is licensed under ODbl, OpenStreetMap contributors',
         $this->assertCount(2, $layouts[1]['maps']);
         $this->assertCount(1, $layouts[1]['labels']);
         $this->assertTrue($layouts[1]['atlas']['enabled']);
+        $this->assertEquals('VilleMTP_MTP_Quartiers_2011_432620130116112610876', $layouts[1]['atlas']['coverageLayer']);
+        $this->assertEquals("'output_'||@atlas_featurenumber", $layouts[1]['atlas']['filenamePattern']);
+        $this->assertEquals('', $layouts[1]['atlas']['pageNameExpression']);
     }
 
     public function testFromQgisPath(): void

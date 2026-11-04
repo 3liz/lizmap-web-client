@@ -108,5 +108,7 @@ Layout::registerChildParser('Atlas', function ($oXmlReader) {
     return array(
         'enabled' => filter_var($oXmlReader->getAttribute('enabled'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE),
         'coverageLayer' => $oXmlReader->getAttribute('coverageLayer'),
+        'filenamePattern' => $oXmlReader->getAttribute('filenamePattern'),
+        'pageNameExpression' => $oXmlReader->getAttribute('pageNameExpression'),
     );
 });

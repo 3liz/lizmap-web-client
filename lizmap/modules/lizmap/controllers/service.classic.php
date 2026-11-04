@@ -847,57 +847,25 @@ class serviceCtrl extends jController
         $featureId = $ids[0];
         lizmap::getLogger()->debug("generateAtlasFilename: Single feature ID: {$featureId}");
 
-        // Get atlas configuration from QGIS project file
-        try {
-            $qgisPath = $this->project->getQgisPath();
-            lizmap::getLogger()->debug("generateAtlasFilename: QGIS project path: {$qgisPath}");
-
-            if (!file_exists($qgisPath)) {
-                lizmap::getLogger()->warning("generateAtlasFilename: QGIS project file does not exist at {$qgisPath}");
-
-                return null;
-            }
-
-            $xmlContent = file_get_contents($qgisPath);
-            $xml = simplexml_load_string($xmlContent);
-
-            if (!$xml) {
-                lizmap::getLogger()->warning('generateAtlasFilename: Could not parse QGIS project XML');
-
-                return null;
-            }
-            lizmap::getLogger()->debug('generateAtlasFilename: Got QGIS project XML');
-        } catch (Exception $e) {
-            lizmap::getLogger()->error('generateAtlasFilename: Exception reading QGIS project: '.$e->getMessage());
-
-            return null;
-        }
-
-        // Find the Layout (print template) with the given name
-        $layouts = $xml->xpath("//Layout[@name='{$template}']");
-        lizmap::getLogger()->debug('generateAtlasFilename: Found '.count($layouts)." layout(s) with name '{$template}'");
-        if (empty($layouts)) {
+        // Get atlas configuration from the print template already read from the QGIS project
+        $printTemplate = $this->project->getPrintTemplate($template);
+        if (!$printTemplate) {
             lizmap::getLogger()->debug("generateAtlasFilename: No layout found with name '{$template}'");
 
             return null;
         }
 
-        $layout = $layouts[0];
-
-        // Get atlas configuration from the layout
-        $atlasElements = $layout->xpath('.//Atlas');
-        lizmap::getLogger()->debug('generateAtlasFilename: Found '.count($atlasElements).' atlas element(s) in layout');
-        if (empty($atlasElements)) {
+        if (!isset($printTemplate['atlas'])) {
             lizmap::getLogger()->debug('generateAtlasFilename: No atlas configuration found in layout');
 
             return null;
         }
 
-        $atlas = $atlasElements[0];
+        $atlas = $printTemplate['atlas'];
         lizmap::getLogger()->debug('generateAtlasFilename: Processing atlas element');
 
         // Check if atlas is enabled
-        if (!isset($atlas['enabled']) || ($atlas['enabled'] != '1' && $atlas['enabled'] !== true)) {
+        if (empty($atlas['enabled'])) {
             lizmap::getLogger()->debug('generateAtlasFilename: Atlas is not enabled');
 
             return null;
