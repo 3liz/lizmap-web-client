@@ -73,6 +73,15 @@ export function qgsTestFile(file_name, directory = 'tests')   {
 }
 
 /**
+ * Get the given specific repository media folder path.
+ * @param {string} repository the repository name folder, default to 'tests'
+ * @returns {string} The repository media folder path
+ */
+export function getRepositoryMediaFolder(repository = 'tests') {
+    return path.join(testsDirectory, 'qgis-projects', repository, 'media');
+}
+
+/**
  * Get the auth storage state path
  * @param {string} name The file name without extension
  * @returns {string} The path to auth storage state path
