@@ -27,6 +27,7 @@ export default class FeaturePickerPopup {
             displayInLayerSwitcher: false,
             styleMap: new OpenLayers.StyleMap({
                 'default': new OpenLayers.Style({
+                    pointRadius: 6,
                     fillColor: '#ffaa00',
                     fillOpacity: 0.3,
                     strokeColor: '#ff6600',
