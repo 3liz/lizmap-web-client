@@ -40,6 +40,34 @@ class ProjectTest extends TestCase
 
     }
 
+    public function testGetPrintTemplate(): void
+    {
+        $proj = new ProjectForTests();
+        $proj->setPrintCapabilities(array(
+            array('title' => 'Landscape A4'),
+            array(
+                'title' => "Owner's card",
+                'atlas' => array(
+                    'enabled' => true,
+                    'coverageLayer' => 'parcels_id',
+                    'filenamePattern' => "'parcel_'||@atlas_pagename",
+                    'pageNameExpression' => '"label"',
+                ),
+            ),
+        ));
+
+        $this->assertNull($proj->getPrintTemplate('Unknown'));
+        $this->assertNull($proj->getPrintTemplate('landscape a4'));
+
+        $printTemplate = $proj->getPrintTemplate('Landscape A4');
+        $this->assertEquals('Landscape A4', $printTemplate['title']);
+        $this->assertArrayNotHasKey('atlas', $printTemplate);
+
+        $printTemplate = $proj->getPrintTemplate("Owner's card");
+        $this->assertEquals("'parcel_'||@atlas_pagename", $printTemplate['atlas']['filenamePattern']);
+        $this->assertEquals('"label"', $printTemplate['atlas']['pageNameExpression']);
+    }
+
     public static function getQgisPathData()
     {
         return array(
