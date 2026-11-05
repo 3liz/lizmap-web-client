@@ -50,6 +50,7 @@ import {isEmpty as _ol_extent$isEmpty} from 'ol/extent.js';
 import {getIntersection as _ol_extent$getIntersection} from 'ol/extent.js';
 import {buffer as _ol_extent$buffer} from 'ol/extent.js';
 import {containsCoordinate as _ol_extent$containsCoordinate} from 'ol/extent.js';
+import {containsExtent as _ol_extent$containsExtent} from 'ol/extent.js';
 
 import $ol$geom$Circle from 'ol/geom/Circle.js';
 import $ol$geom$Geometry from 'ol/geom/Geometry.js';
@@ -61,6 +62,7 @@ import $ol$geom$MultiPoint from 'ol/geom/MultiPoint.js';
 import $ol$geom$MultiPolygon from 'ol/geom/MultiPolygon.js';
 import $ol$geom$Point from 'ol/geom/Point.js';
 import $ol$geom$Polygon from 'ol/geom/Polygon.js';
+import {fromCircle as _ol_geom_$fromCircle} from 'ol/geom/Polygon.js';
 
 import $ol$proj$Projection from 'ol/proj/Projection.js';
 import {get as _ol_proj$get} from 'ol/proj.js';
@@ -99,6 +101,7 @@ import {extentFromProjection as _ol_tilegrid$extentFromProjection} from 'ol/tile
 import $ol$interaction$Draw from 'ol/interaction/Draw.js';
 import $ol$interaction$Modify from 'ol/interaction/Modify.js';
 import $ol$interaction$Select from 'ol/interaction/Select.js';
+import $ol$interaction$Snap from 'ol/interaction/Snap.js';
 import {createBox as _ol_interaction_Draw$createBox} from 'ol/interaction/Draw.js';
 
 import {altKeyOnly as _ol_events_condition$altKeyOnly} from 'ol/events/condition.js';
@@ -163,6 +166,7 @@ ol.extent.getWidth = _ol_extent$getWidth;
 ol.extent.intersects = _ol_extent$intersects;
 ol.extent.isEmpty = _ol_extent$isEmpty;
 ol.extent.containsCoordinate = _ol_extent$containsCoordinate;
+ol.extent.containsExtent = _ol_extent$containsExtent;
 
 ol.geom = {};
 ol.geom.Circle = $ol$geom$Circle;
@@ -175,6 +179,7 @@ ol.geom.MultiPoint = $ol$geom$MultiPoint;
 ol.geom.MultiPolygon = $ol$geom$MultiPolygon;
 ol.geom.Point = $ol$geom$Point;
 ol.geom.Polygon = $ol$geom$Polygon;
+ol.geom.fromCircle = _ol_geom_$fromCircle;
 
 ol.proj = {};
 ol.proj.Projection = $ol$proj$Projection;
@@ -219,6 +224,7 @@ ol.interaction = {};
 ol.interaction.Draw = $ol$interaction$Draw;
 ol.interaction.Modify = $ol$interaction$Modify;
 ol.interaction.Select = $ol$interaction$Select;
+ol.interaction.Snap = $ol$interaction$Snap;
 ol.interaction.Draw.createBox = _ol_interaction_Draw$createBox;
 
 ol.events = {};
