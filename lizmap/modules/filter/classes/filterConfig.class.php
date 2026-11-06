@@ -23,40 +23,51 @@ class filterConfig
 
     public function __construct($repository, $project)
     {
-        if ($repository === null) {
-            return false;
-        }
-        if ($project === null) {
-            return false;
+        // The repository and the project are mandatory
+        if ($repository === null || $project === null) {
+            $this->errors = array(
+                'status' => 'error',
+                'code' => 400,
+                'title' => 'Invalid Query Parameter',
+                'detail' => 'The repository and project parameters are mandatory',
+            );
+
+            return;
         }
 
         try {
             $lproj = lizmap::getProject($repository.'~'.$project);
             if (!$lproj) {
                 $this->errors = array(
+                    'status' => 'error',
+                    'code' => 404,
                     'title' => 'Invalid Query Parameter',
                     'detail' => 'The lizmap project '.strtoupper($project).' does not exist !',
                 );
 
-                return false;
+                return;
             }
         } catch (UnknownLizmapProjectException $e) {
             $this->errors = array(
+                'status' => 'error',
+                'code' => 404,
                 'title' => 'Invalid Query Parameter',
                 'detail' => 'The lizmap project '.strtoupper($project).' does not exist !',
             );
 
-            return false;
+            return;
         }
 
         // Check acl
         if (!$lproj->checkAcl()) {
             $this->errors = array(
+                'status' => 'error',
+                'code' => 403,
                 'title' => 'Access Denied',
                 'detail' => jLocale::get('view~default.repository.access.denied'),
             );
 
-            return false;
+            return;
         }
 
         // Filter config may be an empty array
