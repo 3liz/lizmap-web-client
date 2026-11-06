@@ -1,5 +1,7 @@
 <?php
 
+use LizmapAdmin\QgisProjectsListData;
+
 /**
  * Lizmap administration : List of QGIS projects.
  *
@@ -18,7 +20,10 @@ class qgis_projectsCtrl extends jController
     );
 
     /**
-     * Get the information from QGIS Server and display them.
+     * Display the QGIS projects list page.
+     *
+     * The page ships an empty table shell; the rows are loaded as JSON by
+     * DataTables from the `data` action below.
      *
      * @return jResponseHtml
      */
@@ -28,18 +33,48 @@ class qgis_projectsCtrl extends jController
         $rep = $this->getResponse('html');
         $rep->title = jLocale::get('admin~admin.project.page.title');
 
+        // Context needed to render the legend modal and the server status banner
+        // (server versions, thresholds, required versions).
+        $listData = new QgisProjectsListData();
+
         // Set the HTML content
         $tpl = new jTpl();
-        $repoName = $this->param('repository');
+        $tpl->assign($listData->getContext());
+
+        $tpl->assign(
+            'notDisplayedMessage',
+            jLocale::get(
+                'admin~admin.project.error.some.projects.not.displayed',
+                array(jLocale::get('admin~admin.project.modal.title'))
+            )
+        );
+        $repoName = $this->param('repository', '');
         // bad repo name, set to null
-        if (is_null(lizmap::getRepository($repoName ?? ''))) {
-            $repoName = null;
+        if (is_null(lizmap::getRepository($repoName))) {
+            $repoName = '';
         }
+        $tpl->assign('dataUrl', jUrl::get('admin~qgis_projects:data', array('repository' => $repoName)));
         $tpl->assign('repository', $repoName);
         $tpl->assign('repositoriesList', lizmap::getRepositoryList(true));
         $tpl->assign('baseurl', jUrl::get('qgis_projects:index'));
         $rep->body->assign('MAIN', $tpl->fetch('project_list'));
         $rep->body->assign('selectedMenuItem', 'lizmap_project_list');
+
+        return $rep;
+    }
+
+    /**
+     * Return the QGIS projects list as JSON, consumed by DataTables.
+     *
+     * @return jResponseJson
+     */
+    public function data()
+    {
+        /** @var jResponseJson $rep */
+        $rep = $this->getResponse('json');
+
+        $listData = new QgisProjectsListData();
+        $rep->data = $listData->getData($this->param('repository', ''));
 
         return $rep;
     }
