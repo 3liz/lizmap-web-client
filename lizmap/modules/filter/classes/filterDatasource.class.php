@@ -56,13 +56,6 @@ class filterDatasource
 
             return;
         }
-        $config = $dv->getConfig();
-        if (empty($config)) {
-            $this->errors = $dv->getErrors();
-
-            return;
-        }
-
         $this->repository = $repository;
         $this->project = $project;
         $this->layerId = $layerId;
@@ -73,6 +66,7 @@ class filterDatasource
         if (!in_array($layerId, $this->getFilterLayerIds(), true)) {
             $this->errors = array(
                 'status' => 'error',
+                'code' => 400,
                 'title' => 'Invalid Query Parameter',
                 'detail' => 'The layer '.$this->layerId.' is not configured for the filter tools',
             );
@@ -85,6 +79,7 @@ class filterDatasource
         if (!$layer instanceof qgisVectorLayer) {
             $this->errors = array(
                 'status' => 'error',
+                'code' => 400,
                 'title' => 'Invalid Query Parameter',
                 'detail' => 'The layer '.$this->layerId.' is not a vector layer of the project',
             );
@@ -130,6 +125,97 @@ class filterDatasource
         }
 
         return array_values(array_unique($layerIds));
+    }
+
+    /**
+     * Get the names of the layer fields which can be queried by the filter tools.
+     *
+     * These are the fields of the form filter configuration of the layer,
+     * the date fields of the time manager configuration of the layer,
+     * and the primary key fields, used by the form filter to get the ids
+     * of the filtered features.
+     *
+     * @return string[] the field names
+     */
+    private function getFilterFieldNames()
+    {
+        $fieldNames = array();
+
+        // Fields of the form filter: the field for unique values and text,
+        // the start and end fields for dates and numbers,
+        // min_date and max_date for the configurations before LWC 3.7
+        $formFilterProperties = array('field', 'start_field', 'end_field', 'min_date', 'max_date');
+        foreach ((array) $this->config as $fieldConfig) {
+            if (!is_object($fieldConfig)
+                || !property_exists($fieldConfig, 'layerId')
+                || $fieldConfig->layerId !== $this->layerId) {
+                continue;
+            }
+            $values = get_object_vars($fieldConfig);
+            foreach ($formFilterProperties as $property) {
+                if (isset($values[$property]) && is_string($values[$property])) {
+                    $fieldNames[] = $values[$property];
+                }
+            }
+        }
+
+        // Date fields of the time manager
+        foreach ((array) $this->lproj->getTimemanagerLayersConfig() as $layerConfig) {
+            if (!is_object($layerConfig)
+                || !property_exists($layerConfig, 'layerId')
+                || $layerConfig->layerId !== $this->layerId) {
+                continue;
+            }
+            $values = get_object_vars($layerConfig);
+            foreach (array('startAttribute', 'endAttribute') as $property) {
+                if (isset($values[$property]) && is_string($values[$property])) {
+                    $fieldNames[] = $values[$property];
+                }
+            }
+        }
+
+        // Primary key fields, from the database or from the datasource
+        try {
+            $fieldNames = array_merge($fieldNames, $this->layer->getDbFieldsInfo()->primaryKeys);
+        } catch (Exception $e) {
+            if (!empty($this->datasource->key)) {
+                $fieldNames = array_merge($fieldNames, array_map('trim', explode(',', $this->datasource->key)));
+            }
+        }
+
+        // Remove the empty values of optional properties
+        return array_values(array_unique(array_filter($fieldNames, function ($name) {
+            return $name !== '';
+        })));
+    }
+
+    /**
+     * Check that the requested fields can be queried by the filter tools.
+     *
+     * The errors are set if a field is not used by the filter tools,
+     * to avoid exposing the values of other fields.
+     *
+     * @param string[] $fields the requested field names
+     *
+     * @return bool true if all the fields can be queried
+     */
+    private function checkFilterFields($fields)
+    {
+        $allowedFields = $this->getFilterFieldNames();
+        foreach ($fields as $field) {
+            if (!in_array($field, $allowedFields, true)) {
+                $this->errors = array(
+                    'status' => 'error',
+                    'code' => 400,
+                    'title' => 'Invalid Query Parameter',
+                    'detail' => 'The field '.$field.' is not configured for the filter tools',
+                );
+
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public function getStatus()
@@ -251,6 +337,7 @@ class filterDatasource
 
             $this->errors = array(
                 'status' => 'error',
+                'code' => 500,
                 'title' => 'Invalid Query',
                 'detail' => '',
             );
@@ -319,10 +406,16 @@ class filterDatasource
         if (!in_array($fieldname, $lfields)) {
             $this->errors = array(
                 'status' => 'error',
+                'code' => 400,
                 'title' => 'The field does not exists in the table: ',
                 'detail' => 'given fieldname = '.$fieldname,
             );
 
+            return $this->errors;
+        }
+
+        // Only the fields used by the filter tools can be queried
+        if (!$this->checkFilterFields(array($fieldname))) {
             return $this->errors;
         }
 
@@ -462,12 +555,18 @@ class filterDatasource
             if (!in_array($field, $lfields)) {
                 $this->errors = array(
                     'status' => 'error',
+                    'code' => 400,
                     'title' => 'The field does not exists in the table: ',
                     'detail' => 'given fieldname = '.$field,
                 );
 
                 return $this->errors;
             }
+        }
+
+        // Only the fields used by the filter tools can be queried
+        if (!$this->checkFilterFields($fields)) {
+            return $this->errors;
         }
 
         // validate filter
@@ -535,6 +634,7 @@ class filterDatasource
                 if (!$this->sqliteFunctionExists('GeomFromGPB')) {
                     $this->errors = array(
                         'status' => 'error',
+                        'code' => 501,
                         'title' => 'Filtered extent not available',
                         'detail' => 'SpatiaLite has no GeoPackage support (GeomFromGPB)',
                     );
