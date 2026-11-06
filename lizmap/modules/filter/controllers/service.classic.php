@@ -1,5 +1,6 @@
 <?php
 
+use Lizmap\Request\Proxy;
 use Violet\StreamingJsonEncoder\BufferJsonEncoder;
 use Violet\StreamingJsonEncoder\JsonStream;
 
@@ -52,10 +53,9 @@ class serviceCtrl extends jController
         if (!$dv->getStatus()) {
             return $this->error($dv->getErrors());
         }
+        // The form filter configuration may be empty: the time manager
+        // also uses the filter service
         $config = $dv->getConfig();
-        if (empty($config)) {
-            return $this->error($dv->getErrors());
-        }
         $this->repository = $repository;
         $this->project = $project;
         $this->config = $config;
@@ -87,6 +87,8 @@ class serviceCtrl extends jController
 
         return $this->error(
             array(
+                'status' => 'error',
+                'code' => 400,
                 'title' => 'Not supported request',
                 'detail' => 'The request "'.$request.'" is not supported!',
             ),
@@ -96,7 +98,10 @@ class serviceCtrl extends jController
     /**
      * Provide errors.
      *
-     * @param mixed $errors
+     * The HTTP status code of the response is the code of the errors,
+     * as done by the dataviz service.
+     *
+     * @param array $errors the errors, with title, detail and HTTP status code
      *
      * @return jResponseJson the errors response
      */
@@ -104,9 +109,26 @@ class serviceCtrl extends jController
     {
         /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
+        $this->setErrorHttpStatus($rep, $errors);
         $rep->data = array('errors' => $errors);
 
         return $rep;
+    }
+
+    /**
+     * Set the HTTP status code of an error response.
+     *
+     * @param jResponseJson $rep    the error response
+     * @param array         $errors the errors, with an optional HTTP status code
+     */
+    protected function setErrorHttpStatus($rep, $errors)
+    {
+        // Errors without code are client errors
+        $code = 400;
+        if (is_array($errors) && array_key_exists('code', $errors)) {
+            $code = (int) $errors['code'];
+        }
+        $rep->setHttpStatus($code, Proxy::getHttpStatusMsg($code));
     }
 
     /**
@@ -223,6 +245,19 @@ class serviceCtrl extends jController
      */
     protected function streamResponse($streamedData)
     {
+        // The datasource returns an array with the error status
+        // if the request is not valid or the query failed
+        if (is_array($streamedData)
+            && array_key_exists('status', $streamedData)
+            && $streamedData['status'] === 'error') {
+            /** @var jResponseJson $response */
+            $response = $this->getResponse('json');
+            $this->setErrorHttpStatus($response, $streamedData);
+            $response->data = $streamedData;
+
+            return $response;
+        }
+
         if (is_iterable($streamedData)) {
             /**
              * @var jResponseBinary $response

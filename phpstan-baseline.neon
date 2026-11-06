@@ -16,11 +16,6 @@ parameters:
     - '#^Call to an undefined method jDaoFactoryBase#'
 
     -
-      message: "#^Method filterConfig\\:\\:__construct\\(\\) with return type void returns false but should not return anything\\.$#"
-      count: 5
-      path: lizmap/modules/filter/classes/filterConfig.class.php
-
-    -
       message: "#^Property filterConfig\\:\\:\\$lproj is never read, only written\\.$#"
       count: 1
       path: lizmap/modules/filter/classes/filterConfig.class.php

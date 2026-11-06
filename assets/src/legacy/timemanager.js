@@ -192,7 +192,14 @@ var lizTimemanager = function() {
                     // Callback
                     aCallback(dmin, dmax);
 
-                }, 'json');
+                }, 'json').fail(function(jqXHR){
+                    // The errors are returned with an HTTP error status code
+                    const result = jqXHR.responseJSON;
+                    const error = (result && 'errors' in result) ? result['errors'] : result;
+                    if (error) {
+                        console.log(error.title + ': ' + error.detail);
+                    }
+                });
             }
 
 

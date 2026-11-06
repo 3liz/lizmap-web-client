@@ -118,25 +118,59 @@ async function getExtent(request, layerParams) {
 }
 
 /**
- * Request the feature count of a layer and check that an error is returned.
+ * Request the filter service and check that an error is returned.
+ *
+ * The errors are returned with an HTTP error status code. The errors about
+ * the project or the layer are returned by the controller in an "errors"
+ * property, the errors about the request parameters, like the field name,
+ * are returned directly by the request.
  * @param {APIRequestContext} request the request context
- * @param {string} layerId the layer id
+ * @param {{[key: string]: string}} params the layer, the request and its parameters
+ * @param {number} status the expected HTTP status code
  * @param {string} detail the expected error detail
+ * @param {boolean} inErrorsProperty true if the error is in an "errors" property
  */
-async function expectLayerError(request, layerId, detail) {
-    const searchParams = new URLSearchParams({
-        ...loginParams,
-        layerId: layerId,
-        request: 'getFeatureCount',
-    });
+async function expectError(request, params, status, detail, inErrorsProperty = true) {
+    const searchParams = new URLSearchParams(params);
     const response = await request.get(`${url}?${searchParams}`);
-    // A JSON error, not a server error
-    responseExpect(response).toBeJson();
-    const json = await response.json();
-    expect(json).toHaveProperty('errors');
-    expect(json.errors).toHaveProperty('status', 'error');
-    expect(json.errors).toHaveProperty('detail', detail);
+    // A JSON error with the expected status code
+    responseExpect(response).toBeJson(status);
+    let error = await response.json();
+    if (inErrorsProperty) {
+        expect(error).toHaveProperty('errors');
+        error = error.errors;
+    }
+    expect(error).toHaveProperty('status', 'error');
+    expect(error).toHaveProperty('code', status);
+    expect(error).toHaveProperty('detail', detail);
 }
+
+test.describe('Filter API - requests - @requests @readonly', () => {
+
+    /**
+     * An unknown request returns a client error.
+     */
+    test('Error: Request not supported', async ({ request }) => {
+        await expectError(
+            request,
+            {...loginParams, request: 'getAllValues'},
+            400,
+            'The request "getAllValues" is not supported!'
+        );
+    });
+
+    /**
+     * An unknown project returns a not found error.
+     */
+    test('Error: Project not found', async ({ request }) => {
+        await expectError(
+            request,
+            {...loginParams, project: 'unknown_project'},
+            404,
+            'The lizmap project UNKNOWN_PROJECT does not exist !'
+        );
+    });
+});
 
 test.describe('Filter API - layers - @requests @readonly', () => {
 
@@ -146,8 +180,11 @@ test.describe('Filter API - layers - @requests @readonly', () => {
      */
     test('Error: Layer not configured for the filter tools', async ({ request }) => {
         const layerId = 'layer_with_no_filter_89c540b5_0c19_4805_b505_78770286189f';
-        await expectLayerError(
-            request, layerId, `The layer ${layerId} is not configured for the filter tools`
+        await expectError(
+            request,
+            {...loginParams, layerId: layerId, request: 'getFeatureCount'},
+            400,
+            `The layer ${layerId} is not configured for the filter tools`
         );
     });
 
@@ -155,8 +192,44 @@ test.describe('Filter API - layers - @requests @readonly', () => {
      * An unknown layer returns a JSON error, and not a server error.
      */
     test('Error: Layer not in project', async ({ request }) => {
-        await expectLayerError(
-            request, 'unknown_layer', 'The layer unknown_layer is not configured for the filter tools'
+        await expectError(
+            request,
+            {...loginParams, layerId: 'unknown_layer', request: 'getFeatureCount'},
+            400,
+            'The layer unknown_layer is not configured for the filter tools'
+        );
+    });
+});
+
+test.describe('Filter API - fields - @requests @readonly', () => {
+    test.use({ storageState: getAuthStorageStatePath('admin') });
+
+    /**
+     * The field "group" exists in the table, but it is not used by the form
+     * filter nor by the time manager: its values cannot be queried,
+     * even by an admin.
+     */
+    test('Error: Unique values of a field not configured for the filter tools', async ({ request }) => {
+        await expectError(
+            request,
+            {...loginParams, request: 'getUniqueValues', fieldname: 'group'},
+            400,
+            'The field group is not configured for the filter tools',
+            false
+        );
+    });
+
+    /**
+     * The min and max values can only be queried for configured fields:
+     * the primary key "gid" is allowed, not the field "group".
+     */
+    test('Error: Min and max values of a field not configured for the filter tools', async ({ request }) => {
+        await expectError(
+            request,
+            {...loginParams, request: 'getMinAndMaxValues', fieldname: 'gid,group'},
+            400,
+            'The field group is not configured for the filter tools',
+            false
         );
     });
 });
