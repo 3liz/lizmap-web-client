@@ -2,6 +2,7 @@
 import { test, expect } from '@playwright/test';
 import { expect as responseExpect } from './fixtures/expect-response.js'
 import { ProjectPage } from './pages/project';
+import { FormFilterPage } from './pages/formfilterpage';
 import { getAuthStorageStatePath } from './globals';
 
 
@@ -648,3 +649,37 @@ test.describe('Filter layer data by user - not connected - @readonly', () => {
         await project.closeLeftDock();
     });
 });
+
+/**
+ * Form filter of the layer blue_filter_layer_by_user, filtered by login: the feature count displayed in the
+ * form filter panel must only include the features the user can see.
+ */
+const formFilterCases = [
+    { title: 'not connected', user: null, count: '0' },
+    { title: 'user in group a', user: 'user_in_group_a', count: '1' },
+    { title: 'admin', user: 'admin', count: '3' },
+];
+for (const formFilterCase of formFilterCases) {
+    test.describe(`Filter layer data by user - form filter - ${formFilterCase.title} - @readonly`, () => {
+        if (formFilterCase.user) {
+            test.use({ storageState: getAuthStorageStatePath(formFilterCase.user) });
+        }
+
+        /**
+         * Open the form filter panel and check the feature count
+         * returned by the filter service and displayed.
+         */
+        test('Form filter feature count', async ({ page }) => {
+            const project = new FormFilterPage(page, 'filter_layer_by_user');
+            // The feature count is requested for the layer of the form filter
+            const getFeatureCountPromise = project.waitForGetFeatureCountRequest('filter_layer_by_user_8bd3128f_2cad_4121_b5f9_0b6f6118e2f0');
+            await project.open();
+            await project.openFormFilterPanel();
+            const getFeatureCountRequest = await getFeatureCountPromise;
+            responseExpect(await getFeatureCountRequest.response()).toBeJson();
+
+            // The count only includes the features the user can see
+            await expect(project.countFeatureSpan).toHaveText(formFilterCase.count);
+        });
+    });
+}

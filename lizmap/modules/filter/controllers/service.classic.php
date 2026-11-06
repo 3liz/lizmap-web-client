@@ -125,6 +125,10 @@ class serviceCtrl extends jController
         // Get data
         jClasses::inc('filter~filterDatasource');
         $f = new filterDatasource($repository, $project, $layerId);
+        // Stop if the layer cannot be queried, e.g. not configured for the filter tools
+        if (!$f->getStatus()) {
+            return $this->error($f->getErrors());
+        }
         $streamedData = $f->getFeatureCount($filter);
 
         return $this->streamResponse($streamedData);
@@ -147,6 +151,10 @@ class serviceCtrl extends jController
         // Get data
         jClasses::inc('filter~filterDatasource');
         $f = new filterDatasource($repository, $project, $layerId);
+        // Stop if the layer cannot be queried, e.g. not configured for the filter tools
+        if (!$f->getStatus()) {
+            return $this->error($f->getErrors());
+        }
         $streamedData = $f->getUniqueValues($fieldname, $filter);
 
         return $this->streamResponse($streamedData);
@@ -169,6 +177,10 @@ class serviceCtrl extends jController
         // Get data
         jClasses::inc('filter~filterDatasource');
         $f = new filterDatasource($repository, $project, $layerId);
+        // Stop if the layer cannot be queried, e.g. not configured for the filter tools
+        if (!$f->getStatus()) {
+            return $this->error($f->getErrors());
+        }
         $streamedData = $f->getMinAndMaxValues($fieldname, $filter);
 
         return $this->streamResponse($streamedData);
@@ -191,6 +203,10 @@ class serviceCtrl extends jController
         // Get data
         jClasses::inc('filter~filterDatasource');
         $f = new filterDatasource($repository, $project, $layerId);
+        // Stop if the layer cannot be queried, e.g. not configured for the filter tools
+        if (!$f->getStatus()) {
+            return $this->error($f->getErrors());
+        }
         $streamedData = $f->getExtent($crs, $filter);
 
         return $this->streamResponse($streamedData);
