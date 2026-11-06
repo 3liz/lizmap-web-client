@@ -852,6 +852,17 @@ class Project
         return $timeManager && count((array) $timeManager);
     }
 
+    /**
+     * Get the configuration of the time manager layers.
+     *
+     * @return null|object the time manager layers configuration, keyed by
+     *                     layer name, each one with its layerId
+     */
+    public function getTimemanagerLayersConfig()
+    {
+        return $this->cfg->getTimemanagerLayers();
+    }
+
     public function hasAtlasEnabled()
     {
         $atlasEnabled = $this->cfg->getBooleanOption('atlasEnabled');
