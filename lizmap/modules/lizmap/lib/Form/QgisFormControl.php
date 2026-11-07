@@ -728,10 +728,20 @@ class QgisFormControl
 
     public function isUploadControl()
     {
-        return $this->fieldEditType === 8
-            || $this->fieldEditType === 'FileName'
-            || $this->fieldEditType === 'Photo'
-            || $this->fieldEditType === 'ExternalResource';
+        return self::isUploadEditType($this->fieldEditType);
+    }
+
+    /**
+     * Tell if a QGIS edit type is displayed as a file upload control.
+     *
+     * @param int|string $fieldEditType the QGIS edit type
+     */
+    public static function isUploadEditType($fieldEditType): bool
+    {
+        return $fieldEditType === 8
+            || $fieldEditType === 'FileName'
+            || $fieldEditType === 'Photo'
+            || $fieldEditType === 'ExternalResource';
     }
 
     public function isImageUploadControl()
