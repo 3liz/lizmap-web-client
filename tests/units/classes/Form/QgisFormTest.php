@@ -1,5 +1,6 @@
 <?php
 
+use Lizmap\Form\QgisForm;
 use Lizmap\Form\QgisFormControl;
 use Lizmap\Form\QgisFormControlProperties;
 use Lizmap\Project;
@@ -100,6 +101,19 @@ class dummyFormForDefaults
     public function check()
     {
         return true;
+    }
+}
+
+/**
+ * Upload control stub returning the name of the uploaded file.
+ */
+class dummyUploadControl
+{
+    public $newFile = '';
+
+    public function getNewFile()
+    {
+        return $this->newFile;
     }
 }
 
@@ -723,6 +737,142 @@ class QgisFormTest extends TestCase
 
         // 'foo' was already 'manual' — it must not be overwritten
         $this->assertEquals('manual', $form->getData('foo'));
+    }
+
+    public function testGetUploadFieldNames(): void
+    {
+        $formInfos = array(
+            'label' => new QgisFormControlProperties('label', 'TextEdit', 'input', array()),
+            'photo' => new QgisFormControlProperties('photo', 'ExternalResource', 'upload', array()),
+            'old_photo' => new QgisFormControlProperties('old_photo', 'Photo', 'upload', array()),
+            'file' => new QgisFormControlProperties('file', 'FileName', 'upload', array()),
+            'legacy' => new QgisFormControlProperties('legacy', 8, 'upload', array()),
+            'other' => new QgisFormControlProperties('other', 'ValueMap', 'menulist', array()),
+        );
+
+        $this->assertEquals(
+            array('photo', 'old_photo', 'file', 'legacy'),
+            QgisForm::getUploadFieldNames($formInfos)
+        );
+        $this->assertEquals(array(), QgisForm::getUploadFieldNames(array()));
+        $this->assertEquals(array(), QgisForm::getUploadFieldNames(null));
+    }
+
+    /**
+     * Build a QgisForm for a layer with two upload fields having a default value:
+     * photo (dynamic expression) and document (literal string).
+     */
+    protected function buildUploadForm($form, $evaluateResult)
+    {
+        $textField = (object) array('autoIncrement' => false, 'notNull' => false, 'type' => 'text');
+        $layer = $this->setUpEnv('test', 'upload', array(
+            'pkuid' => (object) array('autoIncrement' => true, 'type' => 'float'),
+            'label' => $textField,
+            'photo' => $textField,
+            'document' => $textField,
+        ));
+        // A form cache valid for the project, so that the controls get their edit types
+        $this->appContext->setCache('/test.qgs.layer-upload-form', array(
+            'qgsmtime' => PHP_INT_MAX,
+            'qgscfgmtime' => PHP_INT_MAX,
+            'format_version' => Project\ProjectCache::CACHE_FORMAT_VERSION,
+            'formControls' => $this->readFormCache(__DIR__.'/forms/test.upload.form.json'),
+        ), null, 'qgisprojects');
+        $layer->setDefaultValues(array(
+            'label' => '"pkuid" || \' tree\'',
+            'photo' => 'attribute(@feature, \'label\')',
+            'document' => '\'plan\'',
+        ));
+        $layer->setDefaultValuesApplyOnUpdate(array(
+            'label' => true,
+            'photo' => true,
+            'document' => true,
+        ));
+
+        // The constructor evaluates the default values: set the stub result first
+        $reflection = new ReflectionClass(QgisForm2ForTests::class);
+
+        /** @var QgisForm2ForTests $qgisForm */
+        $qgisForm = $reflection->newInstanceWithoutConstructor();
+        $qgisForm->evaluateExpressionReturn = $evaluateResult;
+        $qgisForm->__construct($layer, $form, null, false, $this->appContext);
+
+        return $qgisForm;
+    }
+
+    /**
+     * The default value of an upload field must not fill the create form,
+     * neither as a static nor as a dynamic default value.
+     */
+    public function testUploadFieldsAreNotFilledWithDefaultValueAtFormOpen(): void
+    {
+        $qgisForm = $this->buildUploadForm(
+            new dummyFormForDefaults(),
+            (object) array('label' => '1 tree', 'photo' => '1 tree')
+        );
+
+        $controls = $qgisForm->getQgisControls();
+        $this->assertEquals('1 tree', $controls['label']->defaultValue, 'Other fields keep their dynamic default value');
+        $this->assertNull($controls['photo']->defaultValue, 'Dynamic default of an upload field must not fill the form');
+        $this->assertNull($controls['document']->defaultValue, 'Static default of an upload field must not fill the form');
+
+        // Only the default value of the text field is evaluated
+        $this->assertCount(1, $qgisForm->evaluateExpressionCalls);
+        $this->assertEquals(array('label'), array_keys($qgisForm->evaluateExpressionCalls[0]['expressions']));
+
+        // Upload fields are not listed for the live refresh of the client
+        $this->assertEquals(array('label'), array_keys($qgisForm->getDynamicDefaultExpressionsForTests()));
+        $this->assertEquals(array('label' => true), $qgisForm->getDefaultApplyOnUpdateMapForTests());
+
+        // nor filled by setFormDataFromDefault
+        $this->assertEquals(array('label'), array_keys($qgisForm->collectDynamicExpressionsForTests()));
+    }
+
+    /**
+     * Saving a new feature without uploading a file must not store the
+     * default value (the file name) in the upload field.
+     */
+    public function testUploadFieldsAreNotFilledWithDefaultValueBeforeSave(): void
+    {
+        $form = new dummyFormForDefaults();
+        $qgisForm = $this->buildUploadForm($form, (object) array('label' => '1 tree', 'photo' => '1 tree'));
+        // Empty fields of a new feature, no file uploaded
+        $form->setData('label', '');
+        $form->setData('photo', '');
+        $form->setData('document', '');
+
+        $applied = $qgisForm->applyDynamicDefaultsBeforeSave();
+
+        $this->assertEquals(array('label'), $applied);
+        $this->assertEquals('1 tree', $form->getData('label'));
+        $this->assertEquals('', $form->getData('photo'));
+        $this->assertEquals('', $form->getData('document'));
+    }
+
+    /**
+     * The default value of an upload field still names the uploaded file:
+     * stem of the default value + extension of the uploaded file.
+     */
+    public function testUploadDefaultValueStillNamesTheUploadedFile(): void
+    {
+        $qgisForm = $this->buildUploadForm(new dummyFormForDefaults(), null);
+        $upload = new dummyUploadControl();
+
+        // No new file: no renaming
+        $this->assertNull($qgisForm->computeDefaultFilenameForTests($upload, 'photo', array()));
+
+        $upload->newFile = 'IMG_0001.JPG';
+        $qgisForm->evaluateExpressionReturn = (object) array('photo' => 'photos/tree_42.png');
+        $this->assertEquals('tree_42.JPG', $qgisForm->computeDefaultFilenameForTests($upload, 'photo', array('label' => 'tree_42')));
+        $lastCall = end($qgisForm->evaluateExpressionCalls);
+        $this->assertEquals(array('photo' => 'attribute(@feature, \'label\')'), $lastCall['expressions']);
+        $this->assertEquals(array('label' => 'tree_42'), $lastCall['form_feature']['properties']);
+
+        // A literal default value is used without calling QGIS Server
+        $calls = count($qgisForm->evaluateExpressionCalls);
+        $upload->newFile = 'scan.pdf';
+        $this->assertEquals('plan.pdf', $qgisForm->computeDefaultFilenameForTests($upload, 'document', array()));
+        $this->assertCount($calls, $qgisForm->evaluateExpressionCalls);
     }
 
     public function testResolveFieldNames(): void

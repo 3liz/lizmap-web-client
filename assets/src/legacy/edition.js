@@ -2076,6 +2076,8 @@ var lizEdition = function() {
     function fillField( form, name, value, force ) {
         var jCtrl = jFormsJQ.getForm(form.attr('id')).getControl(name);
         var inputs = fieldInputs(form, name);
+        // Upload fields are never filled: their default value only names the uploaded file
+        if (inputs.is(':file') || form.find('[name="' + name + '_jf_action"]').length) return;
         // Dates are split in year, month, day, hour, minutes and seconds inputs
         if (jCtrl && jCtrl.multiFields) {
             if (!force && jCtrl.getValue() != null) return;
