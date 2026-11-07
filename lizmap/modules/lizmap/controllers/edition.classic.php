@@ -721,10 +721,11 @@ class editionCtrl extends jController
             'properties' => $values,
         );
 
-        $defs = $this->layer->getDefaultValueDefinitions();
+        $layer = $this->layer;
+        $defs = $layer->getDefaultValueDefinitions();
         // The default value of an upload field only names the uploaded file
         $uploadFields = Form\QgisForm::getUploadFieldNames(
-            $this->layer->getProject()->getCacheHandler()->getEditableLayerFormCache($this->layer->getId())
+            $layer->getProject()->getCacheHandler()->getEditableLayerFormCache($layer->getId())
         );
         $expressions = array();
         foreach ($defs as $field => $def) {
@@ -744,18 +745,18 @@ class editionCtrl extends jController
             $expressions[$field] = $expression;
         }
 
-        $results = $expressions ? (array) qgisExpressionUtils::evaluateExpressions($this->layer, $expressions, $formFeature) : array();
+        $results = $expressions ? (array) qgisExpressionUtils::evaluateExpressions($layer, $expressions, $formFeature) : array();
 
         // Text widgets: templates are read from the project, never from the request
         $templates = array();
-        $xmlLayer = $texts ? $this->layer->getXmlLayer() : null;
+        $xmlLayer = $texts ? $layer->getXmlLayer() : null;
         foreach ($xmlLayer ? $xmlLayer->xpath('.//attributeEditorTextElement') : array() as $node) {
             if (in_array((string) $node['name'], $texts, true)) {
                 $templates[(string) $node['name']] = (string) $node;
             }
         }
         if ($templates) {
-            $json = qgisExpressionUtils::replaceExpressionText($this->layer, $templates, $formFeature);
+            $json = qgisExpressionUtils::replaceExpressionText($layer, $templates, $formFeature);
             $results += (array) ($json->features[0]->properties ?? array());
         }
 

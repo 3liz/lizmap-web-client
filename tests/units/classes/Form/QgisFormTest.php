@@ -105,51 +105,6 @@ class dummyFormForDefaults
 }
 
 /**
- * QgisForm built by its real constructor, without the HTTP calls to QGIS Server
- * and without filling the controls (upload controls need the Lizmap services).
- */
-class QgisFormUploadDefaultsForTests extends QgisForm2ForTests
-{
-    /** @var array[] recorded calls to evaluateExpression */
-    public $evaluateExpressionCalls = array();
-
-    /** @var mixed return value of the evaluateExpression stub */
-    public $evaluateExpressionReturn;
-
-    public function evaluateExpression($expression, $form_feature = null)
-    {
-        $this->evaluateExpressionCalls[] = array(
-            'expressions' => $expression,
-            'form_feature' => $form_feature,
-        );
-
-        return $this->evaluateExpressionReturn;
-    }
-
-    protected function fillFormControl($formControl, $fieldName, $form) {}
-
-    public function getDynamicDefaultExpressionsForTests()
-    {
-        return $this->dynamicDefaultExpressions;
-    }
-
-    public function getDefaultApplyOnUpdateMapForTests()
-    {
-        return $this->defaultApplyOnUpdateMap;
-    }
-
-    public function collectDynamicExpressionsForTests()
-    {
-        return $this->collectDynamicExpressions();
-    }
-
-    public function computeDefaultFilenameForTests($uploadCtrl, $ref, $formData)
-    {
-        return $this->computeDefaultFilename($uploadCtrl, $ref, $formData);
-    }
-}
-
-/**
  * Upload control stub returning the name of the uploaded file.
  */
 class dummyUploadControl
@@ -835,9 +790,9 @@ class QgisFormTest extends TestCase
         ));
 
         // The constructor evaluates the default values: set the stub result first
-        $reflection = new ReflectionClass(QgisFormUploadDefaultsForTests::class);
+        $reflection = new ReflectionClass(QgisForm2ForTests::class);
 
-        /** @var QgisFormUploadDefaultsForTests $qgisForm */
+        /** @var QgisForm2ForTests $qgisForm */
         $qgisForm = $reflection->newInstanceWithoutConstructor();
         $qgisForm->evaluateExpressionReturn = $evaluateResult;
         $qgisForm->__construct($layer, $form, null, false, $this->appContext);
