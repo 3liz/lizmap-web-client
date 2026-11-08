@@ -182,7 +182,7 @@ class qgisExpressionUtils
         );
 
         return preg_replace_callback(
-            '/\'(?:[^\'\\\\]|\\\\.)*\'|"(?:[^"\\\\]|\\\\.)*"|@atlas_(\w+)/',
+            '/\'(?:[^\'\\\]|\\\.)*\'|"(?:[^"\\\]|\\\.)*"|@atlas_(\w+)/',
             function ($matches) use ($replacements) {
                 if (isset($matches[1]) && array_key_exists($matches[1], $replacements)) {
                     return $replacements[$matches[1]];
