@@ -937,7 +937,7 @@ class serviceCtrl extends jController
 
             // Sanitize filename - remove/replace unsafe characters
             $evaluatedFilename = trim((string) $features[0]->properties->filename);
-            $evaluatedFilename = preg_replace('/[\x00-\x1F<>:"\/\\\\|?*]/', '_', $evaluatedFilename);
+            $evaluatedFilename = preg_replace('/[\x00-\x1F<>:"\/\\\|?*]/', '_', $evaluatedFilename);
             lizmap::getLogger()->debug("generateAtlasFilename: Evaluated filename: '{$evaluatedFilename}'");
 
             if ($evaluatedFilename) {
