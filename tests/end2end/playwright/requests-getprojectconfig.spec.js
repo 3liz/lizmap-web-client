@@ -284,7 +284,18 @@ test.describe('Request Lizmap GetProjectConfig - anonymous - @requests @readonly
 
         expect(body.tooltipLayers).toEqual({});
 
-        expect(body.formFilterLayers).toEqual({});
+        // The form filter is configured to test the filter service
+        expect(body.formFilterLayers).toEqual({
+            '0': {
+                layerId: 'filter_layer_by_user_8bd3128f_2cad_4121_b5f9_0b6f6118e2f0',
+                provider: 'postgres',
+                title: 'User',
+                type: 'uniquevalues',
+                field: 'user',
+                format: 'checkboxes',
+                order: 0,
+            },
+        });
 
         expect(body.datavizLayers.locale).not.toEqual('');
         expect(body.datavizLayers.layers).toEqual([]);
@@ -354,7 +365,18 @@ test.describe('Request Lizmap GetProjectConfig - anonymous - @requests @readonly
 
         expect(body.tooltipLayers).toEqual({});
 
-        expect(body.formFilterLayers).toEqual({});
+        // The form filter is configured to test the filter service
+        expect(body.formFilterLayers).toEqual({
+            '0': {
+                layerId: 'shop_bakery_pg_403084fe_041d_4ede_a2dc_cd9866a53623',
+                provider: 'postgres',
+                title: 'Name',
+                type: 'uniquevalues',
+                field: 'name',
+                format: 'checkboxes',
+                order: 0,
+            },
+        });
 
         expect(body.datavizLayers.locale).not.toEqual('');
         expect(body.datavizLayers.layers).toEqual([]);
@@ -836,7 +858,18 @@ test.describe('Request Lizmap GetProjectConfig - admin - @requests @readonly', (
 
         expect(body.tooltipLayers).toEqual({});
 
-        expect(body.formFilterLayers).toEqual({});
+        // The form filter is configured to test the filter service
+        expect(body.formFilterLayers).toEqual({
+            '0': {
+                layerId: 'filter_layer_by_user_8bd3128f_2cad_4121_b5f9_0b6f6118e2f0',
+                provider: 'postgres',
+                title: 'User',
+                type: 'uniquevalues',
+                field: 'user',
+                format: 'checkboxes',
+                order: 0,
+            },
+        });
 
         expect(body.datavizLayers.locale).not.toEqual('');
         expect(body.datavizLayers.layers).toEqual([]);
@@ -906,7 +939,18 @@ test.describe('Request Lizmap GetProjectConfig - admin - @requests @readonly', (
 
         expect(body.tooltipLayers).toEqual({});
 
-        expect(body.formFilterLayers).toEqual({});
+        // The form filter is configured to test the filter service
+        expect(body.formFilterLayers).toEqual({
+            '0': {
+                layerId: 'shop_bakery_pg_403084fe_041d_4ede_a2dc_cd9866a53623',
+                provider: 'postgres',
+                title: 'Name',
+                type: 'uniquevalues',
+                field: 'name',
+                format: 'checkboxes',
+                order: 0,
+            },
+        });
 
         expect(body.datavizLayers.locale).not.toEqual('');
         expect(body.datavizLayers.layers).toEqual([]);

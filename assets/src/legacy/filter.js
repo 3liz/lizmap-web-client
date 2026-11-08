@@ -252,13 +252,25 @@ var lizLayerFilterTool = function () {
             }
 
             /**
+             * Check the result of a filter service request and log its error.
              *
-             * @param result
+             * The errors about the request parameters are returned with a status,
+             * the errors about the project or the layer in an errors property.
+             * The errors are returned with an HTTP error status code: use
+             * this function with the JSON body of the failed responses too.
+             * @param {object|undefined} result - The JSON result of the request
+             * @returns {boolean} true if the result contains data, false for errors
              */
             function checkResult(result) {
                 if (!result) {
                     return false;
                 }
+                // Errors about the project or the layer
+                if ('errors' in result) {
+                    console.log(result.errors.title + ': ' + result.errors.detail);
+                    return false;
+                }
+                // Errors about the request parameters
                 if ('status' in result && result['status'] == 'error') {
                     console.log(result.title + ': ' + result.detail);
                     return false;
@@ -341,7 +353,10 @@ var lizLayerFilterTool = function () {
 
                     addFieldEvents(field_item);
 
-                }, 'json');
+                }, 'json').fail(function (jqXHR) {
+                    // The errors are returned with an HTTP error status code
+                    checkResult(jqXHR.responseJSON);
+                });
 
             }
 
@@ -400,7 +415,10 @@ var lizLayerFilterTool = function () {
 
                     addFieldEvents(field_item);
 
-                }, 'json');
+                }, 'json').fail(function (jqXHR) {
+                    // The errors are returned with an HTTP error status code
+                    checkResult(jqXHR.responseJSON);
+                });
 
             }
 
@@ -442,6 +460,11 @@ var lizLayerFilterTool = function () {
                         }).then(response => {
                             return response.json();
                         }).then(result => {
+                            // No suggestion if the request failed
+                            if (!checkResult(result)) {
+                                response([]);
+                                return;
+                            }
                             var autocompleteData = [];
                             for (var a in result) {
                                 var feat = result[a];
@@ -931,7 +954,10 @@ var lizLayerFilterTool = function () {
                     if (aCallBack) {
                         aCallBack(ids);
                     }
-                }, 'json');
+                }, 'json').fail(function (jqXHR) {
+                    // The errors are returned with an HTTP error status code
+                    checkResult(jqXHR.responseJSON);
+                });
             }
 
             /**
@@ -1444,7 +1470,10 @@ var lizLayerFilterTool = function () {
                         $('#liz-filter-item-layer-total-count').html(nb);
                     }
 
-                }, 'json');
+                }, 'json').fail(function (jqXHR) {
+                    // The errors are returned with an HTTP error status code
+                    checkResult(jqXHR.responseJSON);
+                });
             }
 
             /**
@@ -1503,7 +1532,12 @@ var lizLayerFilterTool = function () {
                         $('#liz-filter-zoom').val(extent);
                     }
 
-                }, 'json');
+                }, 'json').fail(function (jqXHR) {
+                    // The errors are returned with an HTTP error status code
+                    checkResult(jqXHR.responseJSON);
+                    // Hide Zoom button
+                    $('#liz-filter-zoom').hide();
+                });
             }
 
             /**
