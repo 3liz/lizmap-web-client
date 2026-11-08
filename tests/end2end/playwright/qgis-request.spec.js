@@ -1,5 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { expect as responseExpect } from './fixtures/expect-response.js';
 
 test.describe('QGIS Requests @requests @readonly', () => {
     test('WMS Get Legend Graphic JSON', async ({ request }) => {
@@ -20,15 +21,13 @@ test.describe('QGIS Requests @requests @readonly', () => {
         let url = `/index.php/lizmap/service?${params}`;
         let response = await request.get(url, {});
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toBe('application/json');
+        responseExpect(response).toBeJson();
         // check headers
-        expect(response.headers()).toHaveProperty('cache-control');
-        expect(response.headers()['cache-control']).toBe('no-cache');
-        expect(response.headers()).toHaveProperty('etag');
-        const etag = response.headers()['etag'];
+        let headers = response.headers();
+        expect(headers).toHaveProperty('cache-control');
+        expect(headers['cache-control']).toBe('no-cache');
+        expect(headers).toHaveProperty('etag');
+        const etag = headers['etag'];
         expect(etag).not.toBe('');
         expect(etag).toHaveLength(43);
         // check body
@@ -61,17 +60,15 @@ test.describe('QGIS Requests @requests @readonly', () => {
         url = `/index.php/lizmap/service?${params}`;
         response = await request.get(url, {});
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toBe('application/json');
+        responseExpect(response).toBeJson();
         // check headers
-        expect(response.headers()).toHaveProperty('cache-control');
-        expect(response.headers()['cache-control']).toBe('no-cache');
-        expect(response.headers()).toHaveProperty('etag');
-        expect(response.headers()['etag']).not.toBe('');
-        expect(response.headers()['etag']).toHaveLength(43);
-        expect(response.headers()['etag']).not.toBe(etag);
+        headers = response.headers();
+        expect(headers).toHaveProperty('cache-control');
+        expect(headers['cache-control']).toBe('no-cache');
+        expect(headers).toHaveProperty('etag');
+        expect(headers['etag']).not.toBe('');
+        expect(headers['etag']).toHaveLength(43);
+        expect(headers['etag']).not.toBe(etag);
         // check body
         const categorized = await response.json();
         // check root
@@ -103,17 +100,15 @@ test.describe('QGIS Requests @requests @readonly', () => {
         url = `/index.php/lizmap/service?${params}`;
         response = await request.get(url, {});
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toBe('application/json');
+        responseExpect(response).toBeJson();
         // check headers
-        expect(response.headers()).toHaveProperty('cache-control');
-        expect(response.headers()['cache-control']).toBe('no-cache');
-        expect(response.headers()).toHaveProperty('etag');
-        expect(response.headers()['etag']).not.toBe('');
-        expect(response.headers()['etag']).toHaveLength(43);
-        expect(response.headers()['etag']).not.toBe(etag);
+        headers = response.headers();
+        expect(headers).toHaveProperty('cache-control');
+        expect(headers['cache-control']).toBe('no-cache');
+        expect(headers).toHaveProperty('etag');
+        expect(headers['etag']).not.toBe('');
+        expect(headers['etag']).toHaveLength(43);
+        expect(headers['etag']).not.toBe(etag);
         // check body
         const group = await response.json();
         // check root
@@ -149,17 +144,15 @@ test.describe('QGIS Requests @requests @readonly', () => {
         url = `/index.php/lizmap/service?${params}`;
         response = await request.get(url, {});
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toBe('application/json');
+        responseExpect(response).toBeJson();
         // check headers
-        expect(response.headers()).toHaveProperty('cache-control');
-        expect(response.headers()['cache-control']).toBe('no-cache');
-        expect(response.headers()).toHaveProperty('etag');
-        expect(response.headers()['etag']).not.toBe('');
-        expect(response.headers()['etag']).toHaveLength(43);
-        expect(response.headers()['etag']).not.toBe(etag);
+        headers = response.headers();
+        expect(headers).toHaveProperty('cache-control');
+        expect(headers['cache-control']).toBe('no-cache');
+        expect(headers).toHaveProperty('etag');
+        expect(headers['etag']).not.toBe('');
+        expect(headers['etag']).toHaveLength(43);
+        expect(headers['etag']).not.toBe(etag);
         // check body
         const combined = await response.json();
         // check root
@@ -211,17 +204,54 @@ test.describe('QGIS Requests @requests @readonly', () => {
         url = `/index.php/lizmap/service?${params}`;
         response = await request.post(url, {form:formData});
         // check response
-        expect(response.ok()).toBeTruthy();
-        expect(response.status()).toBe(200);
-        // check content-type header
-        expect(response.headers()['content-type']).toBe('application/json');
+        responseExpect(response).toBeJson();
         // check headers
-        expect(response.headers()).toHaveProperty('cache-control');
-        expect(response.headers()['cache-control']).toBe('no-store, no-cache, must-revalidate');
-        expect(response.headers()).not.toHaveProperty('etag');
+        headers = response.headers();
+        expect(headers).toHaveProperty('cache-control');
+        expect(headers['cache-control']).toBe('no-store, no-cache, must-revalidate');
+        expect(headers).not.toHaveProperty('etag');
         // check body
         const combinedPost = await response.json();
         // check root
-        expect(combinedPost.nodes).toHaveLength(3)
+        expect(combinedPost.nodes).toHaveLength(3);
+
+        // GetLegendGraphic request for groupAsLayer
+        params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'groups_checkboxes',
+            SERVICE: 'WMS',
+            VERSION: '1.3.0',
+            REQUEST: 'GetLegendGraphic',
+            LAYER: 'tramway',
+            STYLE: '',
+            EXCEPTIONS: 'application/vnd.ogc.se_inimage',
+            FORMAT: 'application/json',
+            TRANSPARENT: 'TRUE',
+            DPI: '96',
+        });
+        url = `/index.php/lizmap/service?${params}`;
+        response = await request.get(url, {});
+        // check response
+        responseExpect(response).toBeJson();
+        // check headers
+        headers = response.headers();
+        expect(headers).toHaveProperty('cache-control');
+        expect(headers['cache-control']).toBe('no-cache');
+        expect(headers).toHaveProperty('etag');
+        expect(headers['etag']).not.toBe('');
+        expect(headers['etag']).toHaveLength(43);
+        expect(headers['etag']).not.toBe(etag);
+        // check body
+        const groupAsLayer = await response.json();
+        // check root
+        expect(groupAsLayer.nodes).toHaveLength(1);
+        expect(groupAsLayer.title).toBe('');
+        // check groupAsLayer node as group node
+        const groupAsLayerNode = groupAsLayer.nodes[0]
+        expect(groupAsLayerNode.nodes).toHaveLength(2);
+        expect(groupAsLayerNode.type).toBe('group');
+        expect(groupAsLayerNode.title).toBe('tramway');
+        expect(groupAsLayerNode.name).toBe('tramway');
+        expect(groupAsLayerNode.layerName).toBe('tramway');
     });
 });
