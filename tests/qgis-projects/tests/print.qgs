@@ -3253,7 +3253,7 @@ def my_form_open(dialog, layer, feature):
           <Option name="singleFile" type="bool" value="true"/>
         </Option>
       </customproperties>
-      <Atlas pageNameExpression="&quot;libsquart&quot;" coverageLayer="sousquartiers_e27e6af0_dcc5_4700_9730_361437f69862" hideCoverage="0" sortFeatures="0" filenamePattern="'output_'||@atlas_featurenumber" enabled="1" coverageLayerName="sousquartiers" coverageLayerProvider="" coverageLayerSource="service='lizmapdb' key='id' estimatedmetadata=true srid=2154 type=MultiPolygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;sousquartiers&quot; (geom)" filterFeatures="0"/>
+      <Atlas pageNameExpression="&quot;libsquart&quot;" coverageLayer="sousquartiers_e27e6af0_dcc5_4700_9730_361437f69862" hideCoverage="0" sortFeatures="0" filenamePattern="@atlas_layername||'_'||attribute(@atlas_feature, 'squartmno')||'_'||replace(@atlas_pagename, ' ', '-')" enabled="1" coverageLayerName="sousquartiers" coverageLayerProvider="" coverageLayerSource="service='lizmapdb' key='id' estimatedmetadata=true srid=2154 type=MultiPolygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;sousquartiers&quot; (geom)" filterFeatures="0"/>
     </Layout>
     <Layout worldFileMap="" printResolution="300" name="print_disabled" units="mm">
       <Snapper snapToGrid="0" snapToItems="1" tolerance="5" snapToGuides="1"/>

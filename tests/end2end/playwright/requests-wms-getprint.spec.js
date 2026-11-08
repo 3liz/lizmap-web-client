@@ -168,3 +168,69 @@ test.describe('WMS GetPrint Requests @requests @readonly', () => {
         });
     })
 });
+
+test.describe('WMS GetPrintAtlas Requests @requests @readonly', () => {
+    const params = new URLSearchParams({
+        repository: 'testsrepository',
+        project: 'print',
+    });
+    const url = `/index.php/lizmap/service?${params}`;
+
+    /**
+     * Request an atlas print and return the response
+     * @param {import('@playwright/test').APIRequestContext} request The request context
+     * @param {string} template The atlas layout name
+     * @param {string} layer The atlas coverage layer name
+     * @param {string} expFilter The EXP_FILTER parameter
+     * @returns {Promise<import('@playwright/test').APIResponse>} The response
+     */
+    const getPrintAtlas = (request, template, layer, expFilter) => request.post(url, {
+        form: {
+            'SERVICE': 'WMS',
+            'REQUEST': 'GetPrintAtlas',
+            'VERSION': '1.3.0',
+            'FORMAT': 'pdf',
+            'TRANSPARENT': 'true',
+            'DPI': '100',
+            'TEMPLATE': template,
+            'LAYER': layer,
+            'EXP_FILTER': expFilter,
+        },
+    });
+
+    test('Single feature with an atlas variable filename', async({ request }) => {
+        // The atlas_quartiers layout has: filenamePattern="'output_'||@atlas_featurenumber"
+        const response = await getPrintAtlas(request, 'atlas_quartiers', 'quartiers', '$id IN (1)');
+        responseExpect(response).toBePdf();
+        responseExpect(response).toContainHeaders({
+            'content-disposition': 'attachment; filename="output_1.pdf"',
+        });
+    })
+
+    test('Single feature with a QGIS expression filename', async({ request }) => {
+        // The atlas_sousquartiers layout has:
+        // filenamePattern="@atlas_layername||'_'||attribute(@atlas_feature, 'squartmno')||'_'||replace(@atlas_pagename, ' ', '-')"
+        // pageNameExpression="libsquart"
+        // The feature 1 has squartmno 'HOS' and libsquart 'Plan des 4 Seigneurs'
+        let response = await getPrintAtlas(request, 'atlas_sousquartiers', 'sousquartiers', '$id IN (1)');
+        responseExpect(response).toBePdf();
+        responseExpect(response).toContainHeaders({
+            'content-disposition': 'attachment; filename="sousquartiers_HOS_Plan-des-4-Seigneurs.pdf"',
+        });
+
+        // The feature 15 has squartmno 'MCA' and libsquart 'Les Arceaux'
+        response = await getPrintAtlas(request, 'atlas_sousquartiers', 'sousquartiers', '$id IN (15)');
+        responseExpect(response).toBePdf();
+        responseExpect(response).toContainHeaders({
+            'content-disposition': 'attachment; filename="sousquartiers_MCA_Les-Arceaux.pdf"',
+        });
+    })
+
+    test('Several features use the default filename', async({ request }) => {
+        const response = await getPrintAtlas(request, 'atlas_quartiers', 'quartiers', '$id IN (1, 2)');
+        responseExpect(response).toBePdf();
+        responseExpect(response).toContainHeaders({
+            'content-disposition': 'attachment; filename="print_atlas_quartiers.pdf"',
+        });
+    })
+});
