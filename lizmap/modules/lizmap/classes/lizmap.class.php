@@ -135,7 +135,7 @@ class lizmap
         trigger_error('This method is deprecated. Please use the lizmapRepository::getProperties() method.', E_DEPRECATED);
 
         // @phpstan-ignore deadCode.unreachable
-        return lizmapRepository::$properties;
+        return lizmapRepository::getProperties();
     }
 
     /**
@@ -149,7 +149,7 @@ class lizmap
         trigger_error('This method is deprecated. Please use the lizmapRepository::getPropertiesOptions() method.', E_DEPRECATED);
 
         // @phpstan-ignore deadCode.unreachable
-        return lizmapRepository::$propertiesOptions;
+        return lizmapRepository::getPropertiesOptions();
     }
 
     /**
