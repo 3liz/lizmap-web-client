@@ -13,11 +13,10 @@ class configCtrl extends jController
 {
     // Configure access via jacl2 rights management
     public $pluginParams = array(
-        '*' => array('jacl2.right' => 'lizmap.admin.access'),
         'index' => array('jacl2.rights.and' => array('lizmap.admin.access', 'lizmap.admin.services.view')),
-        'modifyServices' => array('jacl2.right' => 'lizmap.admin.services.update'),
-        'editServices' => array('jacl2.right' => 'lizmap.admin.services.update'),
-        'saveServices' => array('jacl2.right' => 'lizmap.admin.services.update'),
+        'modifyServices' => array('jacl2.right.and' => array('lizmap.admin.access', 'lizmap.admin.services.update')),
+        'editServices' => array('jacl2.right.and' => array('lizmap.admin.access', 'lizmap.admin.services.update')),
+        'saveServices' => array('jacl2.right.and' => array('lizmap.admin.access', 'lizmap.admin.services.update')),
     );
 
     protected function prepareServicesForm(jFormsBase $form, lizmapServices $services)

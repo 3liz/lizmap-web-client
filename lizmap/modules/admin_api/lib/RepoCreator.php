@@ -28,6 +28,11 @@ class RepoCreator
         bool $allowUserDefinedThemes,
         bool $createDirectory
     ): bool {
+
+        if (!preg_match('/^[a-z0-9_]+$/', $key)) {
+            throw new ApiException('Bad repository key.', 400);
+        }
+
         if (\lizmap::getRepository($key)) {
             throw new ApiException("The repository '{$key}' already exists.", 409);
         }
