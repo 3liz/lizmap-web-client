@@ -118,6 +118,7 @@ tests/qgis-projects/tests/media/js/*
 !tests/qgis-projects/tests/media/js/external_javascript_test/
 tests/qgis-projects/tests/media/js/external_javascript_test/*
 !tests/qgis-projects/tests/media/js/external_javascript_test/subscribe_uicreated.js
+!tests/qgis-projects/tests/media/js/external_javascript_test/legacy_events.js
 !tests/qgis-projects/tests/media/js/javascript_error/
 tests/qgis-projects/tests/media/js/javascript_error/*
 !tests/qgis-projects/tests/media/js/javascript_error/invalid_javascript.js
