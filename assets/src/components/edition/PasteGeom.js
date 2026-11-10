@@ -70,9 +70,10 @@ export default class pasteGeom extends HTMLElement {
         render(this._template(), this);
 
         // Add tooltip on the inner button
-        $('button', this).tooltip({
-            placement: 'top'
-        });
+        const tooltipTriggerList = this.querySelectorAll('[data-bs-toggle="tooltip"]');
+        [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, {
+            trigger: 'hover'
+        }));
 
         mainEventDispatcher.addListener(
             () => {
