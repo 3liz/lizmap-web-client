@@ -518,11 +518,14 @@ test.describe('Single WMS layer', () => {
             await page.unroute('**/service/getProjectConfig*');
 
             expect(await page.evaluate(() => lizMap.mainLizmap.map.useTileWms)).toBe(true);
+            // The single WMS layer requests tiles of the custom tile grid size
+            const tileSize = await page.evaluate(() => lizMap.mainLizmap.map.customTileGrid.getTileSize(0));
             const requestMap = await requestMapPromise;
             requestExpect(requestMap).toContainParametersInUrl({
                 'SERVICE': 'WMS',
                 'REQUEST': 'GetMap',
-                'TILED': 'true',
+                'WIDTH': `${tileSize[0]}`,
+                'HEIGHT': `${tileSize[1]}`,
             });
             await requestMap.response();
 
