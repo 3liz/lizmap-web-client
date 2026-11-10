@@ -493,3 +493,46 @@ test.describe('Single WMS layer', () => {
             await requestMap.response();
         });
 });
+
+test.describe('Single WMS layer on a large map', () => {
+
+    // A map larger than the WMS max size (3000 px by default) divided by the
+    // WMS ratio (1.1) loads the single WMS layer as tiles
+    test.use({ viewport: { width: 3400, height: 900 } });
+
+    test('Modules are initialized when the single WMS layer is tiled',
+        {
+            tag:['@readonly']
+        }, async ({ page }) => {
+            // All the layers of this project are in the single WMS layer, none is cached,
+            // so only the single WMS layer can set the layers load status
+            const project = new ProjectPage(page, 'popup_grouped_by_layer');
+            const requestMapPromise = project.waitForSingleWMSGetMapRequest();
+            // The legend is only requested once the modules are initialized
+            await project.open();
+
+            expect(await page.evaluate(() => lizMap.mainLizmap.map.useTileWms)).toBe(true);
+            const requestMap = await requestMapPromise;
+            requestExpect(requestMap).toContainParametersInUrl({
+                'SERVICE': 'WMS',
+                'REQUEST': 'GetMap',
+                'TILED': 'true',
+            });
+            await requestMap.response();
+
+            // The layers of the single WMS layer are loaded
+            await expect.poll(() => page.evaluate(
+                () => lizMap.mainLizmap.state.rootMapGroup.getMapLayerByName('single_wms_points').loadStatus
+            )).toBe('ready');
+
+            // The scale line is displayed
+            await expect(page.locator('lizmap-scaleline .ol-scale-bar')).toBeVisible();
+
+            // A click on the map requests the features for the popup
+            const getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
+            const [width, height] = await page.evaluate(() => lizMap.mainLizmap.map.getSize());
+            await project.clickOnMap(Math.round(width / 2), Math.round(height / 2));
+            const getFeatureInfoRequest = await getFeatureInfoPromise;
+            await getFeatureInfoRequest.response();
+        });
+});
