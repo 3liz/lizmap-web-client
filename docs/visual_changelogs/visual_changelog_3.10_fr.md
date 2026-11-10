@@ -226,6 +226,6 @@ Suite à un changement du format de stockage du cache des tuiles, un cache pré-
 
 Lizmap 3.10 modifie la séquence de démarrage JavaScript, certaines API JavaScript publiques, ainsi que le HTML de
 l'interface avec la migration vers **Bootstrap 5**. Si vous utilisez des **scripts JavaScript externes** (dossier `media/js/`)
-ou du **HTML personnalisé** dans les popups, consultez le [guide de migration de la 3.9 vers la 3.10](migration_3.10.md)
-(en anglais) : il liste ce qu'il faut modifier (événements, API, classes, éléments HTML et sélecteurs) et fournit
+ou du **HTML personnalisé** dans les popups, consultez le [guide de migration de la 3.9 vers la 3.10](migration_3.10_fr.md) :
+il liste ce qu'il faut modifier (événements, API, classes, éléments HTML et sélecteurs) et fournit
 un modèle de script compatible avec la 3.10.
