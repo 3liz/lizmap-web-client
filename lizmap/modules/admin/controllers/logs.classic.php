@@ -16,7 +16,7 @@ class logsCtrl extends jController
 {
     // Configure access via jacl2 rights management
     public $pluginParams = array(
-        '*' => array('jacl2.right' => 'lizmap.admin.lizmap.log.view'),
+        '*' => array('jacl2.right.and' => array('lizmap.admin.lizmap.log.view')),
         'emptyCounter' => array(
             'jacl2.right.and' => array('lizmap.admin.lizmap.log.view', 'lizmap.admin.lizmap.log.delete'),
         ),
