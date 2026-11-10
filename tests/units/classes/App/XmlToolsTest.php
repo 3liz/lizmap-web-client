@@ -66,6 +66,20 @@ class XmlToolsTest extends TestCase
         $this->assertStringContainsString('Fatal', $xml);
     }
 
+    public function testXmlFromStringEmptyRootElement(): void
+    {
+        // An empty root element is valid XML, e.g. a GetFeatureInfo response
+        // without any feature. SimpleXMLElement without children is falsy,
+        // it must not be reported as a parsing error.
+        $xml_str = '<?xml version="1.0" encoding="UTF-8"?>'."\n".'<GetFeatureInfoResponse/>';
+
+        $xml = App\XmlTools::xmlFromString($xml_str);
+        $this->assertTrue(!is_string($xml));
+        $this->assertInstanceOf(SimpleXMLElement::class, $xml);
+        $this->assertEquals('GetFeatureInfoResponse', $xml->getName());
+        $this->assertCount(0, $xml->children());
+    }
+
     public function testXmlFromFile(): void
     {
         $xml_path = __DIR__.'/../Project/Ressources/WMSInfotest.qgs';
