@@ -1908,6 +1908,1168 @@ test.describe('WFS Requests @requests @readonly', () => {
     });
 });
 
+test.describe('WFS Requests filter_layer_by_user @requests @readonly ', () => {
+    test('WFS GetFeature blue_filter_layer_by_user for anonymous', async({ request }) => {
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'filter_layer_by_user',
+        });
+        let url = `/index.php/lizmap/service?${params}`;
+        /** @type {{[key: string]: string}} */
+        let headers = {};
+        /** @type {{[key: string]: string | number | boolean}} */
+        let form = {
+            SERVICE: 'WFS',
+            VERSION: '1.0.0',
+            REQUEST: 'GetFeature',
+            TYPENAME: 'blue_filter_layer_by_user',
+            OUTPUTFORMAT: 'GeoJSON',
+        };
+        let response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(0);
+
+        form['FORCE_QGIS'] = 1;
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(0);
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(0);
+    });
+
+    test('WFS GetFeature blue_filter_layer_by_user for user_in_group_a', async({ request }) => {
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'filter_layer_by_user',
+        });
+        let url = `/index.php/lizmap/service?${params}`;
+        let headers = {
+            authorization: "Basic " + btoa("user_in_group_a:admin")
+        };
+        /** @type {{[key: string]: string | number | boolean}} */
+        let form = {
+            SERVICE: 'WFS',
+            VERSION: '1.0.0',
+            REQUEST: 'GetFeature',
+            TYPENAME: 'blue_filter_layer_by_user',
+            OUTPUTFORMAT: 'GeoJSON',
+        };
+        let response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(1);
+        let body = await response.json();
+        expect(body.features[0]).toHaveProperty('properties');
+        expect(body.features[0].properties).toHaveProperty('gid', 2);
+
+        form['FORCE_QGIS'] = 1;
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(1);
+        expect(body.features[0]).toHaveProperty('properties');
+        expect(body.features[0].properties).toHaveProperty('gid', 2);
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(1);
+    });
+
+    test('WFS GetFeature blue_filter_layer_by_user for user_in_group_b', async({ request }) => {
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'filter_layer_by_user',
+        });
+        let url = `/index.php/lizmap/service?${params}`;
+        let headers = {
+            authorization: "Basic " + btoa("user_in_group_b:admin")
+        };
+        /** @type {{[key: string]: string | number | boolean}} */
+        let form = {
+            SERVICE: 'WFS',
+            VERSION: '1.0.0',
+            REQUEST: 'GetFeature',
+            TYPENAME: 'blue_filter_layer_by_user',
+            OUTPUTFORMAT: 'GeoJSON',
+        };
+        let response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(1);
+        let body = await response.json();
+        expect(body.features[0]).toHaveProperty('properties');
+        expect(body.features[0].properties).toHaveProperty('gid', 2);
+
+        form['FORCE_QGIS'] = 1;
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(1);
+        body = await response.json();
+        expect(body.features[0]).toHaveProperty('properties');
+        expect(body.features[0].properties).toHaveProperty('gid', 2);
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(1);
+    });
+
+    test('WFS GetFeature blue_filter_layer_by_user for admin', async({ request }) => {
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'filter_layer_by_user',
+        });
+        let url = `/index.php/lizmap/service?${params}`;
+        let headers = {
+            authorization: "Basic " + btoa("admin:admin")
+        };
+        /** @type {{[key: string]: string | number | boolean}} */
+        let form = {
+            SERVICE: 'WFS',
+            VERSION: '1.0.0',
+            REQUEST: 'GetFeature',
+            TYPENAME: 'blue_filter_layer_by_user',
+            OUTPUTFORMAT: 'GeoJSON',
+        };
+        let response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(3);
+
+        form['FORCE_QGIS'] = 1;
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(3);
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(3);
+    });
+
+    test('WFS GetFeature blue_filter_layer_by_user mixing users', async({ request }) => {
+        // first admin
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'filter_layer_by_user',
+        });
+        let url = `/index.php/lizmap/service?${params}`;
+        /** @type {{[key: string]: string}} */
+        let headers = {
+            authorization: "Basic " + btoa("admin:admin")
+        };
+        /** @type {{[key: string]: string | number | boolean}} */
+        let form = {
+            SERVICE: 'WFS',
+            VERSION: '1.0.0',
+            REQUEST: 'GetFeature',
+            TYPENAME: 'blue_filter_layer_by_user',
+            OUTPUTFORMAT: 'GeoJSON',
+        };
+        let response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(3);
+
+        // second anonymous
+        headers = {};
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(0);
+
+        // third admin
+        headers = {
+            authorization: "Basic " + btoa("admin:admin")
+        };
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(3);
+
+        // forth user in group a
+        headers = {
+            authorization: "Basic " + btoa("user_in_group_a:admin")
+        };
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(1);
+
+        // fifth admin
+        headers = {
+            authorization: "Basic " + btoa("admin:admin")
+        };
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(3);
+
+        // sixth user in group b
+        headers = {
+            authorization: "Basic " + btoa("user_in_group_b:admin")
+        };
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(1);
+
+        // last anonymous
+        headers = {};
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(0);
+    });
+});
+
+test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @readonly ', () => {
+
+    test('WFS GetFeature shop_bakery_pg for anonymous', async({ request }) => {
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'filter_layer_data_by_polygon_for_groups',
+        });
+        let url = `/index.php/lizmap/service?${params}`;
+        /** @type {{[key: string]: string}} */
+        let headers = {};
+        /** @type {{[key: string]: string | number | boolean}} */
+        let form = {
+            SERVICE: 'WFS',
+            VERSION: '1.0.0',
+            REQUEST: 'GetFeature',
+            TYPENAME: 'shop_bakery_pg',
+            OUTPUTFORMAT: 'GeoJSON',
+        };
+        let response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(0);
+
+        form['FORCE_QGIS'] = 1;
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(0);
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(0);
+    });
+
+    test('WFS GetFeature shop_bakery_pg for user_in_group_a', async({ request }) => {
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'filter_layer_data_by_polygon_for_groups',
+        });
+        let url = `/index.php/lizmap/service?${params}`;
+        /** @type {{[key: string]: string}} */
+        let headers = {
+            authorization: "Basic " + btoa("user_in_group_a:admin")
+        };
+        /** @type {{[key: string]: string | number | boolean}} */
+        let form = {
+            SERVICE: 'WFS',
+            VERSION: '1.0.0',
+            REQUEST: 'GetFeature',
+            TYPENAME: 'shop_bakery_pg',
+            OUTPUTFORMAT: 'GeoJSON',
+        };
+        let response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(4);
+        let body = await response.json();
+        /** @type {[{properties:{id: number}}]} */
+        let features = body.features;
+        expect(features.map(feat => feat.properties.id)).toEqual(
+            expect.arrayContaining([2,9,18,25])
+        );
+
+        form['FORCE_QGIS'] = 1;
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(4);
+        body = await response.json();
+        /** @type {[{properties:{id: number}}]} */
+        features = body.features;
+        expect(features.map(feat => feat.properties.id)).toEqual(
+            expect.arrayContaining([2,9,18,25])
+        );
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(4);
+    });
+
+    test('WFS GetFeature shop_bakery_pg for admin', async({ request }) => {
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'filter_layer_data_by_polygon_for_groups',
+        });
+        let url = `/index.php/lizmap/service?${params}`;
+        /** @type {{[key: string]: string}} */
+        let headers = {
+            authorization: "Basic " + btoa("admin:admin")
+        };
+        /** @type {{[key: string]: string | number | boolean}} */
+        let form = {
+            SERVICE: 'WFS',
+            VERSION: '1.0.0',
+            REQUEST: 'GetFeature',
+            TYPENAME: 'shop_bakery_pg',
+            OUTPUTFORMAT: 'GeoJSON',
+        };
+        let response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(17);
+        let body = await response.json();
+        /** @type {[{properties:{id: number}}]} */
+        let features = body.features;
+        expect(features.map(feat => feat.properties.id)).toEqual(
+            expect.arrayContaining(
+                [2,3,4,5,8,9,11,12,13,14,16,18,19,21,23,24,25]
+            )
+        );
+
+        form['FORCE_QGIS'] = 1;
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(17);
+        body = await response.json();
+        /** @type {[{properties:{id: number}}]} */
+        features = body.features;
+        expect(features.map(feat => feat.properties.id)).toEqual(
+            expect.arrayContaining(
+                [2,3,4,5,8,9,11,12,13,14,16,18,19,21,23,24,25]
+            )
+        );
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(17);
+    });
+
+    test('WFS GetFeature shop_bakery for anonymous', async({ request }) => {
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'filter_layer_data_by_polygon_for_groups',
+        });
+        let url = `/index.php/lizmap/service?${params}`;
+        /** @type {{[key: string]: string}} */
+        let headers = {};
+        /** @type {{[key: string]: string | number | boolean}} */
+        let form = {
+            SERVICE: 'WFS',
+            VERSION: '1.0.0',
+            REQUEST: 'GetFeature',
+            TYPENAME: 'shop_bakery',
+            OUTPUTFORMAT: 'GeoJSON',
+        };
+        let response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(0);
+
+        form['FORCE_QGIS'] = 1;
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(0);
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(0);
+    });
+
+    test('WFS GetFeature shop_bakery for user_in_group_a', async({ request }) => {
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'filter_layer_data_by_polygon_for_groups',
+        });
+        let url = `/index.php/lizmap/service?${params}`;
+        /** @type {{[key: string]: string}} */
+        let headers = {
+            authorization: "Basic " + btoa("user_in_group_a:admin")
+        };
+        /** @type {{[key: string]: string | number | boolean}} */
+        let form = {
+            SERVICE: 'WFS',
+            VERSION: '1.0.0',
+            REQUEST: 'GetFeature',
+            TYPENAME: 'shop_bakery',
+            OUTPUTFORMAT: 'GeoJSON',
+        };
+        let response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(5);
+        let body = await response.json();
+        /** @type {[{properties:{id: number}}]} */
+        let features = body.features;
+        expect(features.map(feat => feat.properties.id)).toEqual(
+            expect.arrayContaining([16,103,119,163,168])
+        );
+
+        form['FORCE_QGIS'] = 1;
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(5);
+        body = await response.json();
+        /** @type {[{properties:{id: number}}]} */
+        features = body.features;
+        expect(features.map(feat => feat.properties.id)).toEqual(
+            expect.arrayContaining([16,103,119,163,168])
+        );
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(5);
+    });
+
+    test('WFS GetFeature shop_bakery for admin', async({ request }) => {
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'filter_layer_data_by_polygon_for_groups',
+        });
+        let url = `/index.php/lizmap/service?${params}`;
+        /** @type {{[key: string]: string}} */
+        let headers = {
+            authorization: "Basic " + btoa("admin:admin")
+        };
+        /** @type {{[key: string]: string | number | boolean}} */
+        let form = {
+            SERVICE: 'WFS',
+            VERSION: '1.0.0',
+            REQUEST: 'GetFeature',
+            TYPENAME: 'shop_bakery',
+            OUTPUTFORMAT: 'GeoJSON',
+        };
+        let response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(25);
+        let body = await response.json();
+        /** @type {[{properties:{id: number}}]} */
+        let features = body.features;
+        expect(features.map(feat => feat.properties.id)).toEqual(
+            expect.arrayContaining([
+                1,16,68,69,73,79,99,102,103,119,126,140,143,151,
+                155,157,158,163,168,173,174,181,195,197,199,
+            ])
+        );
+
+        form['FORCE_QGIS'] = 1;
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(25);
+        body = await response.json();
+        /** @type {[{properties:{id: number}}]} */
+        features = body.features;
+        expect(features.map(feat => feat.properties.id)).toEqual(
+            expect.arrayContaining([
+                1,16,68,69,73,79,99,102,103,119,126,140,143,151,
+                155,157,158,163,168,173,174,181,195,197,199,
+            ])
+        );
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(25);
+    });
+
+    test('WFS GetFeature townhalls_EPSG2154 for anonymous', async({ request }) => {
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'filter_layer_data_by_polygon_for_groups',
+        });
+        let url = `/index.php/lizmap/service?${params}`;
+        /** @type {{[key: string]: string}} */
+        let headers = {};
+        /** @type {{[key: string]: string | number | boolean}} */
+        let form = {
+            SERVICE: 'WFS',
+            VERSION: '1.0.0',
+            REQUEST: 'GetFeature',
+            TYPENAME: 'townhalls_EPSG2154',
+            OUTPUTFORMAT: 'GeoJSON',
+        };
+        let response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(0);
+
+        form['FORCE_QGIS'] = 1;
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(0);
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(0);
+    });
+
+    test('WFS GetFeature townhalls_EPSG2154 for user_in_group_a', async({ request }) => {
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'filter_layer_data_by_polygon_for_groups',
+        });
+        let url = `/index.php/lizmap/service?${params}`;
+        /** @type {{[key: string]: string}} */
+        let headers = {
+            authorization: "Basic " + btoa("user_in_group_a:admin")
+        };
+        /** @type {{[key: string]: string | number | boolean}} */
+        let form = {
+            SERVICE: 'WFS',
+            VERSION: '1.0.0',
+            REQUEST: 'GetFeature',
+            TYPENAME: 'townhalls_EPSG2154',
+            OUTPUTFORMAT: 'GeoJSON',
+        };
+        let response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(4);
+        let body = await response.json();
+        /** @type {[{properties:{fid: number}}]} */
+        let features = body.features;
+        expect(features.map(feat => feat.properties.fid)).toEqual(
+            expect.arrayContaining([2,11,15,25])
+        );
+
+        form['FORCE_QGIS'] = 1;
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(4);
+        body = await response.json();
+        /** @type {[{properties:{fid: number}}]} */
+        features = body.features;
+        expect(features.map(feat => feat.properties.fid)).toEqual(
+            expect.arrayContaining([2,11,15,25])
+        );
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(4);
+    });
+
+    test('WFS GetFeature townhalls_EPSG2154 for admin', async({ request }) => {
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'filter_layer_data_by_polygon_for_groups',
+        });
+        let url = `/index.php/lizmap/service?${params}`;
+        /** @type {{[key: string]: string}} */
+        let headers = {
+            authorization: "Basic " + btoa("admin:admin")
+        };
+        /** @type {{[key: string]: string | number | boolean}} */
+        let form = {
+            SERVICE: 'WFS',
+            VERSION: '1.0.0',
+            REQUEST: 'GetFeature',
+            TYPENAME: 'townhalls_EPSG2154',
+            OUTPUTFORMAT: 'GeoJSON',
+        };
+        let response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(17);
+        let body = await response.json();
+        /** @type {[{properties:{fid: number}}]} */
+        let features = body.features;
+        expect(features.map(feat => feat.properties.fid)).toEqual(
+            expect.arrayContaining([0,2,3,5,8,10,11,14,15,16,18,19,20,21,22,25,26])
+        );
+
+        form['FORCE_QGIS'] = 1;
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(17);
+        body = await response.json();
+        /** @type {[{properties:{fid: number}}]} */
+        features = body.features;
+        expect(features.map(feat => feat.properties.fid)).toEqual(
+            expect.arrayContaining([0,2,3,5,8,10,11,14,15,16,18,19,20,21,22,25,26])
+        );
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(17);
+    });
+});
+
+test.describe('WFS Requests attribute_table @requests @readonly ', () => {
+    test.skip(process.env.LZMQGSRVVERSION == '3.34', 'WFS SORTBY parameter is supported since QGIS 3.40.12');
+
+    test('WFS GetFeature quartiers', async({ request }) => {
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'attribute_table',
+        });
+        let url = `/index.php/lizmap/service?${params}`;
+        /** @type {{[key: string]: string}} */
+        let headers = {};
+        /** @type {{[key: string]: string | number | boolean}} */
+        let form = {
+            SERVICE: 'WFS',
+            VERSION: '1.0.0',
+            REQUEST: 'GetFeature',
+            TYPENAME: 'quartiers',
+            OUTPUTFORMAT: 'GeoJSON',
+            MAXFEATURES: 50,
+            STARTINDEX: 0,
+            SORTBY: 'quartier ASC',
+        };
+        let response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(7);
+        let body = await response.json();
+        /** @type {[{properties:{quartier: number}}]} */
+        let features = body.features;
+        // SORTBY quartier ASC
+        expect(features.map(feat => feat.properties.quartier)).toEqual(
+            [1,2,3,4,5,6,7]
+        );
+
+        form['SORTBY'] = 'quartier DESC';
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(7);
+        body = await response.json();
+        features = body.features;
+        // SORTBY quartier DESC
+        expect(features.map(feat => feat.properties.quartier)).toEqual(
+            [1,2,3,4,5,6,7].reverse()
+        );
+
+        form['FORCE_QGIS'] = 1;
+        form['SORTBY'] = 'quartier ASC';
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(7);
+        body = await response.json();
+        features = body.features;
+        // SORTBY quartier ASC
+        expect(features.map(feat => feat.properties.quartier)).toEqual(
+            [1,2,3,4,5,6,7]
+        );
+
+        form['SORTBY'] = 'quartier DESC';
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(7);
+        body = await response.json();
+        features = body.features;
+        // SORTBY quartier DESC
+        expect(features.map(feat => feat.properties.quartier)).toEqual(
+            [1,2,3,4,5,6,7].reverse()
+        );
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        delete form['STARTINDEX'];
+        delete form['MAXFEATURES'];
+        delete form['SORTBY'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(7);
+    });
+
+    test('WFS GetFeature quartiers BBOX', async({ request }) => {
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'attribute_table',
+        });
+        let url = `/index.php/lizmap/service?${params}`;
+        /** @type {{[key: string]: string}} */
+        let headers = {};
+        /** @type {{[key: string]: string | number | boolean}} */
+        let form = {
+            SERVICE: 'WFS',
+            VERSION: '1.0.0',
+            REQUEST: 'GetFeature',
+            TYPENAME: 'quartiers',
+            OUTPUTFORMAT: 'GeoJSON',
+            MAXFEATURES: 50,
+            STARTINDEX: 0,
+            SORTBY: 'quartier ASC',
+            BBOX: '763699.512775506,6280476.5039667105,775413.9632877404,6284266.667797037',
+            SRSNAME: 'EPSG:2154',
+        };
+        let response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(5);
+        let body = await response.json();
+        /** @type {[{properties:{quartier: number}}]} */
+        let features = body.features;
+        // SORTBY quartier ASC
+        expect(features.map(feat => feat.properties.quartier)).toEqual(
+            [1,2,3,6,7]
+        );
+
+        form['SORTBY'] = 'quartier DESC';
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(5);
+        body = await response.json();
+        features = body.features;
+        // SORTBY quartier DESC
+        expect(features.map(feat => feat.properties.quartier)).toEqual(
+            [1,2,3,6,7].reverse()
+        );
+
+        form['FORCE_QGIS'] = 1;
+        form['SORTBY'] = 'quartier ASC';
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(5);
+        body = await response.json();
+        features = body.features;
+        // SORTBY quartier ASC
+        expect(features.map(feat => feat.properties.quartier)).toEqual(
+            [1,2,3,6,7]
+        );
+
+        form['SORTBY'] = 'quartier DESC';
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(5);
+        body = await response.json();
+        features = body.features;
+        // SORTBY quartier DESC
+        expect(features.map(feat => feat.properties.quartier)).toEqual(
+            [1,2,3,6,7].reverse()
+        );
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        delete form['STARTINDEX'];
+        delete form['MAXFEATURES'];
+        delete form['SORTBY'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(5);
+    });
+
+    test('WFS GetFeature random_points', async({ request }) => {
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'attribute_table',
+        });
+        let url = `/index.php/lizmap/service?${params}`;
+        /** @type {{[key: string]: string}} */
+        let headers = {};
+        /** @type {{[key: string]: string | number | boolean}} */
+        let form = {
+            SERVICE: 'WFS',
+            VERSION: '1.0.0',
+            REQUEST: 'GetFeature',
+            TYPENAME: 'random_points',
+            OUTPUTFORMAT: 'GeoJSON',
+            MAXFEATURES: 50,
+            STARTINDEX: 0,
+            SORTBY: 'id ASC',
+        };
+        let response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(50);
+        let body = await response.json();
+        // SORTBY id ASC
+        expect(body.features[0].properties.id).toEqual(0);
+        expect(body.features[14].properties.id).toEqual(14);
+        expect(body.features[32].properties.id).toEqual(32);
+        expect(body.features[49].properties.id).toEqual(49);
+
+        form['STARTINDEX'] = 650;
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(50);
+        body = await response.json();
+        // SORTBY id ASC
+        expect(body.features[0].properties.id).toEqual(650);
+        expect(body.features[14].properties.id).toEqual(664);
+        expect(body.features[32].properties.id).toEqual(682);
+        expect(body.features[49].properties.id).toEqual(699);
+
+        form['STARTINDEX'] = 0;
+        form['SORTBY'] = 'id DESC';
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(50);
+        body = await response.json();
+        // SORTBY id DESC
+        expect(body.features[0].properties.id).toEqual(699);
+        expect(body.features[14].properties.id).toEqual(685);
+        expect(body.features[32].properties.id).toEqual(667);
+        expect(body.features[49].properties.id).toEqual(650);
+
+        // RESULTTYPE=hits
+        delete form['SORTBY'];
+        delete form['STARTINDEX'];
+        delete form['MAXFEATURES'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(700);
+    });
+});
+
 test.describe('WFS Requests @wfsOutputExtension @readonly ', () => {
     test('WFS GetFeature CSV', async({ request }) => {
         let params = new URLSearchParams({
