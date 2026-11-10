@@ -16,10 +16,25 @@ class Checker
      */
     public static function checkCredentials($serverVars)
     {
-        if (isset($serverVars['PHP_AUTH_USER'])) {
-            return \jAuth::login($serverVars['PHP_AUTH_USER'], $serverVars['PHP_AUTH_PW']);
+        // No BASIC authentication
+        if (!isset($serverVars['PHP_AUTH_USER'])) {
+            return true;
         }
 
-        return true;
+        // Empty login (e.g. "Authorization: Basic Og==" sent by some clients): wrong credentials
+        if ($serverVars['PHP_AUTH_USER'] === '') {
+            \jLog::log('Basic authentication: Empty login sent by client', 'error');
+
+            return false;
+        }
+
+        // Empty password: wrong credentials
+        if (!isset($serverVars['PHP_AUTH_PW'])) {
+            \jLog::log('Basic authentication for user: `'.$serverVars['PHP_AUTH_USER'].'` is missing password', 'error');
+
+            return false;
+        }
+
+        return \jAuth::login($serverVars['PHP_AUTH_USER'], $serverVars['PHP_AUTH_PW']);
     }
 }
