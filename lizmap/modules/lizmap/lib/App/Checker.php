@@ -49,14 +49,23 @@ class Checker
      */
     public static function logoutCredentials($serverVars)
     {
-        $appContext = \lizmap::getAppContext();
-        if (isset($serverVars['PHP_AUTH_USER']) && $appContext->UserIsConnected()) {
-            $juser = $appContext->getUserSession();
-            if ($serverVars['PHP_AUTH_USER'] == $juser->login) {
-                \jAuth::logout();
+        // No BASIC authentication
+        if (!isset($serverVars['PHP_AUTH_USER'])) {
+            return false;
+        }
 
-                return true;
-            }
+        $appContext = \lizmap::getAppContext();
+        // No user connected
+        if (!$appContext->UserIsConnected()) {
+            return false;
+        }
+
+        // Check that it's the same user as the one connected to Lizmap Service
+        $juser = $appContext->getUserSession();
+        if ($serverVars['PHP_AUTH_USER'] == $juser->login) {
+            \jAuth::logout();
+
+            return true;
         }
 
         return false;
