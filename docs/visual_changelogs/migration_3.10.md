@@ -39,7 +39,9 @@ To fix this, Lizmap 3.10 adds **`lizMap.subscribe(callback, eventName)`**:
 
 * it can be called as soon as the script is loaded;
 * if the event **has already been emitted**, the callback is run immediately with the last event;
-* otherwise, the callback is run when the event is emitted.
+* in both cases, the callback is then run again each time the event is emitted.
+  For events emitted several times (§4.3), use `lizMap.mainEventDispatcher.addListener()`
+  inside your initialization function if you only want the next emissions.
 
 This is the recommended way to start an external script.
 
@@ -153,8 +155,16 @@ var lizMyTool = function () {
             // Lizmap >= 3.10: the callback is run even if the event has already been emitted
             lizMap.subscribe(callback, 'lizmap.uicreated');
         } else {
-            // Lizmap <= 3.9
-            lizMap.events.on({ uicreated: callback });
+            // Lizmap <= 3.9: uicreated is emitted before the modules are created
+            lizMap.events.on({
+                uicreated: function () {
+                    if (lizMap.mainLizmap.legend !== undefined) {
+                        callback();
+                    } else {
+                        lizMap.mainEventDispatcher.addListener(callback, 'lizmap.modules.initialized');
+                    }
+                }
+            });
         }
     }
 
@@ -183,7 +193,6 @@ Migration steps for an existing script:
 | `lizMap.proj4` | [proj4js](https://github.com/proj4js/proj4js) library | [proj4rs](https://github.com/3liz/proj4rs) library (Rust, WebAssembly), with the same API: `lizMap.proj4.defs(…)`, `lizMap.proj4(from, to, coordinates)`. |
 | Attribute table | All the features loaded in the browser, DataTables 1 | Server-side pagination, DataTables 2: `lizMap.config.layers[name].features` only contains the **features already displayed**. `attributeLayerContentReady` now gives the DataTables instance in `e.oTable`. |
 | `limitDataToBbox` option | Read by the attribute table | Removed |
-| `lizMap.mainLizmap.action.runLizmapAction(name, scope, layerId, featureId, wkt)` | — | New last parameter `options`: an object whose values replace the `options` declared in the action configuration (only the declared keys are used). |
 | Panels (docks), tabs, modals | Bootstrap 2 HTML | Bootstrap 5 HTML: see [Part 2](#part-2--bootstrap-5), especially §7.3. |
 | `lizMap.map` (OpenLayers 2) | Available | Still available in 3.10, but being removed: use `lizMap.mainLizmap.map` (OpenLayers 10) for any new code. |
 
