@@ -39,7 +39,9 @@ Pour corriger cela, Lizmap 3.10 ajoute **`lizMap.subscribe(callback, nomEvenemen
 
 * elle peut être appelée dès le chargement du script ;
 * si l'événement **a déjà été émis**, le callback est exécuté immédiatement avec le dernier événement ;
-* sinon, le callback est exécuté au moment où l'événement est émis.
+* dans les deux cas, le callback est ensuite exécuté à nouveau à chaque émission de l'événement.
+  Pour les événements émis plusieurs fois (§4.3), utilisez `lizMap.mainEventDispatcher.addListener()`
+  dans votre fonction d'initialisation si vous ne voulez que les prochaines émissions.
 
 C'est la méthode conseillée pour démarrer un script externe.
 
@@ -153,8 +155,16 @@ var lizMyTool = function () {
             // Lizmap >= 3.10: the callback is run even if the event has already been emitted
             lizMap.subscribe(callback, 'lizmap.uicreated');
         } else {
-            // Lizmap <= 3.9
-            lizMap.events.on({ uicreated: callback });
+            // Lizmap <= 3.9: uicreated is emitted before the modules are created
+            lizMap.events.on({
+                uicreated: function () {
+                    if (lizMap.mainLizmap.legend !== undefined) {
+                        callback();
+                    } else {
+                        lizMap.mainEventDispatcher.addListener(callback, 'lizmap.modules.initialized');
+                    }
+                }
+            });
         }
     }
 
@@ -183,37 +193,40 @@ var lizMyTool = function () {
 | `lizMap.proj4` | Bibliothèque [proj4js](https://github.com/proj4js/proj4js) | Bibliothèque [proj4rs](https://github.com/3liz/proj4rs) (Rust, WebAssembly), avec la même API : `lizMap.proj4.defs(…)`, `lizMap.proj4(source, destination, coordonnees)`. |
 | Table attributaire | Toutes les entités chargées dans le navigateur, DataTables 1 | Pagination côté serveur, DataTables 2 : `lizMap.config.layers[name].features` ne contient que les **entités déjà affichées**. `attributeLayerContentReady` fournit maintenant l'instance DataTables dans `e.oTable`. |
 | Option `limitDataToBbox` | Lue par la table attributaire | Supprimée |
-| `lizMap.mainLizmap.action.runLizmapAction(name, scope, layerId, featureId, wkt)` | — | Nouveau dernier paramètre `options` : un objet dont les valeurs remplacent les `options` déclarées dans la configuration de l'action (seules les clés déclarées sont utilisées). |
 | Panneaux (docks), onglets, fenêtres modales | HTML Bootstrap 2 | HTML Bootstrap 5 : voir la [Partie 2](#partie-2--bootstrap-5), notamment le §7.3. |
 | `lizMap.map` (OpenLayers 2) | Disponible | Toujours disponible en 3.10, mais en cours de suppression : utiliser `lizMap.mainLizmap.map` (OpenLayers 10) pour tout nouveau code. |
 
 ## 4. Nouveaux outils disponibles en JavaScript
+
+Certains de ces outils ont été rétroportés dans les versions de maintenance 3.9 : ils sont marqués avec la première
+version 3.9 qui les contient, par exemple *(3.9.4)*. Les éléments marqués *(prochaine 3.9.x)* sont dans la branche 3.9
+mais pas encore publiés. Les éléments sans marque ne sont disponibles qu'à partir de la 3.10.
 
 ### 4.1 Objets globaux
 
 | Objet | Contenu |
 |---|---|
 | `lizMap.subscribe(callback, event)` | Écouter un événement de `mainEventDispatcher`, même s'il a déjà été émis (§1). |
-| `lizMap.constants` | `ADJUSTED_DPI`, `MEDIA_REGEX` (chemin vers un fichier de `media/`), `URL_REGEX` |
-| `lizMap.ol` | Nouvelles classes OpenLayers : `ol.source.GeoTIFF`, `ol.layer.WebGLTile`, `ol.interaction.Snap`, `ol.extent.containsExtent`, `ol.geom.fromCircle` |
-| `lizMap.mainLizmap.utils` | Nouveautés : `fetchXML()`, `sanitizeHTMLContent()` (nettoie du HTML avant de l'insérer dans la page) |
+| `lizMap.constants` *(3.9.6)* | `ADJUSTED_DPI`, `MEDIA_REGEX` (chemin vers un fichier de `media/`), `URL_REGEX` |
+| `lizMap.ol` | Classes OpenLayers : `ol.source.GeoTIFF`, `ol.layer.WebGLTile` *(3.9.4)* ; `ol.interaction.Snap`, `ol.extent.containsExtent`, `ol.geom.fromCircle` *(prochaine 3.9.x)* |
+| `lizMap.mainLizmap.utils` | `fetchXML()` *(3.9.7)*, `sanitizeHTMLContent()` *(3.9.12)* (nettoie du HTML avant de l'insérer dans la page) |
 
 ### 4.2 Méthodes des modules de `lizMap.mainLizmap`
 
 | Module | Nouvelles méthodes et propriétés |
 |---|---|
-| `map` | `zoomToWkt(wkt, projection, options)`, `simulateClick(coordinates, clickType)` (simule un clic sur la carte, par exemple pour ouvrir une popup) |
+| `map` | `zoomToWkt(wkt, projection, options)` *(3.9.4)*, `simulateClick(coordinates, clickType)` *(3.9.9)* (simule un clic sur la carte, par exemple pour ouvrir une popup) |
 | `geolocation` | `rotateView()`, `toggleRotatedView()`, `isRotatedView`, `displayDirection`, `displayPrecision` |
 | `featureStorage` | `copy()`, `clear()`, `hasFeatures()` (copier-coller de géométrie) |
 | `geometryCopyHandler` (nouveau) | `activate()`, `deactivate()`, `isActive()` |
 | `groupPopupByLayers` (nouveau) | `isActive`, `groupPopups(html)` (popups regroupées par couche) |
 | `panoramax` (nouveau, si Panoramax est configuré) | `activate()`, `deactivate()`, `setDateFilter()`, `setTypeFilter()`, `setAccountFilter()`… |
 | `permalink` | `currentPermalinkId`, `currentPermalinkProperties`, `permalinksHistory` (permaliens courts) |
-| `wms` | `getStyles()`, `getLegendGraphicPNG()` |
+| `wms` | `getStyles()`, `getLegendGraphicPNG()` *(3.9.6)* |
 | `state` | `portfolios` (portfolios), `map.excludeBasemapsFromSingleWMS` |
-| `state.layer…` (couches de `rootMapGroup`) | `isVisible(scale)`, `symbologyInitParameters` |
-| `initialConfig.options` | `exportLayers`, `group_popup_by_layer`, `panoramax`, `short_link_permalink`, `geolocationDirection`, `geolocationPrecision`, `exclude_basemaps_from_single_wms` |
-| `initialConfig.attributeLayers…` | `exportFormats`, `exportLimited`, `exportMaxFeatures` |
+| `state.layer…` (couches de `rootMapGroup`) | `isVisible(scale)` *(prochaine 3.9.x)*, `symbologyInitParameters` |
+| `initialConfig.options` | `exportLayers` *(3.9.12)*, `group_popup_by_layer`, `panoramax`, `short_link_permalink`, `geolocationDirection`, `geolocationPrecision`, `exclude_basemaps_from_single_wms` |
+| `initialConfig.attributeLayers…` | `exportFormats`, `exportLimited`, `exportMaxFeatures` *(3.9.12)* |
 
 ### 4.3 Nouveaux événements
 
@@ -226,12 +239,12 @@ var lizMyTool = function () {
 | `lizmap.uicreated` | L'interface est entièrement créée |
 | `lizmap.locatebylayers.loaded` | Les listes « localiser par couche » sont chargées |
 | `tooltip.activated`, `tooltip.deactivated` | L'outil d'infobulle est activé ou désactivé |
-| `geolocation.error`, `geolocation.isRotatedView` | Erreur de géolocalisation, bascule de la rotation de la carte |
+| `geolocation.error` *(3.9.8)*, `geolocation.isRotatedView` | Erreur de géolocalisation, bascule de la rotation de la carte |
 | `geometryCopy.activated`, `geometryCopy.deactivated`, `featureStorage.copy`, `featureStorage.clear` | Copier-coller de géométrie |
 | `panoramax.picture.selected`, `panoramax.position.selected` | Visionneuse Panoramax |
 | `portfolios.portfolio.selected`, `portfolios.portfolio.launched`, `portfolios.run.status.changed`, `portfolios.ui.status.changed` | Portfolios |
 
-Nouvel événement historique (`lizMap.events.on`) : **`actionStarted`** (`{action, layerId, featureId}`), émis
+Événement historique (`lizMap.events.on`) : **`actionStarted`** *(3.9.8)* (`{action, layerId, featureId}`), émis
 avant l'envoi d'une action au serveur.
 
 ### 4.4 Exemple : zoomer sur une géométrie et ouvrir sa popup
