@@ -221,3 +221,10 @@ Migration to **Bootstrap 5** ([#4455](https://github.com/3liz/lizmap-web-client/
 ## Breaking Changes
 
 Following a change in the tile cache storage format, a cache pre-generated with a version prior to 3.10 is no longer used after the upgrade. The cache must be seeded again (the old orphaned cache can be deleted) ([#7183](https://github.com/3liz/lizmap-web-client/issues/7183)).
+
+## Migrating your scripts and popups
+
+Lizmap 3.10 changes the JavaScript startup sequence, some public JavaScript APIs, and the HTML of the interface
+with the migration to **Bootstrap 5**. If you use **external JavaScript scripts** (`media/js/` folder) or **custom HTML**
+in popups, read the [migration guide from 3.9 to 3.10](migration_3.10.md): it lists what to change
+(events, API, classes, HTML elements and selectors) and gives a script template compatible with 3.10.
