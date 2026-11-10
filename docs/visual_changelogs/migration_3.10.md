@@ -198,31 +198,35 @@ Migration steps for an existing script:
 
 ## 4. New tools available in JavaScript
 
+Some of these tools were backported to the 3.9 maintenance releases: they are marked with the first
+3.9 version which contains them, e.g. *(3.9.4)*. Items marked *(next 3.9.x)* are in the 3.9 branch but not
+released yet. Unmarked items are only available from 3.10.
+
 ### 4.1 Global objects
 
 | Object | Content |
 |---|---|
 | `lizMap.subscribe(callback, event)` | Listen to a `mainEventDispatcher` event, even if it has already been emitted (§1). |
-| `lizMap.constants` | `ADJUSTED_DPI`, `MEDIA_REGEX` (path to a `media/` file), `URL_REGEX` |
-| `lizMap.ol` | New OpenLayers classes: `ol.source.GeoTIFF`, `ol.layer.WebGLTile`, `ol.interaction.Snap`, `ol.extent.containsExtent`, `ol.geom.fromCircle` |
-| `lizMap.mainLizmap.utils` | New: `fetchXML()`, `sanitizeHTMLContent()` (clean HTML before inserting it in the page) |
+| `lizMap.constants` *(3.9.6)* | `ADJUSTED_DPI`, `MEDIA_REGEX` (path to a `media/` file), `URL_REGEX` |
+| `lizMap.ol` | OpenLayers classes: `ol.source.GeoTIFF`, `ol.layer.WebGLTile` *(3.9.4)*; `ol.interaction.Snap`, `ol.extent.containsExtent`, `ol.geom.fromCircle` *(next 3.9.x)* |
+| `lizMap.mainLizmap.utils` | `fetchXML()` *(3.9.7)*, `sanitizeHTMLContent()` *(3.9.12)* (clean HTML before inserting it in the page) |
 
 ### 4.2 Methods of the `lizMap.mainLizmap` modules
 
 | Module | New methods and properties |
 |---|---|
-| `map` | `zoomToWkt(wkt, projection, options)`, `simulateClick(coordinates, clickType)` (simulates a click on the map, e.g. to open a popup) |
+| `map` | `zoomToWkt(wkt, projection, options)` *(3.9.4)*, `simulateClick(coordinates, clickType)` *(3.9.9)* (simulates a click on the map, e.g. to open a popup) |
 | `geolocation` | `rotateView()`, `toggleRotatedView()`, `isRotatedView`, `displayDirection`, `displayPrecision` |
 | `featureStorage` | `copy()`, `clear()`, `hasFeatures()` (geometry copy and paste) |
 | `geometryCopyHandler` (new) | `activate()`, `deactivate()`, `isActive()` |
 | `groupPopupByLayers` (new) | `isActive`, `groupPopups(html)` (popups grouped by layer) |
 | `panoramax` (new, if Panoramax is configured) | `activate()`, `deactivate()`, `setDateFilter()`, `setTypeFilter()`, `setAccountFilter()`… |
 | `permalink` | `currentPermalinkId`, `currentPermalinkProperties`, `permalinksHistory` (short permalinks) |
-| `wms` | `getStyles()`, `getLegendGraphicPNG()` |
+| `wms` | `getStyles()`, `getLegendGraphicPNG()` *(3.9.6)* |
 | `state` | `portfolios` (portfolios), `map.excludeBasemapsFromSingleWMS` |
-| `state.layer…` (layers of `rootMapGroup`) | `isVisible(scale)`, `symbologyInitParameters` |
-| `initialConfig.options` | `exportLayers`, `group_popup_by_layer`, `panoramax`, `short_link_permalink`, `geolocationDirection`, `geolocationPrecision`, `exclude_basemaps_from_single_wms` |
-| `initialConfig.attributeLayers…` | `exportFormats`, `exportLimited`, `exportMaxFeatures` |
+| `state.layer…` (layers of `rootMapGroup`) | `isVisible(scale)` *(next 3.9.x)*, `symbologyInitParameters` |
+| `initialConfig.options` | `exportLayers` *(3.9.12)*, `group_popup_by_layer`, `panoramax`, `short_link_permalink`, `geolocationDirection`, `geolocationPrecision`, `exclude_basemaps_from_single_wms` |
+| `initialConfig.attributeLayers…` | `exportFormats`, `exportLimited`, `exportMaxFeatures` *(3.9.12)* |
 
 ### 4.3 New events
 
@@ -235,12 +239,12 @@ Events emitted by `lizMap.mainEventDispatcher`. Listen to them with
 | `lizmap.uicreated` | The interface is fully created |
 | `lizmap.locatebylayers.loaded` | The "locate by layer" lists are loaded |
 | `tooltip.activated`, `tooltip.deactivated` | The tooltip tool is turned on or off |
-| `geolocation.error`, `geolocation.isRotatedView` | Geolocation error, map rotation switched |
+| `geolocation.error` *(3.9.8)*, `geolocation.isRotatedView` | Geolocation error, map rotation switched |
 | `geometryCopy.activated`, `geometryCopy.deactivated`, `featureStorage.copy`, `featureStorage.clear` | Geometry copy and paste |
 | `panoramax.picture.selected`, `panoramax.position.selected` | Panoramax viewer |
 | `portfolios.portfolio.selected`, `portfolios.portfolio.launched`, `portfolios.run.status.changed`, `portfolios.ui.status.changed` | Portfolios |
 
-New legacy event (`lizMap.events.on`): **`actionStarted`** (`{action, layerId, featureId}`), emitted
+Legacy event (`lizMap.events.on`): **`actionStarted`** *(3.9.8)* (`{action, layerId, featureId}`), emitted
 before an action is sent to the server.
 
 ### 4.4 Example: zoom to a geometry and open its popup
