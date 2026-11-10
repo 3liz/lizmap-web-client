@@ -492,24 +492,30 @@ test.describe('Single WMS layer', () => {
             requestExpect(requestMap).toContainParametersInUrl(expectedMapParameters);
             await requestMap.response();
         });
-});
-
-test.describe('Single WMS layer on a large map', () => {
-
-    // A map larger than the WMS max size (3000 px by default) divided by the
-    // WMS ratio (1.1) loads the single WMS layer as tiles
-    test.use({ viewport: { width: 3400, height: 900 } });
 
     test('Modules are initialized when the single WMS layer is tiled',
         {
             tag:['@readonly']
         }, async ({ page }) => {
+            // Lower the WMS max size so that the map is larger than the max size
+            // divided by the WMS ratio (1.1): the single WMS layer is loaded as tiles
+            await page.route('**/service/getProjectConfig*', async route => {
+                const response = await route.fetch();
+                const json = await response.json();
+                json.options.wmsMaxWidth = 950; // just lower than 870*1.1 == 957
+                json.options.wmsMaxHeight = 950; // same
+                await route.fulfill({ response, json });
+            });
+
             // All the layers of this project are in the single WMS layer, none is cached,
             // so only the single WMS layer can set the layers load status
             const project = new ProjectPage(page, 'popup_grouped_by_layer');
             const requestMapPromise = project.waitForSingleWMSGetMapRequest();
             // The legend is only requested once the modules are initialized
             await project.open();
+
+            // Remove catching GetProjectConfig
+            await page.unroute('**/service/getProjectConfig*');
 
             expect(await page.evaluate(() => lizMap.mainLizmap.map.useTileWms)).toBe(true);
             const requestMap = await requestMapPromise;
