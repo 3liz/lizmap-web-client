@@ -150,6 +150,51 @@ class qgisExpressionUtils
     }
 
     /**
+     * Replace the atlas variables of a QGIS expression for a single atlas feature.
+     *
+     * The lizmap plugin evaluates expressions with the feature in the context
+     * but without the atlas scope, so the atlas variables are replaced by their
+     * equivalents for an atlas of one feature. Text in string literals and
+     * quoted field names is kept as is.
+     *
+     * @param string $expression         A QGIS expression using atlas variables
+     * @param string $pageNameExpression The atlas page name expression
+     * @param string $layerId            The atlas coverage layer id
+     * @param string $layerName          The atlas coverage layer name
+     *
+     * @return string The expression without atlas variables
+     */
+    public static function replaceAtlasVariables($expression, $pageNameExpression, $layerId, $layerName)
+    {
+        $quote = function ($value) {
+            return "'".str_replace("'", "''", $value)."'";
+        };
+        $replacements = array(
+            'feature' => '@feature',
+            'featureid' => '@id',
+            'geometry' => '@geometry',
+            // QGIS uses the page number when the page name expression is empty
+            'pagename' => $pageNameExpression ? '('.$pageNameExpression.')' : "'1'",
+            'featurenumber' => '1',
+            'totalfeatures' => '1',
+            'layerid' => $quote($layerId),
+            'layername' => $quote($layerName),
+        );
+
+        return preg_replace_callback(
+            '/\'(?:[^\'\\\]|\\\.)*\'|"(?:[^"\\\]|\\\.)*"|@atlas_(\w+)/',
+            function ($matches) use ($replacements) {
+                if (isset($matches[1]) && array_key_exists($matches[1], $replacements)) {
+                    return $replacements[$matches[1]];
+                }
+
+                return $matches[0];
+            },
+            $expression
+        );
+    }
+
+    /**
      * Request QGIS Server and the lizmap plugin calculate virtual fields
      * for the features of a given vector layer.
      *

@@ -726,9 +726,9 @@ test.describe('Print in popup', () => {
         const response = await getPrintRequest.response();
         // Check response
         responseExpect(response).toBePdf();
-        // QGIS Server returns the filename based on the atlas filenamePattern configured in the project
+        // Lizmap evaluates the atlas filenamePattern configured in the project for the printed feature
         // The atlas_quartiers layout has: filenamePattern="'output_'||@atlas_featurenumber"
-        await expect(response?.headers()['content-disposition']).toBe('attachment; filename="output___@atlas_featurenumber.pdf"');
+        await expect(response?.headers()['content-disposition']).toBe('attachment; filename="output_1.pdf"');
     });
 });
 
