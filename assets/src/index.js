@@ -188,8 +188,11 @@ const initLizmapApp = () => {
 
         // loadProjectConfiguration method returns null if something went wrong
         if (startupConfigurations) {
-            // for backwards compatibility purposes?
-            lizMap.events.triggerEvent('configsloaded', startupConfigurations);
+            // Trigger the legacy event for backwards compatibility (external scripts).
+            // A shallow copy is given because OpenLayers 2 adds the `object` property
+            // (the lizMap object) to the event when a listener exists: it would make
+            // startupConfigurations circular and break the mainEventDispatcher dispatch below.
+            lizMap.events.triggerEvent('configsloaded', {...startupConfigurations});
 
             // dipatch lizmap.configsloaded event with startupConfiguration as parameter
             // WARNING: internal listeners should only perform synchronous
