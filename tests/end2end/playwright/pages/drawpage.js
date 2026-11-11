@@ -200,6 +200,18 @@ export class DrawPage extends ProjectPage {
     }
 
     /**
+     * Checks if the specific constraint DOM input is visible or not
+     * @param {string} type - the constraint type
+     * @param {boolean} visible - if the constraint should be visible or not
+     * @return {Promise<void>}
+     */
+    async checkMeasureConstraintVisibility(type, visible) {
+        const constraint = this.drawPanel.locator(`.digitizing-constraint-${type} input.${type}`)
+
+        await expect(constraint).toBeVisible({visible:visible})
+    }
+
+    /**
      * deleteAllDrawings function
      * Delete all drawn features
      */

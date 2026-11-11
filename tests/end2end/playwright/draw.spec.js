@@ -479,6 +479,61 @@ test.describe('Measure',
             // check final length measure
             await(expect(drawProject.mapAnnotationToolTipStatic)).toBeVisible();
             await(expect(drawProject.mapAnnotationToolTipStatic)).toHaveText('3 km');
+
+            // delete drawings
+            await drawProject.deleteAllDrawings();
+
+            // select circle geom
+            await drawProject.selectGeometry('circle');
+
+            await drawProject.checkMeasureConstraintVisibility('angle',false);
+            // set constraint
+            await drawProject.setMeasureConstraint('distance','2000');
+            await drawProject.clickOnMap(395,246);
+
+            // move the mouse and check measure tooltip
+            await drawProject.map.hover();
+            await drawProject.page.mouse.move(470, 263);
+            // check the second mapAnnotationToolTipMeasure, since it contains dinamic measure bounded to cursor
+            await expect(drawProject.mapAnnotationToolTipMeasure.nth(1)).toBeVisible();
+            await expect(drawProject.mapAnnotationToolTipMeasure.nth(1)).toHaveText(/2 km12\.(?:5[5-9]|6[0-5])\d* km2/);
+
+            await drawProject.page.mouse.move(470, 400);
+            await expect(drawProject.mapAnnotationToolTipMeasure.nth(1)).toHaveText(/2 km12\.(?:5[5-9]|6[0-5])\d* km2/);
+
+            // finalize geometry
+            await drawProject.clickOnMap(470, 400);
+            await(expect(drawProject.mapAnnotationToolTipStatic)).toBeVisible();
+            await(expect(drawProject.mapAnnotationToolTipStatic)).toHaveText(/2 km12\.(?:5[5-9]|6[0-5])\d* km2/);
+
+            // change tool again and check for angle constraint visibility
+            await drawProject.selectGeometry('line');
+            await drawProject.checkMeasureConstraintVisibility('angle',true);
+        });
+
+        test('Clean ui interface from constraint features and tooltip', async ({ page }) => {
+            const drawProject = await initDrawProject(page);
+            // select geometry to draw
+            await drawProject.selectGeometry('line');
+            // toggleMeasure
+            await drawProject.toggleMeasure();
+            // set constraint
+            await drawProject.setMeasureConstraint('distance','1500');
+
+            // draw a linestring composed by two segment of length 1500 m each
+            await drawProject.clickOnMap(395,246);
+            await drawProject.clickOnMap(423,263);
+
+            // change tool without finalize the line
+            await drawProject.selectGeometry('circle');
+
+            // on tool changed all measure tooltips should be hidden ...
+            await expect(drawProject.mapAnnotationToolTipMeasure.nth(0)).toBeHidden();
+            await expect(drawProject.mapAnnotationToolTipMeasure.nth(1)).toBeHidden();
+
+            // ...and constraint layer should be empty
+            const features = await page.evaluate(()=> lizMap.mainLizmap.digitizing._constraintLayer.getSource().getFeatures());
+            expect(features).toHaveLength(0);
         });
     });
 
