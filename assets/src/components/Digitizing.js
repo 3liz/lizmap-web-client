@@ -433,7 +433,7 @@ export default class Digitizing extends HTMLElement {
                         >
                     <span class="input-group-text">m</span>
                 </div>
-                <div class="digitizing-constraint-angle input-group input-group-sm">
+                <div class="digitizing-constraint-angle input-group input-group-sm ${mainLizmap.digitizing.toolSelected != 'circle' ? '' : 'hide'}">
                     <input
                         type="number"
                         placeholder="${lizDict['digitizing.constraint.angle']}"
