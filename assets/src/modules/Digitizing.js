@@ -604,6 +604,14 @@ export class Digitizing {
             this._drawSource.un('addfeature', this._addFeatureSinglePartGeometryListener);
             this._drawSource.un('addfeature', this._addFeatureSaveDispatchListener);
 
+            // clear constraint layer
+            this._constraintLayer.getSource().clear();
+            // remove measure tooltips, if any
+            this._segmentMeasureTooltipElement?.remove();
+            this._totalMeasureTooltipElement?.remove();
+            this._segmentMeasureTooltipElement = null;
+            this._totalMeasureTooltipElement = null;
+
             // If tool === 'deactivate' or current selected tool is selected again => deactivate
             if (tool === this._toolSelected || tool === this._tools[0]) {
                 this._toolSelected = this._tools[0];
