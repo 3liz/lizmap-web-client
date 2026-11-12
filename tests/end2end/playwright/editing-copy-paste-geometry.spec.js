@@ -26,6 +26,7 @@
 import { expect, test } from '@playwright/test';
 import { editedFeatureIds } from './globals';
 import { ProjectPage } from './pages/project';
+import { expect as requestExpect } from './fixtures/expect-request.js';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -39,18 +40,42 @@ const LAYERS = {
         name: 'point_2154',
         id: 'form_edition_point_2154_bfabce3b_eb48_4631_b43f_d1db3772f0a5',
         geomType: 'point',
+        olGeomType:'Point'
     },
     line: {
         name: 'line_2154',
         id: 'form_edition_line_2154_8797dd9f_d762_436f_91b6_1f06a37e9cf3',
         geomType: 'line',
+        olGeomType:'LineString'
     },
     polygon: {
         name: 'polygon_2154',
         id: 'form_edition_polygon_2154_6b836ded_12c4_44ee_a6c4_44bf0a0d349e',
         geomType: 'polygon',
+        olGeomType:'Polygon'
     },
 };
+
+const LAYERS_4326 = {
+    point: {
+        name: 'point_4326',
+        id: 'form_edition_point_4326_f1955711_4ebd_4c78_a9fd_58083b600d6a',
+        geomType: 'point',
+        olGeomType:'Point'
+    },
+    line: {
+        name: 'line_4326',
+        id: 'form_edition_line_4326_2e2d506d_414a_4731_a1bb_17e33c490923',
+        geomType: 'line',
+        olGeomType:'LineString'
+    },
+    polygon: {
+        name: 'polygon_4326',
+        id: 'form_edition_polygon_4326_36f846ad_6690_4d2d_b48d_c342db7c07e9',
+        geomType: 'polygon',
+        olGeomType:'Polygon'
+    },
+}
 
 /**
  * Pixel positions on the OL2 map used as source / target drawing locations.
@@ -148,6 +173,30 @@ async function openEditFormForFeature(project, x, y, featureId, layerId) {
     await (await editRequestPromise).response();
     // lizmap-paste-geom lives in #tabdigitization — switch to it so the button is visible
     await project.page.locator('.edition-tabs button[data-bs-target="#tabdigitization"]').click();
+}
+
+/**
+ * Check if the FeaturePickerHighlight layers contains only one feature
+ * of the "geometryType" type
+ *
+ * @param {ProjectPage} projectPage - the project page instance
+ * @param {string} geometryType - type of geometry to test
+ */
+const checkHighLightLayerFeature = async (projectPage, geometryType)=>{
+    const page = projectPage.page;
+
+    const geometry = await page.evaluate(()=> {
+        const highlightLayer = lizMap.map.getLayersByName('FeaturePickerHighlight');
+        if (!highlightLayer && highlightLayer.length != 1) return '';
+        const features = highlightLayer[0].features;
+        if (!features || features.length !== 1) return '';
+        const geometryComponents = features[0].geometry?.CLASS_NAME?.split('.')
+        if(!geometryComponents || geometryComponents.length != 3) return ''
+
+        return geometryComponents[2];
+    });
+
+    expect(geometry).toBe(geometryType);
 }
 
 /**
@@ -410,59 +459,70 @@ test.describe('Copy-paste geometry — copy mode activation / deactivation',
 test.describe('Copy-paste geometry — feature picker popup',
     { tag: ['@write'] }, () => {
 
-        test('TC-11: Clicking on an existing feature in copy mode shows the picker popup',
-            async ({ page }) => {
-                const project = new ProjectPage(page, PROJECT);
-                await project.open();
+        // test feature picker popup with all geometry types
+        [
+            { editLayer: LAYERS.polygon, tcId: 'TC-11-p', label: 'tc11-p-source', displayName:'tc11-p-source-displayName'},
+            { editLayer: LAYERS.line, tcId: 'TC-11-l', label: 'tc11-l-source', displayName:'tc11-l-source' },
+            { editLayer: LAYERS.point, tcId: 'TC-11-d', label: 'tc11-d-source', displayName:'1' },
+        ].forEach(({editLayer, tcId, label, displayName}) => {
+            test(`${tcId}: Clicking on an existing ${editLayer.geomType} feature in copy mode shows the picker popup`,
+                async ({ page }) => {
+                    const project = new ProjectPage(page, PROJECT);
+                    await project.open();
 
-                // Create a source polygon that will appear in the WMS GetFeatureInfo result
-                const srcIds = await createFeature(
-                    project, page,
-                    LAYERS.polygon.name, 'polygon',
-                    SRC_X, SRC_Y,
-                    'tc11-source',
-                );
+                    // Create a source feature that will appear in the WMS GetFeatureInfo result
+                    const srcIds = await createFeature(
+                        project, page,
+                        editLayer.name, editLayer.geomType,
+                        SRC_X, SRC_Y,
+                        label,
+                    );
 
-                // Open its edit form (modify mode) to get layerId set
-                await openEditFormForFeature(project, SRC_X, SRC_Y, srcIds['id'], LAYERS.polygon.id);
+                    // Open its edit form (modify mode) to get layerId set
+                    await openEditFormForFeature(project, SRC_X, SRC_Y, srcIds['id'], editLayer.id);
 
-                const btn = page.locator('lizmap-paste-geom button');
-                await btn.click(); // activate copy mode
-                await expect(btn).toHaveClass(/active/);
+                    const btn = page.locator('lizmap-paste-geom button');
+                    await btn.click(); // activate copy mode
+                    await expect(btn).toHaveClass(/active/);
 
-                // Set up the GFI request waiter BEFORE clicking
-                const gfiRequestPromise = waitForCopyModeGFIRequest(page);
+                    // Set up the GFI request waiter BEFORE clicking
+                    const gfiRequestPromise = waitForCopyModeGFIRequest(page);
 
-                // Click on the map where the source feature lives
-                // GeometryCopyHandler._onMapClick fires → WMS GetFeatureInfo POST
-                await project.clickOnMapLegacy(SRC_X, SRC_Y);
+                    // Click on the map where the source feature lives
+                    // GeometryCopyHandler._onMapClick fires → WMS GetFeatureInfo POST
+                    await project.clickOnMapLegacy(SRC_X, SRC_Y);
 
-                // Wait for the WMS request to complete so the response is processed
-                const gfiRequest = await gfiRequestPromise;
-                await gfiRequest.response();
+                    // Wait for the WMS request to complete so the response is processed
+                    const gfiRequest = await gfiRequestPromise;
+                    await gfiRequest.response();
 
-                // The feature picker popup must appear
-                const popup = page.locator('#feature-picker-popup');
-                await expect(popup).toBeVisible({ timeout: 5_000 });
+                    // The feature picker popup must appear
+                    const popup = page.locator('#feature-picker-popup');
+                    await expect(popup).toBeVisible({ timeout: 5_000 });
 
-                // At least one feature row representing the source polygon
-                // (may include features from previous failed test runs if cleanup didn't run)
-                await expect(popup.locator('.feature-row')).not.toHaveCount(0);
+                    // At least one feature row representing the source feature
+                    // (may include features from previous failed test runs if cleanup didn't run)
+                    await expect(popup.locator('.feature-row')).not.toHaveCount(0);
 
-                // Row must show the feature display name and the layer name
-                // Display name
-                await expect(
-                    popup.locator('.feature-row', { hasText: 'tc11-source-displayName' })
-                ).toHaveCount(1);
-                // Layer name
-                await expect(popup.locator('.feature-row td').first())
-                    .toContainText(LAYERS.polygon.name);
+                    // Row must show the feature display name and the layer name
+                    // Display name
+                    await expect(
+                        popup.locator('.feature-row', { hasText: `${displayName}` })
+                    ).toHaveCount(1);
+                    // Layer name
+                    await expect(popup.locator('.feature-row td').first())
+                        .toContainText(editLayer.name);
 
-                // Cleanup: close popup, cancel form, delete source
-                await popup.locator('.close-btn').click();
-                await cancelEditForm(project);
-                await deleteFeature(project, SRC_X, SRC_Y, srcIds['id'], LAYERS.polygon.id);
-            });
+                    // hover on the row and check highlighted feature
+                    await popup.locator('.feature-row td').first().hover();
+                    await checkHighLightLayerFeature(project,editLayer.olGeomType);
+
+                    // Cleanup: close popup, cancel form, delete source
+                    await popup.locator('.close-btn').click();
+                    await cancelEditForm(project);
+                    await deleteFeature(project, SRC_X, SRC_Y, srcIds['id'], editLayer.id);
+                });
+        })
 
         test('TC-12: Clicking on an empty area in copy mode does not show the picker popup',
             async ({ page }) => {
@@ -593,15 +653,16 @@ test.describe('Copy-paste geometry — geometry type filtering',
     { tag: ['@write'] }, () => {
 
         /**
-         * Incompatible geometry combinations where the editing layer is polygon.
-         * Copy-paste geometry currently only supports polygons, so we only test
-         * polygon editing layer vs point/line sources.
-         *
+         * Incompatible geometry combinations where the editing layer is either polygon, line or point.
          * Each combination must produce: no picker popup + auto-deactivation of copy mode.
          */
         [
             { editLayer: LAYERS.polygon, srcLayer: LAYERS.point,  tcId: 'TC-17a' },
             { editLayer: LAYERS.polygon, srcLayer: LAYERS.line,   tcId: 'TC-17b' },
+            { editLayer: LAYERS.line, srcLayer: LAYERS.polygon,   tcId: 'TC-17c' },
+            { editLayer: LAYERS.line, srcLayer: LAYERS.point,   tcId: 'TC-17d' },
+            { editLayer: LAYERS.point, srcLayer: LAYERS.line,   tcId: 'TC-17e' },
+            { editLayer: LAYERS.point, srcLayer: LAYERS.polygon,   tcId: 'TC-17f' },
         ].forEach(({ editLayer, srcLayer, tcId }) => {
 
             test(`${tcId}: editing ${editLayer.geomType} layer — ${srcLayer.geomType} source is filtered out`,
@@ -744,14 +805,21 @@ test.describe('Copy-paste geometry — full copy workflow',
             await deleteFeature(project, SRC_X, SRC_Y, srcIds['id'], layerId);
         }
 
-        test('TC-21: Full workflow — copy POLYGON geometry and save', async ({ page }) => {
-            await runFullWorkflowTest(
-                page,
-                LAYERS.polygon.name,
-                LAYERS.polygon.id,
-                'polygon',
-            );
-        });
+        // Test full workflow with all geometry types
+        [
+            {editLayer:LAYERS.polygon, tcId: 'TC-21-p'},
+            {editLayer:LAYERS.line, tcId: 'TC-21-l'},
+            {editLayer:LAYERS.point, tcId: 'TC-21-d'},
+        ].forEach(({editLayer, tcId})=>{
+            test(`${tcId}: Full workflow — copy ${editLayer.geomType.toUpperCase()} geometry and save`, async ({ page }) => {
+                await runFullWorkflowTest(
+                    page,
+                    editLayer.name,
+                    editLayer.id,
+                    editLayer.geomType,
+                );
+            });
+        })
     });
 
 // ---------------------------------------------------------------------------
@@ -987,6 +1055,93 @@ test.describe('Copy-paste geometry — user-facing messages (_notify)',
                 await deleteFeature(project, SRC_X, SRC_Y, ids['id'], LAYERS.polygon.id);
             });
     });
+
+test.describe('Check copy handler on 4326 project for axis orientation adjustment',
+    { tag: ['@write'] }, () => {
+
+        [
+            { editLayer: LAYERS_4326.point, label:'4326_point' },
+            { editLayer: LAYERS_4326.line, label:'4326_line' },
+            { editLayer: LAYERS_4326.polygon, label:'4326_polygon' },
+        ].forEach(({editLayer, label})=>{
+            test(`Check getFeatureInfo WMS request for 4326 ${editLayer.geomType.toUpperCase()} feature`,
+                async ({ page }) => {
+
+                    // change project projection, bbox and initial extent on the fly
+                    await page.route('**/service/getProjectConfig*', async route => {
+                        const response = await route.fetch();
+                        const json = await response.json();
+
+                        // change projection
+                        json.options.projection = {
+                            proj4: "+proj=longlat +datum=WGS84 +no_defs",
+                            ref: "EPSG:4326"
+                        }
+
+                        // change bbox
+                        json.options.bbox = [
+                            "-6.76292745900000014",
+                            "36.02200815300000158",
+                            "20.54463446100000112",
+                            "55.98576099299999953",
+                        ]
+
+                        // change initialExtent
+                        json.options.initialExtent = [
+                            -6.762927459,
+                            36.022008153,
+                            20.544634461,
+                            55.985760993,
+                        ]
+
+                        await route.fulfill({ response, json });
+                    });
+
+                    const project = new ProjectPage(page, PROJECT);
+                    await project.open();
+
+                    // create a new 4326 feature
+                    const srcIds = await createFeature(
+                        project, page,
+                        editLayer.name, editLayer.geomType,
+                        SRC_X, SRC_Y,
+                        label,
+                    );
+
+                    await openEditFormForFeature(project, SRC_X, SRC_Y, srcIds['id'], editLayer.id);
+
+                    const btn = page.locator('lizmap-paste-geom button');
+                    await btn.click(); // activate copy mode
+                    await expect(btn).toHaveClass(/active/);
+
+                    const gfiRequestPromise = waitForCopyModeGFIRequest(page);
+
+                    // Click on the map
+                    await project.clickOnMapLegacy(SRC_X, SRC_Y);
+
+                    // Wait for the WMS GetFeatureInfo request
+                    const gfiRequest = await gfiRequestPromise;
+
+                    // check GetFeatureInfo parameters. BBOX should be issued with lat/long format
+                    const expectedParameters = {
+                        'SERVICE': 'WMS',
+                        'VERSION': '1.3.0',
+                        'REQUEST': 'GetFeatureInfo',
+                        'QUERY_LAYERS': 'polygon_2154,line_2154,point_2154,polygon_4326,line_4326,point_4326,polygon_3857,line_3857,point_3857',
+                        'STYLE':'default,default,default,default,default,default,default,default,default',
+                        'INFO_FORMAT':'text/html',
+                        'CRS': 'EPSG:4326',
+                        'BBOX': /39.1582\d+,-3.4668\d+,52.8495\d+,17.2485\d+/,
+                    }
+                    requestExpect(gfiRequest).toContainParametersInPostData(expectedParameters);
+                    await gfiRequest.response();
+
+                    // delete feature
+                    await cancelEditForm(project);
+                    await deleteFeature(project, SRC_X, SRC_Y, srcIds['id'], editLayer.id);
+                })
+        })
+    })
 
 /**
  * Read a lizDict translation entry from the running page so the assertion
