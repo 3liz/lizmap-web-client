@@ -1051,6 +1051,9 @@ var lizEdition = function() {
                 editionLayer.clearLayers();
                 // activate drawing control
                 ctrl.activate();
+
+                // dispatch restart drawing event to notify others components
+                lizMap.mainEventDispatcher.dispatch('lizmap-edition-restart-drawing');
             });
 
             $('#edition-geomtool-nodetool').click(function(){

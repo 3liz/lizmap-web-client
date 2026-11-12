@@ -37,7 +37,6 @@ export default class Edition {
             lizmapeditiondrawfeaturedeactivated: () => {
                 this.drawFeatureActivated = false;
                 this.layerGeometry = undefined;
-                this.drawControl = undefined;
                 this.lastSegmentLength = undefined;
                 mainEventDispatcher.dispatch('edition.drawFeatureActivated');
             },
