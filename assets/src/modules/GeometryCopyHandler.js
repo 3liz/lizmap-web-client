@@ -9,7 +9,9 @@ import { mainLizmap, mainEventDispatcher } from './Globals.js';
 import FeaturePickerPopup from './FeaturePickerPopup.js';
 import { Utils } from './Utils.js';
 import { Feature } from 'ol';
-import { Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon } from 'ol/geom.js';
+import { Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, Circle as CircleGeom} from 'ol/geom.js';
+import { WKT } from 'ol/format.js';
+import { fromCircle } from 'ol/geom/Polygon.js';
 
 /**
  * Handles geometry copy workflow
@@ -106,13 +108,20 @@ export default class GeometryCopyHandler {
     }
 
     /**
-     * Query all visible layers for features at position via WMS GetFeatureInfo
+     * Query all visible map layers and the digitizing layer
+     * to retrieve features suitable for copying.
+     * Show feature selection popup accordingly or inform the user
+     * if no suitable feature has been identified.
      * @param {object} coordinate - Lon/lat coordinate
      * @param {object} pixelPosition - Pixel position
+     * @returns {Promise<void>}
      */
-    _queryFeaturesAtPosition(coordinate, pixelPosition) {
+    async _queryFeaturesAtPosition(coordinate, pixelPosition) {
         // Close any existing popup before opening a new one
         this._featurePickerPopup.hide();
+
+        // get digitizing features
+        const digitizingFeatures = this._getDigitizingFeatures(pixelPosition);
 
         // Get all visible layers from mainLizmap state
         let candidateLayers = mainLizmap.state.rootMapGroup.findMapLayers()
@@ -136,16 +145,39 @@ export default class GeometryCopyHandler {
             const layerName = layer.wmsName || layer.name;
             return wfsLayerNames.has(layerName);
         });
-
-        if (!candidateLayers.length) {
+        // if no candidate layers or digitized elements are present, notify the user
+        if(!candidateLayers.length && !digitizingFeatures.length) {
             this._notify(
                 lizDict['edition.geom.copyPaste.noCopyableLayers']
-                || 'No copyable layers found. Layers must be visible, popup-enabled and published as WFS to copy their geometries.',
+                || 'No copyable digitizing features or map layers found. Map layers must be visible, popup-enabled and published as WFS to copy their geometries.',
                 'info'
             );
-            this.deactivate();
+
             return;
         }
+        const mapFeatures = await this._getMapFeatures(candidateLayers, pixelPosition);
+        if (!digitizingFeatures.length && !mapFeatures.length) {
+            this._notify(
+                lizDict['edition.geom.copyPaste.noCompatibleFeatures']
+                || 'No compatible features found at this location',
+                'info'
+            );
+
+            return;
+        } else {
+            this._showFeaturePicker([...mapFeatures,...digitizingFeatures], pixelPosition);
+        }
+    }
+
+    /**
+     * Query all visible layers for features at position via WMS GetFeatureInfo
+     * @param {Array<any>} candidateLayers - list of candidate layers
+     * @param {object} pixelPosition - Pixel position
+     * @returns {Promise<Array>} - Array of informations for popup display
+     */
+    async _getMapFeatures(candidateLayers, pixelPosition) {
+
+        if(!candidateLayers.length) return [];
 
         const layersNames = [];
         const layersStyles = [];
@@ -211,29 +243,92 @@ export default class GeometryCopyHandler {
 
         $('#newOlMap').css('cursor', 'wait');
 
-        // Use fetchHTML to get the standard Lizmap popup HTML response
-        Utils.fetchHTML(globalThis['lizUrls'].wms, {
-            method: "POST",
-            body: new URLSearchParams({
-                repository: globalThis['lizUrls'].params.repository,
-                project: globalThis['lizUrls'].params.project,
-                SERVICE: 'WMS',
-                REQUEST: 'GetFeatureInfo',
-                VERSION: '1.3.0',
-                ...wmsParams
+        try {
+            // Use fetchHTML to get the standard Lizmap popup HTML response
+            const response = await Utils.fetchHTML(globalThis['lizUrls'].wms, {
+                method: "POST",
+                body: new URLSearchParams({
+                    repository: globalThis['lizUrls'].params.repository,
+                    project: globalThis['lizUrls'].params.project,
+                    SERVICE: 'WMS',
+                    REQUEST: 'GetFeatureInfo',
+                    VERSION: '1.3.0',
+                    ...wmsParams
+                })
             })
-        }).then(response => {
             $('#newOlMap').css('cursor', 'crosshair');
-            this._handleWMSResponse(response, pixelPosition);
-        }).catch(() => {
+
+            return this._handleWMSResponse(response)
+        } catch {
             $('#newOlMap').css('cursor', 'crosshair');
             this._notify(
                 lizDict['edition.geom.copyPaste.queryError']
                 || 'Error querying features',
                 'error'
             );
-            this.deactivate();
-        });
+            return [];
+        }
+    }
+
+    /**
+     * Gets the new ol digitized features at pixelPosition,
+     * filters them accordingly to the current edition geometry type
+     * and trasfroms them into corresponding ol2 features
+     * @param {object} pixelPosition - Pixel position
+     * @returns {Array<any>} - Array of informations for popup display
+     */
+    _getDigitizingFeatures(pixelPosition){
+        let digitizingFeatures = [];
+
+        if(mainLizmap.digitizing?.featureDrawn) {
+            const editingGeometryType = this._getEditingGeometryType();
+            const features = mainLizmap.map.getFeaturesAtPixel([pixelPosition.x,pixelPosition.y],{
+                // set proper hit tolerance
+                hitTolerance: 10,
+                // filter only digitizing features
+                layerFilter: (layer)=> {
+                    return layer === lizMap.mainLizmap.digitizing.drawLayer;
+                }
+            })
+
+            if (features) {
+                digitizingFeatures = features.filter((digitizingFeatures) => {
+                    // filter geometry to match the edition geometry
+                    const geometryType = digitizingFeatures.getGeometry().getType();
+                    return editingGeometryType &&
+                        this._geometryTypesMatch(geometryType == 'Circle' ? 'Polygon' : geometryType, editingGeometryType);
+                }).map((filteredFeatures) => {
+                    // transform ol geom in ol2 geom
+
+                    // transform cirlces into polygons
+                    if(filteredFeatures.getGeometry() instanceof CircleGeom) {
+                        filteredFeatures = new Feature(fromCircle(filteredFeatures.getGeometry(),128));
+                    }
+                    const wktFormat = new WKT();
+                    const wkt = wktFormat.writeFeature(filteredFeatures,{
+                        dataProjection: mainLizmap.projection,
+                        featureProjection: mainLizmap.qgisProjectProjection
+                    });
+
+                    const wktParser = new OpenLayers.Format.WKT();
+                    const wktOl2 = wktParser.read(wkt);
+
+                    return wktOl2;
+                }).map((h, i) => {
+                    const name = this._getGeometryType(h.geometry) == 'LineString' ? 'Line' : this._getGeometryType(h.geometry);
+                    return {
+                        layerName: lizDict['edition.geom.copyPaste.digitizinLayerName'],
+                        layerId: `drawings`,
+                        featureLabel: `${name} ${i + 1}`,
+                        geometryType: this._getGeometryType(h.geometry),
+                        geometry: h.geometry,
+                        feature: h
+                    }
+                });
+            }
+        }
+
+        return digitizingFeatures;
     }
 
     /**
@@ -264,9 +359,9 @@ export default class GeometryCopyHandler {
     /**
      * Handle WMS GetFeatureInfo HTML response
      * @param {string} htmlResponse - HTML response from WMS GetFeatureInfo
-     * @param {object} pixelPosition - Pixel position where user clicked
+     * @returns {Array<any>} - Array of informations for popup display
      */
-    _handleWMSResponse(htmlResponse, pixelPosition) {
+    _handleWMSResponse(htmlResponse) {
         const features = [];
 
         // Get current editing layer's geometry type for filtering
@@ -327,16 +422,7 @@ export default class GeometryCopyHandler {
             }
         });
 
-        if (features.length > 0) {
-            this._showFeaturePicker(features, pixelPosition);
-        } else {
-            this._notify(
-                lizDict['edition.geom.copyPaste.noCompatibleFeatures']
-                || 'No compatible features found at this location',
-                'info'
-            );
-            this.deactivate();
-        }
+        return features;
     }
 
     /**
@@ -358,7 +444,7 @@ export default class GeometryCopyHandler {
     }
 
     /**
-     * Get geometry type name
+     * Get ol2 geometry type name
      * @param {object} geometry - Geometry object
      * @returns {string} Geometry type name
      */
