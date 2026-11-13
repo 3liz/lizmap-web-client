@@ -66,8 +66,8 @@ class lizmapMainViewItem
     ) {
         $this->id = $id;
         $this->parentId = $parentId;
-        $this->title = jFilter::cleanHtml($title);
-        $this->abstract = jFilter::cleanHtml($abstract);
+        $this->title = lizmap::getAppContext()->cleanHtml($title);
+        $this->abstract = lizmap::getAppContext()->cleanHtml($abstract);
         $this->keywordList = $keywordList;
         $this->proj = $proj;
         $this->bbox = $bbox;

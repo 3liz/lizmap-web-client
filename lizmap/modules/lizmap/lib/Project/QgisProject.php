@@ -1212,8 +1212,8 @@ class QgisProject
 
         // Build data
         $this->data = array(
-            'title' => $project->properties->WMSServiceTitle,
-            'abstract' => $project->properties->WMSServiceAbstract,
+            'title' => $this->appContext->cleanhtml($project->properties->WMSServiceTitle),
+            'abstract' => $this->appContext->cleanhtml($project->properties->WMSServiceAbstract),
             'keywordList' => is_array($project->properties->WMSKeywordList) ? implode(', ', $project->properties->WMSKeywordList) : '',
             'wmsMaxWidth' => $project->properties->WMSMaxWidth,
             'wmsMaxHeight' => $project->properties->WMSMaxHeight,

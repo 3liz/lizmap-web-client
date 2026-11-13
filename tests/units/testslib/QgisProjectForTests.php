@@ -8,7 +8,11 @@ class QgisProjectForTests extends QgisProject
     {
         if ($data !== null) {
             parent::__construct(null, new lizmapServices(null, (object) array(), false, '', ''), new ContextForTests(), $data);
+        } else {
+            // app context must be set
+            $this->appContext = new ContextForTests();
         }
+
     }
 
     public function readXMLProjectTest($file)
