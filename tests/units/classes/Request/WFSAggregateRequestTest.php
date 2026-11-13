@@ -46,6 +46,7 @@ class WFSAggregateRequestTest extends TestCase
         $request->datasource = (object) array(
             'key' => 'id',
             'table' => '"schema"."table"',
+            'geocol' => 'geom',
         );
 
         return $request;
@@ -280,5 +281,33 @@ class WFSAggregateRequestTest extends TestCase
         // Aggregation not possible
         $request->columnsForTests = null;
         $this->assertNull($request->aggregate(array('category'), array(array('count', null))));
+    }
+
+    /**
+     * Test the SQL query computing the extent of the features.
+     */
+    public function testBuildExtentSql(): void
+    {
+        $sql = self::getRequest()->buildExtentSqlForTests(
+            new jDbConnectionForTests(),
+            ' WHERE True AND ( "value" > 10 )',
+            3857,
+        );
+        // Compare without the indentation
+        $sql = preg_replace('/\s+/', ' ', trim($sql));
+
+        // The extent of the envelopes of the selected features, in the output CRS
+        $this->assertStringContainsString(
+            'WITH extent AS ( SELECT ST_Extent(ST_Transform(ST_Envelope("geom"::geometry), 3857)) AS "bbox"'
+            .' FROM "schema"."table" WHERE True AND ( "value" > 10 ) )',
+            $sql
+        );
+
+        // One row with the bounds of the extent
+        $this->assertStringContainsString(
+            'SELECT ST_XMin("bbox") AS "xmin", ST_YMin("bbox") AS "ymin",'
+            .' ST_XMax("bbox") AS "xmax", ST_YMax("bbox") AS "ymax" FROM extent',
+            $sql
+        );
     }
 }

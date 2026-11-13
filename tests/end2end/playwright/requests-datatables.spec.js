@@ -1,6 +1,7 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 import { expect as responseExpect } from './fixtures/expect-response.js'
+import { getAuthStorageStatePath } from './globals';
 
 test.describe('Datables Requests @requests @readonly', () => {
 
@@ -1310,4 +1311,136 @@ test.describe('Datables Requests @requests @readonly', () => {
             ]
         );
     })
+});
+
+/**
+ * Post an extent request for the filtered features of a layer.
+ * @param {import('@playwright/test').APIRequestContext} request - the API request context
+ * @param {string} project - the project key in the tests repository
+ * @param {string} layerId - the layer id
+ * @param {object} data - the datatables parameters: searchBuilder, exp_filter, bbox...
+ * @returns {Promise<number[]>} the extent [xmin, ymin, xmax, ymax], empty if no feature
+ */
+async function getFilteredFeaturesExtent(request, project, layerId, data) {
+    const params = new URLSearchParams({
+        'repository': 'testsrepository',
+        'project': project,
+        'layerId': layerId,
+    });
+    const response = await request.post(`/index.php/lizmap/datatables/filteredFeaturesExtent?${params}`, {
+        data: data,
+    });
+    responseExpect(response).toBeJson(200);
+    return await response.json();
+}
+
+/**
+ * Check an extent, with a precision of 6 decimals.
+ * @param {number[]} extent - the extent to check
+ * @param {number[]} expected - the expected extent [xmin, ymin, xmax, ymax]
+ */
+function expectExtent(extent, expected) {
+    expect(extent).toHaveLength(4);
+    for (let i = 0; i < 4; i++) {
+        expect(extent[i]).toBeCloseTo(expected[i], 6);
+    }
+}
+
+test.describe('Datables extent - PostgreSQL layer @requests @readonly', () => {
+
+    const project = 'attribute_table';
+    // PostgreSQL layer, in EPSG:4326: the extent is computed by the database
+    const layerIdPostgres = 'quartiers_5fe55662_2cbf_48f4_a505_498c61fe978c';
+    // The same data from a Shapefile: the extent is computed from the WFS features
+    const layerIdShapefile = 'quartiers_1d4215b5_d2fa_4200_a725_9bb8b066834c';
+    // PostgreSQL layer, in EPSG:2154: the extent is transformed into EPSG:4326
+    const layerIdPostgres2154 = 'sousquartiers_c2ad98a5_71ad_4fba_823e_a5c901ddb09d';
+
+    test('Extent of all the features', async({ request }) => {
+        const extent = await getFilteredFeaturesExtent(request, project, layerIdPostgres, {searchBuilder: {}});
+        expect(extent).toStrictEqual([3.807070366959713, 43.5667040954502, 3.941330680605673, 43.653371224492886]);
+
+        // Same extent as the one computed from the WFS features
+        const extentShapefile = await getFilteredFeaturesExtent(request, project, layerIdShapefile, {searchBuilder: {}});
+        expectExtent(extentShapefile, extent);
+    });
+
+    test('Extent of the filtered features', async({ request }) => {
+        const data = {
+            searchBuilder: {},
+            exp_filter: '"quartier" IN (1, 2)',
+        };
+        const extent = await getFilteredFeaturesExtent(request, project, layerIdPostgres, data);
+        expect(extent).toStrictEqual([3.807070366959713, 43.60724613949247, 3.8962096076196917, 43.653371224492886]);
+
+        // Same extent as the one computed from the WFS features
+        const extentShapefile = await getFilteredFeaturesExtent(request, project, layerIdShapefile, data);
+        expectExtent(extentShapefile, extent);
+    });
+
+    test('Extent of the features in a bounding box', async({ request }) => {
+        // The bounding box is in EPSG:3857, the extent is still in EPSG:4326
+        const extent = await getFilteredFeaturesExtent(request, project, layerIdPostgres, {
+            searchBuilder: {},
+            bbox: '423000,5404000,428000,5406000',
+            srsname: 'EPSG:3857',
+        });
+        expect(extent).toStrictEqual([3.807070366959713, 43.59131763372437, 3.8611897503366492, 43.64444828096834]);
+    });
+
+    test('Extent of a layer in another CRS', async({ request }) => {
+        const extent = await getFilteredFeaturesExtent(request, project, layerIdPostgres2154, {searchBuilder: {}});
+        expectExtent(extent, [3.8069854560214, 43.56657958722378, 3.941527595276242, 43.653492459778846]);
+    });
+
+    test('Empty extent without feature', async({ request }) => {
+        const extent = await getFilteredFeaturesExtent(request, project, layerIdPostgres, {
+            searchBuilder: {},
+            exp_filter: '"quartier" = -1',
+        });
+        expect(extent).toStrictEqual([]);
+    });
+});
+
+test.describe('Datables extent - filter by login - not connected @requests @readonly', () => {
+
+    test('No feature visible', async({ request }) => {
+        const extent = await getFilteredFeaturesExtent(
+            request,
+            'filter_layer_by_user',
+            'filter_layer_by_user_8bd3128f_2cad_4121_b5f9_0b6f6118e2f0',
+            {searchBuilder: {}},
+        );
+        expect(extent).toStrictEqual([]);
+    });
+});
+
+test.describe('Datables extent - filter by login - user in group a @requests @readonly', () => {
+    test.use({ storageState: getAuthStorageStatePath('user_in_group_a') });
+
+    test('Only the features of the user', async({ request }) => {
+        const extent = await getFilteredFeaturesExtent(
+            request,
+            'filter_layer_by_user',
+            'filter_layer_by_user_8bd3128f_2cad_4121_b5f9_0b6f6118e2f0',
+            {searchBuilder: {}},
+        );
+        // Only the feature 2
+        expectExtent(extent, [-1.1958748745771652, 0.7280687728374095, -1.1958748745771652, 0.7280687728374095]);
+    });
+});
+
+test.describe('Datables extent - filter by login - admin @requests @readonly', () => {
+    test.use({ storageState: getAuthStorageStatePath('admin') });
+
+    test('All the features', async({ request }) => {
+        const extent = await getFilteredFeaturesExtent(
+            request,
+            'filter_layer_by_user',
+            'filter_layer_by_user_8bd3128f_2cad_4121_b5f9_0b6f6118e2f0',
+            {searchBuilder: {}},
+        );
+        // The features 1, 2 and 3
+        expectExtent(extent, [-1.743702915406795, 0.443787033464802, -1.195874874577165, 0.72806877283741]);
+    });
 });
