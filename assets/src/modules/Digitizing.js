@@ -604,6 +604,14 @@ export class Digitizing {
             this._drawSource.un('addfeature', this._addFeatureSinglePartGeometryListener);
             this._drawSource.un('addfeature', this._addFeatureSaveDispatchListener);
 
+            // clear constraint layer
+            this._constraintLayer.getSource().clear();
+            // remove measure tooltips, if any
+            this._segmentMeasureTooltipElement?.remove();
+            this._totalMeasureTooltipElement?.remove();
+            this._segmentMeasureTooltipElement = null;
+            this._totalMeasureTooltipElement = null;
+
             // If tool === 'deactivate' or current selected tool is selected again => deactivate
             if (tool === this._toolSelected || tool === this._tools[0]) {
                 this._toolSelected = this._tools[0];
@@ -635,6 +643,9 @@ export class Digitizing {
                         break;
                     case this._tools[5]:
                         drawOptions.type = 'Circle';
+                        drawOptions.geometryFunction = (coords, geom) => {
+                            return this._contraintsHandler(coords, geom, drawOptions.type);
+                        }
                         break;
                     case this._tools[6]:
                         drawOptions.type = 'Polygon';
@@ -1271,7 +1282,7 @@ export class Digitizing {
      * @type {boolean}
      */
     get hasConstraintsPanelVisible() {
-        return this._hasMeasureVisible && ['line', 'polygon'].includes(this.toolSelected);
+        return this._hasMeasureVisible && ['circle','line', 'polygon'].includes(this.toolSelected);
     }
 
     /**
@@ -1371,6 +1382,8 @@ export class Digitizing {
         if (!geom) {
             if (geomType === 'Polygon') {
                 geom = new Polygon(coords);
+            } else if (geomType === 'Circle') {
+                geom = new CircleGeom(coords[0], 0);
             } else {
                 geom = new LineString(coords);
             }
@@ -1487,6 +1500,12 @@ export class Digitizing {
 
         if (geomType === 'Polygon') {
             geom.setCoordinates([_coords]);
+        } else if (geomType == 'Circle'){
+            // calculate radius
+            const dx = _coords[1][0] - _coords[0][0];
+            const dy = _coords[1][1] - _coords[0][1];
+            const radius = Math.sqrt(dx * dx + dy * dy);
+            geom.setRadius(radius)
         } else {
             geom.setCoordinates(_coords);
         }
