@@ -11,7 +11,9 @@
  * @license    Mozilla Public License
  */
 
-namespace LizmapDataviz\GeoJson;
+namespace Lizmap\Request;
+
+use GuzzleHttp\Psr7\StreamWrapper;
 
 /**
  * Decode the features of a GeoJSON FeatureCollection stream with the native
@@ -26,6 +28,11 @@ namespace LizmapDataviz\GeoJson;
  * nested objects): the block is then not valid JSON, json_decode fails and the
  * previous separator is tried. As a block must start and end at feature
  * boundaries to be valid JSON, wrong features can not be returned.
+ *
+ * Usage, with the response of a WFS GetFeature request in GeoJSON:
+ *     foreach (FeatureStream::fromResponse($wfsRequest->process()) as $feature) {
+ *         $value = $feature->properties->name;
+ *     }
  */
 class FeatureStream
 {
@@ -43,6 +50,25 @@ class FeatureStream
      * Maximum number of whitespaces around a separator.
      */
     private const MAX_WHITESPACES = 64;
+
+    /**
+     * Get the features of the GeoJSON body of a response.
+     *
+     * The caller must check the response code and mime type before:
+     * an error response is not GeoJSON.
+     *
+     * @param OGCResponse|ProxyResponse $response  the response, for example of a WFS GetFeature request
+     * @param int                       $chunkSize the number of bytes read at once
+     *
+     * @return \Generator<int, object> the features, as objects
+     *
+     * @throws \JsonException if the GeoJSON is not valid
+     */
+    public static function fromResponse($response, int $chunkSize = 32768): \Generator
+    {
+        // The generator keeps a reference to the PHP stream of the body
+        return self::read(StreamWrapper::getResource($response->getBodyAsStream()), $chunkSize);
+    }
 
     /**
      * Get the features of the GeoJSON stream.

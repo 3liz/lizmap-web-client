@@ -1,6 +1,6 @@
 <?php
 
-use LizmapDataviz\GeoJson\FeatureStream;
+use Lizmap\Request\FeatureStream;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
