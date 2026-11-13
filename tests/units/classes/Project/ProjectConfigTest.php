@@ -1,14 +1,14 @@
 <?php
 
 use Lizmap\Project;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class projectConfigTest extends TestCase
 {
     public static function getConstructData()
@@ -34,8 +34,6 @@ class projectConfigTest extends TestCase
     }
 
     /**
-     * @dataProvider getConstructData
-     *
      * @param mixed $data
      * @param mixed $expectedData
      */
@@ -80,8 +78,6 @@ class projectConfigTest extends TestCase
     }
 
     /**
-     * @dataProvider getFindLayerData
-     *
      * @param mixed $layers
      * @param mixed $key
      * @param mixed $layerName
@@ -111,8 +107,6 @@ class projectConfigTest extends TestCase
     }
 
     /**
-     * @dataProvider getEditionLayerByNameData
-     *
      * @param mixed $eLayers
      * @param mixed $name
      */
@@ -143,8 +137,6 @@ class projectConfigTest extends TestCase
     }
 
     /**
-     * @dataProvider getEditionLayerByLayerIdData
-     *
      * @param mixed $eLayers
      * @param mixed $id
      * @param mixed $eLayerName
@@ -188,8 +180,6 @@ class projectConfigTest extends TestCase
     }
 
     /**
-     * @dataProvider getOptionsValues
-     *
      * @param mixed $option
      * @param mixed $expectedValue
      */

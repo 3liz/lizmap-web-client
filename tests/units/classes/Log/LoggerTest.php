@@ -1,15 +1,15 @@
 <?php
 
 use Lizmap\Logger\Logger;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\InvalidArgumentException;
 use Psr\Log\LogLevel;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class LoggerTest extends TestCase
 {
     public function testDefault(): void

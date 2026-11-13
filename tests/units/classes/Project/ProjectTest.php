@@ -2,14 +2,14 @@
 
 use Lizmap\Project;
 use Lizmap\Project\ProjectFilesFinder;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class ProjectTest extends TestCase
 {
     public function testReadProject(): void
@@ -78,8 +78,6 @@ class ProjectTest extends TestCase
     }
 
     /**
-     * @dataProvider getQgisPathData
-     *
      * @param mixed $repPath
      * @param mixed $key
      * @param mixed $expectedPath
@@ -104,8 +102,6 @@ class ProjectTest extends TestCase
     }
 
     /**
-     * @dataProvider getRelativeQgisPathData
-     *
      * @param mixed $relative
      * @param mixed $root
      * @param mixed $file
@@ -162,8 +158,6 @@ class ProjectTest extends TestCase
     }
 
     /**
-     * @dataProvider getAttributeLayersData
-     *
      * @param mixed $only
      * @param mixed $attributeLayers
      * @param mixed $expectedReturn
@@ -231,8 +225,6 @@ class ProjectTest extends TestCase
     }
 
     /**
-     * @dataProvider getEditionLayersData
-     *
      * @param mixed $editionLayers
      * @param mixed $acl
      * @param mixed $unset
@@ -283,8 +275,6 @@ class ProjectTest extends TestCase
     }
 
     /**
-     * @dataProvider getLoginFilteredData
-     *
      * @param mixed $lfLayers
      * @param mixed $layers
      * @param mixed $ln
@@ -330,8 +320,6 @@ class ProjectTest extends TestCase
     }
 
     /**
-     * @dataProvider getFiltersData
-     *
      * @param mixed $aclData
      * @param mixed $expectedFilters
      */
@@ -391,8 +379,6 @@ class ProjectTest extends TestCase
     }
 
     /**
-     * @dataProvider getFiltersDataNotMultiple
-     *
      * @param mixed $aclData
      * @param mixed $expectedFilters
      */
@@ -469,8 +455,6 @@ class ProjectTest extends TestCase
     }
 
     /**
-     * @dataProvider getGoogleData
-     *
      * @param mixed $options
      * @param mixed $needGoogle
      * @param mixed $gKey
@@ -524,8 +508,6 @@ class ProjectTest extends TestCase
     }
 
     /**
-     * @dataProvider getCheckAclData
-     *
      * @param mixed $aclData
      * @param mixed $options
      * @param mixed $expectedRet
@@ -581,8 +563,6 @@ class ProjectTest extends TestCase
     }
 
     /**
-     * @dataProvider userFiles4Projets
-     *
      * @param mixed $repoName
      */
     #[DataProvider('userFiles4Projets')]
@@ -772,8 +752,6 @@ class ProjectTest extends TestCase
     }
 
     /**
-     * @dataProvider getAttributeLayersForExport
-     *
      * @param mixed $aclData
      * @param mixed $groups
      * @param mixed $attributeLayers

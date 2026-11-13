@@ -1,14 +1,14 @@
 <?php
 
 use Lizmap\App\VersionTools;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class VersionToolsTest extends TestCase
 {
     public function testDropBuildId(): void
@@ -25,18 +25,16 @@ class VersionToolsTest extends TestCase
         $this->assertEquals('1.40', VersionTools::qgisMajMinHumanVersion('1040')); // Fixme when QGIS 10 is released :)
     }
 
-    public static function strVersionToMajMinIntProvider() {
-        return [
-            '3.40.15' => ['3.40.15', 340],
-            '3.34.10' => ['3.34.10', 334],
-            '4.0.0' => ['4.0.0', 400],
-            '10.4.2' => ['10.4.2', 1004],
-        ];
+    public static function strVersionToMajMinIntProvider()
+    {
+        return array(
+            '3.40.15' => array('3.40.15', 340),
+            '3.34.10' => array('3.34.10', 334),
+            '4.0.0' => array('4.0.0', 400),
+            '10.4.2' => array('10.4.2', 1004),
+        );
     }
 
-    /**
-     * @dataProvider strVersionToMajMinIntProvider
-     */
     #[DataProvider('strVersionToMajMinIntProvider')]
     public function teststrVersionToMajMinInt(string $version, int $expected): void
     {
@@ -66,9 +64,6 @@ class VersionToolsTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider intVersionToSortableProvider
-     */
     #[DataProvider('intVersionToSortableProvider')]
     public function testIntVersionToSortableString(string $intVersion, string $expected): void
     {

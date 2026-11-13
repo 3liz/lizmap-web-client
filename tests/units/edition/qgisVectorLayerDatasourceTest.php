@@ -1,13 +1,13 @@
 <?php
 
 use Lizmap\App\QgisConnectionStringParserException;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class qgisVectorLayerDatasourceTest extends TestCase
 {
     public function testPostgresqlDatasource(): void
@@ -213,7 +213,7 @@ class qgisVectorLayerDatasourceTest extends TestCase
         $this->assertEquals('', $element->getDatasourceParameter('host'));
         $this->assertEquals('', $element->getDatasourceParameter('port'));
         $this->assertEquals('', $element->getDatasourceParameter('user'));
-        $this->assertEquals('qsbc\\def', $element->getDatasourceParameter('password'));
+        $this->assertEquals('qsbc\def', $element->getDatasourceParameter('password'));
         $this->assertEquals('', $element->getDatasourceParameter('authcfg'));
         $this->assertEquals('', $element->getDatasourceParameter('sslmode'));
         $this->assertEquals('', $element->getDatasourceParameter('key'));
@@ -608,7 +608,6 @@ WHERE fk_id_series = 2  )
         $this->assertEquals('geom', $element->getDatasourceParameter('geocol'));
         $this->assertEquals('"year" > 1900', $element->getDatasourceParameter('sql'));
     }
-
 
     public function testBadDatasourceMissingQuote(): void
     {

@@ -1,6 +1,7 @@
 <?php
 
 use Lizmap\Form;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 
 class dummyQgisFormControls implements Form\QgisFormControlsInterface
@@ -38,9 +39,8 @@ class dummyQgisFormControls implements Form\QgisFormControlsInterface
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class qgisAttributeFormTest extends TestCase
 {
     public function testSimpleContainer(): void
@@ -379,7 +379,7 @@ class qgisAttributeFormTest extends TestCase
         $this->assertEquals('foo-tab0-group1', $cc->getParentId());
     }
 
-    public function testBackGroundColor() : void
+    public function testBackGroundColor(): void
     {
         $xml = '<attributeEditorForm>
           <attributeEditorContainer backgroundColor="#AABBCC" collapsed="0" visibilityExpressionEnabled="0" type="Tab" name="tab1" collapsedExpression="" verticalStretch="0" horizontalStretch="0" visibilityExpression="" collapsedExpressionEnabled="0" columnCount="1" groupBox="0" showLabel="1">
@@ -399,9 +399,9 @@ class qgisAttributeFormTest extends TestCase
 
         $tabs = $element->getTabChildren();
         $this->assertCount(2, $tabs);
-        $colors = ['style="background-color:#AABBCC"', ''];
-        $names = ['tab1', 'tab_no_color'];
-        for($i = 0; $i<count($tabs); $i++) {
+        $colors = array('style="background-color:#AABBCC"', '');
+        $names = array('tab1', 'tab_no_color');
+        for ($i = 0; $i < count($tabs); ++$i) {
             $this->assertEquals('tabForm-tab'.strval($i), $tabs[$i]->getHtmlId());
             $this->assertEquals($colors[$i], $tabs[$i]->getBackgroundColorStyle());
             $this->assertEquals($names[$i], $tabs[$i]->getName());

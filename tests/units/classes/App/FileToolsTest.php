@@ -1,13 +1,13 @@
 <?php
 
 use Lizmap\App\FileTools;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class FileToolsTest extends TestCase
 {
     public function testTail(): void

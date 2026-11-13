@@ -1,13 +1,13 @@
 <?php
 
 use LizmapApi\Utils;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class UtilsAPITest extends TestCase
 {
     public function testIsValidBooleanValue(): void

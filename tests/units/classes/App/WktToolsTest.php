@@ -1,13 +1,13 @@
 <?php
 
 use Lizmap\App\WktTools;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class WktToolsTest extends TestCase
 {
     public function testChecking(): void
