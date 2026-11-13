@@ -320,4 +320,6 @@ interface AppContextInterface
     public function getTileCaps($project);
 
     public function buildMapToken();
+
+    public function cleanHtml(string $content);
 }

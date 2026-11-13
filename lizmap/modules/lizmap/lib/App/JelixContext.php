@@ -420,4 +420,10 @@ class JelixContext implements AppContextInterface
             'User-Agent' => $request_headers['User-Agent'] ?? '',
         )));
     }
+
+    public function cleanHtml(string $content)
+    {
+        // NOTE : html stored in gqs may contains url with unescaped &, add replace
+        return \jFilter::cleanHtml(str_replace('&', '&nbsp;', $content));
+    }
 }
