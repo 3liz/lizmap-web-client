@@ -671,21 +671,8 @@ class WFSRequest extends OGCRequest
         }
 
         $sql = ' SELECT ';
-        $propertyname = '';
-        if (array_key_exists('propertyname', $params)) {
-            $propertyname = $params['propertyname'];
-        }
-        if (!empty($propertyname)) {
-            $sfields = array();
-            $pfields = explode(',', $propertyname);
-            foreach ($pfields as $pfield) {
-                if (in_array($pfield, $wfsFields)) {
-                    $sfields[] = $pfield;
-                }
-            }
-        } else {
-            $sfields = $wfsFields;
-        }
+        // Fields requested by PROPERTYNAME, or every WFS field
+        $sfields = $this->getSelectedFields($params, $wfsFields);
         // Add key if not present ( WFS need to export id = typename.id for each feature)
         $key = $this->datasource->key;
         $keys = explode(',', $key);
@@ -1027,39 +1014,131 @@ class WFSRequest extends OGCRequest
      */
     protected function getQueryOrder($cnx, $params, $wfsFields): string
     {
-        // separated by a comma, and ending with a space followed by “a” or “d” (ascending or descending)
-        // If there is no “a” or “d,” then it is “a” by default.
-        // For example: SortBY=id a,name d
-        $sortby = '';
-        $sql = '';
-        if (array_key_exists('sortby', $params)) {
-            $sortby = $params['sortby'];
+        $sortItems = $this->getSortFields($params, $wfsFields);
+        if (count($sortItems) == 0) {
+            return '';
         }
-        if (!empty($sortby)) {
-            $sort_items = array();
-            $items = explode(',', $sortby);
-            foreach ($items as $item) {
-                // !!! Validate on fields to avoid injection !!!
-                $exp = explode(' ', $item);
-                $field = $exp[0];
-                if (in_array($field, $wfsFields)) {
-                    $sort_items[$field] = 'ASC';
-                    if (count($exp) == 2 && in_array(strtolower($exp[1]), array('d', '+d', 'desc', '+desc'))) {
-                        $sort_items[$field] = 'DESC';
-                    }
-                }
+
+        // Build the ORDER BY clause with the validated fields
+        $sql = ' ORDER BY ';
+        $sep = '';
+        foreach ($sortItems as $f => $o) {
+            $sql .= $sep.$cnx->encloseName($f).' '.$o;
+            $sep = ', ';
+        }
+
+        return $sql;
+    }
+
+    /**
+     * Get the sort fields and directions requested by the SORTBY parameter.
+     *
+     * SORTBY is a comma separated list of fields, each one optionally followed
+     * by a space and a direction, for example `id a,name d`. The direction is
+     * ascending by default. Fields which are not WFS fields are ignored.
+     *
+     * @param array    $params    The request parameters
+     * @param string[] $wfsFields The WFS fields of the layer
+     *
+     * @return array<string, string> The sort direction, ASC or DESC, by field name
+     */
+    protected function getSortFields($params, $wfsFields): array
+    {
+        $sortItems = array();
+        if (!array_key_exists('sortby', $params) || empty($params['sortby'])) {
+            return $sortItems;
+        }
+
+        foreach (explode(',', $params['sortby']) as $item) {
+            // !!! Validate on fields to avoid injection !!!
+            $exp = explode(' ', $item);
+            $field = $exp[0];
+            if (!in_array($field, $wfsFields)) {
+                continue;
             }
-            if (count($sort_items) > 0) {
-                $sql .= ' ORDER BY ';
-                $sep = '';
-                foreach ($sort_items as $f => $o) {
-                    $sql .= $sep.$cnx->encloseName($f).' '.$o;
-                    $sep = ', ';
+            // Ascending by default, descending only with an explicit direction
+            $sortItems[$field] = 'ASC';
+            if (count($exp) == 2 && in_array(strtolower($exp[1]), array('d', '+d', 'desc', '+desc'))) {
+                $sortItems[$field] = 'DESC';
+            }
+        }
+
+        return $sortItems;
+    }
+
+    /**
+     * Get the WFS fields selected by the PROPERTYNAME parameter.
+     *
+     * Requested fields which are not WFS fields are ignored. Without
+     * PROPERTYNAME, every WFS field is selected. The primary keys are not added.
+     *
+     * @param array    $params    The request parameters
+     * @param string[] $wfsFields The WFS fields of the layer
+     *
+     * @return string[] The selected WFS fields
+     */
+    protected function getSelectedFields($params, $wfsFields): array
+    {
+        $propertyname = '';
+        if (array_key_exists('propertyname', $params)) {
+            $propertyname = $params['propertyname'];
+        }
+        if (empty($propertyname)) {
+            return array_values($wfsFields);
+        }
+
+        // Keep only the requested fields published in WFS, in the requested order
+        $sfields = array();
+        foreach (explode(',', $propertyname) as $pfield) {
+            if (in_array($pfield, $wfsFields)) {
+                $sfields[] = $pfield;
+            }
+        }
+
+        return $sfields;
+    }
+
+    /**
+     * Get the WFS fields the direct SQL query depends on.
+     *
+     * The query reads the fields selected by PROPERTYNAME (except for a hits request),
+     * sorts on the fields of SORTBY and filters on the fields cited in EXP_FILTER.
+     * A field is considered cited in EXP_FILTER when its name appears as a whole word,
+     * so a name inside a string literal is also returned: the request is then
+     * sent to QGIS Server, which is always correct.
+     *
+     * @param array    $params        The request parameters
+     * @param string[] $wfsFields     The WFS fields of the layer
+     * @param bool     $isHitsRequest True if the request only counts the features
+     *
+     * @return string[] The WFS fields used by the SQL query, without duplicates
+     */
+    protected function getQueryFields($params, $wfsFields, bool $isHitsRequest = false): array
+    {
+        $fields = array();
+
+        // Fields read by the SELECT clause
+        if (!$isHitsRequest) {
+            $fields = $this->getSelectedFields($params, $wfsFields);
+            // Fields used by the ORDER BY clause
+            $fields = array_merge($fields, array_keys($this->getSortFields($params, $wfsFields)));
+        }
+
+        // Fields cited by the expression filter, which includes the filter by login
+        $expFilter = '';
+        if (array_key_exists('exp_filter', $params)) {
+            $expFilter = $params['exp_filter'];
+        }
+        if (!empty($expFilter)) {
+            foreach ($wfsFields as $field) {
+                $pattern = '/(?<![\p{L}\p{N}_])'.preg_quote($field, '/').'(?![\p{L}\p{N}_])/u';
+                if (preg_match($pattern, $expFilter)) {
+                    $fields[] = $field;
                 }
             }
         }
 
-        return $sql;
+        return array_values(array_unique($fields));
     }
 
     /**
@@ -1098,13 +1177,12 @@ class WFSRequest extends OGCRequest
         // Get WFS fields
         $wfsFields = $this->qgisLayer->getWfsFields();
 
-        // Verifying that every wfs fields are db fields
-        // if not return getfeatureQgis
-        if (!$isHitsRequest) {
-            foreach ($wfsFields as $field) {
-                if (!array_key_exists($field, $dbFields)) {
-                    return $this->getfeatureQgis();
-                }
+        // Verifying that the WFS fields used by the query are db fields
+        // if not return getfeatureQgis. Other WFS fields, like virtual fields,
+        // do not prevent the direct SQL query when they are not requested.
+        foreach ($this->getQueryFields($params, $wfsFields, $isHitsRequest) as $field) {
+            if (!array_key_exists($field, $dbFields)) {
+                return $this->getfeatureQgis();
             }
         }
 
