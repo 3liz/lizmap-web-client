@@ -27,6 +27,8 @@ export default class GeometryCopyHandler {
         // Listen for edition form closed event to deactivate copy mode
         mainEventDispatcher.addListener(() => {
             if (this._active) {
+                // force to false since the form is already closed
+                this._drawControlWasActive = false;
                 this.deactivate();
             }
         }, 'edition.formClosed');
