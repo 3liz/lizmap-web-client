@@ -1,13 +1,13 @@
 <?php
 
 use Lizmap\App;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class XmlToolsTest extends TestCase
 {
     public function arrayToXml(array $array, SimpleXMLElement &$xml)

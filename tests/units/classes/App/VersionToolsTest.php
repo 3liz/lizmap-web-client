@@ -1,14 +1,14 @@
 <?php
 
 use Lizmap\App\VersionTools;
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class VersionToolsTest extends TestCase
 {
     public function testDropBuildId(): void
@@ -34,9 +34,6 @@ class VersionToolsTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider strVersionToMajMinIntProvider
-     */
     #[DataProvider('strVersionToMajMinIntProvider')]
     public function teststrVersionToMajMinInt(string $version, int $expected): void
     {
@@ -65,9 +62,6 @@ class VersionToolsTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider intVersionToSortableProvider
-     */
     #[DataProvider('intVersionToSortableProvider')]
     public function testIntVersionToSortableString(string $intVersion, string $expected): void
     {

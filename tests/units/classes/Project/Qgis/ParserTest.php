@@ -2,13 +2,13 @@
 
 use Lizmap\App;
 use Lizmap\Project\Qgis;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class ParserTest extends TestCase
 {
     public function testReadVersion(): void

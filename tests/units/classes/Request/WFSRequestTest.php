@@ -2,14 +2,14 @@
 
 use Lizmap\Project\Repository;
 use Lizmap\Request\WFSRequest;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class WFSRequestTest extends TestCase
 {
     public function testParameters(): void
@@ -78,8 +78,6 @@ class WFSRequestTest extends TestCase
     }
 
     /**
-     * @dataProvider getParametersWithFiltersData
-     *
      * @param mixed $params
      * @param mixed $loginFilters
      * @param mixed $expectedParameters
@@ -118,8 +116,6 @@ class WFSRequestTest extends TestCase
     }
 
     /**
-     * @dataProvider getGetFeatureIdFilterExpData
-     *
      * @param mixed $featureid
      * @param mixed $typename
      * @param mixed $expectedExpFilter
@@ -166,8 +162,6 @@ class WFSRequestTest extends TestCase
     }
 
     /**
-     * @dataProvider getBuildQueryBaseData
-     *
      * @param mixed $params
      * @param mixed $wfsFields
      * @param mixed $expectedSelectFields
@@ -217,8 +211,6 @@ class WFSRequestTest extends TestCase
     }
 
     /**
-     * @dataProvider getGetBboxSqlData
-     *
      * @param mixed $geocol
      * @param mixed $params
      * @param mixed $expectedSql
@@ -261,8 +253,6 @@ class WFSRequestTest extends TestCase
      * Verify that setGeojsonSql wraps both the feature geometry and the bounding-box
      * geometry in ST_Transform(…, $outputSrid) so that WFS responses are returned in
      * the CRS requested by the client.
-     *
-     * @dataProvider getSetGeojsonSqlOutputCrsData
      *
      * @param mixed $outputSrid
      * @param mixed $expectedGeomSql
@@ -332,8 +322,6 @@ class WFSRequestTest extends TestCase
     }
 
     /**
-     * @dataProvider getParseExpFilterData
-     *
      * @param mixed $params
      * @param mixed $key
      * @param mixed $expectedSql
@@ -377,8 +365,6 @@ class WFSRequestTest extends TestCase
     }
 
     /**
-     * @dataProvider getParseFeatureIdData
-     *
      * @param mixed $typename
      * @param mixed $featureId
      * @param mixed $keys
@@ -429,8 +415,6 @@ class WFSRequestTest extends TestCase
     }
 
     /**
-     * @dataProvider getWhereClauseData
-     *
      * @param mixed $params
      * @param mixed $expectedSql
      */
@@ -482,8 +466,6 @@ class WFSRequestTest extends TestCase
     }
 
     /**
-     * @dataProvider getGetQueryOrderData
-     *
      * @param mixed $params
      * @param mixed $wfsFields
      * @param mixed $expectedSql
@@ -634,8 +616,6 @@ class WFSRequestTest extends TestCase
     }
 
     /**
-     * @dataProvider getValidateFilterData
-     *
      * @param mixed $filter
      * @param mixed $expectedFilter
      */
@@ -660,8 +640,6 @@ class WFSRequestTest extends TestCase
     }
 
     /**
-     * @dataProvider getParseDatasourceSqlData
-     *
      * @param mixed $sql
      * @param mixed $expectedSql
      */
@@ -688,8 +666,6 @@ class WFSRequestTest extends TestCase
     }
 
     /**
-     * @dataProvider getSetGeojsonSqlOutputSridData
-     *
      * @param mixed $outputSrid
      * @param mixed $expectedGeomTransform
      * @param mixed $expectedBboxTransform
@@ -746,8 +722,6 @@ class WFSRequestTest extends TestCase
     }
 
     /**
-     * @dataProvider getParseSrsnameSridData
-     *
      * @param mixed $srsname
      * @param mixed $expected
      */

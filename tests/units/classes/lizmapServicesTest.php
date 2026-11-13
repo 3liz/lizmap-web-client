@@ -1,14 +1,14 @@
 <?php
 
 use Jelix\IniFile\IniModifier;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class lizmapServicesTest extends TestCase
 {
     public static function getContactEmail()
@@ -24,8 +24,6 @@ class lizmapServicesTest extends TestCase
     }
 
     /**
-     * @dataProvider getContactEmail
-     *
      * @param mixed $email_test
      * @param mixed $expected_email
      */
@@ -44,8 +42,6 @@ class lizmapServicesTest extends TestCase
     }
 
     /**
-     * @dataProvider getContactEmail
-     *
      * @param mixed $email_test
      * @param mixed $expected_email
      */
@@ -83,8 +79,6 @@ class lizmapServicesTest extends TestCase
     }
 
     /**
-     * @dataProvider getAllowUserAccountRequestsData
-     *
      * @param mixed $allowValue
      * @param mixed $senderEmail
      * @param mixed $isUsingLdap
@@ -114,8 +108,6 @@ class lizmapServicesTest extends TestCase
     }
 
     /**
-     * @dataProvider getHideSensitivePropertiesData
-     *
      * @param mixed $testValue
      * @param mixed $expectedReturnValue
      */
@@ -147,8 +139,6 @@ class lizmapServicesTest extends TestCase
     }
 
     /**
-     * @dataProvider getRootRepositoriesData
-     *
      * @param mixed $testIniValue
      * @param mixed $testVarPathValue
      * @param mixed $expectedReturnValue
@@ -200,8 +190,6 @@ class lizmapServicesTest extends TestCase
     }
 
     /**
-     * @dataProvider getModifyGlobalData
-     *
      * @param mixed $globalConfig
      * @param mixed $newConfig
      * @param mixed $changedProperty
@@ -266,8 +254,6 @@ class lizmapServicesTest extends TestCase
     }
 
     /**
-     * @dataProvider getModifyLocalData
-     *
      * @param mixed $localConfig
      * @param mixed $newConfig
      * @param mixed $changedProperty
@@ -321,8 +307,6 @@ class lizmapServicesTest extends TestCase
     }
 
     /**
-     * @dataProvider getSaveIntoIniData
-     *
      * @param mixed $dataModification
      * @param mixed $expectedIniValues
      * @param mixed $expectedLiveIniValues
@@ -417,8 +401,6 @@ class lizmapServicesTest extends TestCase
     }
 
     /**
-     * @dataProvider getRepoData
-     *
      * @param mixed $repoInfos
      * @param mixed $key
      * @param mixed $expectedReturnValue
@@ -467,8 +449,6 @@ class lizmapServicesTest extends TestCase
     }
 
     /**
-     * @dataProvider getMetricsEnabled
-     *
      * @param mixed $testValue
      * @param mixed $expectedValue
      */

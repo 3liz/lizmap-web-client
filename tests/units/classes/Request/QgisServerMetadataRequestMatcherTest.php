@@ -2,13 +2,13 @@
 
 use GuzzleHttp\Psr7\Request;
 use Lizmap\Request\QgisServerMetadataRequestMatcher;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class QgisServerMetadataRequestMatcherTest extends TestCase
 {
     public function testMapHost(): void

@@ -1,13 +1,13 @@
 <?php
 
 use Lizmap\DataTables\DataTables;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class DataTablesTest extends TestCase
 {
     public function testConvertCriteriaToExpression(): void

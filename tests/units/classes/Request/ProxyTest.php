@@ -1,14 +1,14 @@
 <?php
 
 use Lizmap\Request;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class ProxyTest extends TestCase
 {
     public function setUp(): void
@@ -44,8 +44,6 @@ class ProxyTest extends TestCase
     }
 
     /**
-     * @dataProvider getBuildData
-     *
      * @param mixed $params
      * @param mixed $requestXml
      * @param mixed $expectedClass
@@ -97,8 +95,6 @@ class ProxyTest extends TestCase
     }
 
     /**
-     * @dataProvider getNormalizeParamsData
-     *
      * @param mixed $params
      * @param mixed $expectedData
      */
@@ -132,8 +128,6 @@ class ProxyTest extends TestCase
     }
 
     /**
-     * @dataProvider getConstructUrlData
-     *
      * @param mixed $params
      * @param mixed $expectedUrl
      * @param mixed $url
@@ -173,8 +167,6 @@ class ProxyTest extends TestCase
     }
 
     /**
-     * @dataProvider getIsAllowedRemoteUrlData
-     *
      * @param mixed $url
      * @param mixed $expected
      */
@@ -224,8 +216,6 @@ class ProxyTest extends TestCase
     }
 
     /**
-     * @dataProvider getBuildOptionsData
-     *
      * @param mixed $options
      * @param mixed $method
      * @param mixed $debug
@@ -327,8 +317,6 @@ class ProxyTest extends TestCase
     }
 
     /**
-     * @dataProvider getBuildHeadersData
-     *
      * @param mixed      $options
      * @param mixed      $expectedHeaders
      * @param mixed      $expectedBody
@@ -361,8 +349,6 @@ class ProxyTest extends TestCase
     }
 
     /**
-     * @dataProvider getUserHttpHeadersData
-     *
      * @param mixed $connected
      * @param mixed $userSession
      * @param mixed $userGroups

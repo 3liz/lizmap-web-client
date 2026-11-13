@@ -3,13 +3,13 @@
 use Lizmap\App;
 use Lizmap\Form;
 use Lizmap\Project\Qgis;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class VectorLayerTest extends TestCase
 {
     public function testGetFormControls(): void

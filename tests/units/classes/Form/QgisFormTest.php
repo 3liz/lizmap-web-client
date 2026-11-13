@@ -5,6 +5,7 @@ use Lizmap\Form\QgisFormControl;
 use Lizmap\Form\QgisFormControlProperties;
 use Lizmap\Project;
 use Lizmap\Project\Repository;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -119,9 +120,8 @@ class dummyUploadControl
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class QgisFormTest extends TestCase
 {
     protected $appContext;
@@ -203,8 +203,6 @@ class QgisFormTest extends TestCase
     }
 
     /**
-     * @dataProvider getConstructData
-     *
      * @param mixed $fields
      * @param mixed $projectKey
      * @param mixed $layer
@@ -238,8 +236,6 @@ class QgisFormTest extends TestCase
     }
 
     /**
-     * @dataProvider getDefaultValuesData
-     *
      * @param mixed $defaultValue
      * @param mixed $expressionResult
      * @param mixed $expectedResult
@@ -320,8 +316,6 @@ class QgisFormTest extends TestCase
     }
 
     /**
-     * @dataProvider getCheckData
-     *
      * @param mixed $dbFieldsInfo
      * @param mixed $check
      * @param mixed $data
@@ -500,8 +494,6 @@ class QgisFormTest extends TestCase
     }
 
     /**
-     * @dataProvider getFieldListData
-     *
      * @param mixed $eCaps
      * @param mixed $formFields
      * @param mixed $insert
@@ -565,8 +557,6 @@ class QgisFormTest extends TestCase
     }
 
     /**
-     * @dataProvider getFillControlUniqueData
-     *
      * @param mixed $uniqueValues
      * @param mixed $required
      * @param mixed $setAttribute

@@ -1,14 +1,14 @@
 <?php
 
 use LizmapAdmin\RepositoryTools;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class RepositoryToolsTest extends TestCase
 {
     public static function getDomainLists()
@@ -67,10 +67,8 @@ class RepositoryToolsTest extends TestCase
     }
 
     /**
-     * @dataProvider getDomainLists
-     *
      * @param string $domainListAsString
-     * @param array $expectedResult
+     * @param array  $expectedResult
      */
     #[DataProvider('getDomainLists')]
     public function testFixDomainList($domainListAsString, $expectedResult): void
