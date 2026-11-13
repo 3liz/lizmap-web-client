@@ -58,6 +58,21 @@ class WFSRequestForTests extends WFSRequest
         return $this->getQueryOrder($cnx, $params, $wfsFields);
     }
 
+    public function getSortFieldsForTests($params, $wfsFields)
+    {
+        return $this->getSortFields($params, $wfsFields);
+    }
+
+    public function getSelectedFieldsForTests($params, $wfsFields)
+    {
+        return $this->getSelectedFields($params, $wfsFields);
+    }
+
+    public function getQueryFieldsForTests($params, $wfsFields, $isHitsRequest = false)
+    {
+        return $this->getQueryFields($params, $wfsFields, $isHitsRequest);
+    }
+
     public function validateFilterForTests($filter)
     {
         return $this->validateFilter($filter);
