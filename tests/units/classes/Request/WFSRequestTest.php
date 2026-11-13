@@ -497,6 +497,119 @@ class WFSRequestTest extends TestCase
         $this->assertEquals($expectedSql, $result);
     }
 
+    /**
+     * Data for testGetSortFields.
+     *
+     * @return array[] The request parameters, the WFS fields and the expected sort fields
+     */
+    public static function getGetSortFieldsData()
+    {
+        return array(
+            // No SORTBY
+            array(array(), array('id', 'name'), array()),
+            array(array('sortby' => ''), array('id', 'name'), array()),
+            // Ascending by default, unknown fields ignored
+            array(array('sortby' => 'name,unknown d'), array('id', 'name'), array('name' => 'ASC')),
+            // Explicit directions
+            array(array('sortby' => 'name d,id a'), array('id', 'name'), array('name' => 'DESC', 'id' => 'ASC')),
+        );
+    }
+
+    /**
+     * Check the fields and directions read from the SORTBY parameter.
+     *
+     * @dataProvider getGetSortFieldsData
+     *
+     * @param array $params    The request parameters
+     * @param array $wfsFields The WFS fields of the layer
+     * @param array $expected  The expected sort direction by field name
+     */
+    #[DataProvider('getGetSortFieldsData')]
+    public function testGetSortFields($params, $wfsFields, $expected): void
+    {
+        $wfs = new WFSRequestForTests();
+        $this->assertSame($expected, $wfs->getSortFieldsForTests($params, $wfsFields));
+    }
+
+    /**
+     * Data for testGetSelectedFields.
+     *
+     * @return array[] The request parameters, the WFS fields and the expected selected fields
+     */
+    public static function getGetSelectedFieldsData()
+    {
+        $wfsFields = array('id', 'name', 'virtual');
+
+        return array(
+            // No PROPERTYNAME: every WFS field
+            array(array(), $wfsFields, array('id', 'name', 'virtual')),
+            array(array('propertyname' => ''), $wfsFields, array('id', 'name', 'virtual')),
+            // Requested order kept, unknown fields ignored
+            array(array('propertyname' => 'name,unknown,id'), $wfsFields, array('name', 'id')),
+        );
+    }
+
+    /**
+     * Check the fields selected by the PROPERTYNAME parameter.
+     *
+     * @dataProvider getGetSelectedFieldsData
+     *
+     * @param array $params    The request parameters
+     * @param array $wfsFields The WFS fields of the layer
+     * @param array $expected  The expected selected fields
+     */
+    #[DataProvider('getGetSelectedFieldsData')]
+    public function testGetSelectedFields($params, $wfsFields, $expected): void
+    {
+        $wfs = new WFSRequestForTests();
+        $this->assertSame($expected, $wfs->getSelectedFieldsForTests($params, $wfsFields));
+    }
+
+    /**
+     * Data for testGetQueryFields.
+     *
+     * The layer publishes a virtual field, named "virtual", which is not a database field.
+     *
+     * @return array[] The request parameters, the hits flag and the expected query fields
+     */
+    public static function getGetQueryFieldsData()
+    {
+        return array(
+            // No PROPERTYNAME: every WFS field, the virtual field included
+            array(array(), false, array('id', 'name', 'virtual')),
+            // Virtual field not requested
+            array(array('propertyname' => 'id,name'), false, array('id', 'name')),
+            // Virtual field requested
+            array(array('propertyname' => 'id,virtual'), false, array('id', 'virtual')),
+            // Virtual field used to sort
+            array(array('propertyname' => 'id', 'sortby' => 'virtual d'), false, array('id', 'virtual')),
+            // Virtual field cited by the expression filter
+            array(array('propertyname' => 'id', 'exp_filter' => '"virtual" = 1'), false, array('id', 'virtual')),
+            // Field names inside other words are not cited
+            array(array('propertyname' => 'id', 'exp_filter' => '"virtual_2" = 1 AND "my_name" = 2'), false, array('id')),
+            // Hits request: only the fields of the expression filter
+            array(array('sortby' => 'virtual'), true, array()),
+            array(array('exp_filter' => 'name = \'a\''), true, array('name')),
+        );
+    }
+
+    /**
+     * Check the WFS fields the direct SQL query depends on.
+     *
+     * @dataProvider getGetQueryFieldsData
+     *
+     * @param array $params        The request parameters
+     * @param bool  $isHitsRequest True if the request only counts the features
+     * @param array $expected      The expected query fields
+     */
+    #[DataProvider('getGetQueryFieldsData')]
+    public function testGetQueryFields($params, $isHitsRequest, $expected): void
+    {
+        $wfs = new WFSRequestForTests();
+        $wfsFields = array('id', 'name', 'virtual');
+        $this->assertSame($expected, $wfs->getQueryFieldsForTests($params, $wfsFields, $isHitsRequest));
+    }
+
     public static function getValidateFilterData()
     {
         return array(
