@@ -2,15 +2,15 @@
 
 use Lizmap\Form\QgisFormControl;
 use Lizmap\Form\QgisFormControlProperties;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 
 require_once __DIR__.'/../../../../lizmap/vendor/jelix/jelix/lib/jelix/forms/jFormsBase.class.php';
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class QgisFormControlTest extends TestCase
 {
     public function testSetControlMainProperties(): void

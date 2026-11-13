@@ -1,13 +1,13 @@
 <?php
 
 use Lizmap\App\QgisConnectionStringParserException;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class qgisVectorLayerDatasourceTest extends TestCase
 {
     public function testPostgresqlDatasource(): void

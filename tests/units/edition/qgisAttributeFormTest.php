@@ -1,6 +1,7 @@
 <?php
 
 use Lizmap\Form;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 
 class dummyQgisFormControls implements Form\QgisFormControlsInterface
@@ -38,9 +39,8 @@ class dummyQgisFormControls implements Form\QgisFormControlsInterface
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class qgisAttributeFormTest extends TestCase
 {
     public function testSimpleContainer(): void

@@ -2,13 +2,13 @@
 
 use Lizmap\App;
 use Lizmap\Project\Qgis;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class RasterLayerPipeTest extends TestCase
 {
     public function testFromXmlReader(): void

@@ -1,13 +1,13 @@
 <?php
 
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class PopupCheckboxModifierTest extends TestCase
 {
     public static function setUpBeforeClass(): void
@@ -65,8 +65,6 @@ class PopupCheckboxModifierTest extends TestCase
     }
 
     /**
-     * @dataProvider matchStateData
-     *
      * @param mixed       $value
      * @param mixed       $checkedExpected
      * @param mixed       $uncheckedExpected
@@ -94,8 +92,6 @@ class PopupCheckboxModifierTest extends TestCase
     }
 
     /**
-     * @dataProvider modifierHtmlData
-     *
      * @param mixed $attributeName
      * @param mixed $attributeValue
      * @param mixed $checkBoxFields

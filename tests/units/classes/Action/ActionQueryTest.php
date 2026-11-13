@@ -1,14 +1,14 @@
 <?php
 
 use Lizmap\ActionQuery\ActionQuery;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class ActionQueryTest extends TestCase
 {
     // =========================================================

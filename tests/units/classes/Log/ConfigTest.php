@@ -3,14 +3,14 @@
 use Jelix\IniFile\IniModifier;
 
 use Lizmap\Logger as Log;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class ConfigTest extends TestCase
 {
     protected $context;
@@ -55,8 +55,6 @@ class ConfigTest extends TestCase
     }
 
     /**
-     * @dataProvider getTestModifyData
-     *
      * @param mixed $data
      * @param mixed $newData
      * @param mixed $expectedReturnValue
@@ -97,8 +95,6 @@ class ConfigTest extends TestCase
     }
 
     /**
-     * @dataProvider getTestSaveData
-     *
      * @param mixed $data
      * @param mixed $expectedData
      * @param mixed $changedProp
@@ -157,8 +153,6 @@ class ConfigTest extends TestCase
     }
 
     /**
-     * @dataProvider getTestGetLogItemListData
-     *
      * @param mixed $data
      * @param mixed $expectedList
      */
@@ -201,8 +195,6 @@ class ConfigTest extends TestCase
     }
 
     /**
-     * @dataProvider getTestGetLogItemData
-     *
      * @param mixed $data
      * @param mixed $key
      * @param mixed $valid

@@ -1,13 +1,13 @@
 <?php
 
 use Lizmap\Project;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class ProjectMainDataTest extends TestCase
 {
     public function testConstruct(): void

@@ -1,12 +1,12 @@
 <?php
 
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class qgisExpressionUtilsTest extends TestCase
 {
     public function testCriteriaFromExpression(): void
