@@ -13,10 +13,9 @@
 
 namespace Lizmap\Form;
 
-use GuzzleHttp\Psr7\StreamWrapper as Psr7StreamWrapper;
-use JsonMachine\Items as JsonMachineItems;
 use Lizmap\App\AppContextInterface;
 use Lizmap\App\WktTools;
+use Lizmap\Request\FeatureStream;
 use Lizmap\Request\RemoteStorageRequest;
 use Lizmap\Request\WFSRequest;
 
@@ -2153,8 +2152,7 @@ class QgisForm implements QgisFormControlsInterface
         // Used data
         if ($code < 400 && !in_array(strtolower($mime), array('text/html', 'text/xml'))) {
             // Get data from layer
-            $featureStream = Psr7StreamWrapper::getResource($result->getBodyAsStream());
-            $features = JsonMachineItems::fromStream($featureStream, array('pointer' => '/features'));
+            $features = FeatureStream::fromResponse($result);
             $data = array();
             foreach ($features as $feat) {
                 if (property_exists($feat, 'properties')
