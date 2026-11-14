@@ -4,6 +4,7 @@ use Lizmap\App\Checker;
 use Lizmap\Project\Project;
 use Lizmap\Project\UnknownLizmapProjectException;
 use Lizmap\Request\Proxy;
+use LizmapDataviz\Plot\PlotFactory;
 
 /**
  * PHP Dataviz service to get plot config.
@@ -17,16 +18,6 @@ use Lizmap\Request\Proxy;
  */
 class serviceCtrl extends jController
 {
-    /**
-     * @var null|string the lizmap repository key
-     */
-    private $repository;
-
-    /**
-     * @var null|string the qgis project key
-     */
-    private $project;
-
     /**
      * @var null|Project the Lizmap project
      */
@@ -54,7 +45,7 @@ class serviceCtrl extends jController
      * @urlparam $PROJECT Name of the project
      * @urlparam $REQUEST Request type
      *
-     * @return jResponseJson the request response
+     * @return jResponseBinary|jResponseJson the request response
      */
     public function index()
     {
@@ -80,7 +71,7 @@ class serviceCtrl extends jController
     /**
      * Process the request.
      *
-     * @return jResponseJson the request response
+     * @return jResponseBinary|jResponseJson the request response
      */
     protected function processRequest()
     {
@@ -177,8 +168,6 @@ class serviceCtrl extends jController
                 $datavizConfig->getErrors(),
             );
         }
-        $this->repository = $repository;
-        $this->project = $project;
         $this->config = $config;
 
         // Redirect to method corresponding on REQUEST param
@@ -225,13 +214,11 @@ class serviceCtrl extends jController
     /**
      * Get Plot config.
      *
-     * @return jResponseJson the GetPlot response
+     * @return jResponseBinary|jResponseJson the GetPlot response, or the errors
      */
     protected function GetPlot()
     {
         // Get params
-        $repository = $this->repository;
-        $project = $this->project;
         $plot_id = $this->intParam('plot_id');
         $exp_filter = trim((string) $this->param('exp_filter'));
         $plotConfigParameter = $this->param('plot_config');
@@ -245,9 +232,6 @@ class serviceCtrl extends jController
             }
             jLog::log('Dataviz - parameter plot_config = '.$logPlotConfigParameter, 'lizmapadmin');
         }
-
-        /** @var jResponseJson $rep */
-        $rep = $this->getResponse('json');
 
         // Get the plot configuration from Lizmap config file
         $plotConfig = null;
@@ -314,30 +298,8 @@ class serviceCtrl extends jController
         }
 
         // Create plot
-        jClasses::inc('dataviz~datavizPlot');
-
-        $type = $plotConfig['plot']['type'];
-        if ($type == 'scatter') {
-            $dplot = new datavizPlotScatter($repository, $project, $plotConfig);
-        } elseif ($type == 'box') {
-            $dplot = new datavizPlotBox($repository, $project, $plotConfig);
-        } elseif ($type == 'bar') {
-            $dplot = new datavizPlotBar($repository, $project, $plotConfig);
-        } elseif ($type == 'histogram') {
-            $dplot = new datavizPlotHistogram($repository, $project, $plotConfig);
-        } elseif ($type == 'pie') {
-            $dplot = new datavizPlotPie($repository, $project, $plotConfig);
-        } elseif ($type == 'histogram2d') {
-            $dplot = new datavizPlotHistogram2d($repository, $project, $plotConfig);
-        } elseif ($type == 'polar') {
-            $dplot = new datavizPlotPolar($repository, $project, $plotConfig);
-        } elseif ($type == 'sunburst') {
-            $dplot = new datavizPlotSunburst($repository, $project, $plotConfig);
-        } elseif ($type == 'html') {
-            $dplot = new datavizPlotHtml($repository, $project, $plotConfig);
-        } else {
-            $dplot = null;
-        }
+        $type = $plotConfig['plot']['type'] ?? '';
+        $dplot = PlotFactory::create($this->lizmapProject, $plotConfig);
         if (!$dplot) {
             return $this->error(
                 array(
@@ -349,7 +311,7 @@ class serviceCtrl extends jController
             );
         }
 
-        $fd = $dplot->fetchData('wfs', $exp_filter);
+        $fd = $dplot->fetchData($exp_filter);
         if (!$fd) {
             return $this->error(
                 array(
@@ -360,22 +322,28 @@ class serviceCtrl extends jController
                 )
             );
         }
-        $plot = array(
-            'title' => $dplot->title,
-            'data' => $dplot->getData(),
-            'layout' => $dplot->getLayout(),
-        );
-
         // We also add the URL to access the Plotly JavaScript file
         // to let the client use the same one
         $basePath = jApp::config()->urlengine['basePath'];
         $locale = substr(jApp::config()->locale, 0, 2);
-        $plot['plotly'] = array(
+        $plotly = array(
             'script' => $basePath.'assets/js/dataviz/plotly-custom.min.js',
             'locale' => $basePath.'assets/js/dataviz/plotly-locale-'.$locale.'.js',
         );
 
-        $rep->data = $plot;
+        // Stream the JSON response: the plot values are copied
+        // from temporary streams, without being loaded in memory
+        /** @var jResponseBinary $rep */
+        $rep = $this->getResponse('binary');
+        $rep->mimeType = 'application/json';
+        $rep->outputFileName = 'plot.json';
+        $rep->doDownload = false;
+        $rep->setContentCallback(function () use ($dplot, $plotly) {
+            // Write the plot JSON directly to the response output
+            $output = fopen('php://output', 'w');
+            $dplot->writeJson($output, array('plotly' => $plotly));
+            fclose($output);
+        });
 
         return $rep;
     }

@@ -512,6 +512,18 @@ class WFSRequestTest extends TestCase
             array(array('sortby' => 'name,unknown d'), array('id', 'name'), array('name' => 'ASC')),
             // Explicit directions
             array(array('sortby' => 'name d,id a'), array('id', 'name'), array('name' => 'DESC', 'id' => 'ASC')),
+            // Field names with spaces, with and without direction
+            array(array('sortby' => 'Sewer type'), array('id', 'Sewer type'), array('Sewer type' => 'ASC')),
+            array(array('sortby' => 'Sewer type d,id'), array('id', 'Sewer type'), array('Sewer type' => 'DESC', 'id' => 'ASC')),
+            array(array('sortby' => 'Sewer kind'), array('id', 'Sewer type'), array()),
+            // Quoted field names, with doubled inner quotes, a comma and a final " A"
+            array(array('sortby' => '"Sewer type" d,"id"'), array('id', 'Sewer type'), array('Sewer type' => 'DESC', 'id' => 'ASC')),
+            array(array('sortby' => '"say ""hi"", A"'), array('say "hi", A'), array('say "hi", A' => 'ASC')),
+            array(array('sortby' => '"Zone A" desc'), array('Zone', 'Zone A'), array('Zone A' => 'DESC')),
+            // Unknown quoted field, and SQL injection attempts
+            array(array('sortby' => '"unknown"'), array('id'), array()),
+            array(array('sortby' => '"id"; DROP TABLE t'), array('id'), array('id' => 'ASC')),
+            array(array('sortby' => 'id"; DROP TABLE t; --'), array('id'), array()),
         );
     }
 
