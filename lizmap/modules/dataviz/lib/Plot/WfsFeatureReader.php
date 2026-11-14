@@ -13,10 +13,9 @@
 
 namespace LizmapDataviz\Plot;
 
-use GuzzleHttp\Psr7\StreamWrapper;
 use Lizmap\Project\Project;
+use Lizmap\Request\FeatureStream;
 use Lizmap\Request\WFSRequest;
-use LizmapDataviz\GeoJson\FeatureStream;
 
 /**
  * Read the features of a layer with a WFS GetFeature request.
@@ -108,8 +107,6 @@ class WfsFeatureReader
         }
 
         // Decode the features from the response stream
-        $stream = StreamWrapper::getResource($response->getBodyAsStream());
-
-        return FeatureStream::read($stream);
+        return FeatureStream::fromResponse($response);
     }
 }

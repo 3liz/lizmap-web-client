@@ -11,13 +11,12 @@
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
 
-use GuzzleHttp\Psr7\StreamWrapper as Psr7StreamWrapper;
 use GuzzleHttp\Psr7\Utils as Psr7Utils;
-use JsonMachine\Items as JsonMachineItems;
 use Lizmap\App\Checker;
 use Lizmap\DataTables\DataTables;
 use Lizmap\Project\Project;
 use Lizmap\Project\UnknownLizmapProjectException;
+use Lizmap\Request\FeatureStream;
 use Lizmap\Request\Proxy;
 use Lizmap\Request\WFSRequest;
 
@@ -435,9 +434,8 @@ class datatablesCtrl extends jController
             return $this->setErrorResponse($rep, 400, 'The request to get paginated features failed, mime-type: '.$wfsresponse->getMime());
         }
 
-        // get WFS resposne as a stream, so we can parse it step by step
-        $featureStream = Psr7StreamWrapper::getResource($wfsresponse->getBodyAsStream());
-        $features = JsonMachineItems::fromStream($featureStream, array('pointer' => '/features'));
+        // decode the WFS response stream by blocks of features
+        $features = FeatureStream::fromResponse($wfsresponse);
 
         $bboxXMin = null;
         $bboxXMax = null;
