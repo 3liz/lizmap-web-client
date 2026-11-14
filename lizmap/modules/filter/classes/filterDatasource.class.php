@@ -229,13 +229,56 @@ class filterDatasource
     }
 
     /**
+     * Check that the columns referenced by the SQL filter can be queried by the filter tools.
+     *
+     * Without this check, a filter on any column, e.g. a hidden one, could be
+     * used to guess its values by counting the features.
+     * PostgreSQL compares the column names case-sensitively, SQLite does not.
+     *
+     * @param string $filter the validated SQL filter
+     *
+     * @return bool true if all the referenced columns can be queried
+     */
+    private function checkFilterColumns($filter)
+    {
+        // Columns referenced by the filter
+        $columns = SqlTools::getSQLStringColumnNames($filter);
+        if (count($columns) === 0) {
+            return true;
+        }
+
+        // Compare the names case-insensitively, except for PostgreSQL
+        $caseSensitive = ($this->provider == 'postgres');
+        $allowedFields = $this->getFilterFieldNames();
+        if (!$caseSensitive) {
+            $allowedFields = array_map('strtolower', $allowedFields);
+        }
+        foreach ($columns as $column) {
+            $name = $caseSensitive ? $column : strtolower($column);
+            if (!in_array($name, $allowedFields, true)) {
+                $this->errors = array(
+                    'status' => 'error',
+                    'code' => 400,
+                    'title' => 'Invalid Query Parameter',
+                    'detail' => 'The filter uses the field '.$column.' which is not configured for the filter tools',
+                );
+
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Validate the SQL filter.
      *
-     * If it is not valid, we return 1>2 to force the return of empty data
+     * If it is not valid, we return 1>2 to force the return of empty data.
+     * If it references a column not used by the filter tools, the errors are set.
      *
      * @param string $filter The SQL filter
      *
-     * @return string The processed filter
+     * @return false|string The processed filter, or false if a column is not allowed
      */
     private function validateFilter($filter)
     {
@@ -259,6 +302,11 @@ class filterDatasource
             jLog::log('The EXP_FILTER param contains dangerous chars : '.$e->getMessage().' No data are returned !', 'lizmapadmin');
 
             return $badFilter;
+        }
+
+        // Only the fields used by the filter tools can be referenced
+        if (!$this->checkFilterColumns($filter)) {
+            return false;
         }
 
         return SqlTools::translateExpressionToPostgis($filter, $this->datasource->geocol);
@@ -374,6 +422,9 @@ class filterDatasource
     {
         // validate filter
         $filter = $this->validateFilter($filter);
+        if ($filter === false) {
+            return $this->errors;
+        }
 
         // SQL
         $sql = ' SELECT count(*) AS c';
@@ -421,6 +472,9 @@ class filterDatasource
 
         // validate filter
         $filter = $this->validateFilter($filter);
+        if ($filter === false) {
+            return $this->errors;
+        }
 
         // validate splitter
         $splitter = '';
@@ -571,6 +625,9 @@ class filterDatasource
 
         // validate filter
         $filter = $this->validateFilter($filter);
+        if ($filter === false) {
+            return $this->errors;
+        }
 
         // SQL
         $sql = ' SELECT ';
@@ -610,6 +667,9 @@ class filterDatasource
 
         // validate filter
         $filter = $this->validateFilter($filter);
+        if ($filter === false) {
+            return $this->errors;
+        }
 
         // validate crs
         $vcrs = null;
