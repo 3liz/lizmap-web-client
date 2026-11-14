@@ -14,14 +14,50 @@ use Lizmap\Project\Project;
 class lizmapFts
 {
     /**
+     * Get the parameters used to filter the lizmap_search items by user.
+     *
+     * The items can be restricted to some groups or users with the item_filter
+     * column. The groups of the authenticated user are given as parameters
+     * grp0, grp1..., and its login as the parameter login.
+     *
+     * @param Project $project The QGIS project
+     *
+     * @return array<string, string> the parameters, empty if the user is not authenticated
+     */
+    protected static function getUserFilterParameters($project)
+    {
+        $params = array();
+        if (!jAuth::isConnected()) {
+            return $params;
+        }
+
+        // Groups of the user
+        $appContext = $project->getAppContext();
+        $userGroups = array_values($appContext->aclUserPublicGroupsId());
+        foreach ($userGroups as $i => $group) {
+            $params['grp'.$i] = (string) $group;
+        }
+
+        // Login of the user
+        $user = jAuth::getUserSession();
+        $params['login'] = (string) $user->login;
+
+        return $params;
+    }
+
+    /**
      * Generate the SQL for lizmap_search according to the given project.
      *
-     * @param Project $project    The QGIS project
-     * @param int     $termsCount How many terms are in the searched string
+     * The values are not put in the SQL: it contains named parameters, given
+     * when executing the query.
+     *
+     * @param Project               $project          The QGIS project
+     * @param int                   $termsCount       How many terms are in the searched string
+     * @param array<string, string> $userFilterParams The parameters returned by getUserFilterParameters()
      *
      * @return string The SQL query
      */
-    protected static function generateSql($project, $termsCount)
+    protected static function generateSql($project, $termsCount, $userFilterParams = array())
     {
 
         // Build search query
@@ -64,18 +100,10 @@ class lizmapFts
         // Add filter by groups and user if the user is authenticated
         $sql .= "
         AND ( item_filter = 'all' OR item_filter IS NULL";
-        $isConnected = jAuth::isConnected();
-        if ($isConnected) {
-            // Ok if any group matches
-            $appContext = $project->getAppContext();
-            $userGroups = $appContext->aclUserPublicGroupsId();
-            foreach ($userGroups as $g) {
-                $sql .= " OR '".$g."' = ANY ( string_to_array(item_filter, ',', ' ') )";
-            }
-            // Ok if user matches
-            $user = jAuth::getUserSession();
-            $login = $user->login;
-            $sql .= " OR '".$login."' = ANY ( string_to_array(item_filter, ',', ' ') )";
+        // Ok if any group or the login of the authenticated user matches:
+        // the values are given as named parameters
+        foreach (array_keys($userFilterParams) as $paramName) {
+            $sql .= ' OR :'.$paramName." = ANY ( string_to_array(item_filter, ',', ' ') )";
         }
         $sql .= ' )';
         $sql .= '
@@ -99,7 +127,9 @@ class lizmapFts
     public static function getData($project, $searchedString, $debug, $limit = 500)
     {
         $terms = preg_split('/\s+/', $searchedString);
-        $sql = lizmapFts::generateSql($project, count($terms));
+        // Groups and login of the authenticated user, to filter the items
+        $userFilterParams = lizmapFts::getUserFilterParameters($project);
+        $sql = lizmapFts::generateSql($project, count($terms), $userFilterParams);
         $data = array();
 
         try {
@@ -113,6 +143,7 @@ class lizmapFts
             foreach ($terms as $i => $term) {
                 $params['term'.$i] = $term;
             }
+            $params = array_merge($params, $userFilterParams);
 
             if ($debug) {
                 jLog::log(
