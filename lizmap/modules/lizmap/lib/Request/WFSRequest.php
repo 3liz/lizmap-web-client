@@ -1037,6 +1037,10 @@ class WFSRequest extends OGCRequest
      * by a space and a direction, for example `id a,name d`. The direction is
      * ascending by default. Fields which are not WFS fields are ignored.
      *
+     * A field name can be enclosed in double quotes, with inner double quotes
+     * doubled, as in QGIS expressions: `"Sewer type" d`. Without quotes, a name
+     * with spaces is accepted if the whole item is a WFS field.
+     *
      * @param array    $params    The request parameters
      * @param string[] $wfsFields The WFS fields of the layer
      *
@@ -1049,16 +1053,31 @@ class WFSRequest extends OGCRequest
             return $sortItems;
         }
 
-        foreach (explode(',', $params['sortby']) as $item) {
+        // Each item: a quoted field name and the rest, or an unquoted item
+        preg_match_all('/\s*(?:"((?:[^"]|"")*)"([^,]*)|([^,]+))(?:,|$)/', $params['sortby'], $matches, PREG_SET_ORDER);
+        foreach ($matches as $match) {
+            if (isset($match[3])) {
+                // Unquoted: the whole item is a field, or the direction follows the last space
+                $field = trim($match[3]);
+                $direction = '';
+                $space = strrpos($field, ' ');
+                if (!in_array($field, $wfsFields) && $space !== false) {
+                    $direction = substr($field, $space + 1);
+                    $field = rtrim(substr($field, 0, $space));
+                }
+            } else {
+                // Quoted: the direction follows the closing quote
+                $field = str_replace('""', '"', $match[1]);
+                $direction = trim($match[2]);
+            }
+
             // !!! Validate on fields to avoid injection !!!
-            $exp = explode(' ', $item);
-            $field = $exp[0];
             if (!in_array($field, $wfsFields)) {
                 continue;
             }
             // Ascending by default, descending only with an explicit direction
             $sortItems[$field] = 'ASC';
-            if (count($exp) == 2 && in_array(strtolower($exp[1]), array('d', '+d', 'desc', '+desc'))) {
+            if (in_array(strtolower($direction), array('d', '+d', 'desc', '+desc'))) {
                 $sortItems[$field] = 'DESC';
             }
         }
