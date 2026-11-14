@@ -171,6 +171,7 @@ class SqlTools
         'date_part',
         'date_trunc',
         'age',
+        'to_date',
 
         // Miscellaneous functions
         'coalesce',
@@ -221,6 +222,70 @@ class SqlTools
         }
 
         return $tokens;
+    }
+
+    /**
+     * Get the next significant token of a list of SQL tokens.
+     *
+     * The whitespaces, line breaks and comments are skipped, as done by the
+     * databases. A block comment ends at the first closing mark, as in SQLite
+     * and in parseAndValidateSQLString(): with the nested comments of PostgreSQL,
+     * the extra closing mark is then rejected by the whitelist.
+     *
+     * @param string[] $tokens the tokens returned by tokenizeSQLString()
+     * @param int      $start  the index of the first token to look at
+     *
+     * @return null|string the next significant token, or null if there is none
+     */
+    protected static function getNextSignificantToken(array $tokens, int $start): ?string
+    {
+        $count = count($tokens);
+        $inBlockComment = false;
+        $inLineComment = false;
+
+        for ($k = $start; $k < $count; ++$k) {
+            $token = $tokens[$k];
+            $isLineBreak = ($token === "\n" || $token === "\r" || $token === "\r\n");
+
+            // Inside a line comment, until the end of the line
+            if ($inLineComment) {
+                if ($isLineBreak) {
+                    $inLineComment = false;
+                }
+
+                continue;
+            }
+
+            // Inside a block comment, until the first closing mark
+            if ($inBlockComment) {
+                if ($token === '*/') {
+                    $inBlockComment = false;
+                }
+
+                continue;
+            }
+
+            // Start of a comment
+            if ($token === '--') {
+                $inLineComment = true;
+
+                continue;
+            }
+            if ($token === '/*') {
+                $inBlockComment = true;
+
+                continue;
+            }
+
+            // Whitespaces and line breaks
+            if ($isLineBreak || trim($token, " \t") === '') {
+                continue;
+            }
+
+            return $token;
+        }
+
+        return null;
     }
 
     /**
@@ -440,6 +505,11 @@ class SqlTools
                             $escapedDoubleQuote = true;
                         } else {
                             // This is the closing quote.
+                            // A double quoted identifier followed by a parenthesis is a function call
+                            // in the databases: any function could be called, bypassing the whitelist
+                            if (self::getNextSignificantToken($tokens, $k + 1) === '(') {
+                                throw new \Exception('SQL parser - A double quoted identifier can not be used as a function');
+                            }
                             $state = self::PARSER_STATE_BETWEEN_TOKENS;
                         }
                     }
@@ -484,16 +554,18 @@ class SqlTools
     /**
      * Validate if the given string is valid.
      *
-     * This is a helper function for testing purpose
+     * The string is checked against the whitelist of tokens, extended with the
+     * given tokens, e.g. the unquoted field names of a layer.
      *
-     * @param string $sql The SQL string to test
+     * @param string   $sql              The SQL string to test
+     * @param string[] $allowedSqlTokens Allowed SQL tokens to be merged with the default whitelist
      *
      * @return bool True if the SQL string is valid
      */
-    public static function validateExpressionFilter(string $sql): bool
+    public static function validateExpressionFilter(string $sql, array $allowedSqlTokens = array()): bool
     {
         try {
-            self::parseAndValidateSQLString($sql);
+            self::parseAndValidateSQLString($sql, $allowedSqlTokens);
         } catch (\Exception $e) {
             return false;
         }
