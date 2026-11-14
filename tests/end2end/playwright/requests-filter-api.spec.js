@@ -232,6 +232,36 @@ test.describe('Filter API - fields - @requests @readonly', () => {
             false
         );
     });
+
+    /**
+     * The filter sent by the client can only use the configured fields:
+     * a filter on the field "group" could be used to guess its values
+     * by counting the features.
+     */
+    test('Error: Filter on a field not configured for the filter tools', async ({ request }) => {
+        const detail = 'The filter uses the field group which is not configured for the filter tools';
+        for (const params of [
+            { request: 'getFeatureCount' },
+            { request: 'getUniqueValues', fieldname: 'user' },
+            { request: 'getMinAndMaxValues', fieldname: 'gid' },
+            { request: 'getExtent', crs: 'EPSG:4326' },
+        ]) {
+            await expectError(
+                request,
+                {...loginParams, ...params, filter: '"gid" > 0 AND "group" = \'admins\''},
+                400,
+                detail,
+                false
+            );
+        }
+    });
+
+    /**
+     * The configured fields can be used in the filter sent by the client.
+     */
+    test('Filter on the configured fields', async ({ request }) => {
+        expect(await getFeatureCount(request, loginParams, '"gid" > 0 AND "user" IS NOT NULL')).toBe(2);
+    });
 });
 
 test.describe('Filter API - not connected - @requests @readonly', () => {
