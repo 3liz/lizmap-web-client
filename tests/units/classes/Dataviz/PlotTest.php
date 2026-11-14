@@ -407,6 +407,27 @@ class PlotTest extends TestCase
     }
 
     /**
+     * Test the colors of the groups aggregated by the database: read from a
+     * column, with the default color for the groups without color, and no
+     * colors at all when no group has a color.
+     */
+    public function testColorColumn(): void
+    {
+        $column = JsonColumn::fromJson('["red", null, "blue"]', 3);
+
+        // The default color for the groups without color
+        $this->assertSame(array('red', 'green', 'blue'), PlotForTests::getColorColumnForTests($column, 'green')->jsonSerialize());
+
+        // Without default color, the same column
+        $this->assertSame($column, PlotForTests::getColorColumnForTests($column, null));
+
+        // No color at all: no colors, with or without default color
+        $empty = JsonColumn::fromJson('[null, null]', 2);
+        $this->assertNull(PlotForTests::getColorColumnForTests($empty, 'green'));
+        $this->assertNull(PlotForTests::getColorColumnForTests($empty, null));
+    }
+
+    /**
      * Test the order of the groups sorted in PHP: as the database, with the
      * null values last, and value by value for the lists (parent, label).
      */
