@@ -46,6 +46,9 @@ use Lizmap\Project\Project;
  *
  * For many groups, aggregateColumns() gives the same values as JSON arrays
  * built by PostgreSQL, one per column, which do not need to be decoded.
+ *
+ * The extent of the selected features is given by extent(), without
+ * getting their geometries.
  */
 class WFSAggregateRequest extends WFSRequest
 {
@@ -257,45 +260,116 @@ class WFSAggregateRequest extends WFSRequest
     }
 
     /**
-     * Check that the layer can be aggregated with SQL, and get its fields.
+     * Get the extent of the selected features.
+     *
+     * The extent is computed by PostgreSQL from the envelope of each geometry,
+     * transformed into the output CRS, as the "extent" GEOMETRYNAME of a
+     * GetFeature request. The features without geometry are ignored.
+     *
+     * @param int $srid the SRID of the output CRS, EPSG:4326 by default as for GeoJSON
+     *
+     * @return null|array<int, float> the extent [xmin, ymin, xmax, ymax], an empty
+     *                                array if no feature has a geometry; null if
+     *                                not possible, see getFailureReason()
+     */
+    public function extent(int $srid = self::DEFAULT_OUTPUT_SRID): ?array
+    {
+        $this->failureReason = null;
+
+        try {
+            // Check the layer and its geometry column
+            if (!$this->checkSqlLayer()) {
+                return null;
+            }
+            if (empty($this->datasource->geocol)) {
+                return $this->fail('the layer has no geometry');
+            }
+
+            // Build the WHERE clause, as for a GetFeature request
+            $cnx = $this->qgisLayer->getDatasourceConnection();
+            $whereClause = $this->getWhereClause($cnx, $this->parameters());
+            if ($whereClause === false) {
+                return $this->fail('the filter can not be translated to SQL');
+            }
+
+            // Run the query
+            $sql = $this->buildExtentSql($cnx, $whereClause, $srid);
+            $result = $cnx->query($sql)->fetch();
+        } catch (\Throwable $e) {
+            $this->appContext->logException($e, 'lizmapadmin');
+
+            return $this->fail('database error: '.$e->getMessage());
+        }
+
+        // No feature with a geometry: the extent is null
+        if (!is_object($result) || $result->xmin === null) {
+            return array();
+        }
+
+        return array(
+            (float) $result->xmin,
+            (float) $result->ymin,
+            (float) $result->xmax,
+            (float) $result->ymax,
+        );
+    }
+
+    /**
+     * Check that the features of the layer can be requested with SQL.
      *
      * The conditions are the ones used by process_getfeature() to request
-     * PostgreSQL directly instead of QGIS Server.
+     * PostgreSQL directly instead of QGIS Server. The layer and its
+     * datasource are stored in the qgisLayer and datasource properties.
+     *
+     * @return bool true if possible, false with a failure reason otherwise
+     */
+    protected function checkSqlLayer(): bool
+    {
+        // The layer must be published in WFS and visible by the user
+        $typenameCheckingCode = $this->checkingTypename();
+        if ($typenameCheckingCode !== 200) {
+            return (bool) $this->fail('the layer is not available (HTTP code '.$typenameCheckingCode.')');
+        }
+
+        // Get the layer
+        $lizmapLayer = $this->project->findLayerByTypeName($this->requestedTypename());
+        if (!$lizmapLayer) {
+            return (bool) $this->fail('the layer is not found');
+        }
+        $layer = $this->project->getLayer($lizmapLayer->id);
+
+        // Only PostgreSQL tables, without OGC filter or forced QGIS Server request
+        if (!$layer instanceof \qgisVectorLayer || $layer->getProvider() != 'postgres') {
+            return (bool) $this->fail('the layer is not a PostgreSQL layer');
+        }
+        $this->qgisLayer = $layer;
+        if (!empty($this->param('filter', ''))) {
+            return (bool) $this->fail('OGC FILTER parameter is not supported');
+        }
+        if ($this->param('force_qgis', '') == '1') {
+            return (bool) $this->fail('QGIS Server is forced');
+        }
+        // A table, not a SQL query: table="(SELECT ...)"
+        $this->datasource = $this->qgisLayer->getDatasourceParameters();
+        $table = (string) ($this->datasource->table ?? '');
+        if ($table === '' || $table[0] == '(') {
+            return (bool) $this->fail('the layer datasource is not a table');
+        }
+
+        return true;
+    }
+
+    /**
+     * Check that the layer can be aggregated with SQL, and get its fields.
      *
      * @return null|array<string, \jDbFieldProperties> the database fields
      *                                                 published in WFS, null if not possible
      */
     protected function getAggregatableFields(): ?array
     {
-        // The layer must be published in WFS and visible by the user
-        $typenameCheckingCode = $this->checkingTypename();
-        if ($typenameCheckingCode !== 200) {
-            return $this->fail('the layer is not available (HTTP code '.$typenameCheckingCode.')');
-        }
-
-        // Get the layer
-        $lizmapLayer = $this->project->findLayerByTypeName($this->requestedTypename());
-        if (!$lizmapLayer) {
-            return $this->fail('the layer is not found');
-        }
-        $layer = $this->project->getLayer($lizmapLayer->id);
-
-        // Only PostgreSQL tables, without OGC filter or forced QGIS Server request
-        if (!$layer instanceof \qgisVectorLayer || $layer->getProvider() != 'postgres') {
-            return $this->fail('the layer is not a PostgreSQL layer');
-        }
-        $this->qgisLayer = $layer;
-        if (!empty($this->param('filter', ''))) {
-            return $this->fail('OGC FILTER parameter is not supported');
-        }
-        if ($this->param('force_qgis', '') == '1') {
-            return $this->fail('QGIS Server is forced');
-        }
-        // A table, not a SQL query: table="(SELECT ...)"
-        $this->datasource = $this->qgisLayer->getDatasourceParameters();
-        $table = (string) ($this->datasource->table ?? '');
-        if ($table === '' || $table[0] == '(') {
-            return $this->fail('the layer datasource is not a table');
+        // The layer must be requested with SQL
+        if (!$this->checkSqlLayer()) {
+            return null;
         }
 
         // The primary key orders the features
@@ -456,6 +530,37 @@ class WFSAggregateRequest extends WFSRequest
             )
             SELECT '.implode(', ', $jsonColumns).'
             FROM grouped
+        ';
+    }
+
+    /**
+     * Build the SQL query computing the extent of the features.
+     *
+     * The query returns one row with the columns xmin, ymin, xmax and ymax,
+     * null if no feature has a geometry.
+     *
+     * @param \jDbConnection $cnx         the database connection
+     * @param string         $whereClause the WHERE clause selecting the features
+     * @param int            $srid        the SRID of the output CRS
+     *
+     * @return string the SQL query
+     */
+    protected function buildExtentSql($cnx, string $whereClause, int $srid): string
+    {
+        // Envelope of each geometry in the output CRS, as for the "extent"
+        // GEOMETRYNAME: transforming the envelope is cheaper than the geometry
+        $geometry = $cnx->encloseName($this->datasource->geocol).'::geometry';
+        $envelope = 'ST_Transform(ST_Envelope('.$geometry.'), '.$srid.')';
+
+        return '
+            WITH extent AS (
+                SELECT ST_Extent('.$envelope.') AS "bbox"
+                FROM '.$this->datasource->table.'
+                '.$whereClause.'
+            )
+            SELECT ST_XMin("bbox") AS "xmin", ST_YMin("bbox") AS "ymin",
+                ST_XMax("bbox") AS "xmax", ST_YMax("bbox") AS "ymax"
+            FROM extent
         ';
     }
 

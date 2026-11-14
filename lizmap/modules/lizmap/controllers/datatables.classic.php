@@ -19,6 +19,7 @@ use Lizmap\DataTables\DataTables;
 use Lizmap\Project\Project;
 use Lizmap\Project\UnknownLizmapProjectException;
 use Lizmap\Request\Proxy;
+use Lizmap\Request\WFSAggregateRequest;
 use Lizmap\Request\WFSRequest;
 
 class datatablesCtrl extends jController
@@ -355,9 +356,12 @@ class datatablesCtrl extends jController
     }
 
     /**
-     * Gets features via WFS and calculates the total extent.
+     * Calculates the total extent of the filtered features, in EPSG:4326.
+     *
      * It basically use the same logic of the main endpoint but ignores
-     * pagination to get all filtered features.
+     * pagination to get all filtered features. For a PostgreSQL layer, the
+     * extent is computed by the database; otherwise the features are got
+     * via WFS to calculate it.
      *
      * @return jResponseJson
      */
@@ -417,6 +421,19 @@ class datatablesCtrl extends jController
             $bboxString = implode(',', $this->bbox);
             $wfsParamsData['BBOX'] = $bboxString;
             $wfsParamsData['SRSNAME'] = $this->srsName;
+        }
+
+        // Compute the extent in the database when possible,
+        // with the same parameters selecting the features
+        $aggregateRequest = new WFSAggregateRequest($lproj, $wfsParamsData, lizmap::getServices());
+        $extent = $aggregateRequest->extent();
+        if ($extent !== null) {
+            $rep->data = $extent;
+
+            return $rep;
+        }
+        if (lizmap::getServices()->debugMode == '1') {
+            jLog::log('Datatables - '.$this->layerId.' - the extent is not computed by the database: '.$aggregateRequest->getFailureReason(), 'lizmapadmin');
         }
 
         // if the geometry is not of type point, request the geometry extent,
