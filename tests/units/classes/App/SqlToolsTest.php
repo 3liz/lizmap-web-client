@@ -23,6 +23,10 @@ class SqlToolsTest extends TestCase
             array('alter ', false),
             array('--', true),
             array("-- foo\n\"foo\" = 'bar'", true),
+            array("-- foo\r\n\"foo\" = 'bar'", true),
+            array("-- foo\r\"foo\" = 'bar'", true),
+            array("\"foo\" = 1 -- foo\r) UNION SELECT 1 --", false),
+            array("\"foo\" = 1 -- foo\r\n) UNION SELECT 1 --", false),
             array("/* hello\n   world */ \"foo\" = 'bar'", true),
             array("foo = 'bar'", false), // columns must be quoted
             array('truncate ', false),
@@ -51,6 +55,53 @@ class SqlToolsTest extends TestCase
     {
         $valid = SqlTools::validateExpressionFilter($filter);
         $this->assertEquals($expectedResult, $valid);
+    }
+
+    /**
+     * Provide SQL filters and the column names they reference.
+     *
+     * @return array the filters and the expected column names
+     */
+    public static function getSQLStringColumnNamesData()
+    {
+        return array(
+            // No column
+            array('', array()),
+            array('1 = 1', array()),
+            // Quoted columns, with escaped double quotes and spaces
+            array('"id" IN (1, 2)', array('id')),
+            array('("foo" = \'test\' AND "id" = 55) OR ("foo" = \'bar\')', array('foo', 'id')),
+            array('"my ""quoted"" field" = 1', array('my "quoted" field')),
+            array('"Name" ILIKE \'%a%\'', array('Name')),
+            // Strings and comments are ignored
+            array('"name" = \'"secret" it intersects here\'', array('name')),
+            array('"name" = \'it\'\'s "secret"\'', array('name')),
+            array("\"a\" = 1 -- \"secret\"\n AND \"b\" = 2", array('a', 'b')),
+            array('"a" = 1 /* "secret" */', array('a')),
+            // Keywords, variables and function calls are not columns
+            array('"a" IS NOT NULL AND "b" BETWEEN 1 AND 2', array('a', 'b')),
+            array('"d" < current_date', array('d')),
+            array('$id IN (1)', array()),
+            array('intersects($geometry, geom_from_gml(\'g\'))', array()),
+            array('lower ("name") = \'a\'', array('name')),
+            // Whitelisted bare words used as columns, in lowercase
+            array('age > 30', array('age')),
+            array('"a" = 1 AND Length = 2', array('a', 'length')),
+            // The table qualifier is also returned
+            array('"table"."secret" = 1', array('table', 'secret')),
+        );
+    }
+
+    /**
+     * Test the column names referenced by a SQL filter.
+     *
+     * @param string   $filter   the SQL filter
+     * @param string[] $expected the expected column names
+     */
+    #[DataProvider('getSQLStringColumnNamesData')]
+    public function testGetSQLStringColumnNames($filter, $expected): void
+    {
+        $this->assertEquals($expected, SqlTools::getSQLStringColumnNames($filter));
     }
 
     public static function getTranslateExpressionToPostgisData()
