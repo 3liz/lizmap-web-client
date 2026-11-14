@@ -3191,8 +3191,20 @@ img.ui-datepicker-trigger {
 #edition-geomtool-container,
 #edition-geomtool-restart-drawing,
 lizmap-paste-geom > button,
-lizmap-paste-stored-geom > button {
+lizmap-paste-stored-geom > button,
+lizmap-trace-geom > button {
   margin-left: 5px;
+}
+
+lizmap-trace-geom .edition-trace-unavailable {
+  opacity: 0.5;
+}
+
+lizmap-trace-geom .edition-trace-offset-group {
+  display: inline-flex;
+  width: 9em;
+  margin-left: 5px;
+  vertical-align: top;
 }
 
 
@@ -3951,11 +3963,13 @@ lizmap-fullscreen button svg {
 }
 
 lizmap-paste-geom,
-lizmap-paste-stored-geom {
+lizmap-paste-stored-geom,
+lizmap-trace-geom {
   display: contents;
 }
 
-lizmap-paste-geom svg {
+lizmap-paste-geom svg,
+lizmap-trace-geom svg {
   width: 20px;
   height: 20px;
   vertical-align: text-top;

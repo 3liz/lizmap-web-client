@@ -421,6 +421,14 @@ export default class Snapping {
         return this._config;
     }
 
+    /**
+     * The OL2 layer storing the features to snap on
+     * @type {object}
+     */
+    get snapLayer() {
+        return this._snapLayer;
+    }
+
     set config(config) {
         this._config = config;
 
