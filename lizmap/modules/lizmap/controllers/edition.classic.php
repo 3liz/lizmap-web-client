@@ -1697,6 +1697,113 @@ class editionCtrl extends jController
     }
 
     /**
+     * Check the user can edit the data of a layer, to link or unlink features.
+     *
+     * The same checks as for the other edition requests are done: access to the
+     * repository, right to use the edition tools, layer editable by the user.
+     * The error message is set if the user cannot edit the layer.
+     *
+     * @param Project    $lproj   the project
+     * @param Repository $lrep    the repository
+     * @param string     $layerId the id of the layer to edit
+     *
+     * @return bool true if the user can edit the layer
+     */
+    private function checkLinkEditionAccess($lproj, $lrep, $layerId)
+    {
+        // Access to the repository
+        if (!$lproj->checkAcl()) {
+            $this->setErrorMessage(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
+
+            return false;
+        }
+
+        // Right to use the edition tools
+        if (!jAcl2::check('lizmap.tools.edition.use', $lrep->getKey())) {
+            $this->setErrorMessage(jLocale::get('view~edition.access.denied'), 'AuthorizationRequired');
+
+            return false;
+        }
+
+        // The layer exists, is editable, and the user is in the groups allowed to edit it
+        if (!$this->getLayerEditionParameter($lproj, $layerId, null)) {
+            return false;
+        }
+
+        // The filters by login and by polygon can be overridden
+        $this->loginFilteredOverride = jAcl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey());
+
+        return true;
+    }
+
+    /**
+     * Get the fields of a layer referencing another layer in the project relations.
+     *
+     * @param Project     $lproj              the project
+     * @param string      $referencingLayerId the id of the referencing layer (child or pivot)
+     * @param null|string $referencedLayerId  the id of the referenced layer (parent), null for any
+     *
+     * @return string[] the referencing fields
+     */
+    private function getRelationReferencingFields($lproj, $referencingLayerId, $referencedLayerId = null)
+    {
+        $fields = array();
+        foreach ($lproj->getRelations() as $layerId => $relations) {
+            // The pivot key does not contain relations
+            if ($layerId === 'pivot') {
+                continue;
+            }
+            if ($referencedLayerId !== null && $layerId !== $referencedLayerId) {
+                continue;
+            }
+            foreach ($relations as $relation) {
+                if ($relation['referencingLayer'] === $referencingLayerId) {
+                    $fields[] = $relation['referencingField'];
+                }
+            }
+        }
+
+        return $fields;
+    }
+
+    /**
+     * Check the features of a layer, updated to link or unlink them, are editable by the user.
+     *
+     * The features must respect the filters by login and by polygon, as done for the
+     * other edition requests. The check is not done if no filter is configured for
+     * the layer, or if the user can override the filters.
+     * The error message is set if a feature is not editable.
+     *
+     * @param qgisVectorLayer $layer the layer
+     * @param array           $ids   the primary key values of the features
+     *
+     * @return bool true if all the features are editable
+     */
+    private function checkLinkedFeaturesEditable($layer, $ids)
+    {
+        // No filter to check
+        $layerName = $layer->getName();
+        if ($this->loginFilteredOverride
+            || (!$this->project->getLoginFilteredConfig($layerName, true)
+                && !$this->project->getLayerPolygonFilterConfig($layerName, true))) {
+            return true;
+        }
+
+        // Get each feature, as done for the other edition requests, and check it is editable
+        $primaryKeys = $layer->getDbFieldsInfo()->primaryKeys;
+        foreach ($ids as $id) {
+            $featureData = $this->getWfsFeature($layer, (int) $id, $primaryKeys);
+            if (!$featureData || !$layer->isFeatureEditable($featureData->features[0])) {
+                $this->setErrorMessage(jLocale::get('view~edition.message.error.feature.editable'), 'FeatureNotEditable');
+
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Link features between 2 tables :
      * - Either [1->n] relation, ie a parent layer and a child layer. In this case, passed $features2 layer id = $pivot.
      *   In this case, we set the parent id in the child table foreign key column
@@ -1795,6 +1902,11 @@ class editionCtrl extends jController
             return $this->serviceAnswer();
         }
 
+        // The user must be able to edit the child layer (which can be a third pivot table)
+        if (!$this->checkLinkEditionAccess($lproj, $lrep, $pivotId)) {
+            return $this->serviceAnswer();
+        }
+
         // Get the child layer (which can be a third pivot table) qgisVectorLayer instance
         /** @var qgisVectorLayer $layer The QGIS vector layer instance */
         $layer = $lproj->getLayer($pivotId);
@@ -1851,6 +1963,24 @@ class editionCtrl extends jController
         $key1 = $exp1[1];
         $key2 = $exp2[1];
 
+        // Only the fields of the project relations can be updated
+        if ($isPivot) {
+            // The pivot table fields referencing each parent layer
+            $relations = $lproj->getRelations();
+            $pivotFields = $relations['pivot'][$pivotId] ?? array();
+            $validFields = ($pivotFields[$exp1[0]] ?? null) === $key1
+                && ($pivotFields[$exp2[0]] ?? null) === $key2;
+        } else {
+            // The child primary key, and the child field referencing the parent layer
+            $validFields = in_array($key1, $dbFieldsInfo->primaryKeys, true)
+                && in_array($key2, $this->getRelationReferencingFields($lproj, $pivotId, $exp1[0]), true);
+        }
+        if (!$validFields) {
+            jMessage::add(jLocale::get('view~edition.link.error.no.given.fields'), 'error');
+
+            return $this->serviceAnswer();
+        }
+
         // Check if we need to insert a new row in a pivot table (n-m relation)
         // or if we need to update a foreign key in a child table (1-n relation)
         if (!$isPivot) {
@@ -1858,6 +1988,11 @@ class editionCtrl extends jController
             if (count($ids1) > 1) {
                 jMessage::add(jLocale::get('view~edition.link.error.multiple.ids'), 'error');
 
+                return $this->serviceAnswer();
+            }
+
+            // The child features must be editable by the user
+            if (!$this->checkLinkedFeaturesEditable($layer, $ids2)) {
                 return $this->serviceAnswer();
             }
 
@@ -1942,6 +2077,11 @@ class editionCtrl extends jController
         $this->project = $lproj;
         $this->repository = $lrep;
 
+        // The user must be able to edit the child layer
+        if (!$this->checkLinkEditionAccess($lproj, $lrep, $lid)) {
+            return $this->serviceAnswer();
+        }
+
         // Get child layer information
         $layer = $lproj->getLayer($lid);
         $layerName = $layer->getName();
@@ -1965,6 +2105,19 @@ class editionCtrl extends jController
         if (!array_key_exists($fkey, $dataFields) || !array_key_exists($pkey, $dataFields)) {
             jMessage::add(jLocale::get('view~edition.link.error.no.given.fields'), 'error');
 
+            return $this->serviceAnswer();
+        }
+
+        // Only the child primary key, and a child field referencing a parent layer, can be used
+        if (!in_array($pkey, $dbFieldsInfo->primaryKeys, true)
+            || !in_array($fkey, $this->getRelationReferencingFields($lproj, $lid), true)) {
+            jMessage::add(jLocale::get('view~edition.link.error.no.given.fields'), 'error');
+
+            return $this->serviceAnswer();
+        }
+
+        // The child feature must be editable by the user
+        if (!$this->checkLinkedFeaturesEditable($layer, array($pkeyval))) {
             return $this->serviceAnswer();
         }
 
