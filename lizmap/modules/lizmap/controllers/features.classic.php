@@ -2,6 +2,7 @@
 
 use Lizmap\App\Checker;
 use Lizmap\App\ControllerTools;
+use Lizmap\App\SqlTools;
 use Lizmap\Project\UnknownLizmapProjectException;
 use Lizmap\Request\Proxy;
 
@@ -241,6 +242,18 @@ class featuresCtrl extends jController
 
         // Filter
         $exp_filter = trim($this->param('exp_filter', 'FALSE'));
+
+        // The filter is sent by the client: only the whitelisted tokens are accepted,
+        // as for the WFS EXP_FILTER, plus the unquoted field names of the layer and the
+        // booleans. It prevents the functions reading other layers or the server files.
+        $allowedTokens = array_merge($qgisLayer->getFields(), array('true', 'false'));
+        if (!SqlTools::validateExpressionFilter($exp_filter, $allowedTokens)) {
+            $content['error'] = 'The expression filter is not valid !';
+            $rep->data = $content;
+            $rep->setHttpStatus(400, Proxy::getHttpStatusMsg(400));
+
+            return $rep;
+        }
 
         // AdditionalFields
         try {

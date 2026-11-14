@@ -47,6 +47,13 @@ class SqlToolsTest extends TestCase
             array('("foo" = \'test\' AND "id" = 55)', true),
             array('("foo" = \'test\' AND "id" = 55) OR ("foo" = \'bar\' AND "id" = 44)', true),
             array('intersects($geometry, geom_from_gml(\'some gml\'))', true),
+            // A double quoted identifier can not be used as a function
+            array('"upper"(\'a\') = \'A\'', false),
+            array('"upper" (\'a\') = \'A\'', false),
+            array('"upper" /* a */ (\'a\') = \'A\'', false),
+            array("\"upper\" -- a\n('a') = 'A'", false),
+            array('"id" IN (1)', true),
+            array('"id" = 1 AND ("id" > 0)', true),
         );
     }
 
@@ -55,6 +62,53 @@ class SqlToolsTest extends TestCase
     {
         $valid = SqlTools::validateExpressionFilter($filter);
         $this->assertEquals($expectedResult, $valid);
+    }
+
+    /**
+     * Provide filters with unquoted field names, the allowed tokens and the expected validity.
+     *
+     * @return array the filters, the allowed tokens and the expected results
+     */
+    public static function getValidateExpressionFilterWithTokensData()
+    {
+        $tokens = array('quartmno', 'LIBQUART', 'true', 'false');
+
+        return array(
+            // Filters of the features table, built by Lizmap or written in a maptip
+            array("quartmno = 'MC'", $tokens, true),
+            array("LIBQUART ILIKE 'M%'", $tokens, true),
+            array("libquart = 'a' AND \"quartmno\" IN ('MC', 'PA')", $tokens, true),
+            array('FALSE', $tokens, true),
+            array('null', $tokens, true),
+            // Unknown field or function
+            array("other = 'MC'", $tokens, false),
+            array("quartmno = 'MC'", array(), false),
+            // Functions reading other layers or the server environment
+            array("aggregate('layer', 'count', 1) = 3", $tokens, false),
+            array("attribute(get_feature_by_id('layer', 1), 'user') = 'admin'", $tokens, false),
+            array("get_feature('layer', 'id', 1) IS NOT NULL", $tokens, false),
+            array("relation_aggregate('relation', 'count', 1) > 0", $tokens, false),
+            array("overlay_intersects('layer')", $tokens, false),
+            array("env('HOME') = '/home/qgis'", $tokens, false),
+            array("file_exists('/etc/passwd')", $tokens, false),
+            array('@project_path IS NOT NULL', $tokens, false),
+            // An allowed token can not be used to call a function
+            array("quartmno = 'MC'; SELECT 1", $tokens, false),
+        );
+    }
+
+    /**
+     * Check the validation of a filter with additional allowed tokens.
+     *
+     * @param string   $filter         The filter to validate
+     * @param string[] $tokens         The additional allowed tokens
+     * @param bool     $expectedResult The expected validity
+     */
+    #[DataProvider('getValidateExpressionFilterWithTokensData')]
+    public function testValidateExpressionFilterWithTokens($filter, $tokens, $expectedResult): void
+    {
+        $valid = SqlTools::validateExpressionFilter($filter, $tokens);
+        $this->assertEquals($expectedResult, $valid, $filter);
     }
 
     /**

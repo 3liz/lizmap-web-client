@@ -851,6 +851,12 @@ class WFSRequest extends OGCRequest
             return '';
         }
 
+        // The client filter is merged with the filter by login in parameters():
+        // it must be valid on its own, so that it cannot get out of its parenthesis
+        if (!$this->validateClientExpFilter()) {
+            return false;
+        }
+
         $validFilter = $this->validateFilter($exp_filter);
         if (!$validFilter) {
             return false;
@@ -1307,6 +1313,39 @@ class WFSRequest extends OGCRequest
                 })()
             );
         }
+    }
+
+    /**
+     * Validate the EXP_FILTER parameter sent by the client, before any merge.
+     *
+     * The client filter is put between parenthesis and merged with the other
+     * filters, e.g. the filter by login. Validating only the merged filter is not
+     * enough: a client filter like `1=1 ) OR ( 1=1` would get out of its parenthesis.
+     * The client filter is therefore validated alone, so that its parenthesis are
+     * balanced, and between parenthesis, so that a final comment cannot hide the
+     * closing parenthesis.
+     *
+     * @return bool true if there is no client filter or if it is valid
+     */
+    protected function validateClientExpFilter(): bool
+    {
+        // No client filter
+        $clientExpFilter = $this->param('exp_filter', '');
+        if (empty($clientExpFilter)) {
+            return true;
+        }
+
+        // Validate the filter alone, then between parenthesis as when merged
+        try {
+            SqlTools::parseAndValidateSQLString($clientExpFilter);
+            SqlTools::parseAndValidateSQLString('( '.$clientExpFilter.' )');
+        } catch (\Exception $e) {
+            $this->appContext->logException($e, 'lizmapadmin');
+
+            return false;
+        }
+
+        return true;
     }
 
     /**
