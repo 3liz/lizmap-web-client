@@ -313,9 +313,25 @@ class ProjectTest extends TestCase
         // $filter2 = '"Group" = \'all\'';
         $filter2 = '( "descr" = \'all\' OR "descr" LIKE \'all,%\' OR "descr" LIKE \'%,all\' OR "descr" LIKE \'%,all,%\' )';
 
+        // QGIS expression: the LIKE wildcards are escaped, the backslashes
+        // and the single quotes are escaped as in QgsExpression::quotedString()
+        $aclData3 = array(
+            'userIsConnected' => true,
+            'userSession' => (object) array('login' => 'admin'),
+            'groups' => array('group_a', '%', 'o\'neil\\'),
+        );
+        $filter3 = '( "descr" = \'group_a\' OR "descr" LIKE \'group\\\_a,%\' OR "descr" LIKE \'%,group\\\_a\' OR "descr" LIKE \'%,group\\\_a,%\'';
+        $filter3 .= ' OR ';
+        $filter3 .= '"descr" = \'%\' OR "descr" LIKE \'\\\%,%\' OR "descr" LIKE \'%,\\\%\' OR "descr" LIKE \'%,\\\%,%\'';
+        $filter3 .= ' OR ';
+        $filter3 .= '"descr" = \'o\'\'neil\\\\\' OR "descr" LIKE \'o\'\'neil\\\\\\\,%\' OR "descr" LIKE \'%,o\'\'neil\\\\\\\\\' OR "descr" LIKE \'%,o\'\'neil\\\\\\\,%\'';
+        $filter3 .= ' OR ';
+        $filter3 .= '"descr" = \'all\' OR "descr" LIKE \'all,%\' OR "descr" LIKE \'%,all\' OR "descr" LIKE \'%,all,%\' )';
+
         return array(
             array($aclData1, $filter1),
             array($aclData2, $filter2),
+            array($aclData3, $filter3),
         );
     }
 
@@ -357,6 +373,69 @@ class ProjectTest extends TestCase
         $filters = $proj->getLoginFilters(array('edition_layer_embed_point'));
         $this->assertEquals($expectedFilters, $filters);
 
+    }
+
+    /**
+     * Provide the users and the expected SQL filters by login run by Lizmap.
+     *
+     * @return array the ACL data and the expected filter
+     */
+    public static function getFiltersForSqlData()
+    {
+        $aclData1 = array(
+            'userIsConnected' => true,
+            'userSession' => (object) array('login' => 'admin'),
+            'groups' => array('admin', 'groups', 'lizmap'),
+        );
+        $aclData2 = array(
+            'userIsConnected' => false,
+        );
+        // The LIKE wildcards are values like the others
+        $aclData3 = array(
+            'userIsConnected' => true,
+            'userSession' => (object) array('login' => 'admin'),
+            'groups' => array('group_a', '%'),
+        );
+
+        return array(
+            array($aclData1, '( string_to_array("descr", \',\') && ARRAY[\'admin\', \'groups\', \'lizmap\', \'all\'] )'),
+            array($aclData2, '( string_to_array("descr", \',\') && ARRAY[\'all\'] )'),
+            array($aclData3, '( string_to_array("descr", \',\') && ARRAY[\'group_a\', \'%\', \'all\'] )'),
+        );
+    }
+
+    /**
+     * Test the SQL filters by login run by Lizmap compare the multiple values as arrays.
+     *
+     * @param array  $aclData        the user and its groups
+     * @param string $expectedFilter the expected SQL filter
+     */
+    #[DataProvider('getFiltersForSqlData')]
+    public function testGetLoginFiltersForSql($aclData, $expectedFilter): void
+    {
+        $data = array(
+            'WMSInformation' => array(),
+            'layers' => array(),
+        );
+        $file = __DIR__.'/Ressources/embed_parent.qgs';
+        $context = new ContextForTests();
+        $context->setResult($aclData);
+        $proj = new ProjectForTests($context);
+        $testQgis = new QgisProjectForTests($data);
+        $rep = new Project\Repository('key', array(), null, null, null);
+        $testQgis->setPath($file);
+        $testQgis->readXMLProjectTest($file);
+
+        $cfg = json_decode(file_get_contents(__DIR__.'/Ressources/embed_parent_filtered.qgs.cfg'));
+        $config = new Project\ProjectConfig($cfg);
+        $proj->setCfg($config);
+        $proj->setQgis($testQgis);
+        $proj->setRepo($rep);
+        $proj->setKey('test');
+
+        // The SQL filter of the layer with multiple values
+        $filters = $proj->getLoginFilters(array('edition_layer_embed_point'), false, true);
+        $this->assertEquals($expectedFilter, $filters['edition_layer_embed_point']['filter']);
     }
 
     public static function getFiltersDataNotMultiple()

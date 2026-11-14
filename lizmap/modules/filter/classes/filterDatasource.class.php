@@ -345,7 +345,8 @@ class filterDatasource
         $repositoryKey = $this->lproj->getRepository()->getKey();
         if (!jAcl2::check('lizmap.tools.loginFilteredLayers.override', $repositoryKey)) {
             // Filter by login, as done for the WFS GetFeature request
-            $loginFilter = $this->lproj->getLoginFilter($this->layername);
+            // SQL filter run by Lizmap, matching exactly the multiple values of the field
+            $loginFilter = $this->lproj->getLoginFilter($this->layername, false, true);
             if (!empty($loginFilter) && !empty($loginFilter['filter'])) {
                 $conditions[] = $loginFilter['filter'];
             }

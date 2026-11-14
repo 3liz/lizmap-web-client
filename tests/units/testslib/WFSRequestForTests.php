@@ -12,7 +12,22 @@ class WFSRequestForTests extends WFSRequest
 
     public $appContext;
 
+    /**
+     * @var array the filters by login returned by getRequestLoginFilters()
+     */
+    public $loginFiltersForTests = array();
+
     public function __construct() {}
+
+    /**
+     * Get the SQL filters by login set for the tests.
+     *
+     * @return array the filters by login
+     */
+    protected function getRequestLoginFilters(): array
+    {
+        return $this->loginFiltersForTests;
+    }
 
     public function getFeatureIdFilterExpForTests($featureid, $typename, $qgisLayer)
     {

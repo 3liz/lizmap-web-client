@@ -136,77 +136,42 @@ class WFSRequest extends OGCRequest
      *
      * Lizmap_User, Lizmap_User_Groups, Lizmap_Override_Filter
      * have been added to the OGC request parameters.
-     * Filter data by login if necessary as configured in the plugin for login filtered layers.
+     * The filter by login is not added to the EXP_FILTER parameter: it is applied
+     * by the lizmap_server plugin of QGIS Server, and added as a SQL filter
+     * when the data is queried directly in the database, see getWhereClause().
      *
      * @return array<string, string> the WFS request parameters with Lizmap extra parameters for filtering request
      */
     public function parameters(): array
     {
-        $params = parent::parameters();
+        return parent::parameters();
+    }
 
-        // Filter data by login if necessary
-        // as configured in the plugin for login filtered layers.
-
-        // Filter data by login for request: getfeature
-        if (strtolower($this->param('request')) !== 'getfeature') {
-            return $params;
-        }
-
+    /**
+     * Get the SQL filters by login of the requested layers.
+     *
+     * They are used when the data is queried directly in the database.
+     * Otherwise, the filter by login is applied by the lizmap_server plugin of QGIS Server.
+     *
+     * @return array the filters by login, by layer name, empty if the user can override them
+     */
+    protected function getRequestLoginFilters(): array
+    {
         // No filter data by login rights
         if ($this->appContext->aclCheck('lizmap.tools.loginFilteredLayers.override', $this->repository->getKey())) {
-            return $params;
+            return array();
         }
 
-        // filter data by login
+        // Requested layers
         $typenames = $this->requestedTypename();
         if (is_string($typenames) && $typenames !== '') {
             $typenames = explode(',', $typenames);
         }
-
-        // get login filters
-        $loginFilters = array();
-
-        if (is_array($typenames)) {
-            $loginFilters = $this->project->getLoginFilters($typenames, $this->editingContext);
+        if (!is_array($typenames)) {
+            return array();
         }
 
-        // login filters array is empty
-        if (empty($loginFilters)) {
-            return $params;
-        }
-
-        // filter by polygon: no need to add the expression here as it is done QGIS Server side
-        // or in the method getfeaturePostgres
-        // filter by polygon is compatible for
-        // QGIS >= 3.10 and LWC >= 3.5 and Lizmap plugin >= 3.6.x
-
-        // Initialize the list of filters to add
-        $expFilters = array();
-
-        // Get client exp_filter parameter
-        $clientExpFilter = $this->param('exp_filter', '');
-        if (!empty($clientExpFilter)) {
-            $expFilters[] = '( '.$clientExpFilter.' )';
-        }
-
-        // Merge login filter
-        $attribute = '';
-        foreach ($loginFilters as $lfilter) {
-            $expFilters[] = '( '.$lfilter['filter'].' )';
-            $attribute = $lfilter['filterAttribute'];
-        }
-
-        // Update exp_filter parameter
-        $params['exp_filter'] = implode(' AND ', $expFilters);
-
-        // Update propertyname parameter
-        $propertyName = $this->param('propertyname', '');
-        if (!empty($propertyName)) {
-            $propertyName = trim($propertyName).",{$attribute}";
-            $params['propertyname'] = $propertyName;
-        }
-
-        return $params;
+        return $this->project->getLoginFilters($typenames, $this->editingContext, true);
     }
 
     /**
@@ -851,7 +816,7 @@ class WFSRequest extends OGCRequest
             return '';
         }
 
-        // The client filter is merged with the filter by login in parameters():
+        // The client filter is put between parenthesis and combined with the other filters:
         // it must be valid on its own, so that it cannot get out of its parenthesis
         if (!$this->validateClientExpFilter()) {
             return false;
@@ -985,14 +950,18 @@ class WFSRequest extends OGCRequest
         // BBOX
         $sql .= $this->getbboxSql($params);
 
-        // EXP_FILTER
-        // This also include the filter by login, as done above in the function "parameters"
+        // EXP_FILTER sent by the client
         $expFilterSql = $this->parseExpFilter($cnx, $params);
         if ($expFilterSql === false) {
             // Do not use direct SQL query to PostgreSQL but a request to QGIS Server
             return false;
         }
         $sql .= $expFilterSql;
+
+        // Filter by login, as a SQL filter matching exactly the multiple values of the field
+        foreach ($this->getRequestLoginFilters() as $loginFilter) {
+            $sql .= ' AND '.$loginFilter['filter'];
+        }
 
         // Filter by polygon
         $polygonFilter = $this->qgisLayer->getPolygonFilter($this->editingContext, 5);
@@ -1335,10 +1304,10 @@ class WFSRequest extends OGCRequest
     }
 
     /**
-     * Validate the EXP_FILTER parameter sent by the client, before any merge.
+     * Validate the EXP_FILTER parameter sent by the client, before any combination.
      *
-     * The client filter is put between parenthesis and merged with the other
-     * filters, e.g. the filter by login. Validating only the merged filter is not
+     * The client filter is put between parenthesis and combined with the other
+     * filters, e.g. the filter by login. Validating only a combined filter is not
      * enough: a client filter like `1=1 ) OR ( 1=1` would get out of its parenthesis.
      * The client filter is therefore validated alone, so that its parenthesis are
      * balanced, and between parenthesis, so that a final comment cannot hide the
