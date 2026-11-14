@@ -962,10 +962,7 @@ abstract class AbstractPlot
                 $colors[$i] = new JsonColumn();
             }
             // Use the trace color for the groups without color, as applyColors() does
-            $defaultColors[$i] = null;
-            if (static::FEATURE_COLORS === self::FEATURE_COLORS_MARKER_COLOR) {
-                $defaultColors[$i] = $this->createTrace($i, $fields['y'])['marker']['color'] ?? null;
-            }
+            $defaultColors[$i] = $this->getDefaultFeatureColor($i, $fields['y']);
             $hasColors[$i] = false;
         }
 
@@ -1069,8 +1066,7 @@ abstract class AbstractPlot
      *
      * PostgreSQL returns the groups and the aggregated values as JSON arrays,
      * which are copied in JsonColumn without being decoded: the memory does
-     * not depend on the number of groups (except for the colors, which are
-     * decoded to use the trace color for the groups without color).
+     * not depend on the number of groups.
      *
      * @param string $expFilter a QGIS expression to filter the features
      *
@@ -1129,7 +1125,6 @@ abstract class AbstractPlot
         if ($count === 0) {
             return array();
         }
-        $decode = fn (string $json) => json_decode($json, true, 512, JSON_THROW_ON_ERROR);
 
         // The groups and the values, copied in JsonColumn without being decoded.
         // The groups given by several fields (sunburst) are read row by row.
@@ -1143,20 +1138,74 @@ abstract class AbstractPlot
         foreach ($traceFields as $i => $fields) {
             $values[$i] = JsonColumn::fromJson($columns['aggregates'][$valueIndexes[$i]], $count);
 
-            // The colors are decoded, to use the trace color for the groups
-            // without color. No color at all for a trace: keep the trace
-            // color, as with the aggregation in PHP.
+            // The colors, with the trace color for the groups without color,
+            // as with the aggregation in PHP. No color at all: keep the trace color.
             $colors[$i] = null;
             if ($colorIndexes[$i] !== null) {
-                $traceColors = $decode($columns['aggregates'][$colorIndexes[$i]]);
-                if (count(array_filter($traceColors, fn ($color) => $color !== null)) > 0) {
-                    $colors[$i] = $traceColors;
-                }
+                $colors[$i] = self::getColorColumn(
+                    JsonColumn::fromJson($columns['aggregates'][$colorIndexes[$i]], $count),
+                    $this->getDefaultFeatureColor($i, $fields['y']),
+                );
             }
         }
         unset($columns);
 
         return $this->createAggregatedTraces($groups, $values, $colors);
+    }
+
+    /**
+     * Get the colors of the groups of a trace, from a column of colors.
+     *
+     * The colors are read one by one, so the memory does not depend on the
+     * number of groups. The groups without color get the default color.
+     *
+     * @param JsonColumn  $column       the color of each group, null if none
+     * @param null|string $defaultColor the color of the groups without color, null to keep them without color
+     *
+     * @return null|JsonColumn the colors, null if no group has a color
+     */
+    protected static function getColorColumn(JsonColumn $column, ?string $defaultColor): ?JsonColumn
+    {
+        // Without default color, only check that a group has a color
+        if ($defaultColor === null) {
+            foreach ($column as $color) {
+                if ($color !== null) {
+                    return $column;
+                }
+            }
+
+            return null;
+        }
+
+        // Otherwise copy the colors, with the default color for the groups without color
+        $colors = new JsonColumn();
+        $hasColor = false;
+        foreach ($column as $color) {
+            $hasColor = $hasColor || $color !== null;
+            $colors->append($color ?? $defaultColor);
+        }
+
+        return $hasColor ? $colors : null;
+    }
+
+    /**
+     * Get the color of the groups without color of a trace.
+     *
+     * Only the plot types with one color per value (marker.color) use the
+     * trace color for these groups. The others keep them without color.
+     *
+     * @param int    $index  the trace index in the configuration
+     * @param string $yField the trace Y field
+     *
+     * @return null|string the trace color, null if none or not used
+     */
+    private function getDefaultFeatureColor(int $index, string $yField): ?string
+    {
+        if (static::FEATURE_COLORS !== self::FEATURE_COLORS_MARKER_COLOR) {
+            return null;
+        }
+
+        return $this->createTrace($index, $yField)['marker']['color'] ?? null;
     }
 
     /**

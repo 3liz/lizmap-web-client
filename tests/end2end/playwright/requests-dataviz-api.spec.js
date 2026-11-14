@@ -595,3 +595,58 @@ test.describe('Dataviz API - sunburst',
             }
         });
     });
+
+test.describe('Dataviz API - colors',
+    {
+        tag: ['@requests', '@readonly'],
+    }, () => {
+
+        /**
+         * Get a bar plot of a PostgreSQL layer, aggregated in the database,
+         * colored by the "user" field, which is null for the feature 3.
+         * @param {import('@playwright/test').APIRequestContext} request The request context
+         * @param {string} expFilter A QGIS expression to filter the features
+         * @returns {Promise<object>} The trace of the plot
+         */
+        async function getColoredTrace(request, expFilter) {
+            const response = await request.post(url, {
+                headers: {
+                    authorization: 'Basic ' + btoa('admin:admin'),
+                },
+                data: {
+                    repository: 'testsrepository',
+                    project: 'filter_layer_by_user',
+                    exp_filter: expFilter,
+                    plot_config: {
+                        type: 'bar',
+                        title: 'Colors',
+                        layerId: 'filter_layer_by_user_8bd3128f_2cad_4121_b5f9_0b6f6118e2f0',
+                        x_field: 'gid',
+                        aggregation: 'sum',
+                        traces: [
+                            { y_field: 'gid', color: 'green', colorfield: 'user', z_field: '' },
+                        ],
+                        display_legend: 'True',
+                        stacked: 'False',
+                        horizontal: 'False',
+                        order: 0,
+                    },
+                },
+            });
+            responseExpect(response).toBeJson();
+
+            return (await response.json()).data[0];
+        }
+
+        test('The trace color is used for the groups without color', async ({request}) => {
+            const trace = await getColoredTrace(request, '');
+            expect(trace.x).toEqual([1, 2, 3]);
+            expect(trace.marker.color).toEqual(['admin', 'user_in_group_a,user_in_group_b', 'green']);
+        });
+
+        test('The trace color is kept when no group has a color', async ({request}) => {
+            const trace = await getColoredTrace(request, '"gid" = 3');
+            expect(trace.x).toEqual([3]);
+            expect(trace.marker.color).toBe('green');
+        });
+    });
