@@ -15,6 +15,7 @@ import GeolocationSurvey from './GeolocationSurvey.js';
 import SelectionTool from './SelectionTool.js';
 import { Digitizing } from './Digitizing.js';
 import Snapping from './Snapping.js';
+import EditionTrace from './EditionTrace.js';
 import Layers from './Layers.js';
 import WFS from './WFS.js';
 import WMS from './WMS.js';
@@ -179,6 +180,7 @@ export default class Lizmap {
                     this.digitizing = new Digitizing(this.map, this.lizmap3);
                     this.selectionTool = new SelectionTool(this.map, this.digitizing, this.initialConfig, this.state, this.lizmap3);
                     this.snapping = new Snapping(this.edition, this.state.rootMapGroup, this.state.layerTree, this.lizmap3);
+                    this.editionTrace = new EditionTrace(this.edition, this.snapping, this.lizmap3);
                     this.action = new Action(this.map, this.selectionTool, this.digitizing, this.lizmap3);
                     this.geometryCopyHandler = new GeometryCopyHandler(this._lizmap3.map);
                     this.popup = new Popup(this.initialConfig, this.state, this.map, this.digitizing);

@@ -18,6 +18,7 @@ import OverviewMap from './components/OverviewMap.js';
 import FeatureToolbar from './components/FeatureToolbar.js';
 import ReverseGeom from './components/edition/ReverseGeom.js';
 import PasteGeom from './components/edition/PasteGeom.js';
+import TraceGeom from './components/edition/TraceGeom.js';
 import PasteStoredGeom from './components/edition/PasteStoredGeom.js';
 import ActionSelector from './components/ActionSelector.js';
 import Print from './components/Print.js';
@@ -101,6 +102,7 @@ const definedCustomElements = () => {
     window.customElements.define('lizmap-feature-toolbar', FeatureToolbar);
     window.customElements.define('lizmap-reverse-geom', ReverseGeom);
     window.customElements.define('lizmap-paste-geom', PasteGeom);
+    window.customElements.define('lizmap-trace-geom', TraceGeom);
     window.customElements.define('lizmap-paste-stored-geom', PasteStoredGeom);
     window.customElements.define('lizmap-action-selector', ActionSelector);
     window.customElements.define('lizmap-print', Print);
