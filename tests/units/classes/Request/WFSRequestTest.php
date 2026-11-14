@@ -336,6 +336,58 @@ class WFSRequestTest extends TestCase
         $this->assertEquals($expectedSql, $result);
     }
 
+    /**
+     * Provide client filters merged with a filter by login.
+     *
+     * @return array the client filter, the merged filter and the expected SQL
+     */
+    public static function getParseMergedExpFilterData()
+    {
+        $loginFilter = '( "user" = \'admin\' )';
+
+        return array(
+            // Valid client filter
+            array(
+                '"id" > 0',
+                '( "id" > 0 ) AND '.$loginFilter,
+                ' AND ( ( "id" > 0 ) AND '.$loginFilter.' )',
+            ),
+            // The client filter must not get out of its parenthesis
+            array(
+                '1=1 ) OR ( 1=1',
+                '( 1=1 ) OR ( 1=1 ) AND '.$loginFilter,
+                false,
+            ),
+            // A final comment must not hide the closing parenthesis
+            array(
+                '"id" > 0 --',
+                '( "id" > 0 -- ) AND '.$loginFilter,
+                false,
+            ),
+        );
+    }
+
+    /**
+     * Test the client filter is validated alone, before being merged with the filter by login.
+     *
+     * @param string       $clientFilter the EXP_FILTER parameter sent by the client
+     * @param string       $mergedFilter the EXP_FILTER merged with the filter by login
+     * @param false|string $expectedSql  the expected SQL, false if the filter is not valid
+     */
+    #[DataProvider('getParseMergedExpFilterData')]
+    public function testParseMergedExpFilter($clientFilter, $mergedFilter, $expectedSql): void
+    {
+        $wfs = new WFSRequestForTests();
+        $wfs->appContext = new ContextForTests();
+        $wfs->datasource = (object) array('key' => 'id', 'geocol' => 'geom');
+        $result = $wfs->parseMergedExpFilterForTests(
+            new jDbConnectionForTests(),
+            $clientFilter,
+            array('exp_filter' => $mergedFilter)
+        );
+        $this->assertEquals($expectedSql, $result);
+    }
+
     public static function getParseFeatureIdData()
     {
         return array(
