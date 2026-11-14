@@ -30,6 +30,14 @@ class WFSRequestTest extends TestCase
         $this->assertEquals($expectedParameters, $parameters);
     }
 
+    /**
+     * Provide the request parameters and the filters by login.
+     *
+     * The filter by login is not added to the parameters sent to QGIS Server:
+     * it is applied by the lizmap_server plugin.
+     *
+     * @return array the parameters, the filters by login and the expected parameters
+     */
     public static function getParametersWithFiltersData()
     {
         $params1 = array(
@@ -52,7 +60,6 @@ class WFSRequestTest extends TestCase
             'map' => null,
             'Lizmap_User' => '',
             'Lizmap_User_Groups' => '',
-            'exp_filter' => '( filter ) AND ( test )',
         );
 
         $params2 = array(
@@ -67,8 +74,8 @@ class WFSRequestTest extends TestCase
             'map' => null,
             'Lizmap_User' => '',
             'Lizmap_User_Groups' => '',
-            'exp_filter' => '( testParam ) AND ( filter ) AND ( test )',
-            'propertyname' => 'prop,test attr',
+            'exp_filter' => 'testParam',
+            'propertyname' => 'prop  ',
         );
 
         return array(
@@ -501,6 +508,45 @@ class WFSRequestTest extends TestCase
         $result = '';
         $result = $wfs->getWhereClauseForTests(new jDbConnectionForTests(), $params);
         $this->assertEquals($expectedSql, $result);
+    }
+
+    /**
+     * Test the filter by login is added to the WHERE clause as a separate SQL filter.
+     *
+     * The client EXP_FILTER is used without the filter by login merged for QGIS Server.
+     */
+    public function testGetWhereClauseWithLoginFilter(): void
+    {
+        $wfs = new WFSRequestForTests();
+        $wfs->datasource = (object) array(
+            'key' => 'key',
+            'geocol' => 'geom',
+            'sql' => '',
+        );
+        $wfs->qgisLayer = new LayerWFSForTests();
+        $wfs->appContext = new ContextForTests();
+        $loginFilter = '( string_to_array("user", \',\') && ARRAY[\'admin\', \'all\'] )';
+        $wfs->loginFiltersForTests = array(
+            'layer' => array('filter' => $loginFilter),
+        );
+
+        // Without client filter
+        $result = $wfs->getWhereClauseForTests(new jDbConnectionForTests(), array());
+        $this->assertEquals(' WHERE True AND '.$loginFilter, $result);
+
+        // With a client filter
+        $result = $wfs->getWhereClauseForTests(
+            new jDbConnectionForTests(),
+            array('exp_filter' => '"filter" IN (3, 56, 12)')
+        );
+        $this->assertEquals(' WHERE True AND ( "filter" IN (3, 56, 12) ) AND '.$loginFilter, $result);
+
+        // A client filter getting out of its parenthesis is refused
+        $result = $wfs->getWhereClauseForTests(
+            new jDbConnectionForTests(),
+            array('exp_filter' => '1=1 ) OR ( 1=1')
+        );
+        $this->assertFalse($result);
     }
 
     public static function getGetQueryOrderData()
