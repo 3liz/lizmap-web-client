@@ -10,9 +10,8 @@ import Edition from './Edition.js';
 import Snapping from './Snapping.js';
 import {
     intersectLines,
-    locateOnPath,
     offsetPolyline,
-    tracePath,
+    TraceGraph,
 } from './utils/Tracing.js';
 
 /**
@@ -25,10 +24,15 @@ const DEFAULT_TOLERANCE_PX = 10;
  * Tracing for the edition, as the QGIS tracing digitizing tool.
  *
  * While drawing a line or a polygon, a vertex added on a feature loaded for
- * snapping becomes the trace start. Moving the cursor along the same feature
- * previews the path following its vertices, and the next click adds the
- * traced vertices. An offset distance in meters shifts the traced path:
- * positive to the left of the drawing direction, negative to the right.
+ * snapping becomes the trace start. Moving the cursor over the snapping features
+ * previews the shortest route to it through their network, across the junctions
+ * where they meet or cross, and the next click adds the traced vertices.
+ * An offset distance in meters shifts the traced route: positive to the left
+ * of the drawing direction, negative to the right.
+ *
+ * The OL2 draw handler is wrapped: its modify and point callbacks preview and
+ * add the traced vertices, insertXY and finalize, which add or finish without
+ * these callbacks, first put the trace start back where it was fixed.
  * @class
  * @name EditionTrace
  */
@@ -51,8 +55,11 @@ export default class EditionTrace {
         this._anchor = null;
         // Traced path previewed between the anchor and the cursor
         this._preview = null;
-        // Paths of the snapping features, built on demand
+        // Paths of the snapping features and their network, built on demand
         this._paths = null;
+        this._graph = null;
+        // The missing snapping features message is displayed once per activation
+        this._noFeatureNotified = false;
         // Draw handlers already wrapped
         this._wrappedHandlers = new WeakSet();
 
@@ -68,12 +75,17 @@ export default class EditionTrace {
             }),
         });
         this._lizmap3.map.addLayer(this._guideLayer);
+        this._guideFeature = null;
 
-        // Rebuild the paths when the snapping features change
+        // Rebuild the paths and their network when the snapping features change
+        const resetPaths = () => {
+            this._paths = null;
+            this._graph = null;
+        };
         const snapLayer = this._snapping.snapLayer;
         snapLayer?.events.on({
-            featuresadded: () => this._paths = null,
-            featuresremoved: () => this._paths = null,
+            featuresadded: resetPaths,
+            featuresremoved: resetPaths,
             scope: this,
         });
 
@@ -81,7 +93,7 @@ export default class EditionTrace {
             () => {
                 if (this._edition.drawFeatureActivated) {
                     this._wrapDrawControl(this._edition.drawControl);
-                    this._reset();
+                    this._dropAnchor();
                 } else {
                     this.active = false;
                 }
@@ -90,13 +102,7 @@ export default class EditionTrace {
             'edition.drawFeatureActivated'
         );
 
-        mainEventDispatcher.addListener(
-            () => {
-                this.active = false;
-            },
-            'edition.formClosed'
-        );
-
+        // Snapping is stopped and its configuration removed when the edition form is closed
         mainEventDispatcher.addListener(
             () => {
                 if (!this._snapping.active) {
@@ -104,6 +110,14 @@ export default class EditionTrace {
                 }
             },
             'snapping.active'
+        );
+        mainEventDispatcher.addListener(
+            () => {
+                if (this._active && !this.available) {
+                    this.active = false;
+                }
+            },
+            'snapping.config'
         );
     }
 
@@ -120,7 +134,8 @@ export default class EditionTrace {
      * @type {string|null} the locale key of the reason, null if tracing can be used
      */
     get unavailableReason() {
-        if (this._snapping.config === undefined) {
+        const config = this._snapping.config;
+        if (config === undefined) {
             return 'edition.trace.unavailable.snapping';
         }
         if (!['line', 'polygon'].includes(this._editedGeometryType())) {
@@ -128,6 +143,12 @@ export default class EditionTrace {
         }
         if (!this._edition.drawFeatureActivated) {
             return 'edition.trace.unavailable.drawing';
+        }
+        const enabledLayers = (config.snap_layers ?? []).filter(
+            layerId => config.snap_enabled?.[layerId] && config.snap_on_layers?.[layerId]
+        );
+        if (enabledLayers.length === 0) {
+            return 'edition.trace.unavailable.nolayer';
         }
         return null;
     }
@@ -158,6 +179,8 @@ export default class EditionTrace {
             'edition.trace.unavailable.snapping': 'Tracing follows the snapping features: no snapping layer is configured for this layer.',
             'edition.trace.unavailable.geometry': 'Tracing is available for line and polygon layers.',
             'edition.trace.unavailable.drawing': 'Tracing is available while drawing a new geometry. Use "Restart drawing" to draw the geometry again.',
+            'edition.trace.unavailable.nolayer': 'Tracing follows the snapping features: enable at least one visible snapping layer.',
+            'edition.trace.nofeature': 'No snapping feature is loaded to trace: show a snapping layer or refresh the snapping data.',
         };
         return globalThis.lizDict?.[key] || fallbacks[key] || key;
     }
@@ -198,10 +221,15 @@ export default class EditionTrace {
             return;
         }
         this._active = active;
-        if (active && !this._snapping.active) {
-            this._snapping.active = true;
+        this._dropAnchor();
+        if (active) {
+            this._noFeatureNotified = false;
+            // Keep the preview on top of the other layers
+            this._lizmap3.map.setLayerIndex(this._guideLayer, this._lizmap3.map.layers.length - 1);
+            if (!this._snapping.active) {
+                this._snapping.active = true;
+            }
         }
-        this._reset();
         this._dispatchChange();
     }
 
@@ -233,20 +261,12 @@ export default class EditionTrace {
     }
 
     /**
-     * Forget the trace start and the preview, restoring the previewed vertex
-     * @private
-     */
-    _reset() {
-        this._restoreAnchorVertex();
-        this._anchor = null;
-        this._preview = null;
-        this._drawGuide(null);
-    }
-
-    /**
-     * Wrap the callbacks of the draw handler:
-     * - modify, called when the sketch point moves, previews the traced path
-     * - point, called when a vertex is added, adds the traced vertices
+     * Wrap the draw handler:
+     * - the modify callback, called when the sketch point moves, previews the traced path
+     * - the point callback, called when a vertex is added by a click, adds the traced vertices
+     * - insertXY, which adds a vertex from its coordinates, and finalize, which finishes or
+     *   cancels the sketch, put the trace start back where it was fixed: they do not call
+     *   the point callback, the previewed path is not added
      * @param {object} drawControl - The OL2 DrawFeature control
      * @private
      */
@@ -275,8 +295,19 @@ export default class EditionTrace {
             }
         };
 
-        // Each new geometry starts without trace
-        drawControl.layer?.events.register('sketchcomplete', this, () => this._reset());
+        const originalInsertXY = handler.insertXY;
+        handler.insertXY = function (...args) {
+            self._dropAnchor();
+            const result = originalInsertXY.apply(this, args);
+            self._onVertexInserted(handler);
+            return result;
+        };
+
+        const originalFinalize = handler.finalize;
+        handler.finalize = function (...args) {
+            self._dropAnchor();
+            return originalFinalize.apply(this, args);
+        };
     }
 
     /**
@@ -299,31 +330,32 @@ export default class EditionTrace {
         if (!this._active || !this._anchor) {
             return;
         }
-        if (this._anchor.index !== this._lastFixedIndex(handler)) {
-            // The sketch changed (undo, new geometry): forget the trace start
-            this._anchor = null;
-            this._preview = null;
-            this._drawGuide(null);
+        const components = handler.line.geometry.components;
+        if (components[this._lastFixedIndex(handler)] !== this._anchor.point) {
+            // The trace start is not the last fixed vertex anymore (undo, new geometry)
+            this._dropAnchor();
             return;
         }
 
         this._restoreAnchorVertex();
         this._preview = null;
 
-        const cursor = [vertex.x, vertex.y];
+        const graph = this._getGraph();
         const tolerance = this._tolerance();
-        let best = null;
-        for (const candidate of this._anchor.candidates) {
-            const location = locateOnPath(candidate.path.points, candidate.path.closed, cursor);
-            if (location && location.distance <= tolerance && (best === null || location.distance < best.location.distance)) {
-                best = { candidate: candidate, location: location };
-            }
+        const anchor = this._anchor;
+        if (anchor.graph !== graph) {
+            // The snapping features changed: locate the trace start on their new network
+            anchor.graph = graph;
+            anchor.location = graph.locate(anchor.raw, tolerance);
+            anchor.tree = null;
         }
-
-        const traced = best
-            ? tracePath(best.candidate.path.points, best.candidate.path.closed, best.candidate.location, best.location)
-            : [];
-        if (traced.length < 2) {
+        const target = anchor.location ? graph.locate([vertex.x, vertex.y], tolerance) : null;
+        if (target) {
+            // One shortest path search per trace start, the routes to the cursor are read from it
+            anchor.tree ??= graph.shortestPathTree(anchor.location);
+        }
+        const traced = target ? graph.route(anchor.tree, target) : null;
+        if (!traced || traced.coords.length < 2) {
             this._drawGuide(null);
             return;
         }
@@ -333,7 +365,8 @@ export default class EditionTrace {
         // Join with the previous traced part
         if (this._anchor.lastSegment) {
             const corner = intersectLines(this._anchor.lastSegment, [offsetPath[0], offsetPath[1]]);
-            const maxJoin = 5 * Math.abs(this._offsetInMapUnits(traced[0], traced[1]));
+            const first = traced.segments[0];
+            const maxJoin = 5 * Math.abs(this._offset * this._mapUnitsPerMeter(first.path, first.segment));
             if (corner && Math.hypot(corner[0] - this._anchor.original[0], corner[1] - this._anchor.original[1]) <= maxJoin) {
                 offsetPath[0] = corner;
             } else {
@@ -342,22 +375,22 @@ export default class EditionTrace {
         }
 
         // Move the trace start and the sketch point
-        this._setVertex(handler.line.geometry.components[this._anchor.index], offsetPath[0]);
+        this._setVertex(this._anchor.point, offsetPath[0]);
         const end = offsetPath[offsetPath.length - 1];
         vertex.x = end[0];
         vertex.y = end[1];
 
         this._preview = {
-            anchorIndex: this._anchor.index,
-            path: best.candidate.path,
-            location: best.location,
+            anchorPoint: this._anchor.point,
+            graph: graph,
+            location: target,
             offsetPath: offsetPath,
         };
         this._drawGuide(offsetPath);
     }
 
     /**
-     * A vertex has been fixed: add the previewed traced vertices,
+     * A vertex has been fixed by a click: add the previewed traced vertices,
      * then make the fixed vertex the next trace start
      * @param {object} handler - The OL2 draw handler
      * @private
@@ -369,141 +402,208 @@ export default class EditionTrace {
         const geometry = handler.line.geometry;
         const fixedIndex = this._lastFixedIndex(handler);
         const preview = this._preview;
+        const anchor = this._anchor;
 
-        if (preview && this._anchor && preview.anchorIndex === this._anchor.index && fixedIndex === this._anchor.index + 1) {
+        if (preview && anchor && preview.anchorPoint === anchor.point && geometry.components[fixedIndex - 1] === anchor.point) {
+            const anchorIndex = fixedIndex - 1;
             const offsetPath = preview.offsetPath;
             // Intermediate vertices between the trace start and the fixed vertex
             for (let k = 1; k < offsetPath.length - 1; k++) {
                 geometry.addComponent(
                     new OpenLayers.Geometry.Point(offsetPath[k][0], offsetPath[k][1]),
-                    this._anchor.index + k
+                    anchorIndex + k
                 );
             }
-            const endIndex = this._anchor.index + offsetPath.length - 1;
+            const endPoint = geometry.components[anchorIndex + offsetPath.length - 1];
             const end = offsetPath[offsetPath.length - 1];
-            this._setVertex(geometry.components[endIndex], end);
+            this._setVertex(endPoint, end);
             geometry.clearBounds();
 
+            // The next trace starts where this one ends on the network
             this._anchor = {
-                index: endIndex,
+                point: endPoint,
                 original: end,
-                candidates: [{ path: preview.path, location: preview.location }],
+                raw: preview.location.coord,
+                graph: preview.graph,
+                location: preview.location,
+                tree: null,
                 lastSegment: [offsetPath[offsetPath.length - 2], end],
             };
         } else {
             this._restoreAnchorVertex();
-            this._anchor = this._createAnchor(geometry.components[fixedIndex], fixedIndex);
+            this._anchor = this._createAnchor(geometry.components[fixedIndex]);
+            if (!this._anchor) {
+                this._notifyMissingFeatures();
+            }
         }
         this._preview = null;
         this._drawGuide(null);
     }
 
     /**
+     * A vertex has been added from its coordinates: it can start a trace
+     * @param {object} handler - The OL2 draw handler
+     * @private
+     */
+    _onVertexInserted(handler) {
+        if (this._active && handler.line) {
+            this._anchor = this._createAnchor(handler.line.geometry.components[this._lastFixedIndex(handler)]);
+        }
+    }
+
+    /**
+     * Tell once per activation that no snapping feature is loaded to trace
+     * @private
+     */
+    _notifyMissingFeatures() {
+        if (this._noFeatureNotified || this._getPaths().length > 0) {
+            return;
+        }
+        this._noFeatureNotified = true;
+        this._lizmap3.addMessage(EditionTrace.translate('edition.trace.nofeature'), 'info', true, 7000);
+    }
+
+    /**
      * Create a trace start from a fixed vertex lying on snapping features
      * @param {object} vertex - The OL2 point geometry
-     * @param {number} index  - The vertex index in the sketch
      * @returns {object|null} the trace start, null if the vertex is not on a feature
      * @private
      */
-    _createAnchor(vertex, index) {
+    _createAnchor(vertex) {
         if (!vertex) {
             return null;
         }
         const coord = [vertex.x, vertex.y];
-        const tolerance = this._tolerance();
-        const candidates = [];
-        for (const path of this._getPaths()) {
-            if (coord[0] < path.bounds[0] - tolerance || coord[0] > path.bounds[2] + tolerance
-                || coord[1] < path.bounds[1] - tolerance || coord[1] > path.bounds[3] + tolerance) {
-                continue;
-            }
-            const location = locateOnPath(path.points, path.closed, coord);
-            if (location && location.distance <= tolerance) {
-                candidates.push({ path: path, location: location });
-            }
-        }
-        if (candidates.length === 0) {
+        const graph = this._getGraph();
+        const location = graph.locate(coord, this._tolerance());
+        if (!location) {
             return null;
         }
         return {
-            index: index,
+            point: vertex,
             original: coord,
-            candidates: candidates,
+            raw: location.coord,
+            graph: graph,
+            location: location,
+            tree: null,
             lastSegment: null,
         };
     }
 
     /**
-     * Put the trace start vertex back where it was fixed
+     * Get the network of the snapping feature paths
+     * @returns {TraceGraph} the network
+     * @private
+     */
+    _getGraph() {
+        if (this._graph === null) {
+            this._graph = new TraceGraph(this._getPaths());
+        }
+        return this._graph;
+    }
+
+    /**
+     * Put the trace start vertex back where it was fixed, and forget the trace start
+     * @private
+     */
+    _dropAnchor() {
+        const moved = this._restoreAnchorVertex();
+        this._anchor = null;
+        this._preview = null;
+        this._drawGuide(null);
+        if (moved && this._drawHandler?.line) {
+            this._drawHandler.drawFeature();
+        }
+    }
+
+    /**
+     * Put the trace start vertex back where it was fixed.
+     * The vertex is tracked as an object: once removed from the sketch, moving it has no effect.
+     * @returns {boolean} true if the vertex has been moved
      * @private
      */
     _restoreAnchorVertex() {
-        const components = this._drawHandler?.line?.geometry.components;
-        if (this._anchor && components?.[this._anchor.index]) {
-            this._setVertex(components[this._anchor.index], this._anchor.original);
+        if (!this._anchor) {
+            return false;
         }
+        return this._setVertex(this._anchor.point, this._anchor.original);
     }
 
     /**
      * Move an OL2 point
      * @param {object}   point - OL2 point geometry
      * @param {number[]} coord - the new coordinate
+     * @returns {boolean} true if the point has been moved
      * @private
      */
     _setVertex(point, coord) {
-        if (point && (point.x !== coord[0] || point.y !== coord[1])) {
-            point.x = coord[0];
-            point.y = coord[1];
-            point.clearBounds();
+        if (!point || (point.x === coord[0] && point.y === coord[1])) {
+            return false;
         }
+        point.x = coord[0];
+        point.y = coord[1];
+        point.clearBounds();
+        point.parent?.clearBounds();
+        return true;
     }
 
     /**
-     * Offset a traced path with the offset distance
-     * @param {number[][]} traced - the traced coordinates
-     * @returns {number[][]} the offset path
+     * Offset a traced route with the offset distance
+     * @param {{coords: number[][], segments: Array<{path: object, segment: number}>}} traced - the traced
+     *        coordinates and the path segment of each traced segment
+     * @returns {number[][]} the offset route
      * @private
      */
     _offsetPath(traced) {
         if (this._offset === 0) {
-            return traced.map(coord => [coord[0], coord[1]]);
+            return traced.coords.map(coord => [coord[0], coord[1]]);
         }
-        const distances = [];
-        for (let k = 0; k < traced.length - 1; k++) {
-            distances.push(this._offsetInMapUnits(traced[k], traced[k + 1]));
-        }
-        return offsetPolyline(traced, distances);
+        const distances = traced.segments.map(
+            ({ path, segment }) => this._offset * this._mapUnitsPerMeter(path, segment)
+        );
+        return offsetPolyline(traced.coords, distances);
     }
 
     /**
-     * The offset distance in map units for a segment,
+     * Map units per meter in the offset direction of a path segment,
      * consistent with the geodesic segment length displayed by the edition.
      * The scale is measured perpendicular to the segment, the offset direction,
      * because it differs from the scale along the segment in a geographic projection
      * and, slightly, in EPSG:3857.
      * The probe is centered on the middle of the segment and spans about 100 pixels:
      * OpenLayers rounds geodesic distances to the millimeter, so a short probe is imprecise.
-     * @param {number[]} a - segment start
-     * @param {number[]} b - segment end
-     * @returns {number} the signed offset in map units
+     * The scale is cached on the path, rebuilt when the snapping features change.
+     * @param {object} path    - the path
+     * @param {number} segment - the segment index
+     * @returns {number} the map units per meter
      * @private
      */
-    _offsetInMapUnits(a, b) {
+    _mapUnitsPerMeter(path, segment) {
+        path.scales ??= [];
+        if (path.scales[segment] !== undefined) {
+            return path.scales[segment];
+        }
+        const a = path.points[segment];
+        const b = path.points[(segment + 1) % path.points.length];
         const dx = b[0] - a[0];
         const dy = b[1] - a[1];
         const planar = Math.hypot(dx, dy);
-        if (planar === 0 || this._offset === 0) {
-            return this._offset;
+        let scale = 1;
+        if (planar > 0) {
+            const halfProbe = 50 * this._lizmap3.map.getResolution();
+            const nx = -dy / planar;
+            const ny = dx / planar;
+            const middle = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+            const geodesic = new OpenLayers.Geometry.LineString([
+                new OpenLayers.Geometry.Point(middle[0] - nx * halfProbe, middle[1] - ny * halfProbe),
+                new OpenLayers.Geometry.Point(middle[0] + nx * halfProbe, middle[1] + ny * halfProbe),
+            ]).getGeodesicLength(this._lizmap3.map.getProjectionObject());
+            if (geodesic > 0) {
+                scale = 2 * halfProbe / geodesic;
+            }
         }
-        const halfProbe = 50 * this._lizmap3.map.getResolution();
-        const nx = -dy / planar;
-        const ny = dx / planar;
-        const middle = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
-        const geodesic = new OpenLayers.Geometry.LineString([
-            new OpenLayers.Geometry.Point(middle[0] - nx * halfProbe, middle[1] - ny * halfProbe),
-            new OpenLayers.Geometry.Point(middle[0] + nx * halfProbe, middle[1] + ny * halfProbe),
-        ]).getGeodesicLength(this._lizmap3.map.getProjectionObject());
-        return geodesic > 0 ? this._offset * 2 * halfProbe / geodesic : this._offset;
+        path.scales[segment] = scale;
+        return scale;
     }
 
     /**
@@ -518,7 +618,7 @@ export default class EditionTrace {
 
     /**
      * Get the paths (lines and rings) of the snapping features
-     * @returns {Array<{points: number[][], closed: boolean, bounds: number[]}>} the paths
+     * @returns {Array<{points: number[][], closed: boolean}>} the paths
      * @private
      */
     _getPaths() {
@@ -552,13 +652,7 @@ export default class EditionTrace {
                     points.pop();
                 }
                 if (points.length > 1) {
-                    const xs = points.map(p => p[0]);
-                    const ys = points.map(p => p[1]);
-                    paths.push({
-                        points: points,
-                        closed: closed,
-                        bounds: [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)],
-                    });
+                    paths.push({ points: points, closed: closed });
                 }
                 break;
             }
@@ -574,24 +668,28 @@ export default class EditionTrace {
     }
 
     /**
-     * Draw the previewed traced path
-     * @param {number[][]|null} coords - the path to draw, null to clear
+     * Draw the previewed traced path, with a single feature updated in place
+     * @param {number[][]|null} coords - the path to draw, null to hide it
      * @private
      */
     _drawGuide(coords) {
-        this._guideLayer.destroyFeatures();
         if (!coords || coords.length < 2) {
             this._guideLayer.setVisibility(false);
             return;
         }
-        this._guideLayer.addFeatures([
-            new OpenLayers.Feature.Vector(new OpenLayers.Geometry.LineString(
-                coords.map(c => new OpenLayers.Geometry.Point(c[0], c[1]))
-            )),
-        ]);
+        const geometry = new OpenLayers.Geometry.LineString(
+            coords.map(c => new OpenLayers.Geometry.Point(c[0], c[1]))
+        );
+        if (this._guideFeature === null) {
+            this._guideFeature = new OpenLayers.Feature.Vector(geometry);
+            this._guideLayer.addFeatures([this._guideFeature]);
+        } else {
+            // Remove the rendered previous geometry before drawing the new one
+            this._guideLayer.eraseFeatures([this._guideFeature]);
+            this._guideFeature.geometry = geometry;
+            this._guideLayer.drawFeature(this._guideFeature);
+        }
         this._guideLayer.setVisibility(true);
-        // Keep the preview on top of the other layers
-        this._lizmap3.map.setLayerIndex(this._guideLayer, this._lizmap3.map.layers.length - 1);
     }
 
     /**

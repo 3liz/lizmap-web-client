@@ -27,8 +27,21 @@ const HALF = 100;
 const TOLERANCE = 0.05;
 
 /**
- * Snapping geometries built from the square around the map center
- * @type {{[key: string]: function(object): object}}
+ * Coordinate in the square from fractions of its side, y to the north
+ * @param {object} square - the square
+ * @param {number} x      - fraction of the side from the west edge
+ * @param {number} y      - fraction of the side from the south edge
+ * @returns {number[]} the map coordinate
+ */
+const at = (square, x, y) => [
+    square.xmin + x * (square.xmax - square.xmin),
+    square.ymin + y * (square.ymax - square.ymin),
+];
+
+/**
+ * Snapping geometries built from the square around the map center:
+ * one geometry or a list of geometries, one feature each
+ * @type {{[key: string]: function(object): object|object[]}}
  */
 const GEOMETRIES = {
     square: ({ xmin, ymin, xmax, ymax }) => ({
@@ -40,6 +53,33 @@ const GEOMETRIES = {
         type: 'LineString',
         coordinates: [[xmin, ymin], [xmax, ymin], [xmax, ymax]],
     }),
+    // Road network: separate features meeting at junctions, with bends
+    //   road 1: (0, 0) -> junction 1 (0.5, 0)
+    //   road 2: junction 1 -> bend (0.7, 0.25) -> junction 2 (0.5, 0.5)
+    //   road 3: junction 2 -> bend (0.75, 0.75) -> (1, 0.5)
+    //   road 4: junction 2 -> (0.5, 1)
+    network: (square) => [
+        { type: 'LineString', coordinates: [at(square, 0, 0), at(square, 0.5, 0)] },
+        { type: 'LineString', coordinates: [at(square, 0.5, 0), at(square, 0.7, 0.25), at(square, 0.5, 0.5)] },
+        { type: 'LineString', coordinates: [at(square, 0.5, 0.5), at(square, 0.75, 0.75), at(square, 1, 0.5)] },
+        { type: 'LineString', coordinates: [at(square, 0.5, 0.5), at(square, 0.5, 1)] },
+    ],
+    // Three roads meeting at a junction (0.5, 0): from the west, to the north and to the east
+    crossing: (square) => [
+        { type: 'LineString', coordinates: [at(square, 0, 0), at(square, 0.5, 0)] },
+        { type: 'LineString', coordinates: [at(square, 0.5, 0), at(square, 0.5, 0.75)] },
+        { type: 'LineString', coordinates: [at(square, 0.5, 0), at(square, 1, 0)] },
+    ],
+    // Junctions without shared vertex:
+    //   main road: (0, 0) -> (1, 0), a single segment
+    //   north road: (0.5, 0) -> (0.5, 0.75), ending in the middle of the main road segment
+    //   diagonal road: (0.25, 0.25) -> (0.75, 0.75), crossing the north road at (0.5, 0.5)
+    teeAndCross: (square) => [
+        { type: 'LineString', coordinates: [at(square, 0, 0), at(square, 1, 0)] },
+        { type: 'LineString', coordinates: [at(square, 0.5, 0), at(square, 0.5, 0.75)] },
+        { type: 'LineString', coordinates: [at(square, 0.25, 0.25), at(square, 0.75, 0.75)] },
+    ],
+    none: () => [],
 };
 
 /**
@@ -90,6 +130,8 @@ async function openTracing(page, { editionLayer, snapLayer = 'polygon_2154', geo
     }, { half: HALF, shift });
 
     // Snapping data
+    const built = GEOMETRIES[geometry](square);
+    const snapGeometries = Array.isArray(built) ? built : [built];
     await page.route('**/lizmap/service*', async route => {
         const postData = route.request().postData() ?? '';
         if (!(postData.includes('GetFeature') && postData.includes(snapLayer))) {
@@ -100,12 +142,12 @@ async function openTracing(page, { editionLayer, snapLayer = 'polygon_2154', geo
             contentType: 'application/vnd.geo+json; charset=utf-8',
             json: {
                 type: 'FeatureCollection',
-                features: [{
+                features: snapGeometries.map((snapGeometry, index) => ({
                     type: 'Feature',
-                    id: `${snapLayer}.1`,
-                    properties: { id: 1 },
-                    geometry: GEOMETRIES[geometry](square),
-                }],
+                    id: `${snapLayer}.${index + 1}`,
+                    properties: { id: index + 1 },
+                    geometry: snapGeometry,
+                })),
             },
         });
     });
@@ -119,13 +161,18 @@ async function openTracing(page, { editionLayer, snapLayer = 'polygon_2154', geo
 
     if (activate) {
         await expect(offsetInput).toHaveCount(0);
+        // Activating tracing starts snapping, which loads the snapping geometries
+        const snapResponsePromise = page.waitForResponse(response =>
+            response.request().postData()?.includes('GetFeature') === true
+            && response.request().postData()?.includes(snapLayer) === true
+        );
         await traceButton.click();
         await expect(traceButton).toHaveClass(/active/);
         await expect(offsetInput).toBeVisible();
-        // Activating tracing starts snapping, which loads the snapping geometry
+        await snapResponsePromise;
         await expect.poll(() => page.evaluate(
             () => globalThis.lizMap.mainLizmap.snapping.snapLayer.features.length
-        )).toBe(1);
+        )).toBe(snapGeometries.length);
         await offsetInput.fill(String(offset));
         await offsetInput.press('Enter');
     }
@@ -148,6 +195,8 @@ async function openTracing(page, { editionLayer, snapLayer = 'polygon_2154', geo
         square,
         traceButton,
         offsetInput,
+        // Pixel offset from the map center of a point given in fractions of the square, y to the north
+        px: (x, y) => [shift - HALF + x * 2 * HALF, HALF - y * 2 * HALF],
         move,
         click: async (dx, dy) => {
             await move(dx, dy);
@@ -237,11 +286,11 @@ test.describe('Edition trace @readonly', () => {
 
             // Traced from left to right on the bottom edge, then upward on the right edge:
             // the left side is to the north, then to the west.
-            // The scale is taken at the middle of each traced segment, in the offset direction:
+            // The scale is taken at the middle of each feature segment, in the offset direction:
             // the north-south and east-west scales differ in EPSG:3857.
             const side = square.xmax - square.xmin;
-            const bottomOffset = offset * await mapUnitsPerMeter(page, [square.xmin + side * 0.625, square.ymin], [0, 1]);
-            const rightOffset = offset * await mapUnitsPerMeter(page, [square.xmax, square.ymin + side * 0.375], [1, 0]);
+            const bottomOffset = offset * await mapUnitsPerMeter(page, at(square, 0.5, 0), [0, 1]);
+            const rightOffset = offset * await mapUnitsPerMeter(page, at(square, 1, 0.5), [1, 0]);
 
             const drawn = await drawnGeometry(page);
             expect(drawn?.type).toBe('OpenLayers.Geometry.LineString');
@@ -275,12 +324,12 @@ test.describe('Edition trace @readonly', () => {
         await click(HALF, 0);
         await dblclick(0, -HALF);
 
-        // The scale is taken at the middle of each traced segment, in the offset direction
+        // The scale is taken at the middle of each feature segment, in the offset direction
         const side = square.xmax - square.xmin;
-        const bottom = offset * await mapUnitsPerMeter(page, [square.xmin + side * 0.625, square.ymin], [0, 1]);
-        const rightFirst = offset * await mapUnitsPerMeter(page, [square.xmax, square.ymin + side * 0.25], [1, 0]);
-        const rightSecond = offset * await mapUnitsPerMeter(page, [square.xmax, square.ymin + side * 0.75], [1, 0]);
-        const top = offset * await mapUnitsPerMeter(page, [square.xmin + side * 0.75, square.ymax], [0, 1]);
+        const bottom = offset * await mapUnitsPerMeter(page, at(square, 0.5, 0), [0, 1]);
+        const rightFirst = offset * await mapUnitsPerMeter(page, at(square, 1, 0.5), [1, 0]);
+        const rightSecond = rightFirst;
+        const top = offset * await mapUnitsPerMeter(page, at(square, 0.5, 1), [0, 1]);
         const tolerance = 1e-4 * side;
 
         const drawn = await drawnGeometry(page);
@@ -330,10 +379,10 @@ test.describe('Edition trace @readonly', () => {
         await click(HALF, -50);
         await dblclick(-50, HALF);
 
-        // The scale is taken at the middle of each traced segment, in the offset direction
+        // The scale is taken at the middle of each feature segment, in the offset direction
         const side = square.xmax - square.xmin;
-        const right = offset * await mapUnitsPerMeter(page, [square.xmax, square.ymin + side * 0.375], [1, 0]);
-        const bottom = offset * await mapUnitsPerMeter(page, [square.xmin + side * 0.625, square.ymin], [0, 1]);
+        const right = offset * await mapUnitsPerMeter(page, at(square, 1, 0.5), [1, 0]);
+        const bottom = offset * await mapUnitsPerMeter(page, at(square, 0.5, 0), [0, 1]);
         const tolerance = 1e-4 * side;
 
         const drawn = await drawnGeometry(page);
@@ -433,5 +482,188 @@ test.describe('Edition trace @readonly', () => {
         await expect(page.locator('#message')).toContainText('available for line and polygon layers');
         await expect(traceButton).not.toHaveClass(/active/);
         await expect(offsetInput).toHaveCount(0);
+    });
+
+    test('Trace across several features without clicking their junctions', async ({ page }) => {
+        // The network is shifted to the east: the dock covers the west of the map
+        const { square, px, click, dblclick } = await openTracing(
+            page, { editionLayer: 'line_2154', geometry: 'network', shift: HALF }
+        );
+
+        // From road 1 directly to road 3: the route goes through both junctions and road 2
+        await click(...px(0.25, 0));
+        await dblclick(...px(0.875, 0.625));
+
+        const drawn = await drawnGeometry(page);
+        // Start, junction 1, bend of road 2, junction 2, bend of road 3, end
+        expect(drawn?.points).toHaveLength(6);
+        const side = square.xmax - square.xmin;
+        const expected = [
+            [0.25, 0], [0.5, 0], [0.7, 0.25], [0.5, 0.5], [0.75, 0.75], [0.875, 0.625],
+        ].map(([x, y]) => at(square, x, y));
+        drawn?.points.forEach((point, index) => {
+            // The clicked ends are near, the junctions and bends exact
+            const tolerance = (index === 0 || index === 5) ? side / 100 : TOLERANCE;
+            expectNear(point[0], expected[index][0], tolerance);
+            expectNear(point[1], expected[index][1], tolerance);
+        });
+    });
+
+    test('Trace across a T junction and a crossing without shared vertices', async ({ page }) => {
+        const { square, px, click, dblclick } = await openTracing(
+            page, { editionLayer: 'line_2154', geometry: 'teeAndCross', shift: HALF }
+        );
+
+        // From the main road to the diagonal road, through the north road
+        await click(...px(0.1, 0));
+        await dblclick(...px(0.7, 0.7));
+
+        const drawn = await drawnGeometry(page);
+        // Start, T junction, crossing, end
+        expect(drawn?.points).toHaveLength(4);
+        // @ts-ignore
+        const [start, tee, crossing, end] = drawn.points;
+        const side = square.xmax - square.xmin;
+        expectNear(start[1], square.ymin);
+        expectNear(tee[0], at(square, 0.5, 0)[0]);
+        expectNear(tee[1], at(square, 0.5, 0)[1]);
+        expectNear(crossing[0], at(square, 0.5, 0.5)[0]);
+        expectNear(crossing[1], at(square, 0.5, 0.5)[1]);
+        expectNear(end[0], at(square, 0.7, 0.7)[0], side / 100);
+        expectNear(end[1], at(square, 0.7, 0.7)[1], side / 100);
+    });
+
+    test('Clicking at the junctions traces each part, following their bends', async ({ page }) => {
+        // The network is shifted to the east: the dock covers the west of the map
+        const { square, px, click, dblclick } = await openTracing(
+            page, { editionLayer: 'line_2154', geometry: 'network', shift: HALF }
+        );
+
+        // Road 1, to junction 1
+        await click(...px(0.25, 0));
+        await click(...px(0.5, 0));
+        // Road 2, a separate feature starting at junction 1, to junction 2
+        await click(...px(0.5, 0.5));
+        // Road 3, a separate feature starting at junction 2 (road 4 starts there too)
+        await dblclick(...px(0.875, 0.625));
+
+        const drawn = await drawnGeometry(page);
+        // Start, junction 1, bend of road 2, junction 2, bend of road 3, end
+        expect(drawn?.points).toHaveLength(6);
+        const side = square.xmax - square.xmin;
+        const expected = [
+            [0.25, 0], [0.5, 0], [0.7, 0.25], [0.5, 0.5], [0.75, 0.75], [0.875, 0.625],
+        ].map(([x, y]) => at(square, x, y));
+        drawn?.points.forEach((point, index) => {
+            expectNear(point[0], expected[index][0], side / 100);
+            expectNear(point[1], expected[index][1], side / 100);
+        });
+        // The bends are traced exactly
+        // @ts-ignore
+        expectNear(drawn.points[2][0], expected[2][0]);
+        // @ts-ignore
+        expectNear(drawn.points[2][1], expected[2][1]);
+        // @ts-ignore
+        expectNear(drawn.points[4][0], expected[4][0]);
+        // @ts-ignore
+        expectNear(drawn.points[4][1], expected[4][1]);
+    });
+
+    test('Trace through a junction to the feature under the cursor, the offset corner joining both features', async ({ page }) => {
+        const offset = 2;
+        const { square, px, click, dblclick } = await openTracing(
+            page, { editionLayer: 'line_2154', geometry: 'crossing', shift: HALF, offset }
+        );
+
+        // From the west road to the north road, not the east one, without clicking the junction
+        await click(...px(0.25, 0));
+        await dblclick(...px(0.5, 0.4));
+
+        const side = square.xmax - square.xmin;
+        // Going east, left is north; going north, left is west
+        const west = offset * await mapUnitsPerMeter(page, at(square, 0.25, 0), [0, 1]);
+        const north = offset * await mapUnitsPerMeter(page, at(square, 0.5, 0.375), [1, 0]);
+        const tolerance = 1e-4 * side;
+        const junction = at(square, 0.5, 0);
+
+        const drawn = await drawnGeometry(page);
+        // Start, corner joining both offset roads, end
+        expect(drawn?.points).toHaveLength(3);
+        // @ts-ignore
+        const [start, corner, end] = drawn.points;
+        expectNear(start[1], junction[1] + west, tolerance);
+        expectNear(corner[0], junction[0] - north, tolerance);
+        expectNear(corner[1], junction[1] + west, tolerance);
+        expectNear(end[0], junction[0] - north, tolerance);
+        expect(end[1]).toBeGreaterThan(corner[1]);
+    });
+
+    test('Finishing from the coordinate form puts the trace start back', async ({ page }) => {
+        const offset = 2;
+        const { square, click, move } = await openTracing(page, { editionLayer: 'line_2154', offset });
+
+        // Free vertex, then trace start on the bottom edge
+        await click(-50, 0);
+        await click(-50, HALF);
+        // The preview moves the trace start to the offset
+        await move(HALF, 50);
+        const traceStartY = () => page.evaluate(
+            () => globalThis.lizMap.mainLizmap.edition.drawControl.handler.line.geometry.components[1].y
+        );
+        expect(await traceStartY()).toBeGreaterThan(square.ymin + TOLERANCE);
+
+        // Finish without a click on the map: the previewed trace is not added
+        await page.locator('#edition-point-coord-submit').click();
+
+        const drawn = await drawnGeometry(page);
+        expect(drawn?.points).toHaveLength(2);
+        // @ts-ignore
+        expectNear(drawn.points[1][1], square.ymin);
+    });
+
+    test('Adding a vertex from the coordinate form puts the trace start back', async ({ page }) => {
+        const offset = 2;
+        const { square, click, move } = await openTracing(page, { editionLayer: 'line_2154', offset });
+
+        // Free vertex, then trace start on the bottom edge
+        await click(-50, 0);
+        await click(-50, HALF);
+        // The preview moves the trace start and the sketch point to the offset
+        await move(HALF, 50);
+
+        // Add the sketch point from the coordinate form, then finish
+        await page.locator('#edition-point-coord-add').click();
+        await page.locator('#edition-point-coord-submit').click();
+
+        const rightOffset = offset * await mapUnitsPerMeter(page, at(square, 1, 0.5), [1, 0]);
+        const drawn = await drawnGeometry(page);
+        // Free vertex, trace start, added vertex: no traced corner
+        expect(drawn?.points).toHaveLength(3);
+        // @ts-ignore
+        const [, start, added] = drawn.points;
+        expectNear(start[1], square.ymin);
+        expectNear(added[0], square.xmax - rightOffset, 1e-4 * (square.xmax - square.xmin));
+    });
+
+    test('Tracing is deactivated and explains it when no snapping layer is enabled', async ({ page }) => {
+        const { traceButton } = await openTracing(page, { editionLayer: 'line_2154' });
+
+        // Disable snapping on the only snapping layer
+        await page.locator(`#snap-layer-${LAYER_IDS.polygon_2154}`).uncheck();
+
+        await expect(traceButton).not.toHaveClass(/active/);
+        await expect(traceButton).toHaveClass(/edition-trace-unavailable/);
+        // aria-disabled: Playwright would wait for the button to be enabled
+        await traceButton.click({ force: true });
+        await expect(page.locator('#message')).toContainText('enable at least one visible snapping layer');
+        await expect(traceButton).not.toHaveClass(/active/);
+    });
+
+    test('Tracing tells when no snapping feature is loaded', async ({ page }) => {
+        const { traceButton, click } = await openTracing(page, { editionLayer: 'line_2154', geometry: 'none' });
+
+        await click(0, 0);
+        await expect(page.locator('#message')).toContainText('No snapping feature is loaded to trace');
+        await expect(traceButton).toHaveClass(/active/);
     });
 });
