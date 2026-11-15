@@ -6,6 +6,7 @@ import {Image as ImageLayer, Tile as TileLayer} from 'ol/layer.js';
 import TileWMS from 'ol/source/TileWMS.js';
 import TileState from 'ol/TileState.js';
 import { BaseLayerState } from './state/BaseLayer.js';
+import { StaticWmsGetMapParamList } from './WMS.js';
 import { ValidationError } from './Errors.js';
 
 /**
@@ -319,33 +320,34 @@ export default class SingleWMSLayer {
 
         this.prepareWMSParams()
 
-        const wmsParams = this._layer.getSource().getParams();
-        let param = {
+        const source = this._layer.getSource();
+        const wmsParams = source.getParams();
+        let params = {
             LAYERS: this._layersWmsName.join(","),
-            FORMAT: this._format,
             STYLES: this._layerStyles.join(","),
-            DPI: 96
         }
         // Only send OPACITIES when at least one layer has non-full opacity
         if (this._layerOpacities.some(o => o !== 255))
-            param["OPACITIES"] = this._layerOpacities.join(",");
+            params["OPACITIES"] = this._layerOpacities.join(",");
         if (this._selectionTokens.join("").split("").length > 0)
-            param["SELECTIONTOKEN"] = this._selectionTokens.join(";");
+            params["SELECTIONTOKEN"] = this._selectionTokens.join(";");
         if (this._filterTokens.join("").split("").length > 0)
-            param["FILTERTOKEN"] = this._filterTokens.join(";");
+            params["FILTERTOKEN"] = this._filterTokens.join(";");
         if  (this._legendOn.join("").split("").length > 0)
-            param["LEGEND_ON"] = this._legendOn.join(";");
+            params["LEGEND_ON"] = this._legendOn.join(";");
         if  (this._legendOff.join("").split("").length > 0)
-            param["LEGEND_OFF"] = this._legendOff.join(";");
+            params["LEGEND_OFF"] = this._legendOff.join(";");
 
         // updateParams merges the object, need to manually remove object keys
         // that aren't in the current param object
         for (const key of Object.keys(wmsParams)) {
-            if(!Object.hasOwn(param, key)){
+            // Do not removed static WMS GetMap parameters from the list of parameters
+            if(StaticWmsGetMapParamList.indexOf(key.toLowerCase()) !== -1) continue;
+            if(!Object.hasOwn(params, key)){
                 delete wmsParams[key];
             }
         }
-        Object.assign(wmsParams, param);
+        Object.assign(wmsParams, params);
 
         // update the map
         if (this._layersWmsName.length == 0) {
@@ -356,6 +358,7 @@ export default class SingleWMSLayer {
             this._layer.setVisible(true)
         }
     }
+
     /**
      * update class properties to construct the wms parameters used to get the single image
      * @memberof SingleWMSLayer
