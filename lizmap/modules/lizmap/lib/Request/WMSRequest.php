@@ -899,6 +899,9 @@ class WMSRequest extends OGCRequest
 
         return $this->getViewTpl('view~popup', $layerName, $layerId, $layerTitle, array(
             'popupContent' => $popupRasterContent,
+            // Raster features have no ID nor display name, but the template reads them
+            'featureId' => null,
+            'featureDisplayName' => null,
         ));
     }
 
