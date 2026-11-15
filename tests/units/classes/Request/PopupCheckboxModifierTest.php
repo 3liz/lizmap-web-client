@@ -1,13 +1,13 @@
 <?php
 
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class PopupCheckboxModifierTest extends TestCase
 {
     public static function setUpBeforeClass(): void
@@ -24,32 +24,32 @@ class PopupCheckboxModifierTest extends TestCase
 
         return array(
             // ── Exact match against user-configured states ─────────────────
-            'exact checked (t)'                => array('t', 't', 'f', 'checked'),
-            'exact unchecked (f)'              => array('f', 't', 'f', 'unchecked'),
+            'exact checked (t)' => array('t', 't', 'f', 'checked'),
+            'exact unchecked (f)' => array('f', 't', 'f', 'unchecked'),
 
             // ── Boolean fallback: both states empty → boolean DB field ──────
             // QGIS WMS serialises boolean fields as 'true'/'false'
-            'fallback true'                    => array('true', '', '', 'checked'),
-            'fallback TRUE'                    => array('TRUE', '', '', 'checked'),
-            'fallback t'                       => array('t', '', '', 'checked'),
-            'fallback T'                       => array('T', '', '', 'checked'),
-            'fallback 1'                       => array('1', '', '', 'checked'),
-            'fallback yes'                     => array('yes', '', '', 'checked'),
-            'fallback YES'                     => array('YES', '', '', 'checked'),
-            'fallback on'                      => array('on', '', '', 'checked'),
-            'fallback false'                   => array('false', '', '', 'unchecked'),
-            'fallback FALSE'                   => array('FALSE', '', '', 'unchecked'),
-            'fallback f'                       => array('f', '', '', 'unchecked'),
-            'fallback 0'                       => array('0', '', '', 'unchecked'),
-            'fallback no'                      => array('no', '', '', 'unchecked'),
-            'fallback off'                     => array('off', '', '', 'unchecked'),
+            'fallback true' => array('true', '', '', 'checked'),
+            'fallback TRUE' => array('TRUE', '', '', 'checked'),
+            'fallback t' => array('t', '', '', 'checked'),
+            'fallback T' => array('T', '', '', 'checked'),
+            'fallback 1' => array('1', '', '', 'checked'),
+            'fallback yes' => array('yes', '', '', 'checked'),
+            'fallback YES' => array('YES', '', '', 'checked'),
+            'fallback on' => array('on', '', '', 'checked'),
+            'fallback false' => array('false', '', '', 'unchecked'),
+            'fallback FALSE' => array('FALSE', '', '', 'unchecked'),
+            'fallback f' => array('f', '', '', 'unchecked'),
+            'fallback 0' => array('0', '', '', 'unchecked'),
+            'fallback no' => array('no', '', '', 'unchecked'),
+            'fallback off' => array('off', '', '', 'unchecked'),
 
             // ── Null-like values (boolean field, no value stored) ──────────
-            'empty string'                     => array('', '', '', 'unchecked'),
-            'null literal'                     => array('null', '', '', 'unchecked'),
-            'NULL uppercase'                   => array('NULL', '', '', 'unchecked'),
-            'QGIS null parens ()'              => array('()', '', '', 'unchecked'),
-            'whitespace only'                  => array('   ', '', '', 'unchecked'),
+            'empty string' => array('', '', '', 'unchecked'),
+            'null literal' => array('null', '', '', 'unchecked'),
+            'NULL uppercase' => array('NULL', '', '', 'unchecked'),
+            'QGIS null parens ()' => array('()', '', '', 'unchecked'),
+            'whitespace only' => array('   ', '', '', 'unchecked'),
 
             // ── Fallback suppressed when custom states are configured ───────
             // A boolean-like value must NOT match when the field has text labels
@@ -58,15 +58,13 @@ class PopupCheckboxModifierTest extends TestCase
             'suppressed: 1 with on/off states' => array('1', 'on', 'off', null),
 
             // ── Unknown / unrecognised values ──────────────────────────────
-            'unrecognised string'              => array('maybe', '', '', null),
-            'unrecognised with states'         => array('maybe', 't', 'f', null),
-            'number out of bool range'         => array('2', '', '', null),
+            'unrecognised string' => array('maybe', '', '', null),
+            'unrecognised with states' => array('maybe', 't', 'f', null),
+            'number out of bool range' => array('2', '', '', null),
         );
     }
 
     /**
-     * @dataProvider matchStateData
-     *
      * @param mixed       $value
      * @param mixed       $checkedExpected
      * @param mixed       $uncheckedExpected
@@ -88,14 +86,12 @@ class PopupCheckboxModifierTest extends TestCase
         );
 
         return array(
-            'renders checked'   => array('has_photo', 'true', $checkBoxFields, '<input type="checkbox" disabled="disabled" checked="checked" class="lizmap-popup-checkbox-widget">'),
+            'renders checked' => array('has_photo', 'true', $checkBoxFields, '<input type="checkbox" disabled="disabled" checked="checked" class="lizmap-popup-checkbox-widget">'),
             'renders unchecked' => array('has_photo', 'false', $checkBoxFields, '<input type="checkbox" disabled="disabled" class="lizmap-popup-checkbox-widget">'),
         );
     }
 
     /**
-     * @dataProvider modifierHtmlData
-     *
      * @param mixed $attributeName
      * @param mixed $attributeValue
      * @param mixed $checkBoxFields

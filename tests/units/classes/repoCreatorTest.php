@@ -2,13 +2,13 @@
 
 use LizmapApi\ApiException;
 use LizmapApi\RepoCreator;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class repoCreatorTest extends TestCase
 {
     public array $listPath = array(

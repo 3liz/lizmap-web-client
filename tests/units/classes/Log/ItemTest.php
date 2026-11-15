@@ -1,14 +1,14 @@
 <?php
 
 use Lizmap\Logger as Log;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class ItemTest extends TestCase
 {
     protected $context;
@@ -43,8 +43,6 @@ class ItemTest extends TestCase
     }
 
     /**
-     * @dataProvider getConstructData
-     *
      * @param mixed $config
      */
     #[DataProvider('getConstructData')]
@@ -86,8 +84,6 @@ class ItemTest extends TestCase
     }
 
     /**
-     * @dataProvider getLogDetailData
-     *
      * @param mixed $data
      */
     #[DataProvider('getLogDetailData')]

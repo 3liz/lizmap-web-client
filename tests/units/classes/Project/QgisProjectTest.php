@@ -3,6 +3,7 @@
 use Lizmap\App;
 use Lizmap\Project;
 use Lizmap\Project\Qgis;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -12,9 +13,8 @@ use function PHPUnit\Framework\assertEquals;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class QgisProjectTest extends TestCase
 {
     public function arrayToXml(array $array, SimpleXMLElement &$xml)
@@ -215,8 +215,6 @@ class QgisProjectTest extends TestCase
     }
 
     /**
-     * @dataProvider getLayerData
-     *
      * @param mixed $layers
      * @param mixed $id
      * @param mixed $key
@@ -259,8 +257,6 @@ class QgisProjectTest extends TestCase
     }
 
     /**
-     * @dataProvider getReadEditionLayersData
-     *
      * @param mixed $fileName
      * @param mixed $expectedELayer
      */
@@ -520,8 +516,6 @@ class QgisProjectTest extends TestCase
     }
 
     /**
-     * @dataProvider getShortNamesData
-     *
      * @param mixed $file
      * @param mixed $lname
      * @param mixed $sname

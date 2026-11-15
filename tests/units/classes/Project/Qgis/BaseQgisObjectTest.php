@@ -1,6 +1,7 @@
 <?php
 
 use Lizmap\Project\Qgis;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 
 class Person extends Qgis\BaseQgisObject
@@ -33,9 +34,8 @@ class Car extends Qgis\BaseQgisObject
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class BaseQgisObjectTest extends TestCase
 {
     public function testConstruct(): void
