@@ -2,13 +2,13 @@
 
 use GuzzleHttp\Psr7;
 use Lizmap\Request;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class ProxyResponseTest extends TestCase
 {
     public function testGetter(): void

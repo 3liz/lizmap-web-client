@@ -1,13 +1,13 @@
 <?php
 
 use Lizmap\Project\Repository;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class OGCRequestTest extends TestCase
 {
     public function testParam(): void

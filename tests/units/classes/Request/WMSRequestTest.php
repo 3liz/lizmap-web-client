@@ -3,14 +3,14 @@
 use Lizmap\Project\Repository;
 use Lizmap\Request\OGCResponse;
 use Lizmap\Request\WMSRequest;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class WMSRequestTest extends TestCase
 {
     protected function tearDown(): void
@@ -80,8 +80,6 @@ class WMSRequestTest extends TestCase
     }
 
     /**
-     * @dataProvider getParametersWithFilterData
-     *
      * @param mixed $loginFilter
      * @param mixed $filter
      * @param mixed $expectedFilter
@@ -167,8 +165,6 @@ class WMSRequestTest extends TestCase
     }
 
     /**
-     * @dataProvider getGetContextData
-     *
      * @param mixed $response
      * @param mixed $url
      * @param mixed $expectedResponse
@@ -207,8 +203,6 @@ class WMSRequestTest extends TestCase
     }
 
     /**
-     * @dataProvider getCheckMaximumWidthHeightData
-     *
      * @param mixed $width
      * @param mixed $maxWidth
      * @param mixed $height
@@ -250,8 +244,6 @@ class WMSRequestTest extends TestCase
     }
 
     /**
-     * @dataProvider getUseCacheData
-     *
      * @param mixed $params
      * @param mixed $cacheDriver
      * @param mixed $cached
@@ -281,8 +273,6 @@ class WMSRequestTest extends TestCase
     }
 
     /**
-     * @dataProvider getTileCacheMimeData
-     *
      * @param mixed $format
      * @param mixed $expectedMime
      */
@@ -316,8 +306,6 @@ class WMSRequestTest extends TestCase
     }
 
     /**
-     * @dataProvider getImageDataData
-     *
      * @param mixed $format
      * @param mixed $expectedMime
      * @param mixed $expectedTransparency
@@ -517,8 +505,6 @@ class WMSRequestTest extends TestCase
     }
 
     /**
-     * @dataProvider matchCheckBoxStateData
-     *
      * @param mixed       $value
      * @param mixed       $checked
      * @param mixed       $unchecked
@@ -592,8 +578,6 @@ class WMSRequestTest extends TestCase
     }
 
     /**
-     * @dataProvider applyCheckBoxesToFormPopupData
-     *
      * @param mixed $html
      * @param mixed $fields
      * @param mixed $expected

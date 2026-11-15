@@ -1,14 +1,14 @@
 <?php
 
 use Jelix\UnitTests\UnitTestCase;
+use PHPUnit\Framework\Attributes\CoversNothing;
 
 require_once __DIR__.'/../../../../lizmap/modules/view/classes/lizmapMainViewItem.class.php';
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class lizmapMainViewItemTest extends UnitTestCase
 {
 

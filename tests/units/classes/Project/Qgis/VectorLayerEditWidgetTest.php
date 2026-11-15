@@ -3,13 +3,13 @@
 use Lizmap\App;
 use Lizmap\Project\Qgis\Layer\EditWidget;
 use Lizmap\Project\Qgis\Layer\VectorLayerEditWidget;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class VectorLayerEditWidgetTest extends TestCase
 {
     public function testFromXmlReader(): void

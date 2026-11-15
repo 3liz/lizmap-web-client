@@ -1,14 +1,14 @@
 <?php
 
 use Lizmap\App\SqlTools;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class SqlToolsTest extends TestCase
 {
     public static function getValidateExpressionFilterData()
@@ -75,8 +75,6 @@ class SqlToolsTest extends TestCase
     }
 
     /**
-     * @dataProvider getTranslateExpressionToPostgisData
-     *
      * @param mixed $filter
      * @param mixed $geometryColumn
      * @param mixed $expected

@@ -1,14 +1,14 @@
 <?php
 
 use Jelix\IniFile\IniModifier;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing]
 class lizmapRepositoryTest extends TestCase
 {
     public static function getTestGetPathData()
@@ -59,8 +59,6 @@ class lizmapRepositoryTest extends TestCase
     }
 
     /**
-     * @dataProvider getTestGetPathData
-     *
      * @param mixed $repo
      * @param mixed $key
      * @param mixed $varPath
@@ -131,8 +129,6 @@ class lizmapRepositoryTest extends TestCase
     }
 
     /**
-     * @dataProvider getTestUpdateData
-     *
      * @param mixed $data
      * @param mixed $expectedData
      * @param mixed $changedProp
