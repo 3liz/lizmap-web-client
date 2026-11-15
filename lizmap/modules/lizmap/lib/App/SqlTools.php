@@ -178,6 +178,152 @@ class SqlTools
     );
 
     /**
+     * Allowed SQL tokens which are keywords, not column names, when they are
+     * not followed by an opening parenthesis.
+     * Please only in lowercase.
+     */
+    protected const SQL_KEYWORDS = array(
+        'is', 'not', 'null', 'and', 'or', 'in', 'like', 'ilike', 'as',
+        'case', 'when', 'then', 'else', 'end', 'between',
+        'current_date', 'current_time', 'current_timestamp',
+    );
+
+    /**
+     * Regular expression of a numeric literal, without delimiters.
+     */
+    protected const NUMERIC_LITERAL_PATTERN = '[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?';
+
+    /**
+     * Split a SQL string into tokens.
+     *
+     * The string is split on the syntactic elements: numeric literals,
+     * operators, punctuation, comments, quotes and whitespace,
+     * which are kept as tokens.
+     *
+     * @param string $sql the SQL string
+     *
+     * @return string[] the tokens
+     *
+     * @throws \InvalidArgumentException if the string cannot be split
+     */
+    protected static function tokenizeSQLString(string $sql): array
+    {
+        // split the SQL string into tokens using regular expression. Splitting is made on syntaxic elements
+        $tokens = preg_split('#('
+            .self::NUMERIC_LITERAL_PATTERN
+            .'|!=|<=|>=|<>|==|->>|->' // Composed operators
+            .'|--|\r\n|\r|\n|/\*|\*/' // comments
+            .'|[;:.,()=<>%\'"+*\-/!|&^~?\[\]{}]' // Simple operators, ponctuations, Parentheses, brackets
+            .'|[ \t]+)#u', $sql, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+
+        if ($tokens === false) {
+            throw new \InvalidArgumentException('Unable to tokenize SQL filter');
+        }
+
+        return $tokens;
+    }
+
+    /**
+     * Get the column names referenced by a SQL filter.
+     *
+     * The filter must have been validated with parseAndValidateSQLString().
+     * The column names are the double-quoted identifiers, and the bare words
+     * which are neither SQL keywords nor function calls, nor QGIS or Lizmap
+     * variables like $geometry or @lizmap_user, e.g. "age" in "age > 3".
+     * The bare words are returned in lowercase, as the database folds them.
+     * Strings and comments are ignored.
+     *
+     * @param string $sql the validated SQL filter
+     *
+     * @return string[] the unique column names
+     *
+     * @throws \InvalidArgumentException if the string cannot be split
+     */
+    public static function getSQLStringColumnNames(string $sql): array
+    {
+        $tokens = self::tokenizeSQLString($sql);
+        $count = count($tokens);
+        $columns = array();
+        $state = self::PARSER_STATE_BETWEEN_TOKENS;
+        $identifier = '';
+
+        for ($k = 0; $k < $count; ++$k) {
+            $token = $tokens[$k];
+
+            switch ($state) {
+                case self::PARSER_STATE_BETWEEN_TOKENS:
+                    // Start of a string, an identifier or a comment
+                    if ($token === "'") {
+                        $state = self::PARSER_STATE_STRING_VALUE;
+                    } elseif ($token === '"') {
+                        $state = self::PARSER_STATE_TABLE_NAME;
+                        $identifier = '';
+                    } elseif ($token === '--') {
+                        $state = self::PARSER_STATE_COMMENT_SQL_1;
+                    } elseif ($token === '/*') {
+                        $state = self::PARSER_STATE_COMMENT_SQL_2;
+                    } elseif (preg_match('/^[a-z_][a-z0-9_]*$/i', $token)
+                        && !in_array(strtolower($token), self::SQL_KEYWORDS, true)) {
+                        // A bare word is a column name, unless it is a function call
+                        $next = $k + 1;
+                        while ($next < $count && trim($tokens[$next], " \t\r\n") === '') {
+                            ++$next;
+                        }
+                        if ($next >= $count || $tokens[$next] !== '(') {
+                            $columns[] = strtolower($token);
+                        }
+                    }
+
+                    break;
+
+                case self::PARSER_STATE_STRING_VALUE:
+                    // Skip the escaped quotes '' and stop at the closing quote
+                    if ($token === "'") {
+                        if (isset($tokens[$k + 1]) && $tokens[$k + 1] === "'") {
+                            ++$k;
+                        } else {
+                            $state = self::PARSER_STATE_BETWEEN_TOKENS;
+                        }
+                    }
+
+                    break;
+
+                case self::PARSER_STATE_TABLE_NAME:
+                    // Unescape the double quotes "" and stop at the closing quote
+                    if ($token === '"') {
+                        if (isset($tokens[$k + 1]) && $tokens[$k + 1] === '"') {
+                            $identifier .= '"';
+                            ++$k;
+                        } else {
+                            $columns[] = $identifier;
+                            $state = self::PARSER_STATE_BETWEEN_TOKENS;
+                        }
+                    } else {
+                        $identifier .= $token;
+                    }
+
+                    break;
+
+                case self::PARSER_STATE_COMMENT_SQL_1:
+                    if ($token === "\n" || $token === "\r" || $token === "\r\n") {
+                        $state = self::PARSER_STATE_BETWEEN_TOKENS;
+                    }
+
+                    break;
+
+                case self::PARSER_STATE_COMMENT_SQL_2:
+                    if ($token === '*/') {
+                        $state = self::PARSER_STATE_BETWEEN_TOKENS;
+                    }
+
+                    break;
+            }
+        }
+
+        return array_values(array_unique($columns));
+    }
+
+    /**
      * Parse and validate the provided SQL query string against the defined whitelist of tokens and functions.
      *
      * @param string $sql              the SQL query string to be parsed and validated
@@ -189,19 +335,8 @@ class SqlTools
      */
     public static function parseAndValidateSQLString(string $sql, array $allowedSqlTokens = array()): bool
     {
-        $numericLiteral = '[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?';
-
-        // split the SQL string into tokens using regular expression. Splitting is made on syntaxic elements
-        $tokens = preg_split('#('
-            .$numericLiteral
-            .'|!=|<=|>=|<>|==|->>|->' // Composed operators
-            .'|--|\r\n|\r|\n|/\*|\*/' // comments
-            .'|[;:.,()=<>%\'"+*\-/!|&^~?\[\]{}]' // Simple operators, ponctuations, Parentheses, brackets
-            .'|[ \t]+)#u', $sql, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-
-        if ($tokens === false) {
-            throw new \InvalidArgumentException('Unable to tokenize SQL filter');
-        }
+        $numericLiteral = self::NUMERIC_LITERAL_PATTERN;
+        $tokens = self::tokenizeSQLString($sql);
 
         $state = self::PARSER_STATE_BETWEEN_TOKENS;
 
@@ -312,7 +447,8 @@ class SqlTools
                     break;
 
                 case self::PARSER_STATE_COMMENT_SQL_1:
-                    if ($token == "\n") {
+                    // The comment ends at the end of the line, as in the databases
+                    if ($token === "\n" || $token === "\r" || $token === "\r\n") {
                         $state = self::PARSER_STATE_BETWEEN_TOKENS;
                     }
 
