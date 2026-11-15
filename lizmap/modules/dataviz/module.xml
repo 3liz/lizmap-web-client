@@ -14,4 +14,7 @@
         <module name="lizmap"/>
         <module name="view"/>
     </dependencies>
+    <autoload>
+        <namespacePathMap name="LizmapDataviz" dir="lib"/>
+    </autoload>
 </module>

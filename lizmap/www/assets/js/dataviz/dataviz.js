@@ -516,7 +516,7 @@ let lizDataviz = function () {
                 let y_val = trace.y[x];
                 let y_search = '{$yi}'.replace('i', i + 1);
                 let localeString = dv.config.locale.replace('_', '-')
-                let y_replacement = y_val.toLocaleString(localeString);;
+                let y_replacement = (y_val === null || y_val === undefined) ? '' : y_val.toLocaleString(localeString);
                 html = html.split(y_search).join(y_replacement);
 
                 // Colors
@@ -536,8 +536,8 @@ let lizDataviz = function () {
             htmls[x_val] = html;
         }
 
-        // Sort by X
-        distinct_x.sort();
+        // The X values are already sorted by the backend: numbers and dates
+        // in their order, texts as in the database
 
         // Empty previous html
         $('#' + targetId).html('');
