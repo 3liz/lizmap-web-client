@@ -429,7 +429,7 @@ test.describe('Single WMS layer', () => {
             // All the layers of this project are in the single WMS layer, none is cached,
             // so only the single WMS layer can set the layers load status
             const project = new ProjectPage(page, 'single_wms_image');
-            const requestMapPromise = project.waitForGetMapRequest();
+            let requestMapPromise = project.waitForGetMapRequest();
             // The legend is only requested once the modules are initialized
             await project.open();
 
@@ -439,13 +439,15 @@ test.describe('Single WMS layer', () => {
             expect(await page.evaluate(() => lizMap.mainLizmap.map.useTileWms)).toBe(true);
             // The single WMS layer requests tiles of the custom tile grid size
             const tileSize = await page.evaluate(() => lizMap.mainLizmap.map.customTileGrid.getTileSize(0));
-            const requestMap = await requestMapPromise;
-            requestExpect(requestMap).toContainParametersInUrl({
+            let requestMap = await requestMapPromise;
+            const expectedGetMapParameters = {
                 'SERVICE': 'WMS',
                 'REQUEST': 'GetMap',
                 'WIDTH': `${tileSize[0]}`,
                 'HEIGHT': `${tileSize[1]}`,
-            });
+                'TILED': 'true',
+            };
+            requestExpect(requestMap).toContainParametersInUrl(expectedGetMapParameters);
             await requestMap.response();
 
             // The layers of the single WMS layer are loaded
@@ -462,5 +464,15 @@ test.describe('Single WMS layer', () => {
             await project.clickOnMap(Math.round(width / 2), Math.round(height / 2));
             const getFeatureInfoRequest = await getFeatureInfoPromise;
             await getFeatureInfoRequest.response();
+
+            // Open the layer switcher
+            await page.locator("#button-switcher").click();
+
+            // turn off single_wms_lines layer
+            requestMapPromise = project.waitForGetMapRequest();
+            await page.getByTestId('single_wms_lines').locator('> div input').click();
+            requestMap = await requestMapPromise;
+            requestExpect(requestMap).toContainParametersInUrl(expectedGetMapParameters);
+            await requestMap.response();
         });
 });
