@@ -138,6 +138,12 @@ The list of permalinks is visible in the administration interface ([#6765](https
 
   *Funded by 3Liz - Developed by [Eliott Yvetot](https://github.com/Elioooooott)*
 
+* **Geometry copy-paste functionality** has been extended to **drawings** as well ([#7473](https://github.com/3liz/lizmap-web-client/pull/7473))
+
+    ![img_copy_paste_drawings](media/3.10/copy_paste_drawings.gif)
+
+    *Funded by Etra - Developed by [Riccardo Beltrami](https://github.com/mind84)*
+
 * The **background color** defined in QGIS for form tabs
   is now used in the Lizmap form
   ([#6342](https://github.com/3liz/lizmap-web-client/pull/6342))
