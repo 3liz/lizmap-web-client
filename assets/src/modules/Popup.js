@@ -7,7 +7,7 @@
 
 
 import Overlay from 'ol/Overlay.js';
-import WMS from '../modules/WMS.js';
+import { WMS } from '../modules/WMS.js';
 import { Utils } from './Utils.js';
 
 /**

@@ -12,7 +12,7 @@ import { extend } from 'ol/extent.js';
 import GeoJSON from 'ol/format/GeoJSON.js';
 
 import WFS from '../modules/WFS.js';
-import WMS from '../modules/WMS.js';
+import { WMS } from '../modules/WMS.js';
 import { Utils } from '../modules/Utils.js';
 
 import DataTable from 'datatables.net-bs5';

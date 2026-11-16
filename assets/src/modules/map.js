@@ -15,6 +15,7 @@ import { MapLayerLoadStatus, MapLayerState, MapRootState } from './state/MapLaye
 import olMap from 'ol/Map.js';
 import View from 'ol/View.js';
 import { ADJUSTED_DPI } from '../utils/Constants.js';
+import { StaticWmsGetMapParamList } from './WMS.js';
 import { get as getProjection, getPointResolution } from 'ol/proj.js';
 import { Attribution } from 'ol/control.js';
 import ImageWMS from 'ol/source/ImageWMS.js';
@@ -840,13 +841,14 @@ export default class map extends olMap {
 
                 // Delete entries in `wmsParams` not in `state.wmsParameters`
                 for(const key of Object.keys(wmsParams)){
+                    // Do not removed static WMS GetMap parameters from the list of parameters
+                    if(StaticWmsGetMapParamList.indexOf(key.toLowerCase()) !== -1) continue;
                     if(!Object.hasOwn(state.wmsParameters, key)){
                         delete wmsParams[key];
                     }
                 }
                 // Add a timestamp parameter to force browser to fetch image
                 wmsParams['ts'] = `${Date.now()}`;
-                console.log(wmsParams['ts']);
                 // Merge parameters
                 Object.assign(wmsParams, state.wmsParameters);
 

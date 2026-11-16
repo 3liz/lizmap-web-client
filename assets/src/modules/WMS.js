@@ -6,13 +6,40 @@
  */
 
 import { Utils } from './Utils.js';
+import { createEnum } from './utils/Enums.js';
+import { deepFreeze } from './config/Tools.js';
 import { RequestError } from './Errors.js';
+
+/**
+ * Enum for static WMS GetMap parameters
+ * WMS GetMap parameters that does not change between requests
+ * @enum {string}
+ * @property {string} FORMAT - the WMS GetMap format parameter
+ * @property {string} DPI - the WMS GetMap dpi parameter
+ * @property {string} TILED - the WMS GetMap tiled parameter
+ */
+export const StaticWmsGetMapParameters = createEnum({
+    'FORMAT': 'format',
+    'DPI': 'dpi',
+    'TILED': 'tiled',
+});
+
+/**
+ * List of static WMS GetMap parameters
+ * @name StaticWmsGetMapParamList
+ * @constant {Array<string>}
+ */
+export const StaticWmsGetMapParamList = deepFreeze([
+    StaticWmsGetMapParameters.FORMAT,
+    StaticWmsGetMapParameters.DPI,
+    StaticWmsGetMapParameters.TILED,
+]);
 
 /**
  * @class
  * @name WMS
  */
-export default class WMS {
+export class WMS {
 
     constructor() {
         this._defaultGetFeatureInfoParameters = {
@@ -94,7 +121,7 @@ export default class WMS {
             body: params,
         });
     }
-    
+
     /**
      * Get legend graphic as PNG image URL from WMS
      * @param {object} options - optional parameters which can override this._defaultGetLegendGraphicsParameters
