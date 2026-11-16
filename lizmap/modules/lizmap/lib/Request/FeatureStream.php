@@ -19,15 +19,16 @@ use GuzzleHttp\Psr7\StreamWrapper;
  * Decode the features of a GeoJSON FeatureCollection stream with the native
  * json_decode, by blocks of features, so the memory stays bounded.
  *
- * The stream is read by chunks. In each chunk, the block of complete features
- * is found by searching backward for a separator between two features:
- * a "}" followed by a "," and a "{" (whitespaces allowed). This works for the
- * GeoJSON written by QGIS Server and by the PostgreSQL direct query of Lizmap.
+ * The stream is read by chunks. The JSON structure of the features array is
+ * followed in a single pass: the depth of the objects and arrays, and whether
+ * the current position is inside a string. A feature ends when the depth goes
+ * back to the level of the features array, so the end of each feature is known
+ * exactly, whatever its content: nested objects, arrays of objects, strings
+ * containing braces, or any JSON structure in the properties.
  *
- * Such a separator can also be found inside a feature (in a string or between
- * nested objects): the block is then not valid JSON, json_decode fails and the
- * previous separator is tried. As a block must start and end at feature
- * boundaries to be valid JSON, wrong features can not be returned.
+ * Only the structural characters are examined one by one: the other characters
+ * are skipped with strcspn. The complete features of each chunk are then decoded
+ * together with json_decode.
  *
  * Usage, with the response of a WFS GetFeature request in GeoJSON:
  *     foreach (FeatureStream::fromResponse($wfsRequest->process()) as $feature) {
@@ -37,25 +38,11 @@ use GuzzleHttp\Psr7\StreamWrapper;
 class FeatureStream
 {
     /**
-     * Maximum number of separators tried in a chunk before reading the next one.
-     */
-    private const MAX_CUT_ATTEMPTS = 8;
-
-    /**
-     * Maximum number of commas examined in a chunk to find a separator.
-     */
-    private const MAX_COMMAS = 4096;
-
-    /**
-     * Maximum number of whitespaces around a separator.
-     */
-    private const MAX_WHITESPACES = 64;
-
-    /**
      * Get the features of the GeoJSON body of a response.
      *
-     * The caller must check the response code and mime type before:
-     * an error response is not GeoJSON.
+     * An error response, with an HTTP error code or with a mime type which is
+     * not JSON, for example a QGIS Server exception in XML, gives no feature:
+     * the error is logged.
      *
      * @param OGCResponse|ProxyResponse $response  the response, for example of a WFS GetFeature request
      * @param int                       $chunkSize the number of bytes read at once
@@ -66,14 +53,44 @@ class FeatureStream
      */
     public static function fromResponse($response, int $chunkSize = 32768): \Generator
     {
+        // Error responses are not GeoJSON
+        if (!self::isGeoJsonResponse($response)) {
+            self::log('The response is not GeoJSON, code: '.$response->getCode().', mime type: '.$response->getMime());
+
+            return self::noFeature();
+        }
+
         // The generator keeps a reference to the PHP stream of the body
         return self::read(StreamWrapper::getResource($response->getBodyAsStream()), $chunkSize);
     }
 
     /**
+     * Check if a response contains GeoJSON.
+     *
+     * The response must have a success code and a JSON mime type, for example
+     * application/vnd.geo+json or application/json, with or without charset.
+     *
+     * @param OGCResponse|ProxyResponse $response the response
+     *
+     * @return bool true if the response contains GeoJSON
+     */
+    public static function isGeoJsonResponse($response): bool
+    {
+        // HTTP error code
+        if ($response->getCode() >= 400) {
+            return false;
+        }
+
+        // The mime type, without parameters like the charset
+        $mime = strtolower(trim(explode(';', (string) $response->getMime())[0]));
+
+        return str_ends_with($mime, '/json') || str_ends_with($mime, '+json');
+    }
+
+    /**
      * Get the features of the GeoJSON stream.
      *
-     * The stream is read by chunks, and the complete features of the chunks
+     * The stream is read by chunks, and the complete features of each chunk
      * are decoded together. Only the current chunk and the decoded block of
      * features are kept in memory.
      *
@@ -82,7 +99,7 @@ class FeatureStream
      *
      * @return \Generator<int, object> the features, as objects
      *
-     * @throws \JsonException if the GeoJSON is not valid
+     * @throws \JsonException if the GeoJSON is not valid or not complete
      */
     public static function read($stream, int $chunkSize = 32768): \Generator
     {
@@ -93,9 +110,14 @@ class FeatureStream
         while ($start === false) {
             $chunk = fread($stream, $chunkSize);
             if ($chunk === false || $chunk === '') {
-                // No features array: decode the whole content
+                // No features array: decode the whole content, which must be valid JSON
                 $collection = json_decode($buffer, false, 512, JSON_THROW_ON_ERROR);
-                foreach ($collection->features ?? array() as $feature) {
+                if (!is_object($collection) || !property_exists($collection, 'features')) {
+                    self::log('The GeoJSON has no features array');
+
+                    return;
+                }
+                foreach ($collection->features as $feature) {
                     yield $feature;
                 }
 
@@ -105,32 +127,123 @@ class FeatureStream
             $start = self::findFeaturesStart($buffer);
         }
 
-        // Keep only the features in the buffer: it starts with the first one
+        // Keep only the features in the buffer
         $buffer = substr($buffer, $start);
 
-        // Read the next chunks and decode the complete features of the buffer.
-        // The last feature, which may be incomplete, stays in the buffer.
+        // State of the JSON structure, kept between the chunks
+        // the next position to examine in the buffer
+        $position = 0;
+        // the depth in the features array: 0 between two features
+        $depth = 0;
+        // true inside a string
+        $inString = false;
+        // the position of the "}" ending the last complete feature, -1 if none
+        $lastEnd = -1;
+        // true when the "]" ending the features array is found
+        $complete = false;
+
         while (true) {
+            // Follow the JSON structure in the new part of the buffer
+            $length = strlen($buffer);
+            while ($position < $length) {
+                if ($inString) {
+                    // Skip to the end of the string, or to an escaped character
+                    $position += strcspn($buffer, '"\\', $position);
+                    if ($position >= $length) {
+                        break;
+                    }
+                    if ($buffer[$position] === '\\') {
+                        // The escaped character can not end the string
+                        $position += 2;
+
+                        continue;
+                    }
+                    $inString = false;
+                    ++$position;
+
+                    continue;
+                }
+
+                // Skip to the next string, object or array delimiter
+                $position += strcspn($buffer, '"{}[]', $position);
+                if ($position >= $length) {
+                    break;
+                }
+                $char = $buffer[$position];
+                if ($char === '"') {
+                    $inString = true;
+                } elseif ($char === '{' || $char === '[') {
+                    ++$depth;
+                } else {
+                    --$depth;
+                    if ($depth === 0) {
+                        // End of a feature
+                        $lastEnd = $position;
+                    } elseif ($depth < 0) {
+                        // End of the features array
+                        $complete = true;
+
+                        break 2;
+                    }
+                }
+                ++$position;
+            }
+
+            // Decode the complete features, and keep the rest in the buffer
+            if ($lastEnd >= 0) {
+                foreach (self::decodeFeatures(substr($buffer, 0, $lastEnd + 1)) as $feature) {
+                    yield $feature;
+                }
+                $buffer = substr($buffer, $lastEnd + 1);
+                $position -= $lastEnd + 1;
+                $lastEnd = -1;
+            }
+
+            // Read the next chunk
             $chunk = fread($stream, $chunkSize);
             if ($chunk === false || $chunk === '') {
                 break;
             }
             $buffer .= $chunk;
-
-            $features = self::decodeCompleteFeatures($buffer);
-            if ($features !== null) {
-                foreach ($features as $feature) {
-                    yield $feature;
-                }
-                unset($features);
-            }
         }
 
-        // The buffer contains the last features, the end of the features
-        // array and of the collection, and maybe other collection members
-        $collection = json_decode('{"features":['.$buffer, false, 512, JSON_THROW_ON_ERROR);
-        foreach ($collection->features as $feature) {
-            yield $feature;
+        // A truncated GeoJSON, for example after a network error,
+        // must not give partial data silently
+        if (!$complete) {
+            throw new \JsonException('The features array of the GeoJSON is not complete');
+        }
+
+        // The last features, before the end of the features array
+        if ($lastEnd >= 0) {
+            foreach (self::decodeFeatures(substr($buffer, 0, $lastEnd + 1)) as $feature) {
+                yield $feature;
+            }
+        }
+    }
+
+    /**
+     * Get a generator without feature.
+     *
+     * @return \Generator<int, object> an empty generator
+     */
+    private static function noFeature(): \Generator
+    {
+        yield from array();
+    }
+
+    /**
+     * Log a message for the administrator.
+     *
+     * @param string $message the message
+     */
+    private static function log(string $message): void
+    {
+        // A logging error must not stop the reading of the features,
+        // for example in unit tests without the Jelix logger configuration
+        try {
+            \jLog::log('FeatureStream: '.$message, 'lizmapadmin');
+        } catch (\Throwable $e) {
+            // Nothing to do
         }
     }
 
@@ -158,81 +271,20 @@ class FeatureStream
     }
 
     /**
-     * Decode the complete features at the beginning of the buffer
-     * and remove them from the buffer.
+     * Decode a block of complete features.
      *
-     * The block of features ends at the last separator found in the buffer.
-     * If the block can not be decoded, the separator was inside a feature,
-     * and the previous separators are tried.
+     * @param string $block the features separated by commas, maybe starting with
+     *                      the comma after the previous block
      *
-     * @param string $buffer the features, the first one starts the buffer
+     * @return array the decoded features
      *
-     * @return null|array the decoded features, null if no block can be decoded yet
+     * @throws \JsonException if the features are not valid JSON
      */
-    private static function decodeCompleteFeatures(string &$buffer): ?array
+    private static function decodeFeatures(string $block): array
     {
-        $offset = strlen($buffer);
-        for ($attempt = 0; $attempt < self::MAX_CUT_ATTEMPTS; ++$attempt) {
-            // Find the previous separator between two features
-            $comma = self::findSeparatorBefore($buffer, $offset);
-            if ($comma === false) {
-                return null;
-            }
+        // Remove the comma between the previous block and this one
+        $block = ltrim($block, " \t\r\n,");
 
-            // Decode the features before the separator as a JSON array.
-            // It is valid JSON only if the separator is between two features.
-            $features = json_decode('['.substr($buffer, 0, $comma).']');
-            if (is_array($features)) {
-                // Keep the features after the separator in the buffer
-                $buffer = substr($buffer, $comma + 1);
-
-                return $features;
-            }
-
-            // The separator is inside a feature: try the previous one
-            $offset = $comma;
-        }
-
-        // Too many attempts: wait for the next chunk
-        return null;
-    }
-
-    /**
-     * Find, backward from the offset, a comma between "}" and "{".
-     *
-     * Whitespaces are allowed around the comma, as QGIS Server writes
-     * a new line before it.
-     *
-     * @param string $buffer the features
-     * @param int    $offset the position before which the comma is searched
-     *
-     * @return false|int the position of the comma, false if not found
-     */
-    private static function findSeparatorBefore(string $buffer, int $offset): false|int
-    {
-        for ($commas = 0; $offset > 0 && $commas < self::MAX_COMMAS; ++$commas) {
-            // Find the previous comma: a negative offset makes strrpos
-            // search backward, from the character before $offset
-            $comma = strrpos($buffer, ',', $offset - strlen($buffer) - 1);
-            if ($comma === false) {
-                return false;
-            }
-            $offset = $comma;
-
-            // The comma must follow a "}", ignoring whitespaces
-            $before = rtrim(substr($buffer, max(0, $comma - self::MAX_WHITESPACES), min(self::MAX_WHITESPACES, $comma)));
-            if (!str_ends_with($before, '}')) {
-                continue;
-            }
-            // and be followed by a "{", ignoring whitespaces
-            $after = ltrim(substr($buffer, $comma + 1, self::MAX_WHITESPACES));
-            if (!str_starts_with($after, '{')) {
-                continue;
-            }
-
-            return $comma;
-        }
-
-        return false;
+        return json_decode('['.$block.']', false, 512, JSON_THROW_ON_ERROR);
     }
 }

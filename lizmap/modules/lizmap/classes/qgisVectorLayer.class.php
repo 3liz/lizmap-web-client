@@ -1195,9 +1195,17 @@ class qgisVectorLayer extends qgisMapLayer
             return true;
         }
 
-        $features = FeatureStream::fromResponse($result);
+        // The feature is editable if it is the only one returned:
+        // stop reading at the second feature
+        $count = 0;
+        foreach (FeatureStream::fromResponse($result) as $feature) {
+            ++$count;
+            if ($count > 1) {
+                break;
+            }
+        }
 
-        return iterator_count($features) === 1;
+        return $count === 1;
     }
 
     /**
