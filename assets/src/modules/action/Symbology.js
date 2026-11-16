@@ -8,7 +8,7 @@
 
 import { HttpError } from '../Errors.js';
 import { HttpRequestMethods } from '../Utils.js';
-import WMS from './../WMS.js';
+import { WMS } from './../WMS.js';
 import {LayerTreeLayerState, LayerTreeGroupState} from './../state/LayerTree.js'
 
 /**
