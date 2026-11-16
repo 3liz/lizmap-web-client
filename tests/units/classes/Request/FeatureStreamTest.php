@@ -1,6 +1,7 @@
 <?php
 
-use LizmapDataviz\GeoJson\FeatureStream;
+use Lizmap\Request\FeatureStream;
+use Lizmap\Request\OGCResponse;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -58,6 +59,10 @@ class FeatureStreamTest extends TestCase
                     // Separators between features inside strings and nested objects
                     'text' => str_repeat('x', $i % 13).'},{"a":1}, {'."\n".'"]}',
                     'json' => array(array('a' => 1), array('b' => array('c' => '},{'))),
+                    // Arrays of objects, as in JSON fields, with many separators
+                    'items' => array_fill(0, 3, array('k' => array(array('x' => '}]'), array('y' => '[{')))),
+                    // Escaped quotes and a backslash at the end of a string
+                    'escaped' => '"},{" \"[{\\',
                     'value' => $i * 1.5,
                 ),
             );
@@ -170,5 +175,58 @@ class FeatureStreamTest extends TestCase
 
         $this->expectException(JsonException::class);
         iterator_to_array(FeatureStream::read(self::stream($truncated), 1024), false);
+    }
+
+    /**
+     * Get responses and whether they contain GeoJSON.
+     *
+     * @return array<string, array{0: int, 1: string, 2: bool}> the code, the mime type and the expected result
+     */
+    public static function responseProvider(): array
+    {
+        return array(
+            'GeoJSON' => array(200, 'application/vnd.geo+json; charset=utf-8', true),
+            'JSON' => array(200, 'application/json', true),
+            'Text JSON' => array(200, 'text/json', true),
+            'QGIS Server exception' => array(200, 'text/xml; charset=utf-8', false),
+            'HTML' => array(200, 'text/html', false),
+            'Error code' => array(500, 'application/json', false),
+        );
+    }
+
+    /**
+     * Test the detection of the responses containing GeoJSON.
+     *
+     * @param int    $code     the HTTP status code
+     * @param string $mime     the mime type
+     * @param bool   $expected true if the response contains GeoJSON
+     */
+    #[DataProvider('responseProvider')]
+    public function testIsGeoJsonResponse(int $code, string $mime, bool $expected): void
+    {
+        $response = new OGCResponse($code, $mime, '{"type": "FeatureCollection", "features": []}');
+        $this->assertSame($expected, FeatureStream::isGeoJsonResponse($response));
+    }
+
+    /**
+     * Test that an error response gives no feature, instead of a JSON exception.
+     */
+    public function testFromErrorResponse(): void
+    {
+        // A QGIS Server exception, with a success code
+        $response = new OGCResponse(200, 'text/xml; charset=utf-8', '<ServiceExceptionReport/>');
+        $this->assertCount(0, iterator_to_array(FeatureStream::fromResponse($response), false));
+    }
+
+    /**
+     * Test the features of a GeoJSON response.
+     */
+    public function testFromResponse(): void
+    {
+        $geoJson = self::qgisServerGeoJson(self::features(50));
+        $response = new OGCResponse(200, 'application/vnd.geo+json; charset=utf-8', $geoJson);
+
+        $features = iterator_to_array(FeatureStream::fromResponse($response, 512), false);
+        $this->assertEquals(json_decode($geoJson)->features, $features);
     }
 }
