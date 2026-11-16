@@ -4,6 +4,7 @@ import { MapLayerLoadStatus, MapLayerState } from '../modules/state/MapLayer.js'
 import ImageWMS from 'ol/source/ImageWMS.js';
 import {Image as ImageLayer, Tile as TileLayer} from 'ol/layer.js';
 import TileWMS from 'ol/source/TileWMS.js';
+import TileState from 'ol/TileState.js';
 import { BaseLayerState } from './state/BaseLayer.js';
 import { ValidationError } from './Errors.js';
 
@@ -245,28 +246,55 @@ export default class SingleWMSLayer {
         this._layer.setZIndex(0);
 
         // manage the spinners
-        this._layer.getSource().on('imageloadstart', () => {
+        const source = this._layer.getSource();
+        const setLoading = () => {
+            // add spinners on visible layers
             for (const name of this._layersName) {
-                //add spinners on visible layers
                 const mapLayer = mainLizmap.state.rootMapGroup.getMapLayerByName(name);
                 mapLayer.loadStatus = MapLayerLoadStatus.Loading;
             }
-
-        });
-        this._layer.getSource().on('imageloadend', () => {
-            //remove spinners
+        };
+        const setLoaded = (status) => {
+            // remove spinners
             for (const name of this._mapLayers) {
                 const mapLayer = mainLizmap.state.rootMapGroup.getMapLayerByName(name);
-                mapLayer.loadStatus = MapLayerLoadStatus.Ready;
+                mapLayer.loadStatus = status;
             }
-        });
+        };
 
-        this._layer.getSource().on('imageloaderror', () => {
-            for (const name of this._mapLayers) {
-                const mapLayer = mainLizmap.state.rootMapGroup.getMapLayerByName(name);
-                mapLayer.loadStatus = MapLayerLoadStatus.Error;
-            }
-        });
+        if (source instanceof TileWMS) {
+            // A TileWMS source fires one tileload* event per tile, never imageload*.
+            // Without these listeners the layers keep an undefined load status and
+            // the modules waiting for the first loaded layer (popup, legend,
+            // overview map, scale line...) are never initialized.
+            const loadingTiles = new Set();
+            let hasErrors = false;
+            const onTileDone = (event, failed) => {
+                hasErrors = hasErrors || failed;
+                loadingTiles.delete(event.tile);
+                // OpenLayers fires no end event for a tile released while loading
+                // (LOADING -> EMPTY or ABORT), drop those tiles instead of waiting forever
+                for (const tile of loadingTiles) {
+                    if (tile.getState() !== TileState.LOADING) {
+                        loadingTiles.delete(tile);
+                    }
+                }
+                if (loadingTiles.size === 0) {
+                    setLoaded(hasErrors ? MapLayerLoadStatus.Error : MapLayerLoadStatus.Ready);
+                    hasErrors = false;
+                }
+            };
+            source.on('tileloadstart', event => {
+                loadingTiles.add(event.tile);
+                setLoading();
+            });
+            source.on('tileloadend', event => onTileDone(event, false));
+            source.on('tileloaderror', event => onTileDone(event, true));
+        } else {
+            source.on('imageloadstart', setLoading);
+            source.on('imageloadend', () => setLoaded(MapLayerLoadStatus.Ready));
+            source.on('imageloaderror', () => setLoaded(MapLayerLoadStatus.Error));
+        }
 
         // get the first image to display
         this.updateMap();
