@@ -1,5 +1,6 @@
 <?php
 
+use LizmapDataviz\Json\JsonColumn;
 use LizmapDataviz\Plot\BarPlot;
 
 /**
@@ -18,5 +19,18 @@ class PlotForTests extends BarPlot
     public static function compareGroupsForTests(mixed $a, mixed $b): int
     {
         return self::compareGroups($a, $b);
+    }
+
+    /**
+     * Get the colors of the groups of a trace, from a column of colors.
+     *
+     * @param JsonColumn  $column       the color of each group, null if none
+     * @param null|string $defaultColor the color of the groups without color
+     *
+     * @return null|JsonColumn the colors, null if no group has a color
+     */
+    public static function getColorColumnForTests(JsonColumn $column, ?string $defaultColor): ?JsonColumn
+    {
+        return self::getColorColumn($column, $defaultColor);
     }
 }
