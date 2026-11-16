@@ -138,6 +138,12 @@ La liste des permaliens est visible dans l'interface d'administration ([#6765](h
 
   *Financé par 3Liz - Développé par [Eliott Yvetot](https://github.com/Elioooooott)*
 
+* La **fonctionnalité de copier-coller la géométrie** a été également étendue aux **dessins** ([#7473](https://github.com/3liz/lizmap-web-client/pull/7473))
+
+    ![img_copy_paste_drawings](media/3.10/copy_paste_drawings.gif)
+
+    *Financé par Etra - Développé par [Riccardo Beltrami](https://github.com/mind84)*
+
 * La **couleur de fond** définie dans QGIS pour les onglets du formulaire
   est désormais utilisée dans le formulaire Lizmap
   ([#6342](https://github.com/3liz/lizmap-web-client/pull/6342))
