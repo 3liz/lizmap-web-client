@@ -8,6 +8,30 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Security
+
+* Clean WMS Abstract and title provided by qgs #7329
+* Service - WFS FEATUREID: parenthesize the OR chain - #7403
+* Fix: allow .. for media only on beginning of path #7413
+* Several security fixes: log content must be escaped for HTML output,
+  admin: the HTTP method to send the form for addgroup must be the POST method,
+  admin: some acl2 plugin parameters on controllers was not set correctly, so some rights were not check correctly
+  and admin_api: web API to create a repository must check the repository key⁠ #7440
+* FIX PHP logout after HTTP Basic authentication #7226
+
+### Fixed
+
+* Fix lizmapLogConfig init on docker #7328
+* Login fails with HTTP 500 because lizmapLogConfig.ini.php is missing #7388
+* XmlTools: do not treat an empty root element as a parsing error - #7442
+* PHP: PHP_AUTH_PW variable can miss #7454
+* Popup - Fix undefined featureId warnings for raster layers - #7464
+
+### Backend
+
+* Upgrade JavaScript dependencies
+* Upgrade Jelix to version 1.8.29
+
 ## 3.8.21 - 2026-10-23
 
 ### Fixed
