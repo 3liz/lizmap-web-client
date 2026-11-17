@@ -778,6 +778,43 @@ test.describe('Attribute table @readonly', () => {
         responseExpect(await getSelectionTokenRequest.response()).toBeJson();
     });
 
+    test('Select searched and zoom to extent with a layer name differing from its clean name', async ({ page }) => {
+        // The layer name "Les quartiers à Montpellier" differs from its clean name
+        // "Les_quartiers_a_Montpellier", which is the one used in the table DOM id
+        const project = new ProjectPage(page, 'attribute_table');
+        await project.open();
+
+        const tableName = 'Les_quartiers_a_Montpellier';
+        const typeName = 'quartiers';
+
+        const datatablesRequest = await project.openAttributeTable(tableName);
+        responseExpect(await datatablesRequest.response()).toBeJson();
+        await expect(project.attributeTableWrapper(tableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 7 of 7 entries');
+        const tableHtml = project.attributeTableHtml(tableName);
+        await expect(tableHtml.locator('tbody tr.selected')).toHaveCount(0);
+
+        // Select searched features: all 7 features are selected
+        const getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest(typeName);
+        await project.attributeTableActionBar(tableName).locator('.btn-select-searched').click();
+        const getSelectionTokenRequest = await getSelectionTokenRequestPromise;
+        responseExpect(await getSelectionTokenRequest.response()).toBeJson();
+        requestExpect(getSelectionTokenRequest).toContainParametersInPostData({
+            'service': 'WMS',
+            'request': 'GETSELECTIONTOKEN',
+            'typename': typeName,
+            'ids': '1,2,3,4,5,6,7',
+        });
+        await expect(tableHtml.locator('tbody tr.selected')).toHaveCount(7);
+
+        // Zoom in, then zoom to filtered features extent: the map zooms out to the layer extent
+        await page.evaluate(() => lizMap.mainLizmap.map.getView().setZoom(lizMap.mainLizmap.map.getView().getZoom() + 4));
+        const zoomBefore = await page.evaluate(() => lizMap.mainLizmap.map.getView().getZoom());
+        await project.attributeTableActionBar(tableName).locator('.btn-fit-filtered-extent').click();
+        await expect.poll(() => page.evaluate(() => lizMap.mainLizmap.map.getView().getZoom()))
+            .toBeLessThan(zoomBefore);
+    });
+
     test('Thumbnail class generate img with good path', async ({ page }) => {
         const project = new ProjectPage(page, 'attribute_table');
         await project.open();
