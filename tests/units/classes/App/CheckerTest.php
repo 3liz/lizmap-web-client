@@ -1,7 +1,7 @@
 <?php
 
+use Jelix\UnitTests\UnitTestCase;
 use Lizmap\App\Checker;
-use PHPUnit\Framework\TestCase;
 
 /**
  * Tests of the optional HTTP Basic authentication checks.
@@ -10,15 +10,19 @@ use PHPUnit\Framework\TestCase;
  *
  * @coversNothing
  */
-class CheckerTest extends TestCase
+class CheckerTest extends UnitTestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        self::initJelixConfig();
+    }
+
     /**
      * Empty login is not valid.
      */
     public function testIsValidLoginEmptyLogin(): void
     {
-        // jLog Exception
-        $this->expectExceptionMessage('Attempt to modify property "logger" on null');
         $this->assertFalse(Checker::isValidLogin(''));
     }
 
@@ -27,8 +31,6 @@ class CheckerTest extends TestCase
      */
     public function testIsValidLoginUntrimmedLogin(): void
     {
-        // jLog Exception
-        $this->expectExceptionMessage('Attempt to modify property "logger" on null');
         $this->assertFalse(Checker::isValidLogin(' admin '));
     }
 
@@ -37,8 +39,6 @@ class CheckerTest extends TestCase
      */
     public function testIsValidLoginWithLineFeedLogin(): void
     {
-        // jLog Exception
-        $this->expectExceptionMessage('Attempt to modify property "logger" on null');
         $this->assertFalse(Checker::isValidLogin("admin\n"));
     }
 
@@ -66,8 +66,6 @@ class CheckerTest extends TestCase
      */
     public function testCheckCredentialsWithEmptyLogin(): void
     {
-        // jLog Exception
-        $this->expectExceptionMessage('Attempt to modify property "logger" on null');
         $this->assertFalse(Checker::checkCredentials(array('PHP_AUTH_USER' => '')));
     }
 
@@ -76,8 +74,6 @@ class CheckerTest extends TestCase
      */
     public function testCheckCredentialsWithInvalidLogin(): void
     {
-        // jLog Exception
-        $this->expectExceptionMessage('Attempt to modify property "logger" on null');
         $this->assertFalse(Checker::checkCredentials(array('PHP_AUTH_USER' => ' admin ')));
     }
 
@@ -95,8 +91,6 @@ class CheckerTest extends TestCase
         }, E_WARNING);
 
         try {
-            // jLog Exception
-            $this->expectExceptionMessage('Attempt to modify property "logger" on null');
             $this->assertFalse(Checker::checkCredentials(array('PHP_AUTH_USER' => 'admin')));
         } finally {
             restore_error_handler();
