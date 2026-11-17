@@ -11,11 +11,10 @@
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
 
-use GuzzleHttp\Psr7\StreamWrapper as Psr7StreamWrapper;
 use Jelix\IniFile\IniModifier;
-use JsonMachine\Items as JsonMachineItems;
 use Lizmap\App\QgisConnectionStringParserException;
 use Lizmap\Project\Project;
+use Lizmap\Request\FeatureStream;
 use Lizmap\Request\Proxy;
 use Lizmap\Request\WFSRequest;
 
@@ -1196,10 +1195,17 @@ class qgisVectorLayer extends qgisMapLayer
             return true;
         }
 
-        $featureStream = Psr7StreamWrapper::getResource($result->getBodyAsStream());
-        $features = JsonMachineItems::fromStream($featureStream, array('pointer' => '/features'));
+        // The feature is editable if it is the only one returned:
+        // stop reading at the second feature
+        $count = 0;
+        foreach (FeatureStream::fromResponse($result) as $feature) {
+            ++$count;
+            if ($count > 1) {
+                break;
+            }
+        }
 
-        return iterator_count($features) === 1;
+        return $count === 1;
     }
 
     /**
@@ -1312,8 +1318,7 @@ class qgisVectorLayer extends qgisMapLayer
 
         // Features as iterator
         if ($featuresAsStream) {
-            $featureStream = Psr7StreamWrapper::getResource($result->getBodyAsStream());
-            $features = JsonMachineItems::fromStream($featureStream, array('pointer' => '/features'));
+            $features = FeatureStream::fromResponse($result);
         } else {
             // Features as array
             $features = json_decode($result->getBodyAsString(), true);

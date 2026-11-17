@@ -14,7 +14,6 @@
     "proj4php/proj4php": "~2.0.0",
     "lizmap/streaming-json-encoder": "^2.0.0",
     "guzzlehttp/guzzle": "^8.0.0",
-    "halaxa/json-machine": "^1.1",
     "kevinrob/guzzle-cache-middleware": "^8.0",
     "psr/log": "2.*"
   },
