@@ -7,7 +7,7 @@
 import { mainEventDispatcher, mainLizmap } from '../modules/Globals.js';
 import { TooltipLayersConfig } from './config/Tooltip.js';
 import { Utils } from './Utils.js';
-import WMS from '../modules/WMS.js';
+import { WMS } from '../modules/WMS.js';
 import GeoJSON from 'ol/format/GeoJSON.js';
 import VectorLayer from 'ol/layer/Vector.js';
 import VectorSource from 'ol/source/Vector.js';
