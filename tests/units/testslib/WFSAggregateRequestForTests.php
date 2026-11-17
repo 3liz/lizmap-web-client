@@ -66,6 +66,20 @@ class WFSAggregateRequestForTests extends WFSAggregateRequest
     }
 
     /**
+     * Build the SQL query computing the extent of the features.
+     *
+     * @param jDbConnectionForTests $cnx         the database connection
+     * @param string                $whereClause the WHERE clause
+     * @param int                   $srid        the SRID of the output CRS
+     *
+     * @return string the SQL query
+     */
+    public function buildExtentSqlForTests($cnx, string $whereClause, int $srid): string
+    {
+        return $this->buildExtentSql($cnx, $whereClause, $srid);
+    }
+
+    /**
      * Get the SQL expression of an aggregate function.
      *
      * @param jDbConnectionForTests $cnx      the database connection
