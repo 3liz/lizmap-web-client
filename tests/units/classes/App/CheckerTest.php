@@ -1,7 +1,7 @@
 <?php
 
+use Jelix\UnitTests\UnitTestCase;
 use Lizmap\App\Checker;
-use PHPUnit\Framework\TestCase;
 
 /**
  * Tests of the optional HTTP Basic authentication checks.
@@ -10,16 +10,19 @@ use PHPUnit\Framework\TestCase;
  *
  * @coversNothing
  */
-class CheckerTest extends TestCase
+class CheckerTest extends UnitTestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        self::initJelixConfig();
+    }
+
     /**
      * Empty login is not valid
      */
     public function testIsValidLoginEmptyLogin(): void
     {
-        $this->markTestSkipped('This test is skipped because of jLog exception.');
-        // jLog Exception
-        $this->expectExceptionMessage('Attempt to modify property "logger" on null');
         $this->assertFalse(Checker::isValidLogin(''));
     }
 
@@ -28,9 +31,6 @@ class CheckerTest extends TestCase
      */
     public function testIsValidLoginUntrimmedLogin(): void
     {
-        $this->markTestSkipped('This test is skipped because of jLog exception.');
-        // jLog Exception
-        $this->expectExceptionMessage('Attempt to modify property "logger" on null');
         $this->assertFalse(Checker::isValidLogin(' admin '));
     }
 
@@ -39,9 +39,6 @@ class CheckerTest extends TestCase
      */
     public function testIsValidLoginWithLineFeedLogin(): void
     {
-        $this->markTestSkipped('This test is skipped because of jLog exception.');
-        // jLog Exception
-        $this->expectExceptionMessage('Attempt to modify property "logger" on null');
         $this->assertFalse(Checker::isValidLogin("admin\n"));
     }
 
@@ -69,9 +66,6 @@ class CheckerTest extends TestCase
      */
     public function testCheckCredentialsWithEmptyLogin(): void
     {
-        $this->markTestSkipped('This test is skipped because of jLog exception.');
-        // jLog Exception
-        $this->expectExceptionMessage('Attempt to modify property "logger" on null');
         $this->assertFalse(Checker::checkCredentials(array('PHP_AUTH_USER' => '')));
     }
 
@@ -80,9 +74,6 @@ class CheckerTest extends TestCase
      */
     public function testCheckCredentialsWithInvalidLogin(): void
     {
-        $this->markTestSkipped('This test is skipped because of jLog exception.');
-        // jLog Exception
-        $this->expectExceptionMessage('Attempt to modify property "logger" on null');
         $this->assertFalse(Checker::checkCredentials(array('PHP_AUTH_USER' => ' admin ')));
     }
 
@@ -94,15 +85,12 @@ class CheckerTest extends TestCase
      */
     public function testCheckCredentialsWithEmptyPassword(): void
     {
-        $this->markTestSkipped('This test is skipped because of jLog exception.');
         // Convert the PHP warnings into exceptions to detect them
         set_error_handler(function (int $errno, string $errstr, string $errfile, int $errline): bool {
             throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
         }, E_WARNING);
 
         try {
-            // jLog Exception
-            $this->expectExceptionMessage('Attempt to modify property "logger" on null');
             $this->assertFalse(Checker::checkCredentials(array('PHP_AUTH_USER' => 'admin')));
         } finally {
             restore_error_handler();
