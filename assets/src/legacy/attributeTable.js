@@ -1143,7 +1143,7 @@ var lizAttributeTable = function() {
                 // The calculation is performed on all filtered features, ignoring pagination
                 $('#attribute-layer-'+ cleanName + ' button.btn-fit-filtered-extent').click(async function(){
                     let targetExtent = [];
-                    var tableName = attributeLayersDic[ $(this).val() ];
+                    var tableName = $(this).val();
                     if (!DataTable.isDataTable(`#attribute-layer-table-${tableName}`)) return;
 
                     const dtTable = new DataTable.Api(`#attribute-layer-table-${tableName}`);
@@ -1159,7 +1159,7 @@ var lizAttributeTable = function() {
                         // filter in criteria
                         'filteredfeatureids' in dtParams
                     if (!hasFilter) {
-                        const layerConfig = lizMap.config.layers[$(this).val()];
+                        const layerConfig = lizMap.config.layers[lname];
                         if (layerConfig && 'extent' in layerConfig && 'crs' in layerConfig) {
                             targetExtent = lizMap.ol.proj.transformExtent(
                                 layerConfig.extent,
@@ -1170,7 +1170,7 @@ var lizAttributeTable = function() {
                     } else {
                         const datatablesUrl = globalThis['lizUrls'].dataTablesFilteredFeaturesExtent;
                         const params = {...globalThis['lizUrls'].params};
-                        params['layerId'] = config.attributeLayers[cleanName].layerId;
+                        params['layerId'] = config.attributeLayers[lname].layerId;
 
                         // Using the same parameters as the search builder ensures that the extent calculation
                         // is consistent with the filtered features.
@@ -2553,7 +2553,7 @@ var lizAttributeTable = function() {
                 // Assure selectedFeatures property exists for the layer
                 if( !config.layers[featureType]['selectedFeatures'] )
                     config.layers[featureType]['selectedFeatures'] = [];
-                const table = document.getElementById(`attribute-layer-table-${featureType}`);
+                const table = document.getElementById(`attribute-layer-table-${lizMap.cleanName(featureType)}`);
                 if (!table || !DataTable.isDataTable( $(table) )) return;
                 const eTable = new DataTable.Api(table);
                 const { pages, recordsDisplay } = {...eTable.page.info()};
