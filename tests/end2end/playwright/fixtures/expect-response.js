@@ -594,6 +594,53 @@ export const expect = baseExpect.extend({
     },
 
     /**
+     * Expecting the response contains a Jelix message, as returned by the edition requests
+     *
+     * The messages are the items of the `ul.jelix-msg` list:
+     * `<li class="jelix-msg-item-{type}">{message}</li>`.
+     * @param {APIResponse|Response|null} response the response to test
+     * @param {string} expected the expected text of the message
+     * @param {string} [type] the expected type of the message, e.g. error, any type if not given
+     *
+     * @returns {Promise<MatcherReturnType>} the result
+     */
+    async toContainJelixMessage(response, expected, type = undefined) {
+        const assertionName = 'toContainJelixMessage';
+
+        // Read the messages of the response: their type and their text
+        const body = response !== null ? await response.text() : '';
+        const messages = [...body.matchAll(/<li class="jelix-msg-item-([^"]*)">([^<]*)<\/li>/g)]
+            .map(match => ({ type: match[1], text: match[2] }));
+
+        // One of the messages is the expected one
+        let pass = response !== null && response.ok() && messages.some(
+            message => message.text === expected && (type === undefined || message.type === type)
+        );
+
+        if (this.isNot) {
+            pass = !pass;
+        }
+
+        const expectedMessage = type === undefined ? expected : `${type}: ${expected}`;
+        const received = response !== null
+            ? `${response.status()} ${messages.map(message => `${message.type}: ${message.text}`).join(' | ') || body}`
+            : 'null';
+
+        const message = () => this.utils.matcherHint(assertionName, undefined, undefined, { isNot: this.isNot }) +
+            '\n\n' +
+            `Expected: Response ${this.isNot ? 'not ' : ''}to contain the Jelix message ${this.utils.printExpected(expectedMessage)}\n` +
+            `Received: ${this.utils.printReceived(received)}`;
+
+        return {
+            message,
+            pass,
+            name: assertionName,
+            expected: expectedMessage,
+            actual: received,
+        };
+    },
+
+    /**
      * Expecting the response is a JSON Lizmap Config
      * @param {APIResponse} response the response to test
      *
