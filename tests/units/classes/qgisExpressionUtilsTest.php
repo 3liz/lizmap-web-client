@@ -210,4 +210,98 @@ class qgisExpressionUtilsTest extends TestCase
             qgisExpressionUtils::replaceAtlasVariables($exp, '"name"', 'parcels_id', 'Parcels')
         );
     }
+
+    /**
+     * The status and the errors of a replace expression text response are removed.
+     */
+    public function testLogReplaceExpressionTextErrors(): void
+    {
+        // A context keeping the logged messages
+        $appContext = new class() extends ContextForTests {
+            /** @var list<array{0: string, 1: string}> the logged messages and their categories */
+            public array $messages = array();
+
+            public function logMessage($message, $cat = 'default')
+            {
+                $this->messages[] = array($message, $cat);
+            }
+        };
+
+        // Response of lizmap_server >= 2.16, with an expression in error
+        $json = json_decode('{
+            "type": "FeatureCollection",
+            "status": "partial",
+            "errors": [
+                {"feature": 0, "key": "a", "error": "Expression \'round(\'x\')\' evaluation error"},
+                {"feature": 1, "key": "a", "error": "Expression \'round(\'x\')\' evaluation error"}
+            ],
+            "features": [{"type": "Feature", "id": 0, "geometry": null, "properties": {"a": null}}]
+        }');
+        $errors = qgisExpressionUtils::logReplaceExpressionTextErrors($json, 'layer "test"', $appContext);
+
+        // Each distinct error is logged once, and the first error of each string is returned
+        $this->assertEquals(
+            array(array("Replace expression text error for the layer \"test\": Expression 'round('x')' evaluation error (2 times)", 'lizmapadmin')),
+            $appContext->messages
+        );
+        $this->assertEquals(array('a' => "Expression 'round('x')' evaluation error"), $errors);
+
+        // The status and the errors are removed from the response
+        $this->assertFalse(property_exists($json, 'status'));
+        $this->assertFalse(property_exists($json, 'errors'));
+        $this->assertCount(1, $json->features);
+        $this->assertNull($json->features[0]->properties->a);
+
+        // Response of an older plugin, without status nor errors
+        $json = json_decode('{"type": "FeatureCollection", "features": []}');
+        $errors = qgisExpressionUtils::logReplaceExpressionTextErrors($json, 'layer "test"', $appContext);
+
+        $this->assertEquals(array(), $errors);
+        $this->assertEquals('FeatureCollection', $json->type);
+        $this->assertCount(0, $json->features);
+    }
+
+    /**
+     * The details of an expression error are only given to the administrators and the publishers.
+     */
+    public function testExpressionErrorMessage(): void
+    {
+        // A context returning the locale key and its variables
+        $appContext = new class() extends ContextForTests {
+            public function getLocale($key, $variables = array())
+            {
+                return $key.': '.implode(' | ', $variables);
+            }
+        };
+
+        // Administrator, with the right to update the repositories
+        $appContext->setResult(array(
+            'lizmap.admin.repositories.update' => true,
+            'lizmap.admin.project.list.view' => false,
+        ));
+        $this->assertEquals(
+            'view~edition.form.error.text.widget.details: Widget | The error',
+            qgisExpressionUtils::expressionErrorMessage($appContext, 'view~edition.form.error.text.widget', 'Widget', 'The error')
+        );
+
+        // Publisher, with the right to view the projects list
+        $appContext->setResult(array(
+            'lizmap.admin.repositories.update' => false,
+            'lizmap.admin.project.list.view' => true,
+        ));
+        $this->assertEquals(
+            'view~edition.form.error.text.widget.details: Widget | The error',
+            qgisExpressionUtils::expressionErrorMessage($appContext, 'view~edition.form.error.text.widget', 'Widget', 'The error')
+        );
+
+        // Other users: generic message, without the error
+        $appContext->setResult(array(
+            'lizmap.admin.repositories.update' => false,
+            'lizmap.admin.project.list.view' => false,
+        ));
+        $this->assertEquals(
+            'view~edition.form.error.text.widget: Widget',
+            qgisExpressionUtils::expressionErrorMessage($appContext, 'view~edition.form.error.text.widget', 'Widget', 'The error')
+        );
+    }
 }
