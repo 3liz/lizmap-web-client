@@ -1,10 +1,16 @@
 // @ts-check
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
+import { expect as responseExpect } from './fixtures/expect-response.js';
 import { getAuthStorageStatePath } from './globals';
 
 /**
  * Playwright API request context
  * @typedef {import('@playwright/test').APIRequestContext} APIRequestContext
+ */
+
+/**
+ * Playwright API response
+ * @typedef {import('@playwright/test').APIResponse} APIResponse
  */
 
 /**
@@ -23,24 +29,19 @@ const project = 'attribute_table_editable_features';
 const layerId = 'filter_layer_by_user_c733b070_38ab_425b_8c52_ae331633dcc6';
 
 /**
- * Send a link or unlink request and get the message of the response.
+ * Send a link or unlink request.
  * @param {APIRequestContext} request the request context
  * @param {string} action the edition action: linkFeatures or unlinkChild
  * @param {{[key: string]: string}} params the parameters of the action
- * @returns {Promise<string>} the text of the message
+ * @returns {Promise<APIResponse>} the response, with the Jelix messages as text
  */
-async function getMessage(request, action, params) {
+async function sendLinkRequest(request, action, params) {
     const response = await request.post(`/index.php/lizmap/edition/${action}`, {
         form: { repository: repository, project: project, ...params },
     });
-    expect(response.ok()).toBeTruthy();
-    const body = await response.text();
+    responseExpect(response).toBeTextPlain();
 
-    // The message is in the HTML fragment
-    const match = body.match(/<li class="jelix-msg-item-[^"]*">([^<]*)<\/li>/);
-    expect(match).not.toBeNull();
-
-    return match ? match[1] : '';
+    return response;
 }
 
 // Unlink a child feature, with a field which is not a relation field
@@ -65,8 +66,10 @@ test.describe('Edition link - not connected - @requests @readonly', () => {
      */
     test('Unlink and link are refused', async ({ request }) => {
         const denied = 'You have not the right to use the edition tools.';
-        expect(await getMessage(request, 'unlinkChild', unlinkParams)).toBe(denied);
-        expect(await getMessage(request, 'linkFeatures', linkParams)).toBe(denied);
+        await responseExpect(await sendLinkRequest(request, 'unlinkChild', unlinkParams))
+            .toContainJelixMessage(denied, 'AuthorizationRequired');
+        await responseExpect(await sendLinkRequest(request, 'linkFeatures', linkParams))
+            .toContainJelixMessage(denied, 'AuthorizationRequired');
     });
 });
 
@@ -79,7 +82,9 @@ test.describe('Edition link - admin - @requests @readonly', () => {
      */
     test('Fields which are not relation fields are refused', async ({ request }) => {
         const refused = 'Given fields do not exist.';
-        expect(await getMessage(request, 'unlinkChild', unlinkParams)).toBe(refused);
-        expect(await getMessage(request, 'linkFeatures', linkParams)).toBe(refused);
+        await responseExpect(await sendLinkRequest(request, 'unlinkChild', unlinkParams))
+            .toContainJelixMessage(refused, 'error');
+        await responseExpect(await sendLinkRequest(request, 'linkFeatures', linkParams))
+            .toContainJelixMessage(refused, 'error');
     });
 });
