@@ -689,6 +689,9 @@ class editionCtrl extends jController
      * POST: values (JSON object), geometry (WKT string), fields (JSON array, optional),
      * texts (JSON array of text widget names, optional)
      *
+     * The response gives the value of each field and text widget. With text widgets,
+     * liz_textWidgetErrors gives the error message of each text widget in error.
+     *
      * @return jResponseHtmlFragment|jResponseJson
      */
     public function evaluateDefaultExpressions()
@@ -756,8 +759,22 @@ class editionCtrl extends jController
             }
         }
         if ($templates) {
-            $json = qgisExpressionUtils::replaceExpressionText($layer, $templates, $formFeature);
+            $textErrors = array();
+            $json = qgisExpressionUtils::replaceExpressionText($layer, $templates, $formFeature, $textErrors);
             $results += (array) ($json->features[0]->properties ?? array());
+
+            // The messages of the text widgets in error, shown in the form by the client.
+            // The label of a text widget is its name.
+            $messages = array();
+            foreach ($textErrors as $name => $error) {
+                $messages[$name] = qgisExpressionUtils::expressionErrorMessage(
+                    lizmap::getAppContext(),
+                    'view~edition.form.error.text.widget',
+                    $name,
+                    $error,
+                );
+            }
+            $results['liz_textWidgetErrors'] = $messages ?: new stdClass();
         }
 
         /** @var jResponseJson $rep */
