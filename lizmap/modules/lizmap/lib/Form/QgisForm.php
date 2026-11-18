@@ -749,7 +749,7 @@ class QgisForm implements QgisFormControlsInterface
         foreach ($exprDefaults as $ref => $value) {
             $cur = $form->getData($ref);
             if ($cur === '' || $cur === array()) {
-                $form->setData($ref, $value);
+                $form->setData($ref, $this->formValueFromExpressionResult($ref, $value));
             }
         }
 
@@ -795,11 +795,45 @@ class QgisForm implements QgisFormControlsInterface
                 }
             }
 
-            $form->setData($ref, $value);
+            $form->setData($ref, $this->formValueFromExpressionResult($ref, $value));
             $applied[] = $ref;
         }
 
         return $applied;
+    }
+
+    /**
+     * Convert the result of a default value expression to the value of its form control.
+     *
+     * QGIS returns a JSON boolean for a boolean field, but a jForms checkbox only
+     * accepts its own checked/unchecked values ('t' / 'f' by default): setData(true)
+     * becomes '1' and the checkbox ends up unchecked.
+     *
+     * @param string $ref   the field name
+     * @param mixed  $value the evaluated expression
+     *
+     * @return mixed the value to give to the form control
+     */
+    protected function formValueFromExpressionResult($ref, $value)
+    {
+        if (!isset($this->formControls[$ref])) {
+            return $value;
+        }
+        $formControl = $this->formControls[$ref];
+        if (!($formControl->ctrl instanceof \jFormsControlCheckbox)
+            || !($formControl->fieldEditType === 7 || $formControl->fieldEditType === 'CheckBox')
+            || $formControl->fieldDataType !== 'boolean') {
+            return $value;
+        }
+        $ctrl = $formControl->ctrl;
+        if ($value === $ctrl->valueOnCheck || $value === $ctrl->valueOnUncheck) {
+            return $value;
+        }
+        $checked = $value === true
+            || $value === 1
+            || (is_string($value) && in_array(strtolower($value), array('t', 'true', '1', 'on'), true));
+
+        return $checked ? $ctrl->valueOnCheck : $ctrl->valueOnUncheck;
     }
 
     /**
