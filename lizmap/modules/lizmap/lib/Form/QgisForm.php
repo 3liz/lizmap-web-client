@@ -241,12 +241,31 @@ class QgisForm implements QgisFormControlsInterface
                         'properties' => $form->getAllData(),
                     );
                     // evaluate expression
-                    $expressionT = $this->evaluateExpressionText(array($textName => $textProp['value']), $form_feature);
+                    $textErrors = array();
+                    $expressionT = $this->evaluateExpressionText(array($textName => $textProp['value']), $form_feature, $textErrors);
                     // expecting geojson or null
                     if ($expressionT && is_array($expressionT->features) && count($expressionT->features) == 1 && property_exists($expressionT->features[0], 'properties') && property_exists($expressionT->features[0]->properties, $textName)) {
                         $form->setData($textName, $expressionT->features[0]->properties->{$textName});
                     } else {
                         $form->setData($textName, '');
+                    }
+
+                    // Show the expression error with the jForms errors: the widget and its message
+                    // in the error list at the top of the form. The error is output as HTML by jForms:
+                    // the message is escaped, and the text widget is named so that the client can
+                    // replace the message when the text widgets are evaluated again.
+                    unset($form->getContainer()->errors[$textName]);
+                    if (isset($textErrors[$textName])) {
+                        $message = \qgisExpressionUtils::expressionErrorMessage(
+                            $this->appContext,
+                            'view~edition.form.error.text.widget',
+                            $textProp['label'],
+                            $textErrors[$textName],
+                        );
+                        $form->setErrorOn(
+                            $textName,
+                            '<span data-text-widget="'.htmlspecialchars($textName).'">'.htmlspecialchars($message).'</span>'
+                        );
                     }
                 }
             }
@@ -2006,17 +2025,19 @@ class QgisForm implements QgisFormControlsInterface
     /**
      * Returns the text evaluated from $expression.
      *
-     * @param array      $expression   The expression to evaluate
-     * @param null|array $form_feature A feature to add to the evaluation context
+     * @param array                      $expression   The expression to evaluate
+     * @param null|array                 $form_feature A feature to add to the evaluation context
+     * @param null|array<string, string> $errors       Filled with the error message of each expression in error
      *
      * @return null|object
      */
-    public function evaluateExpressionText($expression, $form_feature = null)
+    public function evaluateExpressionText($expression, $form_feature = null, &$errors = null)
     {
         return \qgisExpressionUtils::replaceExpressionText(
             $this->layer,
             $expression,
-            $form_feature
+            $form_feature,
+            $errors
         );
     }
 
