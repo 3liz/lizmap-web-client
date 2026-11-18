@@ -137,14 +137,27 @@ class featuresCtrl extends jController
             }
         }
 
+        $tooltipErrors = array();
         $data = qgisExpressionUtils::replaceExpressionText(
             $qgisLayer,
             $tooltip,
+            null,
+            $tooltipErrors,
         );
 
         // On error, an empty GeoJSON is returned to the map
         if ($data === null) {
             $data = (object) array('type' => 'FeatureCollection', 'features' => array());
+        }
+
+        // The message shown once to the user, as a foreign member of the GeoJSON
+        if ($tooltipErrors) {
+            $data->lizmapMessage = qgisExpressionUtils::expressionErrorMessage(
+                $lproj->getAppContext(),
+                'view~map.tooltip.error',
+                $qgisLayer->getTitle(),
+                implode(' ', array_unique(array_values($tooltipErrors))),
+            );
         }
 
         $rep->data = $data;
