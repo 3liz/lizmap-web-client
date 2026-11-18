@@ -119,6 +119,11 @@ class featuresCtrl extends jController
             $tooltip,
         );
 
+        // On error, an empty GeoJSON is returned to the map
+        if ($data === null) {
+            $data = (object) array('type' => 'FeatureCollection', 'features' => array());
+        }
+
         $rep->data = $data;
 
         return $rep;
