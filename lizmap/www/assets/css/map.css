@@ -1425,6 +1425,22 @@ SubDock
     margin-right: 4px;
 }
 
+/* Native DataTables quick search, moved to the action bar */
+.attribute-layer-action-bar .dt-search {
+    display: inline-block;
+    margin-right: 4px;
+    vertical-align: top;
+}
+
+.attribute-layer-action-bar .dt-search label {
+    display: none;
+}
+
+.attribute-layer-action-bar .dt-search input {
+    width: 180px;
+    margin-left: 0;
+}
+
 .btn-filterbyextent-attributeTable svg {
     height: 14px;
     width: 14px;
