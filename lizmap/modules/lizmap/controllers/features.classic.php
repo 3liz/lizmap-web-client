@@ -2,6 +2,7 @@
 
 use Lizmap\App\Checker;
 use Lizmap\App\ControllerTools;
+use Lizmap\App\SqlTools;
 use Lizmap\Project\UnknownLizmapProjectException;
 use Lizmap\Request\Proxy;
 
@@ -265,6 +266,22 @@ class featuresCtrl extends jController
         // Filter
         $exp_filter = trim($this->param('exp_filter', 'FALSE'));
 
+        // The filter is sent by the client: only the whitelisted tokens are accepted,
+        // as for the WFS EXP_FILTER, plus the QGIS expression tokens without risk and the
+        // unquoted field names of the layer, which can not be used as functions.
+        // It prevents the functions reading other layers, the files or the server environment.
+        // The error is returned as the other errors, to be displayed by the component.
+        if (!SqlTools::validateExpressionFilter($exp_filter, SqlTools::QGIS_EXPRESSION_TOKENS, $qgisLayer->getFields())) {
+            $rep->data = array(
+                'status' => 'error',
+                'data' => null,
+                'error' => 'The expression filter is not valid! Only simple expressions are accepted: '
+                    .'use a virtual field of the layer for a complex expression.',
+            );
+
+            return $rep;
+        }
+
         // AdditionalFields
         try {
             $additionalFields = json_decode($this->param('additionalFields', '[]'), true);
@@ -275,7 +292,12 @@ class featuresCtrl extends jController
             return $rep;
         }
 
-        $sortingField = trim($this->param('sorting_field', null));
+        // The sorting field is sent by the client: it must be a field of the layer,
+        // otherwise the features are not sorted
+        $sortingField = trim($this->param('sorting_field', ''));
+        if (!in_array($sortingField, $qgisLayer->getFields(), true)) {
+            $sortingField = null;
+        }
 
         $sortingOrder = trim($this->param('sorting_order', 'asc'));
 
