@@ -1995,7 +1995,7 @@ window.lizMap = function() {
      */
     function mAddMessage( aMessage, aType, aClose, aTimeout ) {
         var mType = 'info';
-        var mTypeList = ['info', 'error', 'success'];
+        var mTypeList = ['info', 'warning', 'error', 'success'];
         var mClose = false;
 
         if ( mTypeList.includes(aType) ){
