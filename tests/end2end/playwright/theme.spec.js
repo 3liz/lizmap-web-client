@@ -362,6 +362,30 @@ test.describe('Theme @readonly', () => {
 
 });
 
+test.describe('Theme and permalink in URL @readonly', () => {
+
+    test('permalink in URL must win over the first map theme', async ({ page }) => {
+        const project = new ProjectPage(page, 'theme');
+        // Les quartiers with style2 only, group1 is unchecked
+        const hash = '#3.730872,43.540386,4.017985,43.679557|Les%20quartiers|style2|1';
+        let getMapRequestPromise = project.waitForGetMapRequest();
+        await project.open(false, hash);
+        let getMapRequest = await getMapRequestPromise;
+        await getMapRequest.response();
+
+        // The first map theme has not been activated
+        const themeSelector = page.locator('#theme-selector');
+        await expect(themeSelector.getByText('theme1')).not.toContainClass('active');
+
+        // The layers state comes from the permalink
+        const treeview = page.locator('lizmap-treeview');
+        await expect(treeview.getByTestId('group1').getByLabel('group1')).not.toBeChecked();
+        await expect(treeview.getByTestId('Les quartiers').getByLabel('Les quartiers')).toBeChecked();
+        await page.getByTestId('Les quartiers').locator('.icon-info-sign').click({ force: true });
+        await expect(page.locator('#sub-dock select.styleLayer')).toHaveValue('style2');
+    });
+});
+
 test.describe('Theme and automatic permalink @readonly', () => {
 
     test.beforeEach(async ({ page }) => {
