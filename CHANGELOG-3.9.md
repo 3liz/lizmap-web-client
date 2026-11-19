@@ -21,6 +21,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 ### Added
 
 * Export max features per layer #7347
+* Add lizmap-feature-button component #7300
 
 ### Security
 
