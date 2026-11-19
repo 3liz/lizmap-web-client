@@ -393,6 +393,148 @@ test.describe('Datables Requests @requests @readonly', () => {
         expect(body.data.features[49].properties.id).toEqual(549);
     });
 
+    test('Quick search request with a shapefile layer', async({ request }) => {
+        // The filter is evaluated by QGIS Server
+        let params = new URLSearchParams({
+            'repository': repository,
+            'project': project,
+            'layerId': layerId,
+        });
+        let url = `${base}?${params}`;
+        const columns = [
+            {'data': 'lizSelected', 'searchable': false},
+            {'data': 'featureToolbar', 'searchable': false},
+            {'data': 'quartier', 'searchable': true},
+            {'data': 'quartmno', 'searchable': true},
+            {'data': 'libquart', 'searchable': true},
+        ];
+
+        // Search in all the columns, case insensitive, with a quote
+        let response = await request.post(url, {
+            data: {
+                start: 0,
+                length: 50,
+                columns: columns,
+                order: [{'column': 2, 'dir': 'asc'}],
+                search: {'value': "d'ar", 'regex': false},
+            }
+        });
+        responseExpect(response).toBeJson();
+        let body = await response.json();
+        expect(body).toHaveProperty('recordsTotal', 7);
+        expect(body).toHaveProperty('recordsFiltered', 2);
+        expect(body).toHaveProperty('quickSearch');
+        expect(body.quickSearch).toHaveProperty('enabled', true);
+        /** @type {any[]} */
+        let features = body.data.features;
+        expect(features.map(feat => feat.properties.libquart)).toEqual(
+            ["CROIX D'ARGENT", "PRES D'ARENE"]
+        );
+
+        // Several words: each one in at least one column, numbers searched as text
+        response = await request.post(url, {
+            data: {
+                start: 0,
+                length: 50,
+                columns: columns,
+                order: [{'column': 2, 'dir': 'asc'}],
+                search: {'value': 'cx 4', 'regex': false},
+            }
+        });
+        responseExpect(response).toBeJson();
+        body = await response.json();
+        expect(body).toHaveProperty('recordsFiltered', 1);
+        features = body.data.features;
+        expect(features.map(feat => feat.properties.quartier)).toEqual([4]);
+
+        // A malicious value is only a searched text
+        response = await request.post(url, {
+            data: {
+                start: 0,
+                length: 50,
+                columns: columns,
+                order: [{'column': 2, 'dir': 'asc'}],
+                search: {'value': "' OR 1=1 --", 'regex': false},
+            }
+        });
+        responseExpect(response).toBeJson();
+        body = await response.json();
+        expect(body).toHaveProperty('recordsFiltered', 0);
+        expect(body.data.features).toHaveLength(0);
+
+        // Not searchable columns are ignored
+        response = await request.post(url, {
+            data: {
+                start: 0,
+                length: 50,
+                columns: [
+                    {'data': 'lizSelected', 'searchable': false},
+                    {'data': 'featureToolbar', 'searchable': false},
+                    {'data': 'quartier', 'searchable': true},
+                    {'data': 'libquart', 'searchable': false},
+                ],
+                order: [{'column': 2, 'dir': 'asc'}],
+                search: {'value': 'argent', 'regex': false},
+            }
+        });
+        responseExpect(response).toBeJson();
+        body = await response.json();
+        expect(body).toHaveProperty('recordsFiltered', 0);
+    });
+
+    test('Quick search request with a postgresql layer', async({ request }) => {
+        // The filter is run as SQL by Lizmap, without accents
+        let params = new URLSearchParams({
+            'repository': repository,
+            'project': project,
+            'layerId': 'sousquartiers_3481452b_0a5b_4e0e_8c97_436fbfe60512',
+        });
+        let url = `${base}?${params}`;
+        const data = {
+            start: 0,
+            length: 50,
+            columns: [
+                {'data': 'lizSelected', 'searchable': false},
+                {'data': 'featureToolbar', 'searchable': false},
+                {'data': 'id', 'searchable': true},
+                {'data': 'squartmno', 'searchable': true},
+                {'data': 'libsquart', 'searchable': true},
+            ],
+            order: [{'column': 2, 'dir': 'asc'}],
+            search: {'value': 'COMEDIE', 'regex': false},
+        };
+        let response = await request.post(url, {data: data});
+        responseExpect(response).toBeJson();
+        let body = await response.json();
+        expect(body).toHaveProperty('recordsTotal', 31);
+        expect(body).toHaveProperty('recordsFiltered', 1);
+        expect(body.quickSearch).toHaveProperty('enabled', true);
+        /** @type {any[]} */
+        let features = body.data.features;
+        expect(features.map(feat => feat.properties.libsquart)).toEqual(['Comédie']);
+
+        // The integer column is searched as text
+        data.search.value = '31';
+        response = await request.post(url, {data: data});
+        responseExpect(response).toBeJson();
+        body = await response.json();
+        expect(body).toHaveProperty('recordsFiltered', 1);
+        features = body.data.features;
+        expect(features.map(feat => feat.properties.id)).toEqual([31]);
+
+        // The selection of the searched features uses the quick search
+        data.search.value = 'millenaire';
+        response = await request.post(
+            `/index.php/lizmap/datatables/selectFilteredFeatures?${params}`,
+            {data: data}
+        );
+        responseExpect(response).toBeJson();
+        body = await response.json();
+        expect(body).toHaveProperty('features');
+        expect(body.features).toHaveLength(1);
+        expect(body.features[0].properties.libsquart).toEqual('Millénaire');
+    });
+
     test('Filter featureIds request', async({ request }) => {
         let params = new URLSearchParams({
             'repository': repository,

@@ -165,6 +165,11 @@ class SqlTools
         'left',
         'right',
         'initcap',
+        // Accents removal, with the unaccent PostgreSQL extension, and the immutable
+        // f_unaccent function advised by the Lizmap documentation, used by the quick
+        // search of the attribute table only when they exist in the database
+        'unaccent',
+        'f_unaccent',
 
         // Date and time functions
         'now',

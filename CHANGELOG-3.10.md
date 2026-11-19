@@ -57,6 +57,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * PHP: WMTS EPSG:4326 TileMatrix #7295
 * Printing map in projection with axis orientation neu #7320 fixes #4862 and #6164
 * PHP: Support PostgreSQL float arrays in edition forms with QGIS List widget #7209
+* Attribute table - Restore the quick search in all the columns, run on the server, without accents
+  for PostgreSQL layers with the `unaccent` extension, disabled for big layers not queried in PostgreSQL
 
 ### Security
 
