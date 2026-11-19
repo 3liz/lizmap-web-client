@@ -126,7 +126,7 @@ test.describe('Read short link permalink @requests @read', () => {
 
         responseExpect(response).toBeJson();
         const body = await response.json();
-        expect(body).toHaveProperty('error', ['The permalink does not exists']);
+        expect(body).toHaveProperty('error', ['The permalink does not exist']);
     })
 })
 
