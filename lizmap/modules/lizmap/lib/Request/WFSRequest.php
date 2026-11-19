@@ -826,16 +826,16 @@ class WFSRequest extends OGCRequest
         if (!$validFilter) {
             return false;
         }
-        if (strpos($validFilter, '$id') !== false) {
-            $key = $this->datasource->key;
-            if (count(explode(',', $key)) == 1) {
-                return ' AND ( '.str_replace('$id ', $cnx->encloseName($key).' ', $validFilter).' )';
-            }
 
+        // The $id variable is replaced by the primary key column, if it is a single column
+        $key = $this->datasource->key;
+        $idColumn = (count(explode(',', $key)) == 1) ? $cnx->encloseName($key) : null;
+        $sqlFilter = SqlTools::replaceIdVariable($validFilter, $idColumn);
+        if ($sqlFilter === null) {
             return false;
         }
 
-        return ' AND ( '.$validFilter.' )';
+        return ' AND ( '.$sqlFilter.' )';
     }
 
     /**
