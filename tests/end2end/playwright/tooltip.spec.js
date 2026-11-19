@@ -44,7 +44,7 @@ test.describe('Tooltip @readonly', () => {
         await page.route(/lizmap\/features\/tooltips/, async (route) => {
             const response = await route.fetch();
             const json = await response.json();
-            json['lizmapMessage'] = 'Mocked tooltip error';
+            json['lizmapMessage'] = 'Mocked tooltip error: <b>"field" < 1</b>';
             await route.fulfill({response, json});
         });
 
@@ -53,9 +53,12 @@ test.describe('Tooltip @readonly', () => {
         await page.locator('#tooltip-layer').getByRole('combobox').selectOption('quartiers');
         await (await responsePromise).finished();
 
-        // The message is displayed, and the features are loaded without error
+        // The message is displayed as a warning, and the features are loaded without error
         await expect(page.locator('#message')).toBeVisible();
-        await expect(page.locator('#message')).toContainText('Mocked tooltip error');
+        await expect(page.locator('#message .alert-warning')).toContainText('Mocked tooltip error');
+        // The message is a text, not HTML
+        await expect(page.locator('#message .alert-warning')).toContainText('<b>"field" < 1</b>');
+        await expect(page.locator('#message .alert-warning b')).toHaveCount(0);
         await expect(page.locator('#message')).not.toContainText('An error prevented to load the tooltip data');
     });
 
