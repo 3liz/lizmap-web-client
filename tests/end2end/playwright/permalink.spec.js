@@ -1009,9 +1009,9 @@ test.describe('Read short link permalink @readonly', () => {
         let body = await permalinkResponse?.json();
 
         expect(body).toHaveProperty('error');
-        expect(body.error).toStrictEqual(['The permalink does not exists']);
+        expect(body.error).toStrictEqual(['The permalink does not exist']);
         await expect(page.locator('#content div.alert.alert-danger')).toHaveCount(1);
-        await expect(page.locator('#content div.alert.alert-danger')).toHaveText('The permalink does not exists');
+        await expect(page.locator('#content div.alert.alert-danger')).toHaveText('The permalink does not exist');
         // close message panel
         await(page.locator('#content div.alert.alert-danger .btn-close')).click();
 
@@ -1041,9 +1041,9 @@ test.describe('Read short link permalink @readonly', () => {
         body = await permalinkResponse?.json();
 
         expect(body).toHaveProperty('error');
-        expect(body.error).toStrictEqual(['The permalink does not exists']);
+        expect(body.error).toStrictEqual(['The permalink does not exist']);
         await expect(page.locator('#content div.alert.alert-danger')).toHaveCount(1);
-        await expect(page.locator('#content div.alert.alert-danger')).toHaveText('The permalink does not exists');
+        await expect(page.locator('#content div.alert.alert-danger')).toHaveText('The permalink does not exist');
         url_to_check = new URL(page.url());
         await page.waitForTimeout(500);
 

@@ -767,7 +767,7 @@ test.describe('Attribute table @readonly', () => {
 
         let dialogPromped = false;
         page.once('dialog', dialog => {
-            expect(dialog.message()).toBe("You are about to select more than a 1000 features. This may take a few seconds to process. Are you sure you want to proceed?");
+            expect(dialog.message()).toBe("You are about to select more than 1000 features. This may take a few seconds to process. Are you sure you want to proceed?");
             dialogPromped = true;
             return dialog.accept()
         });

@@ -59,7 +59,7 @@ test.describe('Tooltip @readonly', () => {
         // The message is a text, not HTML
         await expect(page.locator('#message .alert-warning')).toContainText('<b>"field" < 1</b>');
         await expect(page.locator('#message .alert-warning b')).toHaveCount(0);
-        await expect(page.locator('#message')).not.toContainText('An error prevented to load the tooltip data');
+        await expect(page.locator('#message')).not.toContainText('An error prevented the tooltip data from loading');
     });
 
     test('Test fields', async ({ page }) => {

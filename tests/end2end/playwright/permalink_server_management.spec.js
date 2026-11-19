@@ -164,7 +164,7 @@ test.describe('Permalink page',()=>{
         body = await permalinkResponse?.json();
 
         expect(body).toHaveProperty('error');
-        expect(body.error).toStrictEqual(['The permalink does not exists']);
+        expect(body.error).toStrictEqual(['The permalink does not exist']);
 
         // permalink table should be empty
         await expect(permalinkProjectPage.locator('#permalink-history table')).toHaveCount(0);

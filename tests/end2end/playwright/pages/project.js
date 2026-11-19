@@ -1229,7 +1229,7 @@ export class ProjectPage extends BasePage {
      */
     async clearPermalinkHistory(){
         this.page.once('dialog', dialog => {
-            expect(dialog.message()).toBe("Remove all permalink from cache?");
+            expect(dialog.message()).toBe("Remove all permalinks from cache?");
             return dialog.accept();
         });
         await this.page.locator(`#permalink-clear-history`).click();
