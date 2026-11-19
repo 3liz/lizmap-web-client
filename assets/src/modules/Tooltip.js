@@ -128,12 +128,42 @@ export default class Tooltip {
             // Initially hidden, will be set to 1 when features are loaded and filter is applied
             // to avoid visual flickering
             // Using the visible property of the layer does not work
+            // The features are loaded by a custom loader, to read the message
+            // sent by Lizmap with them, e.g. about the tooltip expressions in error
+            const vectorSource = new VectorSource({
+                format: new GeoJSON(),
+            });
+            vectorSource.setLoader((extent, resolution, projection, success, failure) => {
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(geojson => {
+                        // Message shown once, when the layer tooltips are loaded.
+                        // It is a text, e.g. with an expression: it is escaped for the HTML alert.
+                        if (typeof geojson?.lizmapMessage === 'string' && geojson.lizmapMessage !== '') {
+                            const text = document.createElement('p');
+                            text.textContent = geojson.lizmapMessage;
+                            this._lizmap3.addMessage(text.innerHTML, 'warning', true);
+                        }
+                        const features = vectorSource.getFormat().readFeatures(geojson, {
+                            featureProjection: projection,
+                        });
+                        vectorSource.addFeatures(features);
+                        success(features);
+                    })
+                    .catch(() => {
+                        vectorSource.removeLoadedExtent(extent);
+                        failure();
+                    });
+            });
+
             this._activeTooltipLayer = new VectorLayer({
                 opacity: 0,
-                source: new VectorSource({
-                    url: url,
-                    format: new GeoJSON(),
-                }),
+                source: vectorSource,
                 style: vectorStyle
             });
 

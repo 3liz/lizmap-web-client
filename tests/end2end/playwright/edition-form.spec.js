@@ -718,6 +718,54 @@ test.describe(
             await project.checkEditionFormTextField('Name check', 'text modified', 'Name check', true);
         })
 
+        test('Errors of the text widgets are shown in the form', async ({ page }) => {
+
+            const project = new ProjectPage(page, 'text_widget');
+            await project.open();
+
+            // The errors of the text widgets evaluation are mocked, to not depend
+            // on the lizmap_server plugin version
+            let mockedErrors = {'Name check': 'Mocked error of "Name check"'};
+            await page.route(/evaluateDefaultExpressions/, async (route) => {
+                const response = await route.fetch();
+                const json = await response.json();
+                // Since Lizmap 3.10.x, the errors are sent with the values
+                expect(json).toHaveProperty('liz_textWidgetErrors');
+                json['liz_textWidgetErrors'] = mockedErrors;
+                await route.fulfill({response, json});
+            });
+
+            const formRequest = await project.openEditingFormWithLayer('Point edit');
+            await formRequest.response();
+            project.editionForm = page.locator('#jforms_view_edition');
+            const errorList = page.locator('#jforms_view_edition_errors');
+            const nameCheckLabel = project.editionForm.locator('label', {hasText: 'Name check'});
+            const wrongExpressionLabel = project.editionForm.locator('label', {hasText: 'Wrong expression'});
+
+            // The text widgets are evaluated again with the new geometry: the mocked error is shown
+            let evaluateRequestPromise = project.waitForEvaluateDefaultExpressionsRequest();
+            await project.clickOnMapLegacy(488, 331);
+            await (await evaluateRequestPromise).response();
+
+            await expect(errorList).toBeVisible();
+            await expect(errorList.locator('p')).toHaveCount(1);
+            await expect(errorList).toContainText('Mocked error of "Name check"');
+            await expect(nameCheckLabel).toHaveClass(/jforms-error/);
+            // The error of the "Wrong expression" widget, if any, has been replaced
+            await expect(wrongExpressionLabel).not.toHaveClass(/jforms-error/);
+
+            // Without error, the message is removed and the error list is hidden
+            mockedErrors = {};
+            evaluateRequestPromise = project.waitForEvaluateDefaultExpressionsRequest('text modified');
+            await project.editionForm.locator('#jforms_view_edition_point_name').fill('text modified');
+            await project.editionForm.locator('#jforms_view_edition_point_name').blur();
+            await (await evaluateRequestPromise).response();
+
+            await expect(errorList).not.toBeVisible();
+            await expect(errorList.locator('p')).toHaveCount(0);
+            await expect(nameCheckLabel).not.toHaveClass(/jforms-error/);
+        })
+
         test('Insert new feature', async ({ page }) => {
 
             const project = new ProjectPage(page, 'text_widget');

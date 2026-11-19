@@ -1,5 +1,6 @@
 <?php
 
+use Lizmap\App\AppContextInterface;
 use Lizmap\App\WktTools;
 use Lizmap\Project\Project;
 use Lizmap\Request\Proxy;
@@ -316,14 +317,22 @@ class qgisExpressionUtils
     /**
      * Request QGIS Server and the lizmap plugin to replace QGIS expressions text.
      *
-     * @param qgisVectorLayer $layer        A QGIS vector layer
-     * @param array           $expressions  The expressions text to replace
-     * @param array           $form_feature A feature to add to the evaluation context
+     * The strings with an expression in error are null, and the errors are
+     * listed in the response: they are logged for the administrator, returned
+     * in $errors and removed from the returned GeoJSON, as an older plugin does
+     * not send them.
      *
-     * @return null|object the results of expressions text replacement
+     * @param qgisVectorLayer            $layer        A QGIS vector layer
+     * @param array                      $expressions  The expressions text to replace
+     * @param array                      $form_feature A feature to add to the evaluation context
+     * @param null|array<string, string> $errors       Filled with the error message of each string in error
+     *
+     * @return null|object the results of expressions text replacement, null on error
      */
-    public static function replaceExpressionText($layer, $expressions, $form_feature = null)
+    public static function replaceExpressionText($layer, $expressions, $form_feature = null, &$errors = null)
     {
+        $errors = array();
+
         // Evaluate the expression by qgis
         $project = $layer->getProject();
         $params = array(
@@ -343,11 +352,98 @@ class qgisExpressionUtils
 
         // Request replace expression text
         $json = self::request($params, $project);
-        if (!$json) {
+        $appContext = $project->getAppContext();
+        $layerInfo = 'layer "'.$layer->getName().'" of the project "'.$project->getKey().'"';
+
+        // No response or the request has been rejected, e.g. a forbidden expression function:
+        // all the strings are in error
+        if (!$json || !property_exists($json, 'type')) {
+            $message = 'No valid response from QGIS Server';
+            if ($json && property_exists($json, 'message')) {
+                $message = $json->message;
+            }
+            $appContext->logMessage('Replace expression text error for the '.$layerInfo.': '.$message, 'lizmapadmin');
+            foreach (array_keys($expressions) as $key) {
+                $errors[(string) $key] = $message;
+            }
+
             return null;
         }
 
+        $errors = self::logReplaceExpressionTextErrors($json, $layerInfo, $appContext);
+
         return $json;
+    }
+
+    /**
+     * Log the expressions in error of a replace expression text response, and remove them.
+     *
+     * Since lizmap_server 2.16, the response has a status, "success" or "partial",
+     * and the list of the expressions in error, whose strings are null in the results.
+     * The status and the errors are removed from the response, so that it is the
+     * same, whatever the version of the plugin.
+     *
+     * @param object              $json       The GeoJSON response of the replace expression text request
+     * @param string              $layerInfo  The layer and the project, for the log message
+     * @param AppContextInterface $appContext The application context, to log the errors
+     *
+     * @return array<string, string> the first error message of each string in error, by key
+     */
+    public static function logReplaceExpressionTextErrors($json, $layerInfo, AppContextInterface $appContext)
+    {
+        // Count each error: the same expression may fail for many features
+        $messages = array();
+        $errorsByKey = array();
+        if (property_exists($json, 'errors') && is_array($json->errors)) {
+            foreach ($json->errors as $error) {
+                $message = is_object($error) && property_exists($error, 'error') ? (string) $error->error : json_encode($error);
+                $messages[$message] = ($messages[$message] ?? 0) + 1;
+
+                // Keep the first error of each string
+                if (is_object($error) && property_exists($error, 'key') && !isset($errorsByKey[(string) $error->key])) {
+                    $errorsByKey[(string) $error->key] = $message;
+                }
+            }
+        }
+
+        // Log each distinct error once for the administrator
+        foreach ($messages as $message => $count) {
+            $times = $count > 1 ? ' ('.$count.' times)' : '';
+            $appContext->logMessage('Replace expression text error for the '.$layerInfo.': '.$message.$times, 'lizmapadmin');
+        }
+
+        // The response is the same, whatever the version of the plugin
+        unset($json->status, $json->errors);
+
+        return $errorsByKey;
+    }
+
+    /**
+     * Build the message shown to the user for an expression error.
+     *
+     * The administrators and the publishers (rights to update the repositories
+     * or to view the projects list in the administration) get the error message.
+     * The other users get a generic message, asking them to contact the administrator.
+     *
+     * @param AppContextInterface $appContext The application context, to check the rights
+     * @param string              $localeKey  The locale key of the generic message, with the label as variable.
+     *                                        The detailed message key adds the ".details" suffix and the error
+     * @param string              $label      The label of what could not be computed, e.g. a form widget
+     * @param string              $error      The error message
+     *
+     * @return string the message for the current user
+     */
+    public static function expressionErrorMessage(AppContextInterface $appContext, $localeKey, $label, $error)
+    {
+        // The QGIS messages can be on several lines
+        $error = trim(preg_replace('/\s+/', ' ', $error));
+
+        if ($appContext->aclCheck('lizmap.admin.repositories.update')
+            || $appContext->aclCheck('lizmap.admin.project.list.view')) {
+            return $appContext->getLocale($localeKey.'.details', array($label, $error));
+        }
+
+        return $appContext->getLocale($localeKey, array($label));
     }
 
     /**
