@@ -60,6 +60,13 @@ export class WMS {
             VERSION: '1.3.0',
             FORMAT: 'application/json',
         };
+        this._defaultGetStylesParameters = {
+            repository: globalThis['lizUrls'].params.repository,
+            project: globalThis['lizUrls'].params.project,
+            SERVICE: 'WMS',
+            REQUEST: 'GetStyles',
+            VERSION: '1.1.1',
+        };
     }
 
     /**
@@ -137,5 +144,22 @@ export class WMS {
         });
 
         return `${globalThis['lizUrls'].wms}?${params}`;
+    }
+
+
+    /**
+     * Get styles from WMS
+     * @param {object} options - optional parameters which can override this._defaultGetStylesParameters
+     * @returns {Promise} Promise object represents data
+     * @memberof WMS
+     */
+    async getStyles(options) {
+        return Utils.fetchXML(globalThis['lizUrls'].wms, {
+            method: "POST",
+            body: new URLSearchParams({
+                ...this._defaultGetStylesParameters,
+                ...options
+            })
+        });
     }
 }
