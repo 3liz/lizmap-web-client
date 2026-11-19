@@ -67,6 +67,11 @@ class datatablesCtrl extends jController
     private $DTSearchBuilder;
 
     /**
+     * @var string Value of the quick search on all the columns
+     */
+    private $searchValue = '';
+
+    /**
      * @var null|string srs code
      */
     private $srsName;
@@ -163,6 +168,12 @@ class datatablesCtrl extends jController
         $this->DTOrder = $this->param('order');
         $this->DTColumns = $this->param('columns');
         $this->DTSearchBuilder = $this->param('searchBuilder');
+        // Quick search on all the columns, sent by DataTables as search[value]
+        $search = $this->param('search');
+        $this->searchValue = '';
+        if (is_array($search) && isset($search['value']) && is_string($search['value'])) {
+            $this->searchValue = trim($search['value']);
+        }
         $this->filteredFeatureIDs = $this->param('filteredfeatureids') ? explode(',', $this->param('filteredfeatureids')) : array();
         $this->srsName = $this->param('srsname');
         $this->bbox = $this->param('bbox') && $this->srsName ? explode(',', $this->param('bbox')) : array();
@@ -192,6 +203,205 @@ class datatablesCtrl extends jController
 
         return $expFilter;
 
+    }
+
+    /**
+     * Get the columns searched by the quick search.
+     *
+     * The columns are the DataTables columns which are searchable and published
+     * in WFS, as the client can not be trusted.
+     *
+     * @param qgisVectorLayer $layer the layer
+     *
+     * @return string[] the names of the searched columns
+     */
+    private function getQuickSearchColumns(qgisVectorLayer $layer): array
+    {
+        if (!is_array($this->DTColumns)) {
+            return array();
+        }
+
+        $wfsFields = $layer->getWfsFields();
+        $columns = array();
+        foreach ($this->DTColumns as $column) {
+            // A column without data or not searchable
+            if (!is_array($column) || !isset($column['data']) || !is_string($column['data'])) {
+                continue;
+            }
+            if (isset($column['searchable'])
+                && ($column['searchable'] === false || $column['searchable'] === 'false')) {
+                continue;
+            }
+            // Only the fields published in WFS
+            if (in_array($column['data'], $wfsFields, true) && !in_array($column['data'], $columns, true)) {
+                $columns[] = $column['data'];
+            }
+        }
+
+        return $columns;
+    }
+
+    /**
+     * Get the PostgreSQL types of the layer fields, if the WFS requests are run as SQL by Lizmap.
+     *
+     * It follows the conditions of WFSRequest::getfeaturePostgres(): a PostgreSQL table,
+     * not a SQL query, with all the WFS fields in the database (no virtual field) and,
+     * if the expression filter uses $id, a single primary key. When the fields types are
+     * returned, the quick search can use database functions, not known by QGIS Server.
+     *
+     * @param qgisVectorLayer $layer the layer
+     *
+     * @return null|array<string, string> the type of each field, or null if the filter is evaluated by QGIS Server
+     */
+    private function getQuickSearchDbFieldTypes(qgisVectorLayer $layer): ?array
+    {
+        // A PostgreSQL table, not a SQL query
+        if ($layer->getProvider() != 'postgres') {
+            return null;
+        }
+        $dtParams = $layer->getDatasourceParameters();
+        if (!$dtParams->table || $dtParams->table[0] == '(') {
+            return null;
+        }
+
+        try {
+            $dbFields = $layer->getDbFieldList();
+        } catch (Exception $e) {
+            return null;
+        }
+        if (!is_array($dbFields) || !array_key_exists($dtParams->key, $dbFields)) {
+            return null;
+        }
+
+        // All the WFS fields are in the database
+        $types = array();
+        foreach ($layer->getWfsFields() as $field) {
+            if (!array_key_exists($field, $dbFields)) {
+                return null;
+            }
+            $types[$field] = $dbFields[$field]->type;
+        }
+
+        // $id can only be translated for a single primary key
+        if ($this->expFilter && str_contains($this->expFilter, '$id') && str_contains($dtParams->key, ',')) {
+            return null;
+        }
+
+        return $types;
+    }
+
+    /**
+     * Get the PostgreSQL function removing the accents, if it exists in the layer database.
+     *
+     * The f_unaccent immutable function, advised by the Lizmap documentation, is preferred,
+     * as it can be used in an index. It is searched with the search path of the layer connection.
+     *
+     * @param qgisVectorLayer $layer the PostgreSQL layer
+     *
+     * @return null|string the function name, f_unaccent or unaccent, or null
+     */
+    private function getUnaccentFunction(qgisVectorLayer $layer): ?string
+    {
+        try {
+            $cnx = $layer->getDatasourceConnection();
+            $sql = "SELECT CASE
+                WHEN to_regprocedure('f_unaccent(text)') IS NOT NULL THEN 'f_unaccent'
+                WHEN to_regprocedure('unaccent(text)') IS NOT NULL THEN 'unaccent'
+                ELSE '' END AS fn";
+            $result = $cnx->query($sql)->fetch();
+        } catch (Exception $e) {
+            jLog::logEx($e, 'lizmapadmin');
+
+            return null;
+        }
+
+        if (is_object($result) && in_array($result->fn, array('f_unaccent', 'unaccent'), true)) {
+            return $result->fn;
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the number of features of a layer.
+     *
+     * @param Project $lproj    the project
+     * @param string  $typeName the WFS type name of the layer
+     *
+     * @return null|int the number of features, or null if the request failed
+     */
+    private function getFeatureCount(Project $lproj, string $typeName): ?int
+    {
+        $wfsParams = array_merge(
+            WFSRequest::buildGetFeatureParameters($typeName),
+            WFSRequest::$hitsGetFeatureParameters
+        );
+        $wfsrequest = new WFSRequest($lproj, $wfsParams, lizmap::getServices());
+        $wfsresponse = $wfsrequest->process();
+        if ($wfsresponse->getCode() >= 400
+            || !str_contains(strtolower($wfsresponse->getMime()), 'application/vnd.geo+json')) {
+            return null;
+        }
+
+        $hitsData = json_decode($wfsresponse->getBodyAsString());
+        if (!is_object($hitsData) || !property_exists($hitsData, 'numberOfFeatures')) {
+            return null;
+        }
+
+        return (int) $hitsData->numberOfFeatures;
+    }
+
+    /**
+     * Add the quick search on all the columns to the expression filter.
+     *
+     * The quick search is disabled for the layers evaluated by QGIS Server above
+     * DataTables::QUICK_SEARCH_MAX_FEATURES features. When it is disabled, the search is ignored.
+     *
+     * @param Project         $lproj        the project
+     * @param qgisVectorLayer $layer        the layer
+     * @param null|int        $featureCount the number of features of the layer, requested if null and needed
+     *
+     * @return bool true if the quick search is enabled for the layer
+     */
+    private function applyQuickSearch(Project $lproj, qgisVectorLayer $layer, ?int $featureCount = null): bool
+    {
+        $columns = $this->getQuickSearchColumns($layer);
+        $dbFieldTypes = $this->getQuickSearchDbFieldTypes($layer);
+        $sqlQuery = ($dbFieldTypes !== null);
+
+        // Only the columns which can be searched
+        if ($sqlQuery) {
+            $columns = array_values(array_filter($columns, function ($column) use ($dbFieldTypes) {
+                return DataTables::isQuickSearchDbType($dbFieldTypes[$column]);
+            }));
+        }
+
+        // The number of features is only needed to search a layer evaluated by QGIS Server
+        if ($featureCount === null) {
+            $featureCount = 0;
+            if (!$sqlQuery && $this->searchValue !== '') {
+                $featureCount = $this->getFeatureCount($lproj, $layer->getWfsTypeName());
+                if ($featureCount === null) {
+                    return false;
+                }
+            }
+        }
+
+        $enabled = DataTables::isQuickSearchEnabled($sqlQuery, $featureCount, count($columns));
+
+        // Nothing to search or search disabled
+        if ($this->searchValue === '' || !$enabled) {
+            return $enabled;
+        }
+
+        // Build the expression, without accents if possible
+        $unaccentFunction = $sqlQuery ? $this->getUnaccentFunction($layer) : null;
+        $searchFilter = DataTables::buildQuickSearchExpression($this->searchValue, $columns, $dbFieldTypes, $unaccentFunction);
+        if ($searchFilter) {
+            $this->expFilter = !$this->expFilter ? $searchFilter : "( {$this->expFilter} ) AND ( {$searchFilter} )";
+        }
+
+        return $enabled;
     }
 
     public function index()
@@ -281,6 +491,9 @@ class datatablesCtrl extends jController
             $recordsFiltered = count($this->filteredFeatureIDs);
         }
 
+        // Quick search on all the columns, depending on the size of the layer
+        $quickSearchEnabled = $this->applyQuickSearch($lproj, $layer, (int) $hits);
+
         if ($this->expFilter) {
             $wfsParamsData['EXP_FILTER'] = $this->expFilter;
         }
@@ -350,6 +563,9 @@ class datatablesCtrl extends jController
             'recordsFiltered' => (int) $recordsFiltered,
             'data' => json_decode($featureData),
             'editableFeatures' => $editableFeaturesRep,
+            'quickSearch' => array(
+                'enabled' => $quickSearchEnabled,
+            ),
         );
 
         $rep->data = $returnedData;
@@ -410,6 +626,9 @@ class datatablesCtrl extends jController
         $pointGeom = $layerCfg->geometryType == 'point';
 
         $typeName = $layer->getWfsTypeName();
+
+        // Quick search on all the columns, as for the features displayed in the table
+        $this->applyQuickSearch($lproj, $layer);
 
         $wfsParamsData = WFSRequest::buildGetFeatureParameters($typeName);
 
@@ -608,6 +827,9 @@ class datatablesCtrl extends jController
         }
 
         $typeName = $layer->getWfsTypeName();
+
+        // Quick search on all the columns, as for the features displayed in the table
+        $this->applyQuickSearch($lproj, $layer);
 
         $wfsParamsData = WFSRequest::buildGetFeatureParameters($typeName);
 
