@@ -1249,21 +1249,29 @@ class Project
      * Get login filters, get expressions for layers based on login filtered
      * config.
      *
-     * NOTE: We could delegate this completely to the lizmap_server plugin
-     * for all requests. The only request needed to have the SQL filter
-     * is the WFS GetFeature request, if the layer is a PostgreSQL layer.
-     * It this particular case, we could use a similar approach
-     * that the one use with qgisVectorLayer::requestPolygonFilter
-     * which calls the server plugin with SERVICE=Lizmap&REQUEST=GetSubsetString
+     * The filter by login of the OGC requests sent to QGIS Server is applied by
+     * the lizmap_server plugin. These filters are used by Lizmap itself:
+     *
+     * - with $forSql, as PostgreSQL or SQLite SQL filters, run by Lizmap,
+     *   e.g. when the WFS data is queried directly in the database, or when
+     *   a feature is updated or deleted;
+     * - otherwise, as QGIS expressions, evaluated by the lizmap_server plugin
+     *   for one feature or for the data of a form.
+     *
+     * With multiple values in the filter field, e.g. "group_a,group_b", the values
+     * are matched exactly: with an array comparison in SQL, and with LIKE patterns
+     * where the wildcards of the login or the groups, like % or _, are escaped
+     * in QGIS expressions.
      *
      * @param string[] $layers  : layers' name list
      * @param bool     $edition : get login filters for edition
+     * @param bool     $forSql  : get SQL filters instead of QGIS expressions
      *
      * @return array Array containing layers names as key and filter configuration
      *               and SQL filters as values. Array might be empty if no filter
      *               is configured for the layer.
      */
-    public function getLoginFilters($layers, $edition = false)
+    public function getLoginFilters($layers, $edition = false, $forSql = false)
     {
         $filters = array();
 
@@ -1314,69 +1322,62 @@ class Project
                 $provider = $qgisLayer->getProvider();
             }
 
-            // default no user connected
-            $filter = "{$quotedField} = 'all'";
-
             // For PostgreSQL layers, allow multiple values in the filter field
             // E.g. "groupe_a,other_group"
-            if ($provider == 'postgres'
+            $multipleValues = $provider == 'postgres'
                 && property_exists($loginFilteredConfig, 'allow_multiple_acl_values')
-                && $loginFilteredConfig->allow_multiple_acl_values
-            ) {
-                $filter .= " OR {$quotedField} LIKE 'all,%'";
-                $filter .= " OR {$quotedField} LIKE '%,all'";
-                $filter .= " OR {$quotedField} LIKE '%,all,%'";
-            }
+                && $loginFilteredConfig->allow_multiple_acl_values;
+
+            // List of values for expression: default no user connected
+            $values = array();
 
             // A user is connected
             if ($this->appContext->userIsConnected()) {
-                // Get the user
-                $user = $this->appContext->getUserSession();
-                $login = $user->login;
-
-                // List of values for expression
-                $values = array();
                 if (property_exists($loginFilteredConfig, 'filterPrivate')
                     && $this->optionToBoolean($loginFilteredConfig->filterPrivate)
                 ) {
                     // If filter is private use user_login
-                    $values[] = $login;
+                    $user = $this->appContext->getUserSession();
+                    $values[] = $user->login;
                 } else {
                     // Else use user groups
-                    $userGroups = $this->appContext->aclUserPublicGroupsId();
-                    $values = $userGroups;
+                    $values = $this->appContext->aclUserPublicGroupsId();
                 }
+            }
 
-                // Add all to values
-                $values[] = 'all';
+            // Add all to values
+            $values[] = 'all';
+
+            if ($forSql && $multipleValues) {
+                // SQL: one of the values of the field is one of the user values
+                $filter = $this->getMultipleValuesSqlFilter($cnx, $quotedField, $values);
+            } else {
                 $allValuesFilters = array();
 
                 // For each value (group, all, login, etc.), create a filter
                 // combining all the possibility: equality & LIKE
                 foreach ($values as $value) {
                     $valueFilters = array();
-                    // Quote the value with single quotes
-                    $quotedValue = $cnx->quote($value);
 
-                    // equality
+                    // equality, with the value quoted for SQL or for a QGIS expression
+                    $quotedValue = $forSql ? $cnx->quote($value) : $this->quoteExpressionString($value);
                     $valueFilters[] = "{$quotedField} = {$quotedValue}";
 
-                    // For PostgreSQL layers, allow multiple values in the filter field
-                    // E.g. "groupe_a,other_group"
-                    if ($provider == 'postgres'
-                        && property_exists($loginFilteredConfig, 'allow_multiple_acl_values')
-                        && $loginFilteredConfig->allow_multiple_acl_values
-                    ) {
+                    // Multiple values in the filter field, e.g. "groupe_a,other_group",
+                    // in a QGIS expression: the LIKE wildcards of the value are escaped
+                    if ($multipleValues) {
+                        $likeValue = addcslashes($value, '\%_');
+
                         // begins with value & comma
-                        $quotedLikeValue = $cnx->quote("{$value},%");
+                        $quotedLikeValue = $this->quoteExpressionString("{$likeValue},%");
                         $valueFilters[] = "{$quotedField} LIKE {$quotedLikeValue}";
 
                         // ends with comma & value
-                        $quotedLikeValue = $cnx->quote("%,{$value}");
+                        $quotedLikeValue = $this->quoteExpressionString("%,{$likeValue}");
                         $valueFilters[] = "{$quotedField} LIKE {$quotedLikeValue}";
 
                         // value between two commas
-                        $quotedLikeValue = $cnx->quote("%,{$value},%");
+                        $quotedLikeValue = $this->quoteExpressionString("%,{$likeValue},%");
                         $valueFilters[] = "{$quotedField} LIKE {$quotedLikeValue}";
                     }
 
@@ -1398,16 +1399,58 @@ class Project
     }
 
     /**
+     * Quote a string for a QGIS expression.
+     *
+     * As done by QgsExpression::quotedString(): the backslashes are escaped,
+     * since they are escape characters in the strings of the QGIS expressions,
+     * and the single quotes are doubled.
+     *
+     * @param string $value the string to quote
+     *
+     * @return string the string quoted with single quotes
+     */
+    protected function quoteExpressionString($value)
+    {
+        return "'".str_replace(array('\\', "'"), array('\\\\', "''"), $value)."'";
+    }
+
+    /**
+     * Get the SQL filter matching a field containing comma separated values.
+     *
+     * The field matches if one of its values is one of the given values.
+     * The values are compared as array items, not as LIKE patterns, so that
+     * the wildcards of a value, e.g. in a login, are not interpreted.
+     * A GIN index on string_to_array(field, ',') can be used by PostgreSQL.
+     *
+     * @param \jDbConnection $cnx         the database connection, to quote the values
+     * @param string         $quotedField the field name, enclosed with double quotes
+     * @param string[]       $values      the values of the user: login or groups, and all
+     *
+     * @return string the PostgreSQL SQL filter
+     */
+    protected function getMultipleValuesSqlFilter($cnx, $quotedField, $values)
+    {
+        // Quote each value with single quotes
+        $quotedValues = array_map(function ($value) use ($cnx) {
+            return $cnx->quote($value);
+        }, $values);
+
+        // The arrays overlap if they have at least one item in common
+        return "string_to_array({$quotedField}, ',') && ARRAY[".implode(', ', $quotedValues).']';
+    }
+
+    /**
      * Get login filtered config with the build expression.
      *
      * @param string $layerName : layer's name
      * @param bool   $edition   : get login filters for edition
+     * @param bool   $forSql    : get the SQL filter run by Lizmap, see getLoginFilters()
      *
      * @return array the login filtered config with build expression
      */
-    public function getLoginFilter($layerName, $edition = false)
+    public function getLoginFilter($layerName, $edition = false, $forSql = false)
     {
-        $loginFilters = $this->getLoginFilters(array($layerName), $edition);
+        $loginFilters = $this->getLoginFilters(array($layerName), $edition, $forSql);
 
         // login filters array is empty
         if (empty($loginFilters)) {

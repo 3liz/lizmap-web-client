@@ -1316,6 +1316,7 @@ class QgisForm implements QgisFormControlsInterface
 
             // Save the feature in the database
             if ($updateAction) {
+                // SQL filter added to the UPDATE query
                 $loginFilteredLayers = $this->filterDataByLogin($this->layer->getName());
                 $pkVal = $this->layer->updateFeature($feature, $values, $loginFilteredLayers);
             } else {
@@ -1731,6 +1732,7 @@ class QgisForm implements QgisFormControlsInterface
             throw new \Exception('Delete from database can\'t be done for the layer "'.$this->layer->getName().'"!');
         }
 
+        // SQL filter added to the DELETE query
         $loginFilteredLayers = $this->filterDataByLogin($this->layer->getName());
 
         // event to process data before the deletion
@@ -2021,17 +2023,8 @@ class QgisForm implements QgisFormControlsInterface
         if ($filterExpression) {
             $expFilter = $filterExpression;
         }
-        // Filter by login
-        if (!$this->loginFilteredOverride) {
-            $loginFilteredLayers = $this->filterDataByLogin($layerName);
-            if (is_array($loginFilteredLayers)) {
-                if ($expFilter) {
-                    $expFilter = ' ( '.$expFilter.' ) AND ( '.$loginFilteredLayers['where'].' ) ';
-                } else {
-                    $expFilter = $loginFilteredLayers['where'];
-                }
-            }
-        }
+        // The filter by login is applied by the WFS request: as SQL when the data
+        // is queried directly in the database, or by the lizmap_server plugin
         if ($expFilter) {
             $params['EXP_FILTER'] = $expFilter;
             // disable PROPERTYNAME in this case : if the exp_filter uses other fields, no data would be returned otherwise
@@ -2129,17 +2122,8 @@ class QgisForm implements QgisFormControlsInterface
         if ($relation['filterExpression']) {
             $expFilter = $relation['filterExpression'];
         }
-        // Filter by login
-        if (!$this->loginFilteredOverride) {
-            $loginFilteredLayers = $this->filterDataByLogin($relation['layerName']);
-            if (is_array($loginFilteredLayers)) {
-                if ($expFilter) {
-                    $expFilter = ' ( '.$expFilter.' ) AND ( '.$loginFilteredLayers['where'].' ) ';
-                } else {
-                    $expFilter = $loginFilteredLayers['where'];
-                }
-            }
-        }
+        // The filter by login is applied by the WFS request: as SQL when the data
+        // is queried directly in the database, or by the lizmap_server plugin
         if ($expFilter) {
             $params['EXP_FILTER'] = $expFilter;
             // disable PROPERTYNAME in this case : if the exp_filter uses other fields, no data would be returned otherwise
@@ -2216,6 +2200,9 @@ class QgisForm implements QgisFormControlsInterface
      * Filter data by login if necessary
      * as configured in the plugin for login filtered layers.
      *
+     * The WHERE statement is a SQL filter, run by Lizmap in the UPDATE
+     * and DELETE queries.
+     *
      * @param string $layername
      *
      * @return null|array array with these keys:
@@ -2245,7 +2232,7 @@ class QgisForm implements QgisFormControlsInterface
             $attribute = $loginFilteredConfig->filterAttribute;
 
             // SQL filter
-            $layerFilter = $layerProject->getLoginFilter($layername);
+            $layerFilter = $layerProject->getLoginFilter($layername, false, true);
             if (empty($layerFilter)) {
                 return null;
             }
