@@ -376,12 +376,9 @@ class SqlTools
                         $state = self::PARSER_STATE_COMMENT_SQL_2;
                     } elseif (preg_match('/^[a-z_][a-z0-9_]*$/i', $token)
                         && !in_array(strtolower($token), self::SQL_KEYWORDS, true)) {
-                        // A bare word is a column name, unless it is a function call
-                        $next = $k + 1;
-                        while ($next < $count && trim($tokens[$next], " \t\r\n") === '') {
-                            ++$next;
-                        }
-                        if ($next >= $count || $tokens[$next] !== '(') {
+                        // A bare word is a column name, unless it is a function call:
+                        // the whitespaces and the comments before the parenthesis are skipped
+                        if (self::getNextSignificantToken($tokens, $k + 1) !== '(') {
                             $columns[] = strtolower($token);
                         }
                     }
@@ -635,6 +632,85 @@ class SqlTools
     }
 
     /**
+     * Replace the significant tokens of a SQL string.
+     *
+     * The tokens of the strings, of the double quoted identifiers and of the
+     * comments are kept unchanged: only the other tokens are given to the callback,
+     * e.g. the function names and the variables.
+     *
+     * @param string   $sql      the SQL string, validated by parseAndValidateSQLString()
+     * @param callable $callback called with the token, all the tokens and the index of the token;
+     *                           it returns the replacement of the token, or null to keep it
+     *
+     * @return string the SQL string with the replaced tokens
+     *
+     * @throws \InvalidArgumentException if the string cannot be split
+     */
+    protected static function replaceSignificantTokens(string $sql, callable $callback): string
+    {
+        $tokens = self::tokenizeSQLString($sql);
+        $count = count($tokens);
+        $state = self::PARSER_STATE_BETWEEN_TOKENS;
+
+        for ($k = 0; $k < $count; ++$k) {
+            $token = $tokens[$k];
+
+            switch ($state) {
+                case self::PARSER_STATE_BETWEEN_TOKENS:
+                    // Start of a string, an identifier or a comment, kept unchanged
+                    if ($token === "'") {
+                        $state = self::PARSER_STATE_STRING_VALUE;
+                    } elseif ($token === '"') {
+                        $state = self::PARSER_STATE_TABLE_NAME;
+                    } elseif ($token === '--') {
+                        $state = self::PARSER_STATE_COMMENT_SQL_1;
+                    } elseif ($token === '/*') {
+                        $state = self::PARSER_STATE_COMMENT_SQL_2;
+                    } else {
+                        // A significant token, which can be replaced
+                        $replacement = $callback($token, $tokens, $k);
+                        if ($replacement !== null) {
+                            $tokens[$k] = $replacement;
+                        }
+                    }
+
+                    break;
+
+                case self::PARSER_STATE_STRING_VALUE:
+                case self::PARSER_STATE_TABLE_NAME:
+                    // Stop at the closing quote, a doubled quote is an escaped quote
+                    $quote = ($state === self::PARSER_STATE_STRING_VALUE) ? "'" : '"';
+                    if ($token === $quote) {
+                        if (isset($tokens[$k + 1]) && $tokens[$k + 1] === $quote) {
+                            ++$k;
+                        } else {
+                            $state = self::PARSER_STATE_BETWEEN_TOKENS;
+                        }
+                    }
+
+                    break;
+
+                case self::PARSER_STATE_COMMENT_SQL_1:
+                    // The comment ends at the end of the line
+                    if ($token === "\n" || $token === "\r" || $token === "\r\n") {
+                        $state = self::PARSER_STATE_BETWEEN_TOKENS;
+                    }
+
+                    break;
+
+                case self::PARSER_STATE_COMMENT_SQL_2:
+                    if ($token === '*/') {
+                        $state = self::PARSER_STATE_BETWEEN_TOKENS;
+                    }
+
+                    break;
+            }
+        }
+
+        return implode('', $tokens);
+    }
+
+    /**
      * Translate a QGIS expression filter into a PostGIS compatible SQL filter.
      *
      * Rewrites the geometry predicate functions used by the selection tool and
@@ -642,22 +718,81 @@ class SqlTools
      * disjoint) to their PostGIS ST_* equivalents, translates geom_from_gml() and
      * replaces the $geometry variable with the given geometry column.
      *
-     * The predicate name is matched case-insensitively and only when followed by
-     * an opening parenthesis, so plain text and column names are left untouched.
+     * The filter is translated on its tokens, as it has been validated: the strings,
+     * the double quoted identifiers and the comments are left untouched. The function
+     * names are matched case-insensitively and only when followed by an opening
+     * parenthesis, after the whitespaces and the comments.
      *
-     * @param string $filter         The QGIS expression filter
+     * @param string $filter         The QGIS expression filter, validated by parseAndValidateSQLString()
      * @param string $geometryColumn The layer geometry column name
      *
      * @return string The PostGIS compatible filter
      */
     public static function translateExpressionToPostgis(string $filter, string $geometryColumn): string
     {
-        foreach (self::GEOMETRY_PREDICATES as $qgisFunction => $postgisFunction) {
-            $filter = preg_replace('/\b'.$qgisFunction.'\s*\(/i', $postgisFunction.'(', $filter);
-        }
-        $filter = str_replace('geom_from_gml', 'ST_GeomFromGML', $filter);
+        // The geometry column, as a double quoted identifier
+        $quotedGeometryColumn = '"'.str_replace('"', '""', $geometryColumn).'"';
 
-        return str_replace('$geometry', '"'.$geometryColumn.'"', $filter);
+        return self::replaceSignificantTokens(
+            $filter,
+            function (string $token, array $tokens, int $k) use ($quotedGeometryColumn): ?string {
+                $name = strtolower($token);
+
+                // The $geometry variable
+                if ($name === '$geometry') {
+                    return $quotedGeometryColumn;
+                }
+
+                // The functions, only when they are called
+                if (self::getNextSignificantToken($tokens, $k + 1) !== '(') {
+                    return null;
+                }
+                if (array_key_exists($name, self::GEOMETRY_PREDICATES)) {
+                    return self::GEOMETRY_PREDICATES[$name];
+                }
+                if ($name === 'geom_from_gml') {
+                    return 'ST_GeomFromGML';
+                }
+
+                return null;
+            }
+        );
+    }
+
+    /**
+     * Replace the $id variable of a QGIS expression filter.
+     *
+     * The variable is replaced on the tokens of the filter: a $id in a string,
+     * a double quoted identifier or a comment is left untouched.
+     *
+     * @param string      $filter   The filter, validated by parseAndValidateSQLString()
+     * @param null|string $idColumn The primary key column, enclosed for the database,
+     *                              or null if the layer has no single primary key
+     *
+     * @return null|string The filter with the primary key column, or null if the filter
+     *                     uses $id and there is no single primary key column
+     */
+    public static function replaceIdVariable(string $filter, ?string $idColumn): ?string
+    {
+        $found = false;
+        $result = self::replaceSignificantTokens(
+            $filter,
+            function (string $token) use ($idColumn, &$found): ?string {
+                if (strtolower($token) !== '$id') {
+                    return null;
+                }
+                $found = true;
+
+                return $idColumn;
+            }
+        );
+
+        // The filter uses $id, but the layer has no single primary key
+        if ($found && $idColumn === null) {
+            return null;
+        }
+
+        return $result;
     }
 
     /**
