@@ -229,7 +229,7 @@ test.describe('N to M relations',
 
             // check info message for link pivot
             await expect(project.editionForm.locator("#edition-link-pivot"))
-                .toHaveText("The new record will be linked to the feature ID \"2\" of \"Natural areas\" layer");
+                .toHaveText("The new record will be linked to the feature ID \"2\" of the \"Natural areas\" layer");
 
             // fill the form and submit
             await project.fillEditionFormTextInput('bird_name', 'Northern pintail');
@@ -318,7 +318,7 @@ test.describe('N to M relations',
 
             // unlink area from birds, this should delete the pivot record
             page.once('dialog', dialog => {
-                expect(dialog.message()).toBe("Are you sure you want to unlink the selected feature from \"Birds\" layer?");
+                expect(dialog.message()).toBe("Are you sure you want to unlink the selected feature from the \"Birds\" layer?");
                 return dialog.accept();
             });
 
@@ -332,7 +332,7 @@ test.describe('N to M relations',
 
             // delete a bird record, this should remove pivot records too
             page.once('dialog', dialog => {
-                expect(dialog.message()).toBe("Are you sure you want to delete the selected feature? \n\nThe related links with the following layers:\n \nNatural areas \n\nwill be also deleted");
+                expect(dialog.message()).toBe("Are you sure you want to delete the selected feature? \n\nThe related links with the following layers:\n \nNatural areas \n\nwill also be deleted");
                 return dialog.accept();
             });
 
@@ -439,7 +439,7 @@ test.describe('N to M relations',
 
             // unlink a bird from popup (n:m cardinality)
             page.once('dialog', dialog => {
-                expect(dialog.message()).toBe("Are you sure you want to unlink the selected feature from \"Natural areas\" layer?");
+                expect(dialog.message()).toBe("Are you sure you want to unlink the selected feature from the \"Natural areas\" layer?");
                 return dialog.accept();
             });
 
@@ -469,7 +469,7 @@ test.describe('N to M relations',
             editFeatureRequest = await editFeatureRequestPromise;
             await editFeatureRequest.response();
 
-            await expect(page.locator("#edition-link-pivot")).toHaveText("The new record will be linked to the feature ID \"1\" of \"Natural areas\" layer")
+            await expect(page.locator("#edition-link-pivot")).toHaveText("The new record will be linked to the feature ID \"1\" of the \"Natural areas\" layer")
 
             // fill the form and submit
             await project.fillEditionFormTextInput('bird_name', 'Common snipe');
@@ -521,7 +521,7 @@ test.describe('N to M relations',
             editFeatureRequest = await editFeatureRequestPromise;
             await editFeatureRequest.response();
 
-            await expect(page.locator("#edition-link-pivot")).toHaveText("The new record will be linked to the feature ID \"1\" of \"Natural areas\" layer")
+            await expect(page.locator("#edition-link-pivot")).toHaveText("The new record will be linked to the feature ID \"1\" of the \"Natural areas\" layer")
 
             //await project.editionForm.locator('#jforms_view_edition_liz_future_action').selectOption('create');
             // fill the form and submit
@@ -535,7 +535,7 @@ test.describe('N to M relations',
 
             await page.waitForTimeout(500);
             await expect(page.locator(".alert-linkaddedfeature p")).toHaveText('The new feature of layer "Birds" was successfully linked to the layer "Natural areas"');
-            await expect(page.locator("#edition-link-pivot")).toHaveText("The new record will be linked to the feature ID \"1\" of \"Natural areas\" layer")
+            await expect(page.locator("#edition-link-pivot")).toHaveText("The new record will be linked to the feature ID \"1\" of the \"Natural areas\" layer")
 
             // insert new bird with option "reopen form", this should not add the pivot record in order to avoid duplication
             // fill the form and submit
