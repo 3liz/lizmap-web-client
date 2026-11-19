@@ -142,9 +142,12 @@ export default class Tooltip {
                         return response.json();
                     })
                     .then(geojson => {
-                        // Message shown once, when the layer tooltips are loaded
+                        // Message shown once, when the layer tooltips are loaded.
+                        // It is a text, e.g. with an expression: it is escaped for the HTML alert.
                         if (typeof geojson?.lizmapMessage === 'string' && geojson.lizmapMessage !== '') {
-                            this._lizmap3.addMessage(geojson.lizmapMessage, 'warning', true);
+                            const text = document.createElement('p');
+                            text.textContent = geojson.lizmapMessage;
+                            this._lizmap3.addMessage(text.innerHTML, 'warning', true);
                         }
                         const features = vectorSource.getFormat().readFeatures(geojson, {
                             featureProjection: projection,

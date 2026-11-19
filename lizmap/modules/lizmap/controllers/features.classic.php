@@ -149,7 +149,8 @@ class featuresCtrl extends jController
             $data = (object) array('type' => 'FeatureCollection', 'features' => array());
         }
 
-        // The message shown once to the user, as a foreign member of the GeoJSON
+        // The message shown once to the user, as a foreign member of the GeoJSON.
+        // It is a text, escaped by the client when it is displayed.
         if ($tooltipErrors) {
             $data->lizmapMessage = qgisExpressionUtils::expressionErrorMessage(
                 $lproj->getAppContext(),
