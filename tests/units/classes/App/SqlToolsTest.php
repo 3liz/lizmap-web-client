@@ -65,50 +65,80 @@ class SqlToolsTest extends TestCase
     }
 
     /**
-     * Provide filters with unquoted field names, the allowed tokens and the expected validity.
+     * Provide filters of the features table, with the field names of the layer, and the expected validity.
      *
-     * @return array the filters, the allowed tokens and the expected results
+     * @return array the filters, the field names and the expected results
      */
-    public static function getValidateExpressionFilterWithTokensData()
+    public static function getValidateFeaturesTableFilterData()
     {
-        $tokens = array('quartmno', 'LIBQUART', 'true', 'false');
+        $fields = array('quartmno', 'LIBQUART', 'env', 'attribute');
 
         return array(
             // Filters of the features table, built by Lizmap or written in a maptip
-            array("quartmno = 'MC'", $tokens, true),
-            array("LIBQUART ILIKE 'M%'", $tokens, true),
-            array("libquart = 'a' AND \"quartmno\" IN ('MC', 'PA')", $tokens, true),
-            array('FALSE', $tokens, true),
-            array('null', $tokens, true),
+            array("quartmno = 'MC'", $fields, true),
+            array("LIBQUART ILIKE 'M%'", $fields, true),
+            array("libquart = 'a' AND \"quartmno\" IN ('MC', 'PA')", $fields, true),
+            array('FALSE', $fields, true),
+            array('null', $fields, true),
+            // Operators and QGIS functions without risk
+            array("\"quartmno\" <> 'MC'", $fields, true),
+            array("\"libquart\" || 'x' = 'ax'", $fields, true),
+            array('"quartmno" + 1 > 2 AND "quartmno" * 2 < 10', $fields, true),
+            array("\"libquart\" ~ '^M'", $fields, true),
+            array("if(\"quartmno\" = 'MC', true, false)", $fields, true),
+            array("to_string(\"quartmno\") = '1'", $fields, true),
+            array("regexp_match(\"libquart\", 'M')", $fields, true),
+            array("year(to_date('2024-01-02')) = 2024", $fields, true),
+            array("array_contains(string_to_array(\"libquart\", ','), 'a')", $fields, true),
+            array("attribute('quartmno') = 'MC'", $fields, true),
+            // A field name, not a function
+            array("env = 'MC'", $fields, true),
+            array("env('HOME') = '/home/qgis'", $fields, false),
+            array("env ('HOME') = '/home/qgis'", $fields, false),
+            array("env /* comment */ ('HOME') = '/home/qgis'", $fields, false),
             // Unknown field or function
-            array("other = 'MC'", $tokens, false),
+            array("other = 'MC'", $fields, false),
             array("quartmno = 'MC'", array(), false),
+            array("represent_value(\"quartmno\") = 'MC'", $fields, false),
             // Functions reading other layers or the server environment
-            array("aggregate('layer', 'count', 1) = 3", $tokens, false),
-            array("attribute(get_feature_by_id('layer', 1), 'user') = 'admin'", $tokens, false),
-            array("get_feature('layer', 'id', 1) IS NOT NULL", $tokens, false),
-            array("relation_aggregate('relation', 'count', 1) > 0", $tokens, false),
-            array("overlay_intersects('layer')", $tokens, false),
-            array("env('HOME') = '/home/qgis'", $tokens, false),
-            array("file_exists('/etc/passwd')", $tokens, false),
-            array('@project_path IS NOT NULL', $tokens, false),
-            // An allowed token can not be used to call a function
-            array("quartmno = 'MC'; SELECT 1", $tokens, false),
+            array("aggregate('layer', 'count', 1) = 3", $fields, false),
+            array("attribute(get_feature_by_id('layer', 1), 'user') = 'admin'", $fields, false),
+            array("get_feature('layer', 'id', 1) IS NOT NULL", $fields, false),
+            array("relation_aggregate('relation', 'count', 1) > 0", $fields, false),
+            array("overlay_intersects('layer')", $fields, false),
+            array("file_exists('/etc/passwd')", $fields, false),
+            array('@project_path IS NOT NULL', $fields, false),
+            array("eval('1') = 1", $fields, false),
+            // Not a single expression
+            array("quartmno = 'MC'; SELECT 1", $fields, false),
         );
     }
 
     /**
-     * Check the validation of a filter with additional allowed tokens.
+     * Check the validation of a filter of the features table.
+     *
+     * The QGIS expression tokens without risk are allowed, and the field names
+     * of the layer, which can not be used as functions.
      *
      * @param string   $filter         The filter to validate
-     * @param string[] $tokens         The additional allowed tokens
+     * @param string[] $fields         The field names of the layer
      * @param bool     $expectedResult The expected validity
      */
-    #[DataProvider('getValidateExpressionFilterWithTokensData')]
-    public function testValidateExpressionFilterWithTokens($filter, $tokens, $expectedResult): void
+    #[DataProvider('getValidateFeaturesTableFilterData')]
+    public function testValidateFeaturesTableFilter($filter, $fields, $expectedResult): void
     {
-        $valid = SqlTools::validateExpressionFilter($filter, $tokens);
+        $valid = SqlTools::validateExpressionFilter($filter, SqlTools::QGIS_EXPRESSION_TOKENS, $fields);
         $this->assertEquals($expectedResult, $valid, $filter);
+    }
+
+    /**
+     * The QGIS expression tokens are not allowed in the WFS filters run as SQL.
+     */
+    public function testQgisExpressionTokensNotInSqlFilters(): void
+    {
+        $this->assertFalse(SqlTools::validateExpressionFilter("\"name\" || 'x' = 'ax'"));
+        $this->assertFalse(SqlTools::validateExpressionFilter('if("id" = 1, true, false)'));
+        $this->assertFalse(SqlTools::validateExpressionFilter('"id" + 1 > 2'));
     }
 
     /**
