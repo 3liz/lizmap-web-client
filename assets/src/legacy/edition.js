@@ -2184,7 +2184,13 @@ var lizEdition = function() {
             fields:     JSON.stringify(fields),
             texts:      JSON.stringify(info.textWidgets)
         }, function(resp) {
-            Object.keys(resp || {}).forEach(function(f) {
+            resp = resp || {};
+            // The messages of the text widgets in error
+            var textWidgetErrors = resp['liz_textWidgetErrors'] || {};
+            delete resp['liz_textWidgetErrors'];
+            showTextWidgetErrors(form, info.textWidgets, textWidgetErrors);
+
+            Object.keys(resp).forEach(function(f) {
                 // Text widgets are display-only: always refresh
                 if (info.textWidgets.includes(f)) {
                     form.find('[name="' + f + '"]').val(resp[f]).next('.jforms-value').text(resp[f]);
@@ -2193,6 +2199,50 @@ var lizEdition = function() {
                 }
             });
         }, 'json');
+    }
+
+    /**
+     * Show the errors of the text widgets as jForms errors.
+     *
+     * The text widget and its label get the jforms-error class, and the message is
+     * added to the error list at the top of the form, as done by the server when
+     * the form is displayed. The previous messages of the text widgets, marked with
+     * the data-text-widget attribute, are removed.
+     * @param {jQuery} form - The edition form
+     * @param {string[]} textWidgets - The names of the text widgets of the form
+     * @param {{[key: string]: string}} errors - The error message of each text widget in error
+     */
+    function showTextWidgetErrors( form, textWidgets, errors ) {
+        var formId = form.attr('id');
+        var errorList = $('#' + formId + '_errors');
+
+        textWidgets.forEach(function(name) {
+            var message = errors[name];
+            var inError = typeof message === 'string' && message !== '';
+
+            // Mark or unmark the widget and its label.
+            // The name of a text widget can have spaces: its label is not found with a jQuery id selector.
+            form.find('[name="' + name + '"]').next('.jforms-value').toggleClass('jforms-error is-invalid', inError);
+            $(document.getElementById(formId + '_' + name + '_label')).toggleClass('jforms-error', inError);
+
+            // Replace the previous message of this text widget, given by the server or by this function
+            errorList.find('[data-text-widget]').filter(function() {
+                return this.getAttribute('data-text-widget') === name;
+            }).closest('p').remove();
+            if (!inError) {
+                return;
+            }
+            if (!errorList.length) {
+                errorList = $('<div>')
+                    .attr('id', formId + '_errors')
+                    .addClass('alert alert-danger jforms-error-list');
+                form.first().before(errorList);
+            }
+            errorList.append($('<p>').append($('<span>').attr('data-text-widget', name).text(message)));
+        });
+
+        // Hide the error list without any message
+        errorList.toggle(errorList.children().length > 0);
     }
 
     /**
