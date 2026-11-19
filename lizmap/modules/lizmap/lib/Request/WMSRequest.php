@@ -39,72 +39,18 @@ class WMSRequest extends OGCRequest
         return $this->forceRequest = $forced;
     }
 
+    /**
+     * Get the WMS request parameters, with the Lizmap extra parameters.
+     *
+     * The filter by login is not added to the FILTER parameter: it is applied
+     * by the lizmap_server plugin of QGIS Server, with the user and the groups
+     * given in the Lizmap extra parameters.
+     *
+     * @return array the WMS request parameters
+     */
     public function parameters()
     {
-        $params = parent::parameters();
-
-        // Filter data by login if necessary
-        // as configured in the plugin for login filtered layers.
-
-        // Filter data by login for request: GetMap, GetFeatureInfo, GetPrint, GetPrintAtlas
-        $wmsRequest = strtolower($this->param('request'));
-        if (!in_array($wmsRequest, array('getmap', 'getfeatureinfo', 'getprint', 'getprintatlas'))) {
-            return $params;
-        }
-
-        // No filter data by login rights
-        if ($this->appContext->aclCheck('lizmap.tools.loginFilteredLayers.override', $this->repository->getKey())) {
-            return $params;
-        }
-
-        // filter data by login
-        $layers = $this->param('layers');
-
-        // 'GetPrintAtlas' request has param 'layer' and not 'layers'
-        if ($wmsRequest == 'getprintatlas') {
-            $layers = $this->param('layer');
-        }
-
-        if (is_string($layers)) {
-            $layers = explode(',', $layers);
-        }
-
-        // get login filters
-        $loginFilters = array();
-
-        if ($layers) {
-            $loginFilters = $this->project->getLoginFilters($layers);
-        }
-
-        // login filters array is empty
-        if (empty($loginFilters)) {
-            return $params;
-        }
-
-        // merge client filter parameter
-        $clientFilter = $this->param('filter', '');
-        if (!empty($clientFilter)) {
-            $clientFilterExpression = explode(';', $clientFilter);
-            foreach ($clientFilterExpression as $a) {
-                $b = explode(':', $a);
-                $layerName = trim($b[0]);
-                $layerFilter = trim($b[1]);
-                if (array_key_exists($layerName, $loginFilters)) {
-                    $loginFilters[$layerName]['filter'] .= ' AND ( '.$layerFilter.' )';
-                } else {
-                    $loginFilters[$layerName] = array('filter' => '( '.$layerFilter.' )', 'layername' => $layerName);
-                }
-            }
-        }
-
-        // update filter parameter
-        $filters = array();
-        foreach ($loginFilters as $layerName => $layerFilter) {
-            $filters[] = $layerName.':'.$layerFilter['filter'];
-        }
-        $params['filter'] = implode(';', $filters);
-
-        return $params;
+        return parent::parameters();
     }
 
     /**
