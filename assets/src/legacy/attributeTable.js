@@ -1154,6 +1154,8 @@ var lizAttributeTable = function() {
                         'criteria' in dtParams.searchBuilder &&
                         Array.isArray(dtParams.searchBuilder.criteria) &&
                         dtParams.searchBuilder.criteria.length > 0) ||
+                        // quick search on all the columns
+                        (dtParams.search?.value) ||
                         // bbox criteria
                         'bbox' in dtParams ||
                         // filter in criteria
@@ -1648,6 +1650,8 @@ var lizAttributeTable = function() {
                 lConfig['alias'] = cAliases;
                 // Datatable configuration
                 if ( !DataTable.isDataTable( aTable ) ) {
+                    // The table of the layer tab, not a child table or an edition table
+                    const isLayerTable = (aTable == '#attribute-layer-table-' + cleanName);
                     const datatablesUrl = globalThis['lizUrls'].dataTables;
                     const params = {...globalThis['lizUrls'].params};
                     params['layerId'] = lConfig.id;
@@ -1695,6 +1699,11 @@ var lizAttributeTable = function() {
                                 }
                             },
                             dataSrc: (json) => {
+                                // Enable or disable the quick search input, depending on the size of the layer
+                                if (isLayerTable) {
+                                    updateQuickSearchInput(aTable, json.quickSearch?.enabled);
+                                }
+
                                 // Format data for DataTables
                                 let formatedData = [];
                                 if (!json.data) {
@@ -1745,6 +1754,11 @@ var lizAttributeTable = function() {
                         }
                         ,columns: columns
                         ,initComplete: function(settings) {
+                            // Move the quick search input to the action bar
+                            if (isLayerTable) {
+                                moveQuickSearchInput(aTable);
+                            }
+
                             // Refresh size of datatable after data has been loaded
                             refreshDatatableSize('#'+$('#bottom-dock div.bottom-content.active div.attribute-layer-main').attr('id'));
 
@@ -1776,7 +1790,14 @@ var lizAttributeTable = function() {
                         ,pageLength: 50
                         ,scrollY: '95%' // Used to init but refreshDatatableSize() does the job of setting the height
                         ,layout: {
-                            topStart: null,
+                            // Native DataTables quick search, run on the server in all the columns,
+                            // only for the table of the layer tab, not for the child tables
+                            topStart: isLayerTable ? {
+                                search: {
+                                    text: '',
+                                    placeholder: lizDict['attributeLayers.toolbar.input.search.title'],
+                                }
+                            } : null,
                             topEnd: null,
                             bottomStart: ['info', 'pageLength'],
                             bottomEnd: {
@@ -1849,6 +1870,70 @@ var lizAttributeTable = function() {
                     aCallback(aName,aTable);
 
                 return false;
+            }
+
+            /**
+             * Get the native DataTables quick search input of an attribute table.
+             *
+             * The input is first in the DataTables container, then moved to the action bar.
+             *
+             * @param {string} aTable The table selector
+             * @returns {HTMLInputElement|null} The input, or null if the table has no quick search
+             */
+            function getQuickSearchInput(aTable) {
+                return document.querySelector(aTable)
+                    ?.closest('.attribute-layer-main')
+                    ?.querySelector('.dt-search input') ?? null;
+            }
+
+            /**
+             * Move the native DataTables quick search of an attribute table to its action bar.
+             *
+             * The search is put after the search builder button, and the empty layout row
+             * above the table is removed, so that the table keeps its height.
+             *
+             * @param {string} aTable The table selector
+             */
+            function moveQuickSearchInput(aTable) {
+                const table = document.querySelector(aTable);
+                const searchContainer = table?.closest('.dt-container')?.querySelector('.dt-search');
+                const actionBar = table?.closest('.attribute-layer-content')?.previousElementSibling;
+                if (!searchContainer || !actionBar) {
+                    return;
+                }
+
+                // Insert the search after the search builder button, if any
+                const layoutRow = searchContainer.closest('.dt-layout-row');
+                const searchBuilderButtons = actionBar.querySelector(':scope > .dt-buttons');
+                if (searchBuilderButtons) {
+                    searchBuilderButtons.insertAdjacentElement('afterend', searchContainer);
+                } else {
+                    actionBar.insertAdjacentElement('afterbegin', searchContainer);
+                }
+
+                // Remove the layout row which is now empty
+                if (layoutRow && !layoutRow.querySelector('.dt-layout-cell > *')) {
+                    layoutRow.remove();
+                }
+            }
+
+            /**
+             * Enable or disable the quick search input of an attribute table, as given by the server.
+             *
+             * The server disables the quick search for the big layers not queried directly in the database.
+             *
+             * @param {string}  aTable    The table selector
+             * @param {boolean} [enabled] True if the quick search is enabled, undefined if unknown
+             */
+            function updateQuickSearchInput(aTable, enabled) {
+                const input = getQuickSearchInput(aTable);
+                if (!input || typeof enabled !== 'boolean') {
+                    return;
+                }
+                input.disabled = !enabled;
+                input.title = enabled
+                    ? lizDict['attributeLayers.toolbar.input.search.help']
+                    : lizDict['attributeLayers.toolbar.input.search.disabled.help'];
             }
 
             /**

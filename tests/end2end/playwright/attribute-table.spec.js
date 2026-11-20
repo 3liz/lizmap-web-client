@@ -815,6 +815,59 @@ test.describe('Attribute table @readonly', () => {
             .toBeLessThan(zoomBefore);
     });
 
+    test('Quick search in all the columns', async ({ page }) => {
+        const project = new ProjectPage(page, 'attribute_table');
+        await project.open();
+
+        const tableName = 'Les_quartiers_a_Montpellier';
+        const typeName = 'quartiers';
+
+        const datatablesRequest = await project.openAttributeTable(tableName);
+        responseExpect(await datatablesRequest.response()).toBeJson();
+        const tableWrapper = project.attributeTableWrapper(tableName);
+        await expect(tableWrapper.locator('div.dt-info'))
+            .toContainText('Showing 1 to 7 of 7 entries');
+
+        // The native DataTables quick search input is in the action bar, and enabled
+        const searchInput = project.attributeTableActionBar(tableName).locator('.dt-search input');
+        await expect(searchInput).toBeVisible();
+        await expect(searchInput).toBeEnabled();
+        await expect(searchInput).toHaveAttribute('placeholder', 'Search');
+        await expect(searchInput).toHaveAttribute('title', 'Search in all the columns');
+        // No search input above the table
+        await expect(tableWrapper.locator('.dt-search')).toHaveCount(0);
+
+        // Type a search: the request is sent to the server with the search value
+        let datatablesRequestPromise = project.waitForDatatablesRequest();
+        await searchInput.fill("d'ar");
+        let searchRequest = await datatablesRequestPromise;
+        responseExpect(await searchRequest.response()).toBeJson();
+        expect(searchRequest.postData()).toContain('search%5Bvalue%5D=d\'ar');
+        await expect(tableWrapper.locator('div.dt-info'))
+            .toContainText('Showing 1 to 2 of 2 entries (filtered from 7 total entries)');
+
+        // Select searched features: only the 2 searched features are selected
+        const getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest(typeName);
+        await project.attributeTableActionBar(tableName).locator('.btn-select-searched').click();
+        const getSelectionTokenRequest = await getSelectionTokenRequestPromise;
+        responseExpect(await getSelectionTokenRequest.response()).toBeJson();
+        requestExpect(getSelectionTokenRequest).toContainParametersInPostData({
+            'service': 'WMS',
+            'request': 'GETSELECTIONTOKEN',
+            'typename': typeName,
+            'ids': '4,5',
+        });
+
+        // Clear the search
+        datatablesRequestPromise = project.waitForDatatablesRequest();
+        await searchInput.fill('');
+        searchRequest = await datatablesRequestPromise;
+        responseExpect(await searchRequest.response()).toBeJson();
+        await expect(searchInput).toHaveValue('');
+        await expect(tableWrapper.locator('div.dt-info'))
+            .toContainText('Showing 1 to 7 of 7 entries');
+    });
+
     test('Thumbnail class generate img with good path', async ({ page }) => {
         const project = new ProjectPage(page, 'attribute_table');
         await project.open();
