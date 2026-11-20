@@ -360,9 +360,12 @@ export default class Print extends HTMLElement {
 
             highlightSymbol.push(mainLizmap.digitizing.getFeatureDrawnSLD(index));
 
-            // Labels
-            const label = featureDrawn.get('text') ?? ' ';
-            highlightLabelString.push(label);
+            // Labels: the text of the feature and its measures when the measure tool is visible
+            const label = [
+                featureDrawn.get('text'),
+                mainLizmap.digitizing.getFeatureDrawnMeasureLabel(index),
+            ].filter(text => text).join('\n');
+            highlightLabelString.push(label || ' ');
             // Font size is 10px by default (https://github.com/openlayers/openlayers/blob/v8.1.0/src/ol/style/Text.js#L30)
             let scale = featureDrawn.get('scale') ?? 1;
             if (scale) {
