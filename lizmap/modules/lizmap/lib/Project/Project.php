@@ -2559,6 +2559,14 @@ class Project
             );
         }
 
+        $tpl = new \jTpl();
+        $dockable[] = new \lizmapMapDockItem(
+            'layercompare',
+            $this->appContext->getLocale('view~map.layercompare.navbar.title'),
+            $tpl->fetch('view~map_layercompare'),
+            5
+        );
+
         if ($this->hasTooltipLayers()) {
             $tpl = new \jTpl();
             $dockable[] = new \lizmapMapDockItem(
