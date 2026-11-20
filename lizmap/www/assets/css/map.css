@@ -2534,6 +2534,30 @@ lizmap-navbar {
   text-align:center;
 }
 
+/* Map loading indicator */
+.map-loading-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 999;
+  width: 56px;
+  height: 56px;
+  margin: -28px 0 0 -28px;
+  border: 8px solid var(--color-contrasted-elements-light, #c3dceb);
+  border-top-color: var(--color-contrasted-elements, #43718c);
+  border-radius: 50%;
+  filter: drop-shadow(0 0 2px rgb(255 255 255 / 90%));
+  pointer-events: none;
+  visibility: hidden;
+  animation: spinner 0.8s linear infinite;
+}
+
+/* Shown after a short delay to avoid flickering on fast loads */
+.map-loading-indicator.loading {
+  visibility: visible;
+  transition: visibility 0s 150ms;
+}
+
 /* Overview map */
 #overview-box {
   z-index:999;
