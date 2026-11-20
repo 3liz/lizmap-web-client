@@ -33,6 +33,7 @@ lizmap/var/config/profiles.ini.php
 lizmap/var/config/installer.ini.php
 lizmap/var/config/installer.bak.ini.php
 lizmap/var/config/localurls.xml
+lizmap/var/config/basicAuthCacheSecret.ini.php
 lizmap/var/db/*.db
 lizmap/var/lizmap-theme-config/*
 !lizmap/var/lizmap-theme-config/.empty
