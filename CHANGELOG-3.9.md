@@ -8,6 +8,22 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+### Contributors
+
+### Added
+
+* Add lizmap-feature-button component #7300
+
+### Fixed
+
+### Security
+
+### Tests
+
+### Backend
+
 ## 3.9.12 - 2026-10-23
 
 ### Funders
