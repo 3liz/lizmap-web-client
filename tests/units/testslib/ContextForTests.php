@@ -249,6 +249,12 @@ class ContextForTests implements AppContextInterface
 
     public function buildMapToken()
     {
-        return "TOKEN_FOR_TEST";
+        return 'TOKEN_FOR_TEST';
+    }
+
+    public function cleanHtml(string $content)
+    {
+        // NOTE : to improve, currently the clean method is tested via end2end.
+        return $content;
     }
 }
