@@ -67,6 +67,7 @@
                     </button>
                     <lizmap-paste-geom></lizmap-paste-geom>
                     <lizmap-paste-stored-geom style="display:none;" data-bs-toggle="tooltip" data-bs-title="{@view~edition.geomtool.pastegeom.title@}"></lizmap-paste-stored-geom>
+                    <lizmap-trace-geom></lizmap-trace-geom>
                     <form id="edition-point-coord-form" class="form-horizontal">
                         <fieldset>
                             <div id="edition-point-coord-form-group" class="jforms-table-group">

@@ -297,13 +297,15 @@ h1, h2, h3, h4, h5 {
 
 /* Copy/paste geometry button web component - display inline */
 lizmap-paste-geom,
-lizmap-paste-stored-geom {
+lizmap-paste-stored-geom,
+lizmap-trace-geom {
   display: inline-block;
   vertical-align: top;
 }
 
 lizmap-paste-geom svg,
-lizmap-paste-stored-geom svg {
+lizmap-paste-stored-geom svg,
+lizmap-trace-geom svg {
   width: 16px;
   height: 16px;
   vertical-align: middle;
