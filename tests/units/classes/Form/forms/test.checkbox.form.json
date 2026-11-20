@@ -1,0 +1,31 @@
+{
+    "pkuid": {
+        "editAttr": {
+            "editable": 1,
+            "fieldAlias": ""
+        },
+        "fieldEditType": "TextEdit",
+        "markup": "input",
+        "rendererCategories": []
+    },
+    "label": {
+        "editAttr": {
+            "editable": 1,
+            "fieldAlias": ""
+        },
+        "fieldEditType": "TextEdit",
+        "markup": "input",
+        "rendererCategories": []
+    },
+    "done": {
+        "editAttr": {
+            "CheckedState": "",
+            "UncheckedState": "",
+            "editable": 1,
+            "fieldAlias": ""
+        },
+        "fieldEditType": "CheckBox",
+        "markup": "checkbox",
+        "rendererCategories": []
+    }
+}
