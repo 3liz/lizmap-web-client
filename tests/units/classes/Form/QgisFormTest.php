@@ -791,6 +791,86 @@ class QgisFormTest extends TestCase
     }
 
     /**
+     * Build a QgisForm for a layer with a boolean checkbox field and a text field,
+     * both with a dynamic default value applied on update.
+     *
+     * @param mixed $form
+     * @param mixed $evaluateResult
+     * @param mixed $featureId
+     */
+    protected function buildCheckboxForm($form, $evaluateResult, $featureId)
+    {
+        $layer = $this->setUpEnv('test', 'checkbox', array(
+            'pkuid' => (object) array('autoIncrement' => true, 'type' => 'float'),
+            'label' => (object) array('autoIncrement' => false, 'notNull' => false, 'type' => 'text'),
+            'done' => (object) array('autoIncrement' => false, 'notNull' => false, 'type' => 'bool'),
+        ));
+        $layer->eCapabilities = (object) array('capabilities' => (object) array('modifyGeometry' => 'true', 'modifyAttribute' => 'true'));
+        $this->appContext->setCache('/test.qgs.layer-checkbox-form', array(
+            'qgsmtime' => PHP_INT_MAX,
+            'qgscfgmtime' => PHP_INT_MAX,
+            'format_version' => Project\ProjectCache::CACHE_FORMAT_VERSION,
+            'formControls' => $this->readFormCache(__DIR__.'/forms/test.checkbox.form.json'),
+        ), null, 'qgisprojects');
+        $layer->setDefaultValues(array(
+            'label' => '"pkuid" || \' tree\'',
+            'done' => '"label" IS NOT NULL',
+        ));
+        $layer->setDefaultValuesApplyOnUpdate(array(
+            'label' => true,
+            'done' => true,
+        ));
+
+        $reflection = new ReflectionClass(QgisForm2ForTests::class);
+
+        /** @var QgisForm2ForTests $qgisForm */
+        $qgisForm = $reflection->newInstanceWithoutConstructor();
+        $qgisForm->evaluateExpressionReturn = $evaluateResult;
+        $qgisForm->__construct($layer, $form, $featureId, false, $this->appContext);
+
+        return $qgisForm;
+    }
+
+    public static function getCheckboxDefaultResults()
+    {
+        return array(
+            'JSON true' => array(true, 't'),
+            'JSON false' => array(false, 'f'),
+            'string t' => array('t', 't'),
+            'string f' => array('f', 'f'),
+            'string true' => array('true', 't'),
+            'string false' => array('false', 'f'),
+            'integer 1' => array(1, 't'),
+            'integer 0' => array(0, 'f'),
+            'null' => array(null, 'f'),
+        );
+    }
+
+    /**
+     * The result of a default value expression of a boolean checkbox must be
+     * converted to the checked / unchecked value of the checkbox before save,
+     * otherwise jForms turns true ('1') into the unchecked value.
+     *
+     * @param mixed $result
+     * @param mixed $expected
+     */
+    #[DataProvider('getCheckboxDefaultResults')]
+    public function testCheckboxDefaultValueBeforeSave($result, $expected): void
+    {
+        $form = new dummyFormForDefaults();
+        $qgisForm = $this->buildCheckboxForm($form, null, '1');
+        $form->setData('label', '1 tree');
+        $form->setData('done', 'f');
+
+        $qgisForm->evaluateExpressionReturn = (object) array('label' => '1 tree', 'done' => $result);
+        $applied = $qgisForm->applyDynamicDefaultsBeforeSave();
+
+        $this->assertEquals(array('label', 'done'), $applied);
+        $this->assertSame($expected, $form->getData('done'));
+        $this->assertSame('1 tree', $form->getData('label'), 'Other fields keep the evaluated value');
+    }
+
+    /**
      * The default value of an upload field must not fill the create form,
      * neither as a static nor as a dynamic default value.
      */
