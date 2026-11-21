@@ -3,6 +3,7 @@ import { test, expect } from '@playwright/test';
 import { expect as requestExpect } from './fixtures/expect-request.js'
 import { expect as responseExpect } from './fixtures/expect-response.js'
 import { ProjectPage } from "./pages/project";
+import { DrawPage } from "./pages/drawpage";
 
 test.describe('Snap on edition', () => {
     test.beforeEach(async ({ page }) => {
@@ -356,5 +357,185 @@ test.describe('Snap on edition', () => {
         await expect(page.locator("#edition-point-coord-form-group .snap-layers-list .snap-layer").nth(2).locator("input")).toBeDisabled();
         await expect(page.locator("#edition-point-coord-form-group .snap-layers-list .snap-layer").nth(2).locator("label")).toHaveText("Point snap");
         await expect(page.locator("#edition-point-coord-form-group .snap-layers-list .snap-layer").nth(2).locator("label")).toContainClass("snap-disabled");
+    })
+})
+
+test.describe('Snap on drawings on edition mode', {tag:'@readonly'}, () => {
+    test('Snap selector component state and events', async ({ page }) => {
+        const project = new ProjectPage(page, 'form_edition_multilayer_snap');
+        await project.open();
+
+        const formRequest = await project.openEditingFormWithLayer('form_edition_snap_control');
+        await formRequest.response();
+
+        await page.getByRole('tab', { name: 'Digitization' }).click();
+
+        // Ensure no snap mode is active by default and the dropdown menu is collapsed
+        const snapComponent = project.editionSnapSelectorComponent;
+        await expect(snapComponent).toBeVisible();
+        await project.checkEditionSnapSelectorComponentState('nosnap',false);
+        await expect(snapComponent.locator('.dropdown-menu')).toBeHidden();
+
+        // Test dropdown panel toggling before selecting any snap mode
+        // Clicking the main button should open and close the selector panel without changing state
+        await project.toggleEditionSnapSelectorSelectionPanel(true,true);
+        await project.toggleEditionSnapSelectorSelectionPanel(false,true);
+        await project.checkEditionSnapSelectorComponentState('nosnap',false);
+
+        // Clicking the dropdown arrow button should also toggle the panel without changing state
+        await project.toggleEditionSnapSelectorSelectionPanel(true,false);
+        await project.toggleEditionSnapSelectorSelectionPanel(false,false);
+        await project.checkEditionSnapSelectorComponentState('nosnap',false);
+
+        // attach a listener and define a helper to assert 'lizmap-snap-selector-update' events
+        const snapEvents = [];
+        let eventCount = 0;
+
+        /**
+         * Verifies that a new 'lizmap-snap-selector-update' event was emitted
+         * with the expected active state and selected snap mode.
+         * @param {boolean} active - snap is active or not
+         * @param {string} snapSelected - snap type
+         * @returns {void}
+         */
+        const expectSnapEvent = (active, snapSelected) => {
+            expect(snapEvents).toHaveLength(eventCount + 1);
+            expect(snapEvents[eventCount]).toMatchObject({ active, snapSelected });
+            // increment counter for future events
+            eventCount++;
+        };
+
+        await page.exposeFunction('onSnapEvent', (detail) => {
+            snapEvents.push(detail);
+        })
+
+        // attach the event listener to the component
+        await snapComponent.evaluate((el) => {
+            el.addEventListener('lizmap-snap-selector-update', (event) => {
+                window.onSnapEvent(event.detail)
+            }, true);
+        });
+
+        // selecting 'vertex' should activate snapping and emit an update event
+        await project.editionSnapSelectorSelectSnap('vertex');
+        expectSnapEvent(true, 'vertex');
+        // check component internal state
+        await project.checkEditionSnapSelectorComponentState('vertex',true);
+
+        // clicking the main button should deactivate snapping while preserving 'vertex' as the selected mode and emit event too
+        await project.toggleEditionSnapSelectorSelectionPanel(false,true);
+        expectSnapEvent(false, 'vertex');
+        await project.checkEditionSnapSelectorComponentState('vertex',false);
+
+        // selecting 'intersection' should update the mode, re-enable snapping, and emit an event
+        await project.editionSnapSelectorSelectSnap('intersection');
+        expectSnapEvent(true, 'intersection');
+        await project.checkEditionSnapSelectorComponentState('intersection',true);
+
+        // clicking the main button should deactivate snapping while preserving 'intersection' as the selected mode
+        await project.toggleEditionSnapSelectorSelectionPanel(false,true);
+        expectSnapEvent(false, 'intersection');
+        await project.checkEditionSnapSelectorComponentState('intersection',false);
+
+        // Stopping the tool removes the component from the DOM (triggering disconnectedCallback)
+        // and emits a final inactive event retaining the last selected snap mode
+        await page.getByRole('button', { name: 'Stop' }).click();
+        expectSnapEvent(false, 'intersection');
+    })
+
+    test('Snap on drawings', async ({ page }) => {
+        const project = new DrawPage(page, 'form_edition_multilayer_snap');
+        await project.open();
+
+        await project.openDrawPanel();
+
+        const firstLineCoords = [
+            [359,371],
+            [497,297],
+            [566,369],
+            [595,254],
+        ];
+
+        const secondLineCoords = [
+            [443,406],
+            [485,235],
+            [627,369],
+        ];
+
+        const circleCoords = [
+            [482,159],
+            [500,259]
+        ];
+
+        const polygonCoords = [
+            [629,214],
+            [555,193],
+            [535,299]
+        ]
+
+        await project.drawLine(firstLineCoords);
+        await project.drawLine(secondLineCoords);
+        await project.drawCirlce(circleCoords);
+        await project.drawPolygon(polygonCoords);
+
+        await project.closeDrawPanel();
+
+        // open edition form
+        const formRequest = await project.openEditingFormWithLayer('form_edition_snap_control');
+        await formRequest.response();
+
+        await page.getByRole('tab', { name: 'Digitization' }).click();
+
+        // evaluate the number of features contained in the snap layer
+        await project.checkeditionSnapDrawingsLayer(0);
+
+        // select vertex snap type
+        await project.editionSnapSelectorSelectSnap('vertex');
+
+        // vertex snap should load all 4 drawn geometries
+        await project.checkeditionSnapDrawingsLayer(4);
+
+        // change snap
+        await project.editionSnapSelectorSelectSnap('intersection');
+        // intersection snap should load only the 8 intersection points between geometries
+        await project.checkeditionSnapDrawingsLayer(8);
+
+        // disable snap
+        await project.toggleEditionSnapSelectorSelectionPanel(false,true);
+        // disabling snap should clear all features from the snap layer
+        await project.checkeditionSnapDrawingsLayer(0);
+
+        // re-enabling snap should restore the previous mode (8 intersection points)
+        await project.toggleEditionSnapSelectorSelectionPanel(false,true);
+        await project.checkeditionSnapDrawingsLayer(8);
+
+        // back to vertex snap
+        await project.editionSnapSelectorSelectSnap('vertex');
+        // switching back to vertex snap should restore the 4 geometries
+        await project.checkeditionSnapDrawingsLayer(4);
+
+        // stopping the snap tool should remove the component and empty the snap layer
+        await page.getByRole('button', { name: 'Stop' }).click();
+        await project.checkeditionSnapDrawingsLayer(0);
+
+        // starting the tool again should re-initialize it in a clean state (no active snap)
+        await page.getByRole('button', { name: 'Start' }).click();
+        await project.checkeditionSnapDrawingsLayer(0);
+
+        // re-enable vertex snap to proceed with tolerance checks
+        await project.editionSnapSelectorSelectSnap('vertex');
+        await project.checkeditionSnapDrawingsLayer(4);
+
+        // check snap tolerance
+        // verify vertex snap triggers within tolerance below the first line's starting point
+        await project.checkEditionOL2SnapAroundPoint(firstLineCoords[0],'down');
+
+        // verify intersection snap triggers within tolerance to the right of intersection [578, 323]
+        await project.editionSnapSelectorSelectSnap('intersection');
+        await project.checkEditionOL2SnapAroundPoint([578,323],'right');
+
+        // TODO: Add tests for line/edge snapping. Currently complex to assert because
+        // the sketch cursor could slide along the segment unless constrained to strictly
+        // horizontal or vertical lines.
     })
 })
