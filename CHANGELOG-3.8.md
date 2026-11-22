@@ -31,6 +31,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 * Upgrade JavaScript dependencies
 * Upgrade Jelix to version 1.8.29
+* Upgrade jQuery to version 3.7.1
 
 ## 3.8.21 - 2026-10-23
 
