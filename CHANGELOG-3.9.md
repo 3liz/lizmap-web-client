@@ -8,6 +8,75 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* **[Conseil Départemental du Calvados](https://www.calvados.fr/)**
+* **[Direction départementale des territoires et de la mer - Hérault](https://ddtm34.lizmap.com/carto/)**
+* **[Geolab | La Réunion](https://geolab.re/)**
+* **[Etablissement Public Foncier LOcal des territoires Oise & Aisne ](https://epflo.fr)**
+* **Tethys** with @mind84
+* **[Faunalia](https://www.faunalia.eu/)** with @mind84
+* **[Klein und Leber GbR](https://www.gisgeometer.de/)** with @meyerlor
+
+### Added
+
+* Export max features per layer #7347
+
+### Security
+
+* Clean WMS Abstract and title provided by qgs #7329
+* Service - WFS FEATUREID: parenthesize the OR chain - #7403
+* Fix: allow .. for media only on beginning of path #7413
+* Several security fixes: log content must be escaped for HTML output,
+  admin: the HTTP method to send the form for addgroup must be the POST method,
+  admin: some acl2 plugin parameters on controllers was not set correctly, so some rights were not check correctly
+  and admin_api: web API to create a repository must check the repository key⁠ #7440
+* FIX PHP logout after HTTP Basic authentication #7226
+* Search: Use bound parameters for the user filter of lizmap_search #7506
+* Edition: Check the user rights when linking and unlinking features #7507
+* The expression filter sent as EXP_FILTER is now validated more strictly before being used #7505
+* Filter by login: Exact match of multiple values #7508
+
+### Fixed
+
+* Fix lizmapLogConfig init on docker #7328
+* Edition Form - Make readonly multi-select checkboxes readonly #7334
+* JS: LayerTree item name selected and event not well managed #7348
+* JS: selection and selection token changed event #7349
+* Edition - Accept strange characters for column #5654
+* Form filter: groundwork to filter each field's values by the other fields' selection #7246⁠
+* Time Manager filter: Use the layer's configured attributeResolution #7057 fixes #7056
+* Clicking the "i" (layer information) button of some layers throws an error #7381 fixes #7374
+* Login fails with HTTP 500 because lizmapLogConfig.ini.php is missing #7388
+* JS: Some modules are not initialized if at least one layer is out of scale and checked #7396 fixes #7221 and #7375
+* Service - WFS FEATUREID: parenthesize the OR chain #7403
+* JS: Use WMTS capabilities for external WMTS base layers #7404 fixes #7402
+* Enforce control on upload files #7410
+* Improvements of the form filter backend #7433
+* PHP: bad syntax in deprecated getRepositoryProperties and getRepositoryPropertiesOptions methods #7441
+* XmlTools: do not treat an empty root element as a parsing error - #7442
+* PHP: PHP_AUTH_PW variable can miss #7454
+* JS: Correctly track the load status for Single WMS #7446
+* Popup - Fix undefined featureId warnings for raster layers - #7464
+* PHP: Enhance WFS GetFeature by using direct SQL when requested fields are database fields #7471
+* Form filter: Only allow the confired fields in the filter parameter #7485
+* Typos in en_US dictionary and update impacted tests #7518
+
+### Tests
+
+* GitHub Action: Fix cache the Playwright Browser Binaries #7354
+* Upgrade environment
+* GitHub Action: Update PHPUnit versions for PHP version >= 8.4 #7399
+* fix WFSRequestTest - add empty sql for datatsource in testgetWhereClause #7409
+* Enhancing the WMS GetLegendGraphic JSON testsby using responseExpect and adding tests for group configured as GroupAsLayer #7437
+
+### Backend
+
+* JS API: Exposes some additional OL classes/methods useful for external js interaction #7425
+* Upgrade JavaScript dependencies
+* Upgrade Jelix to version 1.8.29
+* Upgrade jQuery to version 3.7.1
+
 ## 3.9.12 - 2026-10-23
 
 ### Funders
