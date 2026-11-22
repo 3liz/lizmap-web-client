@@ -927,8 +927,8 @@ test.describe('Print 3857', () => {
         // chain that can exceed the default 30s budget under CI contention
         // (it passed on retry). Give this test extra headroom.
         test.slow();
-        const printPage = new PrintPage(page, 'draw');
-        const drawProject = new DrawPage(page, 'draw');
+        const printPage = new PrintPage(page, 'print_3857');
+        const drawProject = new DrawPage(page, 'print_3857');
         // Close left dock
         await drawProject.closeLeftDock();
         // open draw panel
@@ -965,6 +965,17 @@ test.describe('Print 3857', () => {
             'TEMPLATE': 'print_labels',
             'FORMAT_OPTIONS': 'TEXT_RENDER_FORMAT:AlwaysText',
         }
+
+        // Confirmation message should be displayed
+        await expect(page.locator('#message')).toBeVisible();
+        await expect(page.locator('#message > div')).toContainClass('print-in-progress');
+        await expect(page.locator('#message > div')).toContainClass('alert-info');
+        await expect(page.locator('#message > div > p')).toContainText('Print started, please wait…');
+
+        // Close the message
+        await expect(page.locator('#message .btn-close')).toBeVisible();
+        await page.locator('#message .btn-close').click();
+        await expect(page.locator('#message')).toBeHidden();
 
         // Expected GetPrint parameters
         /* eslint-disable no-useless-escape, @stylistic/js/max-len --
@@ -1036,6 +1047,17 @@ test.describe('Print 3857', () => {
         // check request
         getPrintRequest = await getPrintPromise;
 
+        // Confirmation message should be displayed
+        await expect(page.locator('#message')).toBeVisible();
+        await expect(page.locator('#message > div')).toContainClass('print-in-progress');
+        await expect(page.locator('#message > div')).toContainClass('alert-info');
+        await expect(page.locator('#message > div > p')).toContainText('Print started, please wait…');
+
+        // Close the message
+        await expect(page.locator('#message .btn-close')).toBeVisible();
+        await page.locator('#message .btn-close').click();
+        await expect(page.locator('#message')).toBeHidden();
+
         // Expected GetPrint parameters
         const expectedParameters2 = Object.assign({}, expectedParameters, {
             'map0:EXTENT': /423077.\d+,5399867.\d+,439503.\d+,5410713.\d+/,
@@ -1082,6 +1104,17 @@ test.describe('Print 3857', () => {
 
         // check request
         getPrintRequest = await getPrintPromise;
+
+        // Confirmation message should be displayed
+        await expect(page.locator('#message')).toBeVisible();
+        await expect(page.locator('#message > div')).toContainClass('print-in-progress');
+        await expect(page.locator('#message > div')).toContainClass('alert-info');
+        await expect(page.locator('#message > div > p')).toContainText('Print started, please wait…');
+
+        // Close the message
+        await expect(page.locator('#message .btn-close')).toBeVisible();
+        await page.locator('#message .btn-close').click();
+        await expect(page.locator('#message')).toBeHidden();
 
         // Expected GetPrint parameters
         const expectedParameters3 = Object.assign({}, expectedParameters, {
