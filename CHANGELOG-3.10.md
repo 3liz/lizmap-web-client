@@ -16,6 +16,12 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * **[SMICA](https://www.smica.fr/)**
 * **[Communauté de communes du Val d'Argent](https://www.cc-valdargent.fr/)**
 * **[EBERL ZivilTechniker](https://www.zt-eberl.at/)**
+* **[Direction départementale des territoires et de la mer - Hérault](https://ddtm34.lizmap.com/carto/)**
+* **[Geolab | La Réunion](https://geolab.re/)**
+* **[Etablissement Public Foncier LOcal des territoires Oise & Aisne ](https://epflo.fr)**
+* **Tethys** with @mind84
+* **[Faunalia](https://www.faunalia.eu/)** with @mind84
+* **[Klein und Leber GbR](https://www.gisgeometer.de/)** with @meyerlor
 
 ### Contributors
 
@@ -28,6 +34,41 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 * Limit export formats per layer #7149
 * Edition - Copy-paste geometry: display the QGIS feature display name in the feature picker #7210
+* Edition - Live refresh of text widgets and more field type #7267
+* Evaluate the atlas filename expression with QGIS Server #7434⁠
+* Circle measure constraint #7463⁠
+* Extend geometry copy-paste functionality on digitized features #7473
+* Dataviz - Server-side aggregation and streamed response #7477
+* Attribute table - Compute the extent of the filtered features in PostgreSQL #7478
+* PHP - Use FeatureStream instead of JsonMachine to read the WFS features #7483⁠
+* Dataviz - Read the colors aggregated by the database as a column #7484
+* Add lizmap-feature-button component #7300
+* Attribute table - Restore the quick search in all the columns, run on the server, without accents
+  for PostgreSQL layers with the `unaccent` extension, disabled for big layers not queried in PostgreSQL #7522
+
+### Security
+
+* Return error if selection token is unknown or expired - #7131
+* Docker image has been updated with PHP 8.3.36 to fix CVE-2026-109618 and CVE-2026-109619 in the PHP engine.
+* html editor (ckeditor): strengthens the validation of uploaded images to prevent security issues caused by improper
+  configuration of web servers and PHP (for example web configuration allowing foo.php.jpg to be sent to PHP, or allowing
+  foo.jpg having php code into its content). #7155
+* SQL filters - Use a new algorithm with a stronger validation method #7186
+* sanitize HTML content before DOM insertion (XSS) #7306
+* block SSRF via external WMS layer URLs in getFeatureInfo requests #7307
+* Clean WMS Abstract and title provided by qgs #7329
+* Service - WFS FEATUREID: parenthesize the OR chain - #7403
+* Fix: allow .. for media only on beginning of path #7413
+* Several security fixes: log content must be escaped for HTML output,
+  admin: the HTTP method to send the form for addgroup must be the POST method,
+  admin: some acl2 plugin parameters on controllers was not set correctly, so some rights were not check correctly
+  and admin_api: web API to create a repository must check the repository key⁠ #7440
+* FIX PHP logout after HTTP Basic authentication #7226
+* Search: Use bound parameters for the user filter of lizmap_search #7506
+* Edition: Check the user rights when linking and unlinking features #7507
+* The expression filter sent as EXP_FILTER is now validated more strictly before being used #7505
+* Filter by login: Exact match of multiple values #7508
+* PHP SqlTools - Translate the spatial QGIS expression filters on their tokens #7519
 
 ### Fixed
 
@@ -43,10 +84,18 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * PHP: New parser for layer datasources #7067
 * PHP: logout after HTTP Basic authentication #7226
 * Admin page : check if QGIS is reachable #7159
+* Admin page: improve fontsizing and menu look & feel #7215
+* Style - Update back button in permalink & geobookmark add button #7222
+* UI: Keep the map theme selector dropdown inside the legend panel #7224⁠
+* Tooltip - Do not apply the popup table style inside the map tooltip #7229⁠
 * PHP: GetFeatureInfo Error 500 on unkown layer #7242
 * Edition - Make non editable date fields really non editable #7230
+* Edition - Enlarge the checkboxes of the edition form #7231⁠
 * Store and serve WebP tiles as WebP in the server tile cache #7232 fixes #7225
+* UI: Keep the header font size in the search field #7234⁠
+* UI: Make the overview map fill its frame #7235⁠
 * PHP: request's headers has to be string - partial #7034
+* Edition - Fix the font size of edition form title #7247
 * PHP: Project in a US survey feet CRS (+units=us-ft) fails to load: division by zero in lizmapTiler::getTileMatrixSetList #7272 fixes #7262
 * PHP: Keep decimal size and position of QGIS layout items #7285
 * PHP: WMTS GetCapabilities: TopLeftCorner is rounded to 14 significant digits (differs from internal value) #7271 fixes #7264
@@ -57,19 +106,38 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * PHP: WMTS EPSG:4326 TileMatrix #7295
 * Printing map in projection with axis orientation neu #7320 fixes #4862 and #6164
 * PHP: Support PostgreSQL float arrays in edition forms with QGIS List widget #7209
-* Attribute table - Restore the quick search in all the columns, run on the server, without accents
-  for PostgreSQL layers with the `unaccent` extension, disabled for big layers not queried in PostgreSQL
-
-### Security
-
-* Return error if selection token is unknown or expired - #7131
-* Docker image has been updated with PHP 8.3.36 to fix CVE-2026-109618 and CVE-2026-109619 in the PHP engine.
-* html editor (ckeditor): strengthens the validation of uploaded images to prevent security issues caused by improper
-  configuration of web servers and PHP (for example web configuration allowing foo.php.jpg to be sent to PHP, or allowing
-  foo.jpg having php code into its content). #7155
-* SQL filters - Use a new algorithm with a stronger validation method #7186
-* sanitize HTML content before DOM insertion (XSS) #7306
-* block SSRF via external WMS layer URLs in getFeatureInfo requests #7307
+* Fix lizmapLogConfig init on docker #7328
+* DXF export per layer enabled #7331
+* Edition Form - Make readonly multi-select checkboxes readonly #7334
+* JS: LayerTree item name selected and event not well managed #7348
+* JS: selection and selection token changed event #7349
+* Edition - Accept strange characters for column #5654
+* Form filter: groundwork to filter each field's values by the other fields' selection #7246⁠
+* Time Manager filter: Use the layer's configured attributeResolution #7057 fixes #7056
+* Permalink - Display the base layer restored from the URL hash #7376
+* Clicking the "i" (layer information) button of some layers throws an error #7381 fixes #7374
+* Login fails with HTTP 500 because lizmapLogConfig.ini.php is missing #7388
+* JS: Some modules are not initialized if at least one layer is out of scale and checked #7396 fixes #7221 and #7375
+* Service - WFS FEATUREID: parenthesize the OR chain #7403
+* JS: Use WMTS capabilities for external WMTS base layers #7404 fixes #7402
+* Enforce control on upload files #7410
+* Print: Atlas filename for QGIS projects larger than 10 MB #7419
+* Edition: Geometry copy-paste #7424
+* Edition: never fill upload fields with their default value #7426⁠
+* Improvements of the form filter backend #7433
+* PHP: bad syntax in deprecated getRepositoryProperties and getRepositoryPropertiesOptions methods #7441
+* XmlTools: do not treat an empty root element as a parsing error #7442
+* JS - Legacy configsloaded event listened from an external script breaks the map #7451⁠
+* PHP: PHP_AUTH_PW variable can miss #7454
+* JS: Correctly track the load status for Single WMS #7446
+* Popup - Fix undefined featureId warnings for raster layers - #7464
+* PHP: Enhance WFS GetFeature by using direct SQL when requested fields are database fields #7471
+* Form filter: Only allow the confired fields in the filter parameter #7485
+* Attribute table select searched / zoom to extent for layer names with special characters #7502
+* Edition - Convert default expression results for boolean checkboxes #7504⁠
+* Expressions - Show the errors of the text widgets and of the tooltips with Lizmap server plugin 2.16.0 #7509
+* Typos in en_US dictionary and update impacted tests #7518
+* UI: Oversized atlas print buttons in the popup feature toolbar #7532
 
 ### Tests
 
@@ -81,6 +149,11 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * e2e: about wrong display expression in textwidget #7270
 * PHP Unit: Enhancing Proxy::buildHeader for checking X-Lizmap-Override-Filter #7277
 * e2e: enhancing export data - #7296
+* GitHub Action: Fix cache the Playwright Browser Binaries #7354
+* Upgrade environment
+* GitHub Action: Update PHPUnit versions for PHP version >= 8.4 #7399
+* fix WFSRequestTest - add empty sql for datatsource in testgetWhereClause #7409
+* Enhancing the WMS GetLegendGraphic JSON testsby using responseExpect and adding tests for group configured as GroupAsLayer #7437
 * Update Playwright to 1.63
 * Update Chai to 6.3
 * Update Dotenv to 18.0
@@ -90,10 +163,13 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Backend
 
+* Docker - Upgrade Alpine to 3.24 and Php to 8.5 #7317
+* JS API: Exposes some additional OL classes/methods useful for external js interaction #7425
 * Update sldreader to 2.1
 * Update flatgeobuf to 4.5
 * Update ol to 10.11
-* Upgrade Jelix to version 1.8.28
+* Upgrade Jelix to version 1.8.29
+* Upgrade jQuery to version 3.7.1
 
 ## 3.10.0-rc.3 - 2026-09-09
 
