@@ -24,7 +24,8 @@
    line-height (which made these buttons look oversized after the BS5 upgrade). */
 .btn:not(.hide):has(> [class^="icon-"]:only-child),
 .btn:not(.hide):has(> [class*=" icon-"]:only-child),
-.btn:not(.hide):has(> svg:only-child) {
+.btn:not(.hide):has(> svg:only-child),
+.btn:not(.hide):has(> img:only-child) {
   --bs-btn-line-height: 1;
   --bs-btn-padding-y: 0.25rem;
   --bs-btn-padding-x: 0.25rem;
@@ -3903,11 +3904,14 @@ lizmap-feature-toolbar button:hover > [class^="icon-"],
   display: none;
 }
 
-.feature-atlas button svg {
-  display: inline-block;
-  width: 1em;
-  height: 1em;
-  vertical-align: -0.125em;
+/* Atlas buttons use the default print sprite or a custom icon (any image size):
+   render both in the same 14px box, with the same top margin, as the legacy icons */
+.feature-atlas button svg,
+.feature-atlas button img {
+  width: 14px;
+  height: 14px;
+  margin-top: 1px;
+  object-fit: contain;
 }
 
 .feature-atlas button:hover > img[src$=".svg"] {
