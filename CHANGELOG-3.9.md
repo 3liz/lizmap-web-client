@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.9.13 - 2026-11-23
+
 ### Funders
 
 * **[Conseil Départemental du Calvados](https://www.calvados.fr/)**
