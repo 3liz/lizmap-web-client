@@ -40,8 +40,8 @@ export function formatArea(area, html = false) {
  * the length for a line, the perimeter and the area for a polygon,
  * the radius and the area for a circle.
  * Other geometry types have no measure.
- * @param {import('ol/geom/Geometry.js').default} geom - The geometry
- * @param {import('ol/proj.js').ProjectionLike} projection - The projection of the geometry
+ * @param {Geometry} geom - The geometry
+ * @param {object|string} projection - The OpenLayers projection of the geometry or its code
  * @param {boolean} [html] - Use HTML markup for the area unit exponent
  * @returns {string[]} The formatted measures, empty if the geometry has no measure
  */
