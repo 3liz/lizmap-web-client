@@ -36,6 +36,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Edition: Check the user rights when linking and unlinking features #7507
 * The expression filter sent as EXP_FILTER is now validated more strictly before being used #7505
 * Filter by login: Exact match of multiple values #7508
+* PHP SqlTools - Translate the spatial QGIS expression filters on their tokens #7519
 
 ### Fixed
 
