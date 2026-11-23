@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.8.22 - 2026-11-23
+
 ### Security
 
 * Clean WMS Abstract and title provided by qgs #7329
