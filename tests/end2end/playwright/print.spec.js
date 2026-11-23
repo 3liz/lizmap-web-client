@@ -27,33 +27,34 @@ test.describe('Print', () => {
     });
 
     test('Print UI', async ({ page }) => {
+        const printPage = new PrintPage(page, 'print');
         // Scales
-        await expect(page.locator('#print-scale > option')).toHaveCount(6);
-        await expect(page.locator('#print-scale > option')).toContainText(
+        await expect(printPage.printScaleOptions).toHaveCount(6);
+        await expect(printPage.printScaleOptions).toContainText(
             ['500,000', '250,000', '100,000', '50,000', '25,000', '10,000']);
         // Templates - order must match layouts.list order in cfg
-        await expect(page.locator('#print-template > option')).toHaveCount(3);
-        await expect(page.locator('#print-template > option')).toHaveText(['print_labels', 'print_overview', 'print_map']);
+        await expect(printPage.printTemplateOptions).toHaveCount(3);
+        await expect(printPage.printTemplateOptions).toHaveText(['print_labels', 'print_overview', 'print_map']);
 
         // Test `print_labels` template
 
         // Format and DPI are not displayed as there is only one value
-        await expect(page.locator('#print-format')).toHaveCount(0);
-        await expect(page.locator('.print-dpi')).toHaveCount(0);
+        await expect(printPage.printFormatCombobox).toHaveCount(0);
+        await expect(printPage.printDpiCombobox).toHaveCount(0);
 
         // Test `print_map` template
-        await page.locator('#print-template').selectOption('2');
+        await printPage.printTemplateCombobox.selectOption('2');
 
         // Format and DPI lists exist as there are multiple values
-        await expect(page.locator('#print-format > option')).toHaveCount(2);
-        await expect(page.locator('#print-format > option')).toContainText(['JPEG', 'PNG']);
-        await expect(page.locator('.btn-print-dpis > option')).toHaveCount(2);
-        await expect(page.locator('.btn-print-dpis > option')).toContainText(['100', '200']);
+        await expect(printPage.printFormatOptions).toHaveCount(2);
+        await expect(printPage.printFormatOptions).toContainText(['JPEG', 'PNG']);
+        await expect(printPage.printDpiOptions).toHaveCount(2);
+        await expect(printPage.printDpiOptions).toContainText(['100', '200']);
 
         // JPEG is default
-        expect(await page.locator('#print-format').inputValue()).toBe('jpeg');
+        expect(await printPage.printFormatCombobox.inputValue()).toBe('jpeg');
         // 200 DPI is default
-        expect(await page.locator('.btn-print-dpis').inputValue()).toBe('200');
+        expect(await printPage.printDpiCombobox.inputValue()).toBe('200');
     });
 
     test('Print custom scale mode', async ({ page }) => {
@@ -148,7 +149,7 @@ test.describe('Print', () => {
 
         // Mock file, because we test the request, not the file
         await page.route('**/service*', async route => {
-            const request = await route.request();
+            const request = route.request();
             const searchParams = new URLSearchParams(request.postData() ?? '');
             if (searchParams.get('SERVICE') !== 'WMS' ||
                 !searchParams.has('REQUEST') ||
@@ -225,8 +226,11 @@ test.describe('Print', () => {
         // Get the mock response
         responseExpect(await getPrintRequest.response()).toBePdf();
 
+        // The message has to be closed if all is right
+        await expect(printPage.messageContainer).toBeHidden();
+
         // Test `print_overview` template
-        await page.locator('#print-template').selectOption('1');
+        await printPage.printTemplateCombobox.selectOption('1');
 
         getPrintPromise = printPage.waitForGetPrintRequest();
         // Launch print
@@ -253,8 +257,11 @@ test.describe('Print', () => {
         // Get the mock response
         responseExpect(await getPrintRequest.response()).toBePdf();
 
+        // The message has to be closed if all is right
+        await expect(printPage.messageContainer).toBeHidden();
+
         // Test `print_map` template
-        await page.locator('#print-template').selectOption('2');
+        await printPage.printTemplateCombobox.selectOption('2');
 
         getPrintPromise = printPage.waitForGetPrintRequest();
         // Launch print
@@ -281,24 +288,17 @@ test.describe('Print', () => {
         responseExpect(await getPrintRequest.response()).toBeImageJpeg();
 
         // Redlining with circle
-        await page.locator('#button-draw').click();
-        await page.getByRole('button', { name: 'Toggle Dropdown' }).click();
-        await page.locator('#draw .digitizing-circle > svg').click();
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 610,
-                y: 302
-            }
-        });
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 722,
-                y: 300
-            }
-        });
+        const drawProject = new DrawPage(page, 'print');
+        await drawProject.openDrawPanel();
+        await drawProject.drawPanel.click();
+        await drawProject.selectGeometry('circle');
 
-        await page.locator('#button-print').click();
-        await page.locator('#print-scale').selectOption('100000');
+        // Draw circle
+        await drawProject.clickOnMap(610, 302);
+        await drawProject.clickOnMap(722, 300);
+
+        await printPage.openPrintPanel();
+        await printPage.printScaleCombobox.selectOption('100000');
 
         getPrintPromise = printPage.waitForGetPrintRequest();
         // Launch print
@@ -352,6 +352,9 @@ test.describe('Print', () => {
         // Get the mock response
         responseExpect(await getPrintRequest.response()).toBePdf();
 
+        // The message has to be closed if all is right
+        await expect(printPage.messageContainer).toBeHidden();
+
         // Stop listening to WMS requests
         await page.unroute('**/service*');
     });
@@ -378,13 +381,13 @@ test.describe('Print', () => {
         });
 
         // Select a feature
-        await page.locator('#button-attributeLayers').click();
-        await page.getByRole('button', { name: 'Detail' }).click();
+        // Open attribute table
+        await printPage.openAttributeTable('quartiers');
         // click on select Button
         let getSelectionTokenRequestPromise = printPage.waitForGetSelectionTokenRequest();
         await page.locator(
             'lizmap-feature-toolbar:nth-child(1) > div:nth-child(1) > button:nth-child(1)').first().click();
-        await page.locator('#bottom-dock-window-buttons .btn-bottomdock-clear').click();
+        await printPage.closeBottomDock();
 
         let getSelectionTokenRequest = await getSelectionTokenRequestPromise;
 
@@ -461,13 +464,13 @@ test.describe('Print', () => {
         });
 
         // Select a feature
-        await page.locator('#button-attributeLayers').click();
-        await page.getByRole('button', { name: 'Detail' }).click();
+        // Open attribute table
+        await printPage.openAttributeTable('quartiers');
         // click on select Button
         let getSelectionTokenRequestPromise = printPage.waitForGetSelectionTokenRequest();
         await page.locator(
             'lizmap-feature-toolbar:nth-child(1) > div:nth-child(1) > button:nth-child(1)').first().click();
-        await page.locator('#bottom-dock-window-buttons .btn-bottomdock-clear').click();
+        await printPage.closeBottomDock();
 
         let getSelectionTokenRequest = await getSelectionTokenRequestPromise;
 
@@ -487,7 +490,8 @@ test.describe('Print', () => {
         expect(jsonSelectionTokenResponse).toHaveProperty('token');
 
         // Filter selected feature
-        await page.locator('#button-attributeLayers').click();
+        // Reopen attribute table
+        await printPage.openAttributeTable('quartiers');
         await page.locator('.btn-filter-attributeTable').click();
         let getFilterTokenPromise = printPage.waitForGetFilterTokenRequest();
         let getFilterTokenRequest = await getFilterTokenPromise;
@@ -497,7 +501,7 @@ test.describe('Print', () => {
         let jsonFilterTokenResponse = await getFilterTokenResponse?.json();
         expect(jsonFilterTokenResponse).toHaveProperty('token');
 
-        await page.locator('#bottom-dock-window-buttons .btn-bottomdock-clear').click();
+        await printPage.closeBottomDock();
         const getPrintPromise = printPage.waitForGetPrintRequest();
         // Launch print
         await printPage.launchPrint();
@@ -668,7 +672,7 @@ test.describe('Print in popup', () => {
         const printPage = new PrintPage(page, 'print');
         await printPage.open();
         let getFeatureInfoRequestPromise = printPage.waitForGetFeatureInfoRequest();
-        await page.locator('#newOlMap').click({ position: { x: 409, y: 186 } });
+        await printPage.clickOnMap(409, 186);
         let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
         expect(getFeatureInfoRequest.postData()).toMatch(/GetFeatureInfo/);
     });
@@ -718,17 +722,21 @@ test.describe('Print in popup', () => {
         const getPrintParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
         expect(getPrintParams.size).toBe(10);
 
-        await expect(getPrintParams.has('CRS')).toBe(false)
-        await expect(getPrintParams.has('LAYERS')).toBe(false)
-        await expect(getPrintParams.has('ATLAS_PK')).toBe(false)
+        expect(getPrintParams.has('CRS')).toBe(false)
+        expect(getPrintParams.has('LAYERS')).toBe(false)
+        expect(getPrintParams.has('ATLAS_PK')).toBe(false)
 
         // Test `atlas_quartiers` print atlas response
         const response = await getPrintRequest.response();
         // Check response
         responseExpect(response).toBePdf();
+
         // Lizmap evaluates the atlas filenamePattern configured in the project for the printed feature
         // The atlas_quartiers layout has: filenamePattern="'output_'||@atlas_featurenumber"
-        await expect(response?.headers()['content-disposition']).toBe('attachment; filename="output_1.pdf"');
+        expect(response?.headers()['content-disposition']).toBe('attachment; filename="output_1.pdf"');
+
+        // The message has to be closed if all is right
+        await expect(printPage.messageContainer).toBeHidden();
     });
 });
 
@@ -743,29 +751,31 @@ test.describe('Print - user in group a', () => {
     });
 
     test('Print UI', async ({ page }) => {
+        const printPage = new PrintPage(page, 'print');
+
         // Templates - order must match layouts.list order in cfg
-        await expect(page.locator('#print-template > option')).toHaveCount(3);
-        await expect(page.locator('#print-template > option')).toHaveText(['print_labels', 'print_overview', 'print_map']);
+        await expect(printPage.printTemplateOptions).toHaveCount(3);
+        await expect(printPage.printTemplateOptions).toHaveText(['print_labels', 'print_overview', 'print_map']);
 
         // Test `print_labels` template
 
         // Format and DPI are not displayed as there is only one value
-        await expect(page.locator('#print-format')).toHaveCount(0);
-        await expect(page.locator('.print-dpi')).toHaveCount(0);
+        await expect(printPage.printFormatCombobox).toHaveCount(0);
+        await expect(printPage.printDpiCombobox).toHaveCount(0);
 
         // Test `print_map` template
-        await page.locator('#print-template').selectOption('2');
+        await printPage.printTemplateCombobox.selectOption('2');
 
         // Format and DPI lists exist as there are multiple values
-        await expect(page.locator('#print-format > option')).toHaveCount(2);
-        await expect(page.locator('#print-format > option')).toContainText(['JPEG', 'PNG']);
-        await expect(page.locator('.btn-print-dpis > option')).toHaveCount(2);
-        await expect(page.locator('.btn-print-dpis > option')).toContainText(['100', '200']);
+        await expect(printPage.printFormatOptions).toHaveCount(2);
+        await expect(printPage.printFormatOptions).toContainText(['JPEG', 'PNG']);
+        await expect(printPage.printDpiOptions).toHaveCount(2);
+        await expect(printPage.printDpiOptions).toContainText(['100', '200']);
 
         // JPEG is default
-        expect(await page.locator('#print-format').inputValue()).toBe('jpeg');
+        expect(await printPage.printFormatCombobox.inputValue()).toBe('jpeg');
         // 200 DPI is default
-        expect(await page.locator('.btn-print-dpis').inputValue()).toBe('200');
+        expect(await printPage.printDpiCombobox.inputValue()).toBe('200');
     });
 });
 
@@ -780,43 +790,45 @@ test.describe('Print - admin', () => {
     });
 
     test('Print UI', async ({ page }) => {
+        const printPage = new PrintPage(page, 'print');
+
         // Templates - order must match layouts.list order in cfg
-        await expect(page.locator('#print-template > option')).toHaveCount(4);
-        await expect(page.locator('#print-template > option')).toHaveText(['print_labels', 'print_overview', 'print_map', 'print_allowed_groups']);
+        await expect(printPage.printTemplateOptions).toHaveCount(4);
+        await expect(printPage.printTemplateOptions).toHaveText(['print_labels', 'print_overview', 'print_map', 'print_allowed_groups']);
 
         // Test `print_labels` template
 
         // Format and DPI are not displayed as there is only one value
-        await expect(page.locator('#print-format')).toHaveCount(0);
-        await expect(page.locator('.print-dpi')).toHaveCount(0);
+        await expect(printPage.printFormatCombobox).toHaveCount(0);
+        await expect(printPage.printDpiCombobox).toHaveCount(0);
 
         // Test `print_map` template
-        await page.locator('#print-template').selectOption('2');
+        await printPage.printTemplateCombobox.selectOption('2');
 
         // Format and DPI lists exist as there are multiple values
-        await expect(page.locator('#print-format > option')).toHaveCount(2);
-        await expect(page.locator('#print-format > option')).toContainText(['JPEG', 'PNG']);
-        await expect(page.locator('.btn-print-dpis > option')).toHaveCount(2);
-        await expect(page.locator('.btn-print-dpis > option')).toContainText(['100', '200']);
+        await expect(printPage.printFormatOptions).toHaveCount(2);
+        await expect(printPage.printFormatOptions).toContainText(['JPEG', 'PNG']);
+        await expect(printPage.printDpiOptions).toHaveCount(2);
+        await expect(printPage.printDpiOptions).toContainText(['100', '200']);
 
         // JPEG is default
-        expect(await page.locator('#print-format').inputValue()).toBe('jpeg');
+        expect(await printPage.printFormatCombobox.inputValue()).toBe('jpeg');
         // 200 DPI is default
-        expect(await page.locator('.btn-print-dpis').inputValue()).toBe('200');
+        expect(await printPage.printDpiCombobox.inputValue()).toBe('200');
 
         // Test `print_allowed_groups` template
-        await page.locator('#print-template').selectOption('3');
+        await printPage.printTemplateCombobox.selectOption('3');
 
         // Format and DPI lists exist as there are multiple values
-        await expect(page.locator('#print-format > option')).toHaveCount(4);
-        await expect(page.locator('#print-format > option')).toContainText(['PDF', 'SVG', 'PNG', 'JPEG']);
-        await expect(page.locator('.btn-print-dpis > option')).toHaveCount(3);
-        await expect(page.locator('.btn-print-dpis > option')).toContainText(['100', '200', '300']);
+        await expect(printPage.printFormatOptions).toHaveCount(4);
+        await expect(printPage.printFormatOptions).toContainText(['PDF', 'SVG', 'PNG', 'JPEG']);
+        await expect(printPage.printDpiOptions).toHaveCount(3);
+        await expect(printPage.printDpiOptions).toContainText(['100', '200', '300']);
 
         // PDF is default
-        expect(await page.locator('#print-format').inputValue()).toBe('pdf');
+        expect(await printPage.printFormatCombobox.inputValue()).toBe('pdf');
         // 100 DPI is default
-        expect(await page.locator('.btn-print-dpis').inputValue()).toBe('100');
+        expect(await printPage.printDpiCombobox.inputValue()).toBe('100');
     });
 });
 
@@ -830,36 +842,39 @@ test.describe('Print 3857', () => {
     });
 
     test('Print UI', async ({ page }) => {
+        const printPage = new PrintPage(page, 'print_3857');
+
         // Scales
-        await expect(page.locator('#print-scale > option')).toHaveCount(5);
-        await expect(page.locator('#print-scale > option')).toContainText(['288,895', '144,448', '72,224', '36,112', '18,056']);
+        await expect(printPage.printScaleOptions).toHaveCount(5);
+        await expect(printPage.printScaleOptions).toContainText(['288,895', '144,448', '72,224', '36,112', '18,056']);
         // Templates
-        await expect(page.locator('#print-template > option')).toHaveCount(2);
-        await expect(page.locator('#print-template > option')).toContainText(['print_labels', 'print_map']);
+        await expect(printPage.printTemplateOptions).toHaveCount(2);
+        await expect(printPage.printTemplateOptions).toContainText(['print_labels', 'print_map']);
 
         // Test `print_labels` template
 
         // Format and DPI are not displayed as there is only one value
-        await expect(page.locator('#print-format')).toHaveCount(0);
-        await expect(page.locator('.print-dpi')).toHaveCount(0);
+        await expect(printPage.printFormatCombobox).toHaveCount(0);
+        await expect(printPage.printDpiCombobox).toHaveCount(0);
 
         // Test `print_map` template
-        await page.locator('#print-template').selectOption('1');
+        await printPage.printTemplateCombobox.selectOption('1');
 
         // Format and DPI lists exist as there are multiple values
-        await expect(page.locator('#print-format > option')).toHaveCount(2);
-        await expect(page.locator('#print-format > option')).toContainText(['JPEG', 'PNG']);
-        await expect(page.locator('.btn-print-dpis > option')).toHaveCount(2);
-        await expect(page.locator('.btn-print-dpis > option')).toContainText(['100', '200']);
+        await expect(printPage.printFormatOptions).toHaveCount(2);
+        await expect(printPage.printFormatOptions).toContainText(['JPEG', 'PNG']);
+        await expect(printPage.printDpiOptions).toHaveCount(2);
+        await expect(printPage.printDpiOptions).toContainText(['100', '200']);
 
         // PNG is default
-        expect(await page.locator('#print-format').inputValue()).toBe('jpeg');
+        expect(await printPage.printFormatCombobox.inputValue()).toBe('jpeg');
         // 200 DPI is default
-        expect(await page.locator('.btn-print-dpis').inputValue()).toBe('200');
+        expect(await printPage.printDpiCombobox.inputValue()).toBe('200');
     });
 
     test('Print requests', async ({ page }) => {
         const printPage = new PrintPage(page, 'print_3857');
+
         // Required GetPrint parameters
         const expectedParameters = {
             'SERVICE': 'WMS',
@@ -897,7 +912,7 @@ test.describe('Print 3857', () => {
         expect(getPrintParams.size).toBe(expectedLength);
 
         // Test `print_map` template
-        await page.locator('#print-template').selectOption('1');
+        await printPage.printTemplateCombobox.selectOption('1');
         getPrintPromise = printPage.waitForGetPrintRequest();
 
         // Launch print
@@ -967,7 +982,7 @@ test.describe('Print 3857', () => {
         }
 
         // Confirmation message should be displayed
-        await expect(page.locator('#message')).toBeVisible();
+        await expect(printPage.messageContainer).toBeVisible();
         await expect(page.locator('#message > div')).toContainClass('print-in-progress');
         await expect(page.locator('#message > div')).toContainClass('alert-info');
         await expect(page.locator('#message > div > p')).toContainText('Print started, please wait…');
@@ -1017,7 +1032,7 @@ test.describe('Print 3857', () => {
         responseExpect(await getPrintRequest.response()).toBePdf();
 
         // The message has to be closed if all is right
-        await expect(page.locator('#message')).toBeHidden();
+        await expect(printPage.messageContainer).toBeHidden();
 
         // open draw panel
         await drawProject.openDrawPanel();
@@ -1046,7 +1061,7 @@ test.describe('Print 3857', () => {
         getPrintRequest = await getPrintPromise;
 
         // Confirmation message should be displayed
-        await expect(page.locator('#message')).toBeVisible();
+        await expect(printPage.messageContainer).toBeVisible();
         await expect(page.locator('#message > div')).toContainClass('print-in-progress');
         await expect(page.locator('#message > div')).toContainClass('alert-info');
         await expect(page.locator('#message > div > p')).toContainText('Print started, please wait…');
@@ -1078,7 +1093,7 @@ test.describe('Print 3857', () => {
         responseExpect(await getPrintRequest.response()).toBePdf();
 
         // The message has to be closed if all is right
-        await expect(page.locator('#message')).toBeHidden();
+        await expect(printPage.messageContainer).toBeHidden();
 
         // open draw panel
         await drawProject.openDrawPanel();
@@ -1102,7 +1117,7 @@ test.describe('Print 3857', () => {
         getPrintRequest = await getPrintPromise;
 
         // Confirmation message should be displayed
-        await expect(page.locator('#message')).toBeVisible();
+        await expect(printPage.messageContainer).toBeVisible();
         await expect(page.locator('#message > div')).toContainClass('print-in-progress');
         await expect(page.locator('#message > div')).toContainClass('alert-info');
         await expect(page.locator('#message > div > p')).toContainText('Print started, please wait…');
@@ -1134,7 +1149,7 @@ test.describe('Print 3857', () => {
         responseExpect(await getPrintRequest.response()).toBePdf();
 
         // The message has to be closed if all is right
-        await expect(page.locator('#message')).toBeHidden();
+        await expect(printPage.messageContainer).toBeHidden();
     });
 });
 
@@ -1149,32 +1164,35 @@ test.describe('Print 2278', () => {
     });
 
     test('Print UI', async ({ page }) => {
+        const printPage = new PrintPage(page, 'texas_2278');
+
         // Scales
-        await expect(page.locator('#print-scale > option')).toHaveCount(10);
-        await expect(page.locator('#print-scale > option')).toContainText([
+        await expect(printPage.printScaleOptions).toHaveCount(10);
+        await expect(printPage.printScaleOptions).toContainText([
             '10,000,000', '5,000,000', '2,500,000',
             '1,000,000', '500,000', '250,000',
             '100,000', '50,000', '25,000',
             '10,000',
         ]);
         // Templates
-        await expect(page.locator('#print-template > option')).toHaveCount(1);
-        await expect(page.locator('#print-template > option')).toContainText(['A4-portrait']);
+        await expect(printPage.printTemplateOptions).toHaveCount(1);
+        await expect(printPage.printTemplateOptions).toContainText(['A4-portrait']);
 
         // Format and DPI are not displayed as there is only one value
-        await expect(page.locator('#print-format')).toHaveCount(0);
-        await expect(page.locator('.print-dpi')).toHaveCount(0);
+        await expect(printPage.printFormatCombobox).toHaveCount(0);
+        await expect(printPage.printDpiCombobox).toHaveCount(0);
     });
 
     test('Print scales linked to zoom', async ({ page }) => {
+        const printPage = new PrintPage(page, 'texas_2278');
+
         // Check scale
         await expect(page.locator('#overview-bar .ol-scale-text')).toHaveText('1 : ' + (10000000).toLocaleString(locale));
 
         // Check selected print scale
-        await expect(page.locator('#print-scale')).toHaveValue('10000000');
+        await expect(printPage.printScaleCombobox).toHaveValue('10000000');
 
         // Close print panel
-        const printPage = new PrintPage(page, 'texas_2278');
         await printPage.closePrintPanel();
 
         // Zoom in
@@ -1193,7 +1211,7 @@ test.describe('Print 2278', () => {
         await printPage.openPrintPanel();
 
         // Check selected print scale
-        await expect(page.locator('#print-scale')).toHaveValue('2500000');
+        await expect(printPage.printScaleCombobox).toHaveValue('2500000');
     });
 });
 
@@ -1279,6 +1297,9 @@ test.describe('Print base layers', () => {
         // Check response
         responseExpect(await getPrintRequest.response()).toBePdf();
 
+        // The message has to be closed if all is right
+        await expect(printPage.messageContainer).toBeHidden();
+
         // Print osm-mapnik & quartiers
         let getMapRequestPromise = page.waitForRequest(/REQUEST=GetMap/);
         await page.getByLabel('quartiers').check();
@@ -1305,6 +1326,9 @@ test.describe('Print base layers', () => {
 
         // Check response
         responseExpect(await getPrintRequest.response()).toBePdf();
+
+        // The message has to be closed if all is right
+        await expect(printPage.messageContainer).toBeHidden();
 
         // Print quartiers not open-topo-map
         // Catch opentopomap request to mock them
@@ -1372,6 +1396,9 @@ test.describe('Print base layers', () => {
         // Check response
         responseExpect(await getPrintRequest.response()).toBePdf();
 
+        // The message has to be closed if all is right
+        await expect(printPage.messageContainer).toBeHidden();
+
         // Print quartiers_baselayer & quartiers
         await page.locator('#switcher-baselayer').getByRole('combobox').selectOption('quartiers_baselayer');
         getMapRequest = await getMapRequestPromise;
@@ -1396,6 +1423,9 @@ test.describe('Print base layers', () => {
         expect(getPrintParams.size).toBe(expectedLength);
         // Check response
         responseExpect(await getPrintRequest.response()).toBePdf();
+
+        // The message has to be closed if all is right
+        await expect(printPage.messageContainer).toBeHidden();
     });
 });
 
@@ -1423,7 +1453,7 @@ test.describe('Error while printing', () => {
             await route.continue();
         });
 
-        await page.locator('#print-launch').click();
+        await printPage.launchPrint();
 
         await expect(
             page.getByText('The output is currently not available. Please contact the system administrator.')
