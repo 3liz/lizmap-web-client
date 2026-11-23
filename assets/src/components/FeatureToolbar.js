@@ -8,6 +8,7 @@
 
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import { Utils } from '../modules/Utils.js';
+import { getPrintMainMapId, getPrintLayersParameters } from '../modules/PrintLayers.js';
 import { html, render } from 'lit-html';
 
 import { transformExtent } from 'ol/proj.js';
@@ -821,6 +822,11 @@ export default class FeatureToolbar extends HTMLElement {
             LAYER: this._layerConfig?.shortname || this._layerConfig?.name,
             EXP_FILTER: '$id IN ('+ escapeFeatureId(this._fid) +')',
         };
+
+        // Print the selected base layer and the visible layers
+        // instead of the project default visibility
+        const template = mainLizmap.config?.printTemplates?.find(t => t?.title === templateName);
+        Object.assign(wmsParams, getPrintLayersParameters(getPrintMainMapId(template)));
 
         // Custom labels
         this.querySelectorAll(
