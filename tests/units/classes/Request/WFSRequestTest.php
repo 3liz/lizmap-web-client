@@ -313,6 +313,9 @@ class WFSRequestTest extends TestCase
             array(array('exp_filter' => '$id IN ( -9999999 )'), 'key', ' AND ( "key" IN ( -9999999 ) )'),
             // In the case of a multiple primary key, the expression is not valid
             array(array('exp_filter' => 'filter for test with $id = 5'), 'key,otherKey', false),
+            // $id without space after it, and $id only in a string
+            array(array('exp_filter' => '$id=5'), 'key', ' AND ( "key"=5 )'),
+            array(array('exp_filter' => '"name" = \'$id \''), 'key,otherKey', ' AND ( "name" = \'$id \' )'),
             // missing closing parenthesis
             array(array('exp_filter' => '"field" = 50 ('), '', false),
             // field names must be double-quoted
@@ -717,7 +720,7 @@ class WFSRequestTest extends TestCase
             array('touches($geometry, geom_from_gml(\'g\'))', 'ST_Touches("column", ST_GeomFromGML(\'g\'))'),
             array('disjoint($geometry, geom_from_gml(\'g\'))', 'ST_Disjoint("column", ST_GeomFromGML(\'g\'))'),
             // Operators are matched case-insensitively and tolerate whitespace before "(".
-            array('INTERSECTS ($geometry, geom_from_gml(\'g\'))', 'ST_Intersects("column", ST_GeomFromGML(\'g\'))'),
+            array('INTERSECTS ($geometry, geom_from_gml(\'g\'))', 'ST_Intersects ("column", ST_GeomFromGML(\'g\'))'),
             // A predicate combined with another expression must keep both parts.
             array('"field" > 3 AND within($geometry, geom_from_gml(\'g\'))', '"field" > 3 AND ST_Within("column", ST_GeomFromGML(\'g\'))'),
             // A bare word that is not a function call must be left untouched.
