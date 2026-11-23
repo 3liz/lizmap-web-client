@@ -36,6 +36,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Edition - Copy-paste geometry: display the QGIS feature display name in the feature picker #7210
 * Edition - Live refresh of text widgets and more field type #7267
 * Evaluate the atlas filename expression with QGIS Server #7434⁠
+* Export max features per layer #7347
 * Circle measure constraint #7463⁠
 * Extend geometry copy-paste functionality on digitized features #7473
 * Dataviz - Server-side aggregation and streamed response #7477
