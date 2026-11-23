@@ -134,6 +134,12 @@ export class ProjectPage extends BasePage {
     warningMessage;
 
     /**
+     * The Lizmap massage container
+     * @type {Locator}
+     */
+    messageContainer;
+
+    /**
      * Logs collected
      * @type {logMessage[]}
      */
@@ -233,6 +239,7 @@ export class ProjectPage extends BasePage {
         this.popupContent = page.locator('#popupcontent');
         this.treeView = page.locator('#switcher lizmap-treeview');
         this.warningMessage = page.locator('#lizmap-warning-message');
+        this.messageContainer = page.locator('#message');
         this.search = page.locator('#search-query');
         this.switcher = page.locator('#button-switcher');
         this.baseLayerSelect = page.locator('#switcher-baselayer').getByRole('combobox')
@@ -547,6 +554,13 @@ export class ProjectPage extends BasePage {
     async changeLayerStyle(layer, style){
         await this.openLayerInfo(layer);
         await this.page.locator("#sub-dock").locator("select.styleLayer").selectOption(style);
+    }
+
+    /**
+     * Close bottom dock without closing other elements like attribute table tabs.
+     */
+    async closeBottomDock(){
+        await this.page.locator('#bottom-dock-window-buttons .btn-bottomdock-clear').click();
     }
 
     /**

@@ -38,6 +38,48 @@ export class PrintPage extends ProjectPage {
     printScaleCombobox;
 
     /**
+     * The print scale combobox options
+     * @type {Locator}
+     */
+    printScaleOptions;
+
+    /**
+     * The print template combobox
+     * @type {Locator}
+     */
+    printTemplateCombobox;
+
+    /**
+     * The print template combobox options
+     * @type {Locator}
+     */
+    printTemplateOptions;
+
+    /**
+     * The print format combobox
+     * @type {Locator}
+     */
+    printFormatCombobox;
+
+    /**
+     * The print format combobox options
+     * @type {Locator}
+     */
+    printFormatOptions;
+
+    /**
+     * The print dpi combobox
+     * @type {Locator}
+     */
+    printDpiCombobox;
+
+    /**
+     * The print format combobox options
+     * @type {Locator}
+     */
+    printDpiOptions;
+
+    /**
      * The launch print button on print panel
      * @type {Locator}
      */
@@ -56,6 +98,13 @@ export class PrintPage extends ProjectPage {
         this.printSwitcherButton = page.locator('#button-print');
         this.launchPrintButton = page.locator('#print-launch');
         this.printScaleCombobox = page.locator('#print-scale');
+        this.printScaleOptions = page.locator('#print-scale > option');
+        this.printTemplateCombobox = page.locator('#print-template');
+        this.printTemplateOptions = page.locator('#print-template > option');
+        this.printFormatCombobox = page.locator('#print-format');
+        this.printFormatOptions = page.locator('#print-format > option');
+        this.printDpiCombobox = this.printPanel.locator('.btn-print-dpis');
+        this.printDpiOptions = this.printPanel.locator('.btn-print-dpis > option');
     }
 
     /**
