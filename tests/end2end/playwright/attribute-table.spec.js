@@ -1753,6 +1753,12 @@ test.describe('Attribute table atlas print button', () => {
             'LAYER': 'quartiers',
             // EXP_FILTER should contain the selected feature IDs
             'EXP_FILTER': /\$id IN \(.+\)/,
+            // The selected base layer and the visible layers are printed
+            'map0:LAYERS': 'OpenStreetMap,quartiers,sousquartiers',
+            'map0:STYLES': 'default,défaut,défaut',
+            'map0:OPACITIES': '204,255,255',
+            // The selection is sent to highlight the selected features
+            'SELECTIONTOKEN': /.+/,
         };
 
         await expectParametersToContain('Atlas print with selected features', getPrintRequest.postData() ?? '', expectedParameters);
