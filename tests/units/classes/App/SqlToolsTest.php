@@ -149,6 +149,8 @@ class SqlToolsTest extends TestCase
     public static function getSQLStringColumnNamesData()
     {
         return array(
+            // A function call, with a comment before its parenthesis, is not a column
+            array('lower /* c */ ("name") = \'a\'', array('name')),
             // No column
             array('', array()),
             array('1 = 1', array()),
@@ -200,12 +202,19 @@ class SqlToolsTest extends TestCase
             array('overlaps($geometry, geom_from_gml(\'g\'))', 'geom', 'ST_Overlaps("geom", ST_GeomFromGML(\'g\'))'),
             array('touches($geometry, geom_from_gml(\'g\'))', 'geom', 'ST_Touches("geom", ST_GeomFromGML(\'g\'))'),
             array('disjoint($geometry, geom_from_gml(\'g\'))', 'geom', 'ST_Disjoint("geom", ST_GeomFromGML(\'g\'))'),
-            // Operators are matched case-insensitively and tolerate whitespace before "(".
-            array('INTERSECTS ($geometry, geom_from_gml(\'g\'))', 'geom', 'ST_Intersects("geom", ST_GeomFromGML(\'g\'))'),
+            // Operators are matched case-insensitively and tolerate whitespace and comments before "(".
+            array('INTERSECTS ($geometry, geom_from_gml(\'g\'))', 'geom', 'ST_Intersects ("geom", ST_GeomFromGML(\'g\'))'),
+            array('intersects /* c */ ($geometry, geom_from_gml(\'g\'))', 'geom', 'ST_Intersects /* c */ ("geom", ST_GeomFromGML(\'g\'))'),
             // A predicate combined with another expression must keep both parts.
             array('"field" > 3 AND within($geometry, geom_from_gml(\'g\'))', 'the_geom', '"field" > 3 AND ST_Within("the_geom", ST_GeomFromGML(\'g\'))'),
             // A bare word that is not a function call must be left untouched.
             array('"name" = \'it intersects here\'', 'geom', '"name" = \'it intersects here\''),
+            // The strings, the double quoted identifiers and the comments are left untouched
+            array('"name" = \'intersects($geometry)\'', 'geom', '"name" = \'intersects($geometry)\''),
+            array('"geom_from_gml_date" IS NOT NULL', 'geom', '"geom_from_gml_date" IS NOT NULL'),
+            array('"a$geometry" = 1 -- $geometry', 'geom', '"a$geometry" = 1 -- $geometry'),
+            // A geometry column with a double quote
+            array('intersects($geometry, geom_from_gml(\'g\'))', 'my"geom', 'ST_Intersects("my""geom", ST_GeomFromGML(\'g\'))'),
         );
     }
 
@@ -218,5 +227,40 @@ class SqlToolsTest extends TestCase
     public function testTranslateExpressionToPostgis($filter, $geometryColumn, $expected): void
     {
         $this->assertEquals($expected, SqlTools::translateExpressionToPostgis($filter, $geometryColumn));
+    }
+
+    /**
+     * Provide filters with the $id variable, the primary key column and the expected filter.
+     *
+     * @return array the filters, the primary key columns and the expected results
+     */
+    public static function getReplaceIdVariableData()
+    {
+        return array(
+            array('$id = 5', '"key"', '"key" = 5'),
+            // Without space after the variable, and at the end of the filter
+            array('$id=5', '"key"', '"key"=5'),
+            array('5 = $id', '"key"', '5 = "key"'),
+            array('$id IN (1, 2) OR $ID = 3', '"key"', '"key" IN (1, 2) OR "key" = 3'),
+            // The strings, the double quoted identifiers and the comments are left untouched
+            array('"name" = \'$id \' /* $id */', '"key"', '"name" = \'$id \' /* $id */'),
+            array('"my$id" = 1', '"key"', '"my$id" = 1'),
+            // Without single primary key, a filter using $id can not be used
+            array('$id = 5', null, null),
+            array('"name" = \'$id\'', null, '"name" = \'$id\''),
+        );
+    }
+
+    /**
+     * Check the replacement of the $id variable.
+     *
+     * @param string      $filter   The filter
+     * @param null|string $idColumn The primary key column, enclosed for the database
+     * @param null|string $expected The expected filter
+     */
+    #[DataProvider('getReplaceIdVariableData')]
+    public function testReplaceIdVariable($filter, $idColumn, $expected): void
+    {
+        $this->assertSame($expected, SqlTools::replaceIdVariable($filter, $idColumn));
     }
 }
