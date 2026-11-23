@@ -972,11 +972,6 @@ test.describe('Print 3857', () => {
         await expect(page.locator('#message > div')).toContainClass('alert-info');
         await expect(page.locator('#message > div > p')).toContainText('Print started, please wait…');
 
-        // Close the message
-        await expect(page.locator('#message .btn-close')).toBeVisible();
-        await page.locator('#message .btn-close').click();
-        await expect(page.locator('#message')).toBeHidden();
-
         // Expected GetPrint parameters
         /* eslint-disable no-useless-escape, @stylistic/js/max-len --
          * Block of SLD
@@ -1021,6 +1016,9 @@ test.describe('Print 3857', () => {
         // Check response
         responseExpect(await getPrintRequest.response()).toBePdf();
 
+        // The message has to be closed if all is right
+        await expect(page.locator('#message')).toBeHidden();
+
         // open draw panel
         await drawProject.openDrawPanel();
         // select point to draw
@@ -1053,11 +1051,6 @@ test.describe('Print 3857', () => {
         await expect(page.locator('#message > div')).toContainClass('alert-info');
         await expect(page.locator('#message > div > p')).toContainText('Print started, please wait…');
 
-        // Close the message
-        await expect(page.locator('#message .btn-close')).toBeVisible();
-        await page.locator('#message .btn-close').click();
-        await expect(page.locator('#message')).toBeHidden();
-
         // Expected GetPrint parameters
         const expectedParameters2 = Object.assign({}, expectedParameters, {
             'map0:EXTENT': /423077.\d+,5399867.\d+,439503.\d+,5410713.\d+/,
@@ -1083,6 +1076,9 @@ test.describe('Print 3857', () => {
 
         // Check response
         responseExpect(await getPrintRequest.response()).toBePdf();
+
+        // The message has to be closed if all is right
+        await expect(page.locator('#message')).toBeHidden();
 
         // open draw panel
         await drawProject.openDrawPanel();
@@ -1111,11 +1107,6 @@ test.describe('Print 3857', () => {
         await expect(page.locator('#message > div')).toContainClass('alert-info');
         await expect(page.locator('#message > div > p')).toContainText('Print started, please wait…');
 
-        // Close the message
-        await expect(page.locator('#message .btn-close')).toBeVisible();
-        await page.locator('#message .btn-close').click();
-        await expect(page.locator('#message')).toBeHidden();
-
         // Expected GetPrint parameters
         const expectedParameters3 = Object.assign({}, expectedParameters, {
             'map0:EXTENT': /423077.\d+,5399867.\d+,439503.\d+,5410713.\d+/,
@@ -1141,6 +1132,9 @@ test.describe('Print 3857', () => {
 
         // Check response
         responseExpect(await getPrintRequest.response()).toBePdf();
+
+        // The message has to be closed if all is right
+        await expect(page.locator('#message')).toBeHidden();
     });
 });
 
