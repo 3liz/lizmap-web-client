@@ -17,7 +17,7 @@ import {
 const UPDATE_MOCK_FILES = false;
 
 
-test.describe('Print', () => {
+test.describe('Print @readonly', () => {
 
     test.beforeEach(async ({ page }) => {
         const printPage = new PrintPage(page, 'print');
@@ -580,7 +580,7 @@ test.describe(
     }
 );
 
-test.describe('Print in popup', () => {
+test.describe('Print in popup  @readonly', () => {
     test.beforeEach(async ({ page }) => {
         const printPage = new PrintPage(page, 'print');
         await printPage.open();
@@ -650,7 +650,7 @@ test.describe('Print in popup', () => {
     });
 });
 
-test.describe('Print - user in group a', () => {
+test.describe('Print - user in group a @readonly', () => {
     test.use({ storageState: getAuthStorageStatePath('user_in_group_a') });
 
     test.beforeEach(async ({ page }) => {
@@ -689,7 +689,7 @@ test.describe('Print - user in group a', () => {
     });
 });
 
-test.describe('Print - admin', () => {
+test.describe('Print - admin @readonly', () => {
     test.use({ storageState: getAuthStorageStatePath('admin') });
 
     test.beforeEach(async ({ page }) => {
@@ -742,7 +742,7 @@ test.describe('Print - admin', () => {
     });
 });
 
-test.describe('Print 3857', () => {
+test.describe('Print 3857 @readonly', () => {
 
     test.beforeEach(async ({ page }) => {
         const printPage = new PrintPage(page, 'print_3857');
@@ -1063,7 +1063,7 @@ test.describe('Print 3857', () => {
     });
 });
 
-test.describe('Print 2278', () => {
+test.describe('Print 2278 @readonly', () => {
 
     const locale = 'en-US';
 
@@ -1125,7 +1125,7 @@ test.describe('Print 2278', () => {
     });
 });
 
-test.describe('Print base layers', () => {
+test.describe('Print base layers @readonly', () => {
     test.beforeEach(async ({ page }) => {
         // Catch openstreetmap requests to mock them
         /** @type {string[]} */
@@ -1339,7 +1339,7 @@ test.describe('Print base layers', () => {
     });
 });
 
-test.describe('Error while printing', () => {
+test.describe('Error while printing @readonly', () => {
 
     test.beforeEach(async ({ page }) => {
         const printPage = new PrintPage(page, 'print');
