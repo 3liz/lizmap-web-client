@@ -57,6 +57,35 @@ export default class Snapping {
         this._snapOnDrawings = false;
         this._snapType = null;
 
+        // sketch geometry style when snapping to vertices/points
+        this._snapOnPointStyle = {
+            graphicName: "square",
+            pointRadius: 6,
+            fill:false,
+            strokeColor: "#FF7F00",
+            strokeWidth: 3
+        }
+
+        // sketch geometry style when snapping to segments edges
+        this._snapOnEdgeStyle = {
+            graphicName: "circle",
+            pointRadius: 6,
+            fill:false,
+            strokeColor: "#FF7F00",
+            strokeWidth: 3
+        }
+
+        // sketch geometry style when snapping to intersections
+        this._snapOnIntersectionStyle = {
+            graphicName: "cross",
+            pointRadius: 8,
+            rotation: 45,
+            fillColor: "#FF7F00",
+            strokeColor: "#FF7F00",
+            strokeWidth: 1,
+            strokeOpacity: 1
+        }
+
         // Create layer to store snap features
         const snapLayer = new OpenLayers.Layer.Vector('snaplayer', {
             visibility: false,
@@ -113,6 +142,39 @@ export default class Snapping {
 
         this._lizmap3.controls['snapControl'] = snapControl;
         this._lizmap3.controls['snapDrawingsControl'] = this._snapDrawingsControl;
+
+        // register snap/unsnap event on both snapControl and snapDrawings control
+        // snap event on map features
+        snapControl.events.register('snap', this, (e) => {
+            // The e.snapType property is used to set the style of the sketch geometry;
+            // for map elements, only snapping to edges/vertices is supported. In the future, with a newer version of OL 10,
+            // it will be possible to make improvements, as that version natively supports snapping to intersections.
+            this._edition.setOL2SketchGeometryStyle(e.snapType == 'edge' ? this._snapOnEdgeStyle : this._snapOnPointStyle);
+        })
+
+        // unsnap on map features
+        snapControl.events.register('unsnap',this, () => {
+            // setting the style to null to restore the default style of the sketch geometry
+            this._edition.setOL2SketchGeometryStyle(null);
+        })
+
+        // snap on drawings
+        this._snapDrawingsControl.events.register('snap',this, (e) => {
+            // In this case, the type of snap is determined by the custom component; therefore, we are fully aware of the
+            // snapping functionality currently in use. Since OL2 does not support intersection, we can rely on the _snapType class property
+            // to set the correct style in the event of an intersection, and use e.snapType to distinguish between an edge and a vertex.
+            if(this._snapType == 'intersection'){
+                this._edition.setOL2SketchGeometryStyle(this._snapOnIntersectionStyle);
+            } else {
+                this._edition.setOL2SketchGeometryStyle(e.snapType == 'edge' ? this._snapOnEdgeStyle : this._snapOnPointStyle);
+            }
+        })
+
+        // unsnap on drawings
+        this._snapDrawingsControl.events.register('unsnap',this, () => {
+            // setting the style to null to restore the default style of the sketch geometry
+            this._edition.setOL2SketchGeometryStyle(null);
+        })
 
         this._setSnapLayersRefreshable = () => {
             if(this._active){

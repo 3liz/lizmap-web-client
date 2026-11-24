@@ -1399,4 +1399,27 @@ export class ProjectPage extends BasePage {
             expect(snapPointXY).toEqual(expectedXY);
         }
     }
+
+    /**
+     * Check the form of the drawing geometry sketch style at the specified coordinates
+     * @param {Array<number>} coordinates - coordinates to check
+     * @param {string} sketchStyle - expected sketch graphic name
+     * @returns {Promise<void>}
+     */
+    async checkOl2SnapDrawSketchGeometryStyle(coordinates, sketchStyle){
+
+        await this.mapOl2.hover({position:{x:coordinates[0], y:coordinates[1]}});
+        const shape = await this.page.evaluate(()=> lizMap.mainLizmap.edition.drawControl.handler?.point?.style?.graphicName);
+        expect(shape).toBe(sketchStyle);
+    }
+
+    /**
+     * Check the style of the element corresponding to the vertex being edited.
+     * @param {string|null} geometryStyle - expected vertex geometry style, null in case of unsnap or mouse released
+     * @returns {Promise<void>}
+     */
+    async checkOl2SnapEditSketchGeometryStyle(geometryStyle){
+        const shape = await this.page.evaluate(()=> lizMap.mainLizmap.edition.lastActiveVertex?.style?.graphicName || null);
+        expect(shape).toBe(geometryStyle);
+    }
 }

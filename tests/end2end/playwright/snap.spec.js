@@ -5,6 +5,47 @@ import { expect as responseExpect } from './fixtures/expect-response.js'
 import { ProjectPage } from "./pages/project";
 import { DrawPage } from "./pages/drawpage";
 
+
+/**
+ * Draw a set of digitizing features
+ * @param {DrawPage} project - the draw project page
+ * @return {Promise<void>}
+ */
+const drawFeaturesSet = async (project) => {
+    await project.openDrawPanel();
+
+    const firstLineCoords = [
+        [359,371],
+        [497,297],
+        [566,369],
+        [595,254],
+    ];
+
+    const secondLineCoords = [
+        [443,406],
+        [485,235],
+        [627,369],
+    ];
+
+    const circleCoords = [
+        [482,159],
+        [500,259]
+    ];
+
+    const polygonCoords = [
+        [629,214],
+        [555,193],
+        [535,299]
+    ]
+
+    await project.drawLine(firstLineCoords);
+    await project.drawLine(secondLineCoords);
+    await project.drawCirlce(circleCoords);
+    await project.drawPolygon(polygonCoords);
+
+    await project.closeDrawPanel();
+}
+
 test.describe('Snap on edition', () => {
     test.beforeEach(async ({ page }) => {
         const project = new ProjectPage(page, 'form_edition_multilayer_snap');
@@ -447,38 +488,8 @@ test.describe('Snap on drawings on edition mode', {tag:'@readonly'}, () => {
         const project = new DrawPage(page, 'form_edition_multilayer_snap');
         await project.open();
 
-        await project.openDrawPanel();
-
-        const firstLineCoords = [
-            [359,371],
-            [497,297],
-            [566,369],
-            [595,254],
-        ];
-
-        const secondLineCoords = [
-            [443,406],
-            [485,235],
-            [627,369],
-        ];
-
-        const circleCoords = [
-            [482,159],
-            [500,259]
-        ];
-
-        const polygonCoords = [
-            [629,214],
-            [555,193],
-            [535,299]
-        ]
-
-        await project.drawLine(firstLineCoords);
-        await project.drawLine(secondLineCoords);
-        await project.drawCirlce(circleCoords);
-        await project.drawPolygon(polygonCoords);
-
-        await project.closeDrawPanel();
+        // draw features set
+        await drawFeaturesSet(project);
 
         // open edition form
         const formRequest = await project.openEditingFormWithLayer('form_edition_snap_control');
@@ -528,7 +539,7 @@ test.describe('Snap on drawings on edition mode', {tag:'@readonly'}, () => {
 
         // check snap tolerance
         // verify vertex snap triggers within tolerance below the first line's starting point
-        await project.checkEditionOL2SnapAroundPoint(firstLineCoords[0],'down');
+        await project.checkEditionOL2SnapAroundPoint([359,371],'down');
 
         // verify intersection snap triggers within tolerance to the right of intersection [578, 323]
         await project.editionSnapSelectorSelectSnap('intersection');
@@ -537,5 +548,187 @@ test.describe('Snap on drawings on edition mode', {tag:'@readonly'}, () => {
         // TODO: Add tests for line/edge snapping. Currently complex to assert because
         // the sketch cursor could slide along the segment unless constrained to strictly
         // horizontal or vertical lines.
+    })
+})
+
+test.describe('Snap cursor style', {tag:'@readonly'}, () => {
+    test('Snap cursor style on create features', async ({ page }) => {
+        const project = new DrawPage(page, 'form_edition_multilayer_snap');
+        await project.open();
+
+        // draw features set
+        await drawFeaturesSet(project);
+
+        const bbox = await project.mapOl2.boundingBox();
+        const dx = bbox?.x || 0;
+        const dy = bbox?.y || 0;
+
+        // enable other layers
+        await project.treeView.getByTestId('form_edition_snap_line').click();
+        await project.treeView.getByTestId('form_edition_snap_polygon').click();
+
+        // open edition form
+        const formRequest = await project.openEditingFormWithLayer('form_edition_snap_control');
+        await formRequest.response();
+
+        // clear lizmap messages
+        await page.locator('#lizmap-snapping-message .btn-close').click();
+        await page.locator('#lizmap-edition-message .btn-close').click();
+
+        // move to digitizing panel
+        await page.getByRole('tab', { name: 'Digitization' }).click();
+
+        // test snap on map features while inserting a new feature
+
+        // set of map features
+        const mapFeaturesTestPoints = [
+            // point map feature
+            {coords:[407,323], sketchStyle:'square'},
+            // line map feature vertex
+            {coords:[381,311], sketchStyle:'square'},
+            // polygon map feature vertex
+            {coords:[378,333], sketchStyle:'square'},
+            // line map feature edge
+            {coords:[380,303], sketchStyle:'circle'},
+            // polygon map feature edge
+            {coords:[443,264], sketchStyle:'circle'},
+        ];
+
+        // set of digitized features
+        const drawFeaturesTestPoint = [
+            // digitized line feature vertex
+            {coords:[443,407], sketchStyle:'square'},
+            // digitized polygon fature vertex
+            {coords:[629,212], sketchStyle:'square'},
+            // digitized circle feature boundaries
+            {coords:[570,105], sketchStyle:'square'},
+            // digitized line feature edge
+            {coords:[452,371], sketchStyle:'circle'},
+            // digitized polygon feature edge
+            {coords:[603,205], sketchStyle:'circle'},
+        ];
+
+        // intersetion point coords
+        const intersectionPointCoords = [578,323];
+
+        // test snap sketch geometry style on map features
+        for (const testPoints of mapFeaturesTestPoints) {
+            await project.checkOl2SnapDrawSketchGeometryStyle(testPoints.coords,testPoints.sketchStyle);
+        }
+
+        // test digitizing features
+        // activate the snap on drawings
+        await project.editionSnapSelectorSelectSnap('vertex');
+
+        // test snap sketch geometry style on digitized features
+        for (const testPoints of drawFeaturesTestPoint) {
+            await project.checkOl2SnapDrawSketchGeometryStyle(testPoints.coords,testPoints.sketchStyle);
+        }
+
+        // test intersection point
+        await project.editionSnapSelectorSelectSnap('intersection');
+        await project.checkOl2SnapDrawSketchGeometryStyle(intersectionPointCoords,'cross');
+
+        // switch back to vertex snap
+        await project.editionSnapSelectorSelectSnap('vertex');
+
+        // add a point element to test snapping during editing
+        const featureAddedPoint = [629,180]
+        await project.clickOnMapLegacy(featureAddedPoint[0],featureAddedPoint[1]);
+
+        // feature added, start drag
+        await page.mouse.down();
+
+        // test both map and digitized features together
+        for (const testPoints of [...mapFeaturesTestPoints,...drawFeaturesTestPoint]) {
+            await page.mouse.move(dx+testPoints.coords[0], dy+testPoints.coords[1], { steps: 10 });
+            await project.checkOl2SnapEditSketchGeometryStyle(testPoints.sketchStyle);
+        }
+
+        // back to insert point, the sketch style should return to deafult style
+        await page.mouse.move(dx+featureAddedPoint[0], dy+featureAddedPoint[1], { steps: 10 });
+        // no snap active
+        await project.checkOl2SnapEditSketchGeometryStyle(null);
+
+        // release mouse. The feature has been modified, sketch style should return to deafult style
+        await page.mouse.up();
+        await project.checkOl2SnapEditSketchGeometryStyle(null);
+
+        // select intersection snap
+        await project.editionSnapSelectorSelectSnap('intersection');
+
+        // hover on inserted point
+        await project.mapOl2.hover({position:{x:featureAddedPoint[0],y:featureAddedPoint[1]}});
+        await page.mouse.down();
+        await project.checkOl2SnapEditSketchGeometryStyle(null);
+
+        // move the cursor on a line intersection
+        await page.mouse.move(dx+intersectionPointCoords[0], dy+intersectionPointCoords[1], { steps: 10 });
+        await project.checkOl2SnapEditSketchGeometryStyle('cross');
+
+        await page.mouse.up();
+        // on mouse release, the sketch style should return to deafult style
+        await project.checkOl2SnapEditSketchGeometryStyle(null);
+
+        // editing an existing geometry
+        // close current form
+        await page.getByRole('tab', { name: 'Form' }).click();
+        page.once('dialog', dialog => dialog.accept());
+        await project.editingSubmit('cancel').click();
+        await expect(page.locator('#edition-form-container')).toBeHidden();
+
+        // open polygon feaure popup
+        const gfiPromise = project.waitForGetFeatureInfoRequest();
+        await project.clickOnMap(449, 262);
+        await (await gfiPromise).response();
+
+        // get feature popup
+        const feature = await project.identifyContentLocator("2", "form_edition_snap_polygon_6f187b01_618b_4d0c_8149_d7008e94d2a0");
+
+        const editRequestPromise = project.page.waitForRequest(/lizmap\/edition\/editFeature/);
+        // launch feature edition
+        await feature.locator('.feature-edit').click();
+        await (await editRequestPromise).response();
+
+        // clear interface
+        await page.locator('#lizmap-snapping-message .btn-close').click();
+        await page.locator('#lizmap-edition-message .btn-close').click();
+
+        // switch to digitization panel
+        await page.getByRole('tab', { name: 'Digitization' }).click();
+        // activate snap on drawings
+        await project.editionSnapSelectorSelectSnap('vertex');
+
+        // start ediing a vertex
+        const polygonVertexCoordinates = [432,256];
+        await project.mapOl2.hover({position:{x:polygonVertexCoordinates[0],y:polygonVertexCoordinates[1]}});
+
+        // drag vertex
+        await page.mouse.down();
+
+        // initial default sketch style test
+        await project.checkOl2SnapEditSketchGeometryStyle(null);
+
+        // test both map and digitized features together
+        for (const testPoints of [...mapFeaturesTestPoints,...drawFeaturesTestPoint]) {
+            await page.mouse.move(dx+testPoints.coords[0], dy+testPoints.coords[1], { steps: 10 });
+            await project.checkOl2SnapEditSketchGeometryStyle(testPoints.sketchStyle);
+        }
+
+        // release mouse
+        await page.mouse.up();
+        await project.checkOl2SnapEditSketchGeometryStyle(null);
+
+        // change snap type
+        await project.editionSnapSelectorSelectSnap('intersection');
+        // hover on the last point tested
+        const lastPoint = drawFeaturesTestPoint[drawFeaturesTestPoint.length - 1];
+        await project.mapOl2.hover({position:{x:lastPoint.coords[0],y:lastPoint.coords[1]}});
+        await page.mouse.down();
+        // move the cursor on a line intersection
+        await page.mouse.move(dx+intersectionPointCoords[0], dy+intersectionPointCoords[1], { steps: 10 });
+        await project.checkOl2SnapEditSketchGeometryStyle('cross');
+        await page.mouse.up();
+        await project.checkOl2SnapEditSketchGeometryStyle(null);
     })
 })
