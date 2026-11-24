@@ -2,6 +2,7 @@
 
 use Lizmap\App\SqlTools;
 use Lizmap\DataTables\DataTables;
+use Lizmap\Form\QgisFormControl;
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 
@@ -537,6 +538,130 @@ class DataTablesTest extends TestCase
                 // Only the searched columns are cited
                 $this->assertEquals(array('name', 'id'), SqlTools::getSQLStringColumnNames($exp), $exp);
             }
+        }
+    }
+
+    /**
+     * Test the codes of the labels matching a word of the quick search.
+     */
+    public function testGetLabelCodesMatchingWord(): void
+    {
+        $labels = array(
+            '1' => 'Forêt',
+            '2' => 'Prairie',
+            'U' => 'Zone urbaine',
+            QgisFormControl::QGIS_NULL_VALUE => 'Inconnu',
+        );
+
+        // Case insensitive
+        $this->assertEquals(array('2'), DataTables::getLabelCodesMatchingWord($labels, 'PRAIRIE'));
+        $this->assertEquals(array('2', 'U'), DataTables::getLabelCodesMatchingWord($labels, 'ai'));
+
+        // Accent insensitive, if the intl extension is installed
+        if (class_exists('Normalizer')) {
+            $this->assertEquals(array('1'), DataTables::getLabelCodesMatchingWord($labels, 'foret'));
+            $this->assertEquals(array('1'), DataTables::getLabelCodesMatchingWord($labels, 'FORÊT'));
+        }
+
+        // The label of the NULL value is ignored, it is not displayed
+        $this->assertEquals(array(), DataTables::getLabelCodesMatchingWord($labels, 'connu'));
+
+        // LIKE wildcards
+        $this->assertEquals(array('U'), DataTables::getLabelCodesMatchingWord($labels, 'zone%ine'));
+        $this->assertEquals(array('2'), DataTables::getLabelCodesMatchingWord($labels, 'pr_irie'));
+
+        // Regular expression characters are not interpreted
+        $this->assertEquals(array(), DataTables::getLabelCodesMatchingWord($labels, '.*'));
+        $this->assertEquals(array(), DataTables::getLabelCodesMatchingWord($labels, 'zone/'));
+
+        // Not found
+        $this->assertEquals(array(), DataTables::getLabelCodesMatchingWord($labels, 'eau'));
+        $this->assertEquals(array(), DataTables::getLabelCodesMatchingWord(array(), 'eau'));
+    }
+
+    /**
+     * Test the quick search on the columns with labels.
+     */
+    public function testBuildQuickSearchExpressionLabels(): void
+    {
+        $labeledValues = array(
+            'landuse' => array(
+                '1' => 'Forest',
+                '2' => 'Forest edge',
+                '3' => "Farmer's field",
+                QgisFormControl::QGIS_NULL_VALUE => 'Unknown',
+            ),
+        );
+
+        // Evaluated by QGIS Server: the codes of the matching labels
+        $this->assertEquals(
+            '( "name" ILIKE \'%forest%\' OR "landuse" IN ( \'1\', \'2\' ) )',
+            DataTables::buildQuickSearchExpression('forest', array('name', 'landuse'), null, null, $labeledValues)
+        );
+
+        // No matching label: the column is not searched
+        $this->assertEquals(
+            '( "name" ILIKE \'%water%\' )',
+            DataTables::buildQuickSearchExpression('water', array('name', 'landuse'), null, null, $labeledValues)
+        );
+        $this->assertEquals(
+            '1 = 0',
+            DataTables::buildQuickSearchExpression('water', array('landuse'), null, null, $labeledValues)
+        );
+
+        // The label of the NULL value is ignored, and the quotes in the codes are escaped
+        $labeledValues['landuse']["o'k"] = 'Unknown too';
+        $this->assertEquals(
+            '( "landuse" IN ( \'o\'\'k\' ) )',
+            DataTables::buildQuickSearchExpression('unknown', array('landuse'), null, null, $labeledValues)
+        );
+
+        // Run as SQL: the non text columns are converted to text
+        $types = array('name' => 'varchar', 'landuse' => 'int');
+        $this->assertEquals(
+            '( "name" ILIKE \'%edge%\' OR concat("landuse") IN ( \'2\' ) )',
+            DataTables::buildQuickSearchExpression('edge', array('name', 'landuse'), $types, null, $labeledValues)
+        );
+        $types['landuse'] = 'varchar';
+        $this->assertEquals(
+            '( "landuse" IN ( \'2\' ) )',
+            DataTables::buildQuickSearchExpression('edge', array('landuse'), $types, 'unaccent', $labeledValues)
+        );
+
+        // The generated expressions are valid
+        foreach (array("' OR 1=1 --", 'forest', 'unknown', "farmer's") as $search) {
+            foreach (array(null, $types) as $dbFieldTypes) {
+                $exp = DataTables::buildQuickSearchExpression($search, array('name', 'landuse'), $dbFieldTypes, null, $labeledValues);
+                $this->assertTrue(SqlTools::validateExpressionFilter($exp), $exp);
+            }
+        }
+    }
+
+    /**
+     * Test the expression getting the labels of a source layer matching the quick search.
+     */
+    public function testBuildLabelSearchExpression(): void
+    {
+        // Evaluated by QGIS Server: any word in the label
+        $this->assertEquals(
+            '( "label" ILIKE \'%first%\' ) OR ( "label" ILIKE \'%l\'\'eau%\' )',
+            DataTables::buildLabelSearchExpression("first  l'eau", 'label')
+        );
+
+        // Run as SQL, without accents
+        $this->assertEquals(
+            '( f_unaccent("label") ILIKE f_unaccent(\'%forêt%\') )',
+            DataTables::buildLabelSearchExpression('forêt', 'label', array('label' => 'text'), 'f_unaccent')
+        );
+
+        // Nothing to search
+        $this->assertEquals('', DataTables::buildLabelSearchExpression('  ', 'label'));
+
+        // The generated expressions are valid and only use the label field
+        foreach (array("' OR 1=1 --", 'first second', '%_%') as $search) {
+            $exp = DataTables::buildLabelSearchExpression($search, 'label', array('label' => 'varchar'), 'unaccent');
+            $this->assertTrue(SqlTools::validateExpressionFilter($exp), $exp);
+            $this->assertEquals(array('label'), SqlTools::getSQLStringColumnNames($exp), $exp);
         }
     }
 

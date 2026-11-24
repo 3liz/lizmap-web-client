@@ -1714,7 +1714,10 @@ var lizAttributeTable = function() {
                             dataSrc: (json) => {
                                 // Enable or disable the quick search input, depending on the size of the layer
                                 if (isLayerTable) {
-                                    updateQuickSearchInput(aTable, json.quickSearch?.enabled);
+                                    // The columns not searched are given by their aliases
+                                    const skippedColumns = (json.quickSearch?.skippedColumns ?? [])
+                                        .map(column => cAliases?.[column] || column);
+                                    updateQuickSearchInput(aTable, json.quickSearch?.enabled, skippedColumns);
                                 }
 
                                 // Format data for DataTables
@@ -1934,11 +1937,14 @@ var lizAttributeTable = function() {
              * Enable or disable the quick search input of an attribute table, as given by the server.
              *
              * The server disables the quick search for the big layers not queried directly in the database.
+             * It also gives the columns not searched because too many labels match the search: they are
+             * listed in the title of the input, which is highlighted.
              *
-             * @param {string}  aTable    The table selector
-             * @param {boolean} [enabled] True if the quick search is enabled, undefined if unknown
+             * @param {string}   aTable           The table selector
+             * @param {boolean}  [enabled]        True if the quick search is enabled, undefined if unknown
+             * @param {string[]} [skippedColumns] The names of the columns not searched
              */
-            function updateQuickSearchInput(aTable, enabled) {
+            function updateQuickSearchInput(aTable, enabled, skippedColumns = []) {
                 const input = getQuickSearchInput(aTable);
                 if (!input || typeof enabled !== 'boolean') {
                     return;
@@ -1947,6 +1953,14 @@ var lizAttributeTable = function() {
                 input.title = enabled
                     ? lizDict['attributeLayers.toolbar.input.search.help']
                     : lizDict['attributeLayers.toolbar.input.search.disabled.help'];
+
+                // Warn about the columns not searched
+                const hasSkippedColumns = enabled && skippedColumns.length > 0;
+                input.classList.toggle('border-warning', hasSkippedColumns);
+                if (hasSkippedColumns) {
+                    input.title = lizDict['attributeLayers.toolbar.input.search.skipped.help']
+                        + ' ' + skippedColumns.join(', ');
+                }
             }
 
             /**
