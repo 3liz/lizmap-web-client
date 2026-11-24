@@ -26,6 +26,7 @@ export default class Edition {
         this.layerGeometry = undefined;
         this.drawControl = undefined;
         this._lastSegmentLength = undefined;
+        this._lastActiveVertex = null;
 
         lizmap3.events.on({
             lizmapeditiondrawfeatureactivated: (properties) => {
@@ -48,6 +49,16 @@ export default class Edition {
                 mainEventDispatcher.dispatch('edition.formClosed');
             }
         });
+
+        mainEventDispatcher.addListener(()=>{
+            if (this._lastActiveVertex) {
+                this._lastActiveVertex.style = null;
+                if (this._lastActiveVertex.layer) {
+                    this._lastActiveVertex.layer.drawFeature(this._lastActiveVertex);
+                }
+                this._lastActiveVertex = null;
+            }
+        }, 'edition.feature.modified')
     }
 
     get layerId() {
@@ -82,6 +93,59 @@ export default class Edition {
             this._lastSegmentLength = lastSegmentLength;
 
             mainEventDispatcher.dispatch('edition.lastSegmentLength');
+        }
+    }
+
+    /**
+     * The last modified vertex geometry
+     * @type {object|null} - OpenLayers 2 feature representing the last modified vertex
+     */
+    get lastActiveVertex(){
+        return this._lastActiveVertex;
+    }
+
+    /**
+     * Sets the style for sketch geometry, in both drawing mode and edit mode.
+     * Setting an empty object restores the default style.
+     * @param {object|null} style
+     * @returns {void}
+     */
+    setOL2SketchGeometryStyle(style = {}){
+        // draw mode
+        if(this.drawControl?.active) {
+            this.drawControl.handler.point.style = style;
+        } else if (this.modifyFeatureControl?.active) {
+            // edition mode
+            // gets the current vertex, so that the geometry is modified only for the vertex being edited
+            // while leaving all others in the default style
+            const currentVertex = this.modifyFeatureControl.vertex;
+            if( this._lastActiveVertex && this._lastActiveVertex != currentVertex) {
+                // reset the style of the drawn vertex, since it has changed
+                // (for example, the user has selected a different vertex to edit)
+                this._lastActiveVertex.style = null
+                if (this._lastActiveVertex.layer) {
+                    this._lastActiveVertex.layer.drawFeature(this._lastActiveVertex);
+                }
+                this._lastActiveVertex = null;
+            }
+
+            // set the style of the current vertex and redraw it
+            if (currentVertex){
+                if (style) {
+                    currentVertex.style = OpenLayers.Util.applyDefaults(
+                        { ...style },
+                        OpenLayers.Feature.Vector.style["default"]
+                    );
+                    // kep trace of the last vertex selected
+                    this._lastActiveVertex = currentVertex;
+                } else {
+                    // Case where the user is still dragging, but the snap has disengaged
+                    currentVertex.style = null;
+                    this._lastActiveVertex = null;
+                }
+                // redraw vertex
+                this.modifyFeatureControl.layer.drawFeature(currentVertex);
+            }
         }
     }
 
