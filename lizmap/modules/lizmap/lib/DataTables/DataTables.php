@@ -2,6 +2,8 @@
 
 namespace Lizmap\DataTables;
 
+use Lizmap\Form\QgisFormControl;
+
 /**
  * @phpstan-type DTSingleCriteria array{type: string, data: ?string, origData: ?string, condition: ?string, value1: ?string, value2: ?string}
  * @phpstan-type DTCriteria array{criteria: ?DTSingleCriteria, type: string, data: ?string, origData: ?string, condition: ?string, value1: ?string, value2: ?string}
@@ -38,11 +40,6 @@ class DataTables
         'bool', 'bytea', 'geometry', 'geography', 'raster', 'box', 'box2d', 'box3d',
         'json', 'jsonb', 'xml', 'tsvector', 'tsquery', 'oid',
     );
-
-    /**
-     * Code used by QGIS in a value map for the NULL value.
-     */
-    public const VALUE_MAP_NULL_CODE = '{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}';
 
     /**
      * @param DTCriteria $criteria A search criteria provided by DataTables search builder
@@ -360,6 +357,7 @@ class DataTables
      *
      * The search is case and accent insensitive. As in a LIKE pattern,
      * the wildcards % and _ of the word match any characters and any character.
+     * The label of the NULL value of a value map is ignored: it is not displayed in the table.
      *
      * @param array  $labels the labels, indexed by code
      * @param string $word   a word of the quick search
@@ -388,7 +386,7 @@ class DataTables
         // Keep the codes of the matching labels
         $codes = array();
         foreach ($labels as $code => $label) {
-            if (!is_scalar($label)) {
+            if (!is_scalar($label) || $code === QgisFormControl::QGIS_NULL_VALUE) {
                 continue;
             }
             if (preg_match($regex, self::normalizeQuickSearchText((string) $label))) {
@@ -402,9 +400,8 @@ class DataTables
     /**
      * Build the condition of the quick search on a column with labels.
      *
-     * The column must have one of the given codes. The NULL code of the value maps
-     * is converted to IS NULL. When run as SQL, the non text columns are converted
-     * to text with concat(), to compare them safely with the codes.
+     * The column must have one of the given codes. When run as SQL, the non text
+     * columns are converted to text with concat(), to compare them safely with the codes.
      *
      * @param string      $quotedColumn the quoted name of the column
      * @param string[]    $codes        the codes of the labels matching the search
@@ -415,27 +412,22 @@ class DataTables
      */
     public static function buildLabeledColumnExpression(string $quotedColumn, array $codes, ?string $dbFieldType = null): string
     {
-        $conditions = array();
-
-        // The NULL value
-        if (in_array(self::VALUE_MAP_NULL_CODE, $codes, true)) {
-            $conditions[] = "{$quotedColumn} IS NULL";
-            $codes = array_values(array_diff($codes, array(self::VALUE_MAP_NULL_CODE)));
+        if (count($codes) == 0) {
+            return '';
         }
 
-        // The other codes, quoted as strings
-        if (count($codes) > 0) {
-            $quotedCodes = array_map(function ($code) {
-                return "'".str_replace("'", "''", $code)."'";
-            }, $codes);
-            $column = $quotedColumn;
-            if ($dbFieldType !== null && !in_array(strtolower($dbFieldType), self::PG_TEXT_TYPES, true)) {
-                $column = "concat({$quotedColumn})";
-            }
-            $conditions[] = "{$column} IN ( ".implode(', ', $quotedCodes).' )';
+        // The codes, quoted as strings
+        $quotedCodes = array_map(function ($code) {
+            return "'".str_replace("'", "''", $code)."'";
+        }, $codes);
+
+        // The non text columns are converted to text in PostgreSQL
+        $column = $quotedColumn;
+        if ($dbFieldType !== null && !in_array(strtolower($dbFieldType), self::PG_TEXT_TYPES, true)) {
+            $column = "concat({$quotedColumn})";
         }
 
-        return implode(' OR ', $conditions);
+        return "{$column} IN ( ".implode(', ', $quotedCodes).' )';
     }
 
     /**
