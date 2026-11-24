@@ -638,6 +638,34 @@ class DataTablesTest extends TestCase
     }
 
     /**
+     * Test the expression getting the labels of a source layer matching the quick search.
+     */
+    public function testBuildLabelSearchExpression(): void
+    {
+        // Evaluated by QGIS Server: any word in the label
+        $this->assertEquals(
+            '( "label" ILIKE \'%first%\' ) OR ( "label" ILIKE \'%l\'\'eau%\' )',
+            DataTables::buildLabelSearchExpression("first  l'eau", 'label')
+        );
+
+        // Run as SQL, without accents
+        $this->assertEquals(
+            '( f_unaccent("label") ILIKE f_unaccent(\'%forêt%\') )',
+            DataTables::buildLabelSearchExpression('forêt', 'label', array('label' => 'text'), 'f_unaccent')
+        );
+
+        // Nothing to search
+        $this->assertEquals('', DataTables::buildLabelSearchExpression('  ', 'label'));
+
+        // The generated expressions are valid and only use the label field
+        foreach (array("' OR 1=1 --", 'first second', '%_%') as $search) {
+            $exp = DataTables::buildLabelSearchExpression($search, 'label', array('label' => 'varchar'), 'unaccent');
+            $this->assertTrue(SqlTools::validateExpressionFilter($exp), $exp);
+            $this->assertEquals(array('label'), SqlTools::getSQLStringColumnNames($exp), $exp);
+        }
+    }
+
+    /**
      * Test if the quick search is enabled depending on the size of the layer.
      */
     public function testIsQuickSearchEnabled(): void

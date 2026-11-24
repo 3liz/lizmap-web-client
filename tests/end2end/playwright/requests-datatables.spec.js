@@ -582,6 +582,70 @@ test.describe('Datables Requests @requests @readonly', () => {
         expect(body).toHaveProperty('recordsFiltered', 0);
     });
 
+    test('Quick search request in the labels of the value relations and relation references', async({ request }) => {
+        // The labels are searched in the source layers, without accents
+        let params = new URLSearchParams({
+            'repository': repository,
+            'project': 'key_value_mapping',
+            'layerId': 'attribute_table_5a99a714_c29f_40d3_9b85_89deed970e68',
+        });
+        let url = `${base}?${params}`;
+        const data = {
+            start: 0,
+            length: 50,
+            columns: [
+                {'data': 'lizSelected', 'searchable': false},
+                {'data': 'featureToolbar', 'searchable': false},
+                {'data': 'id', 'searchable': true},
+                {'data': 'label_from_int_value_relation', 'searchable': true},
+                {'data': 'label_from_text_value_relation', 'searchable': true},
+                {'data': 'label_from_int_relation_reference', 'searchable': true},
+                {'data': 'label_from_text_relation_reference', 'searchable': true},
+            ],
+            order: [{'column': 2, 'dir': 'asc'}],
+            search: {'value': 'troisieme', 'regex': false},
+        };
+        let response = await request.post(url, {data: data});
+        responseExpect(response).toBeJson();
+        let body = await response.json();
+        expect(body).toHaveProperty('recordsFiltered', 1);
+        expect(body.quickSearch).toHaveProperty('enabled', true);
+        expect(body.quickSearch).toHaveProperty('skippedColumns', []);
+        /** @type {any[]} */
+        let features = body.data.features;
+        expect(features.map(feat => feat.properties.id)).toEqual([3]);
+
+        // The label of the integer value relation
+        data.search.value = 'FOURTH';
+        response = await request.post(url, {data: data});
+        responseExpect(response).toBeJson();
+        body = await response.json();
+        features = body.data.features;
+        expect(features.map(feat => feat.properties.id)).toEqual([4]);
+
+        // Only the label of the relation reference
+        data.columns = data.columns.filter(column => column.data != 'label_from_text_value_relation');
+        data.search.value = 'deuxième';
+        response = await request.post(url, {data: data});
+        responseExpect(response).toBeJson();
+        body = await response.json();
+        features = body.data.features;
+        expect(features.map(feat => feat.properties.id)).toEqual([2]);
+
+        // The values relations with multiple values are searched in the codes
+        data.columns = [
+            {'data': 'id', 'searchable': true},
+            {'data': 'label_from_text_multiple_value_relation', 'searchable': true},
+        ];
+        data.order = [{'column': 0, 'dir': 'asc'}];
+        data.search.value = 'second';
+        response = await request.post(url, {data: data});
+        responseExpect(response).toBeJson();
+        body = await response.json();
+        features = body.data.features;
+        expect(features.map(feat => feat.properties.id)).toEqual([2, 4]);
+    });
+
     test('Filter featureIds request', async({ request }) => {
         let params = new URLSearchParams({
             'repository': repository,

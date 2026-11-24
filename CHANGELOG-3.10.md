@@ -110,7 +110,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * PHP: Support PostgreSQL float arrays in edition forms with QGIS List widget #7209
 * Attribute table - Restore the quick search in all the columns, run on the server, without accents
   for PostgreSQL layers with the `unaccent` extension, disabled for big layers not queried in PostgreSQL
-* Attribute table - The quick search finds the labels of the value maps, not their codes
+* Attribute table - The quick search finds the labels of the value maps, value relations and relation references, not their codes
 * Fix lizmapLogConfig init on docker #7328
 * DXF export per layer enabled #7331
 * Edition Form - Make readonly multi-select checkboxes readonly #7334

@@ -72,6 +72,11 @@ class datatablesCtrl extends jController
     private $searchValue = '';
 
     /**
+     * @var string[] the columns not searched by the quick search, because too many labels match the search
+     */
+    private $quickSearchSkippedColumns = array();
+
+    /**
      * @var null|string srs code
      */
     private $srsName;
@@ -244,7 +249,12 @@ class datatablesCtrl extends jController
     /**
      * Get the labels of the searched columns displayed with labels in the table.
      *
-     * Only the value maps are supported: their labels are stored in the project.
+     * The labels of the value maps are stored in the project. For the value relations
+     * and the relation references, only the labels matching the quick search are requested
+     * in the source layer. If there are too many, the column is not searched and is added
+     * to the skipped columns. If they can not be requested, e.g. the source layer is not
+     * published in WFS, or for the value relations with multiple values, the codes are
+     * searched as for the other columns.
      *
      * @param Project         $lproj   the project
      * @param qgisVectorLayer $layer   the layer
@@ -259,19 +269,113 @@ class datatablesCtrl extends jController
             return array();
         }
 
-        // Keep the value maps of the searched columns
         $labeledValues = array();
         foreach ($columns as $column) {
             $fieldConfig = $fieldsConfig[$column] ?? null;
-            if (!is_array($fieldConfig) || ($fieldConfig['type'] ?? '') !== 'ValueMap') {
+            if (!is_array($fieldConfig)) {
                 continue;
             }
-            if (!empty($fieldConfig['data']) && is_array($fieldConfig['data'])) {
-                $labeledValues[$column] = $fieldConfig['data'];
+            $type = $fieldConfig['type'] ?? '';
+
+            // Value map: the labels are in the project
+            if ($type === 'ValueMap') {
+                if (!empty($fieldConfig['data']) && is_array($fieldConfig['data'])) {
+                    $labeledValues[$column] = $fieldConfig['data'];
+                }
+
+                continue;
+            }
+
+            // Value relation with a single value or relation reference: the labels are in the source layer
+            if ($type === 'RelationReference' || ($type === 'ValueRelation' && empty($fieldConfig['allow_multi']))) {
+                $labels = $this->getSourceLayerLabels($lproj, $fieldConfig);
+                if ($labels === null) {
+                    continue;
+                }
+                if (count($labels) > DataTables::QUICK_SEARCH_MAX_LABELS) {
+                    // Too many labels: the column is not searched
+                    $this->quickSearchSkippedColumns[] = $column;
+                    $labels = array();
+                }
+                $labeledValues[$column] = $labels;
             }
         }
 
         return $labeledValues;
+    }
+
+    /**
+     * Get the labels of the source layer of a value relation or of a relation reference
+     * matching the quick search.
+     *
+     * At most DataTables::QUICK_SEARCH_MAX_LABELS + 1 labels are requested, to know if
+     * there are too many. The filter expression of the value relation is not used: it often
+     * depends on the form, and only the codes stored in the layer can be found.
+     *
+     * @param Project $lproj       the project
+     * @param array   $fieldConfig the configuration of the field with labels, with the keys
+     *                             source_layer_id, code_field and label_field
+     *
+     * @return null|array<string, string> the labels indexed by code, or null if they can not be requested
+     */
+    private function getSourceLayerLabels(Project $lproj, array $fieldConfig): ?array
+    {
+        // The source layer, with the code and the label fields published in WFS
+        $sourceLayer = $lproj->getLayer($fieldConfig['source_layer_id'] ?? '');
+        if (!$sourceLayer instanceof qgisVectorLayer) {
+            return null;
+        }
+        $codeField = $fieldConfig['code_field'] ?? '';
+        $labelField = $fieldConfig['label_field'] ?? '';
+        $wfsFields = $sourceLayer->getWfsFields();
+        if (!is_string($codeField) || !is_string($labelField)
+            || !in_array($codeField, $wfsFields, true) || !in_array($labelField, $wfsFields, true)) {
+            return null;
+        }
+
+        // The filter on the label, run as SQL by Lizmap if possible
+        $dbFieldTypes = $this->getQuickSearchDbFieldTypes($sourceLayer, '');
+        $unaccentFunction = ($dbFieldTypes !== null) ? $this->getUnaccentFunction($sourceLayer) : null;
+        $filter = DataTables::buildLabelSearchExpression($this->searchValue, $labelField, $dbFieldTypes, $unaccentFunction);
+        if ($filter === '') {
+            return null;
+        }
+
+        // Request the codes and the labels
+        $wfsParams = WFSRequest::buildGetFeatureParameters(
+            $sourceLayer->getWfsTypeName(),
+            array(
+                'PROPERTYNAME' => $codeField.','.$labelField,
+                'GEOMETRYNAME' => 'none',
+                'EXP_FILTER' => $filter,
+                'MAXFEATURES' => (string) (DataTables::QUICK_SEARCH_MAX_LABELS + 1),
+            )
+        );
+        $wfsrequest = new WFSRequest($lproj, $wfsParams, lizmap::getServices());
+        $wfsresponse = $wfsrequest->process();
+        if ($wfsresponse->getCode() >= 400
+            || !str_contains(strtolower($wfsresponse->getMime()), 'application/vnd.geo+json')) {
+            return null;
+        }
+        $data = json_decode($wfsresponse->getBodyAsString(), true);
+        if (!is_array($data) || !isset($data['features']) || !is_array($data['features'])) {
+            return null;
+        }
+
+        // The labels indexed by code
+        $labels = array();
+        foreach ($data['features'] as $feature) {
+            $properties = $feature['properties'] ?? null;
+            if (!is_array($properties) || !isset($properties[$codeField], $properties[$labelField])) {
+                continue;
+            }
+            if (!is_scalar($properties[$codeField]) || !is_scalar($properties[$labelField])) {
+                continue;
+            }
+            $labels[(string) $properties[$codeField]] = (string) $properties[$labelField];
+        }
+
+        return $labels;
     }
 
     /**
@@ -282,11 +386,12 @@ class datatablesCtrl extends jController
      * if the expression filter uses $id, a single primary key. When the fields types are
      * returned, the quick search can use database functions, not known by QGIS Server.
      *
-     * @param qgisVectorLayer $layer the layer
+     * @param qgisVectorLayer $layer     the layer
+     * @param string          $expFilter the expression filter of the request
      *
      * @return null|array<string, string> the type of each field, or null if the filter is evaluated by QGIS Server
      */
-    private function getQuickSearchDbFieldTypes(qgisVectorLayer $layer): ?array
+    private function getQuickSearchDbFieldTypes(qgisVectorLayer $layer, string $expFilter): ?array
     {
         // A PostgreSQL table, not a SQL query
         if ($layer->getProvider() != 'postgres') {
@@ -316,7 +421,7 @@ class datatablesCtrl extends jController
         }
 
         // $id can only be translated for a single primary key
-        if ($this->expFilter && str_contains($this->expFilter, '$id') && str_contains($dtParams->key, ',')) {
+        if ($expFilter && str_contains($expFilter, '$id') && str_contains($dtParams->key, ',')) {
             return null;
         }
 
@@ -399,7 +504,7 @@ class datatablesCtrl extends jController
     private function applyQuickSearch(Project $lproj, qgisVectorLayer $layer, ?int $featureCount = null): bool
     {
         $columns = $this->getQuickSearchColumns($layer);
-        $dbFieldTypes = $this->getQuickSearchDbFieldTypes($layer);
+        $dbFieldTypes = $this->getQuickSearchDbFieldTypes($layer, (string) $this->expFilter);
         $sqlQuery = ($dbFieldTypes !== null);
 
         // Only the columns which can be searched
@@ -427,7 +532,7 @@ class datatablesCtrl extends jController
             return $enabled;
         }
 
-        // Build the expression, without accents if possible, on the labels of the value maps
+        // Build the expression, without accents if possible, on the labels of the columns with labels
         $unaccentFunction = $sqlQuery ? $this->getUnaccentFunction($layer) : null;
         $labeledValues = $this->getQuickSearchLabeledValues($lproj, $layer, $columns);
         $searchFilter = DataTables::buildQuickSearchExpression($this->searchValue, $columns, $dbFieldTypes, $unaccentFunction, $labeledValues);
@@ -599,6 +704,7 @@ class datatablesCtrl extends jController
             'editableFeatures' => $editableFeaturesRep,
             'quickSearch' => array(
                 'enabled' => $quickSearchEnabled,
+                'skippedColumns' => $this->quickSearchSkippedColumns,
             ),
         );
 

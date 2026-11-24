@@ -25,6 +25,12 @@ class DataTables
     public const QUICK_SEARCH_MAX_WORDS = 3;
 
     /**
+     * Maximum number of labels found in the source layer of a value relation or of a relation
+     * reference, for the quick search. Above it, the column is not searched.
+     */
+    public const QUICK_SEARCH_MAX_LABELS = 500;
+
+    /**
      * PostgreSQL types of text values, searched directly with ILIKE.
      * The types are given as returned by Jelix, without the digits, e.g. int for int4.
      */
@@ -395,6 +401,30 @@ class DataTables
         }
 
         return $codes;
+    }
+
+    /**
+     * Build the expression filter to get the labels of a source layer matching the quick search.
+     *
+     * The source layer is the layer of a value relation or of a relation reference.
+     * The label must contain at least one of the words: the conditions are combined with OR.
+     *
+     * @param string                     $search           the value typed by the user
+     * @param string                     $labelField       the name of the label field
+     * @param null|array<string, string> $dbFieldTypes     the PostgreSQL type of each field, null if the
+     *                                                     expression is evaluated by QGIS Server
+     * @param null|string                $unaccentFunction the PostgreSQL function removing accents, or null
+     *
+     * @return string the expression, or an empty string if there is nothing to search
+     */
+    public static function buildLabelSearchExpression(string $search, string $labelField, ?array $dbFieldTypes = null, ?string $unaccentFunction = null): string
+    {
+        $wordExpressions = array();
+        foreach (self::getQuickSearchWords($search) as $word) {
+            $wordExpressions[] = self::buildQuickSearchExpression($word, array($labelField), $dbFieldTypes, $unaccentFunction);
+        }
+
+        return implode(' OR ', $wordExpressions);
     }
 
     /**
