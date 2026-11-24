@@ -51,6 +51,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Attribute table - The quick search finds the labels of the value maps, value relations and relation references, not their codes #7546
 * Edition - Snap on drawings during edition #7533
 * Edition - Sketch geometry style on snap #7545
+* Permalink in URL must win over the first map theme #7283⁠
+* Startup: trigger_filter URL parameter to filter zoomed features #7284⁠
 
 ### Security
 
