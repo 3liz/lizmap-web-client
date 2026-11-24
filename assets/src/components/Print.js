@@ -253,7 +253,11 @@ export default class Print extends HTMLElement {
         wmsParams[this._mainMapID + ':EXTENT'] = extent.join(',');
         wmsParams[this._mainMapID + ':SCALE'] = this._printScale;
 
-        Object.assign(wmsParams, getPrintLayersParameters(this._mainMapID));
+        Object.assign(wmsParams, getPrintLayersParameters(
+            this._mainMapID,
+            mainLizmap.state.baseLayers.selectedBaseLayer,
+            mainLizmap.state.rootMapGroup,
+        ));
 
         // If user has made a draw, print it with redlining
         const formatWKT = new WKT();

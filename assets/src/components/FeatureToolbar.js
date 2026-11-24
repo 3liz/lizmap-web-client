@@ -826,7 +826,11 @@ export default class FeatureToolbar extends HTMLElement {
         // Print the selected base layer and the visible layers
         // instead of the project default visibility
         const template = mainLizmap.config?.printTemplates?.find(t => t?.title === templateName);
-        Object.assign(wmsParams, getPrintLayersParameters(getPrintMainMapId(template)));
+        Object.assign(wmsParams, getPrintLayersParameters(
+            getPrintMainMapId(template),
+            mainLizmap.state.baseLayers.selectedBaseLayer,
+            mainLizmap.state.rootMapGroup,
+        ));
 
         // Custom labels
         this.querySelectorAll(

@@ -935,7 +935,9 @@ var lizAttributeTable = function() {
                                 return t && t.title === layoutTitle;
                             });
                             Object.assign(wmsParams, PrintLayersModule.getPrintLayersParameters(
-                                PrintLayersModule.getPrintMainMapId(template)
+                                PrintLayersModule.getPrintMainMapId(template),
+                                lizMap.mainLizmap.state.baseLayers.selectedBaseLayer,
+                                lizMap.mainLizmap.state.rootMapGroup
                             ));
                             UtilsModule.Utils.downloadFile(lizMap.mainLizmap.serviceURL, wmsParams, function() {
                                 $button.prop('disabled', false);

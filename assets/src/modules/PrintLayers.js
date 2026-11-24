@@ -4,7 +4,11 @@
  * @copyright 2026 3Liz
  * @license MPL-2.0
  */
-import { mainLizmap } from './Globals.js';
+
+/**
+ * @import { BaseLayerState } from './state/BaseLayer.js'
+ * @import { MapRootState } from './state/MapLayer.js'
+ */
 
 /**
  * Get the id of the main map of a print template, as used to prefix
@@ -31,10 +35,12 @@ export function getPrintMainMapId(template) {
  * the selected base layer and the visible layers in their drawing order,
  * with their styles, opacities, filter and selection tokens and legend options.
  * They let QGIS Server print what the user sees instead of the project default.
- * @param {string} mapId - Id of the layout map the layers parameters are for
+ * @param {string}         mapId             - Id of the layout map the layers parameters are for
+ * @param {BaseLayerState} selectedBaseLayer - The selected base layer state
+ * @param {MapRootState}   rootMapGroup      - The root map group state
  * @returns {object} The WMS parameters
  */
-export function getPrintLayersParameters(mapId) {
+export function getPrintLayersParameters(mapId, selectedBaseLayer, rootMapGroup) {
     const wmsParams = {};
 
     const printLayers = [];
@@ -42,7 +48,6 @@ export function getPrintLayersParameters(mapId) {
     const opacityLayers = [];
 
     // Add selected base layer if any
-    const selectedBaseLayer = mainLizmap.state.baseLayers.selectedBaseLayer;
     if (selectedBaseLayer && selectedBaseLayer.hasItemState) {
         printLayers.push(selectedBaseLayer.itemState.wmsName);
         styleLayers.push(selectedBaseLayer.itemState.wmsSelectedStyleName);
@@ -51,7 +56,7 @@ export function getPrintLayersParameters(mapId) {
 
     // Add visible layers in defined order
     const orderedVisibleLayers = {};
-    mainLizmap.state.rootMapGroup.findExplodedMapLayers().forEach(layer => {
+    rootMapGroup.findExplodedMapLayers().forEach(layer => {
         if (layer.visibility) {
             orderedVisibleLayers[layer.layerOrder] = layer;
         }
