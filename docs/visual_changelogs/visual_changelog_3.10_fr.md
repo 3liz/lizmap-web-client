@@ -104,6 +104,16 @@ La liste des permaliens est visible dans l'interface d'administration ([#6765](h
 
 *Financé par digi-studio, Etra & Faunalia - Développé par [Nicolas Boisteault](https://github.com/nboisteault), [René-Luc D'Hont](https://github.com/rldhont) & [Riccardo Beltrami](https://github.com/mind84)*
 
+* Réactivation de la recherche rapide dans toutes les colonnes, désactivée pour les couches volumineuses qui ne serait fournies par PostgreSQL ([#7522](https://github.com/3liz/lizmap-web-client/pull/7522))
+
+  ![attribute-table-quicke-search](media/3.10/attribute-table-quicke-search.gif)
+
+* Configuration des **formats d'export** ([#7149](https://github.com/3liz/lizmap-web-client/pull/7149)) et du **nombre maximum d'objets exportables** ([#7347](https://github.com/3liz/lizmap-web-client/pull/7347)) des données de la table d'attributs
+
+  <img width="80%" src="media/3.10/attribute_table_config.png" alt="img_attribute_table_config">
+
+  *Financé par le Grand Narbonne et le Conseil Départemental du Calvados*
+
 ### Édition
 
 * Prise en charge des **expressions de valeur par défaut** sur tous les champs :
@@ -164,6 +174,12 @@ La liste des permaliens est visible dans l'interface d'administration ([#6765](h
 
   *Financé par Etra - Développé par [Riccardo Beltrami](https://github.com/mind84)*
 
+* **Accrochage aux dessins** pendant l'édition ([#7533](https://github.com/3liz/lizmap-web-client/pull/7533))
+
+  ![edition_snap_digitizing](media/3.10/edition_snap_digitizing.gif)
+
+  *Financé par Etra - Développé par [Riccardo Beltrami](https://github.com/mind84)*
+
 ### Légende
 
 Un **double-clic** sur la case à cocher d'une couche coche ou décoche toutes ses classes de symbologie ([#6640](https://github.com/3liz/lizmap-web-client/pull/6640)).
@@ -201,6 +217,20 @@ L'**outil de sélection par rectangle** est désormais activé automatiquement �
 <img width="80%" src="media/3.10/selection_auto_activated.png" alt="img_selection_auto_activated">
 
 *Développé par [meyerlor](https://github.com/meyerlor)*
+
+### Digitalisation
+
+* Ajout de la prise en charge de la **contrainte de rayon pour les dessins de cercle** ([#7463](https://github.com/3liz/lizmap-web-client/pull/7463))
+
+  ![digitizing_circle_constraint](media/3.10/digitizing_circle_constraint.gif)
+
+  *Financé par Faunalia - Développé par [Riccardo Beltrami](https://github.com/mind84)*
+
+* Améliorer la visualisation de la couche des contraintes ([#7463](https://github.com/3liz/lizmap-web-client/pull/7463))
+
+  ![digitizing_distance_constraint](media/3.10/digitizing_distance_constraint.gif)
+
+  *Financé par Faunalia - Développé par [Riccardo Beltrami](https://github.com/mind84)*
 
 ## Développeurs
 
