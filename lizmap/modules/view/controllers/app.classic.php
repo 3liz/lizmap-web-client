@@ -1,5 +1,6 @@
 <?php
 
+use Lizmap\App\Checker;
 use Lizmap\Events\LizmapMetadataEvent;
 use Lizmap\Server\Server;
 use LizmapAdmin\ModulesInfo\ModulesChecker;
@@ -26,12 +27,9 @@ class appCtrl extends jController
         /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
 
-        // Authenticate
-        $basicAuthUsed = false;
-        if (isset($_SERVER['PHP_AUTH_USER'])) {
-            $basicAuthUsed = true;
-            $logUser = jAuth::login($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
-        }
+        // Optional BASIC authentication, for the current request only
+        $basicAuthUsed = isset($_SERVER['PHP_AUTH_USER']);
+        $logUser = Checker::checkCredentials($_SERVER);
 
         if ($this->boolParam('debug')) {
             jLog::log('Processing request for Lizmap metadata : '.jAuth::getUserSession()->login, 'lizmapadmin');
