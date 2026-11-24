@@ -2,6 +2,7 @@
 
 use Lizmap\App\SqlTools;
 use Lizmap\DataTables\DataTables;
+use Lizmap\Form\QgisFormControl;
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 
@@ -549,7 +550,7 @@ class DataTablesTest extends TestCase
             '1' => 'Forêt',
             '2' => 'Prairie',
             'U' => 'Zone urbaine',
-            DataTables::VALUE_MAP_NULL_CODE => 'Inconnu',
+            QgisFormControl::QGIS_NULL_VALUE => 'Inconnu',
         );
 
         // Case insensitive
@@ -562,8 +563,8 @@ class DataTablesTest extends TestCase
             $this->assertEquals(array('1'), DataTables::getLabelCodesMatchingWord($labels, 'FORÊT'));
         }
 
-        // The NULL code
-        $this->assertEquals(array(DataTables::VALUE_MAP_NULL_CODE), DataTables::getLabelCodesMatchingWord($labels, 'connu'));
+        // The label of the NULL value is ignored, it is not displayed
+        $this->assertEquals(array(), DataTables::getLabelCodesMatchingWord($labels, 'connu'));
 
         // LIKE wildcards
         $this->assertEquals(array('U'), DataTables::getLabelCodesMatchingWord($labels, 'zone%ine'));
@@ -588,7 +589,7 @@ class DataTablesTest extends TestCase
                 '1' => 'Forest',
                 '2' => 'Forest edge',
                 '3' => "Farmer's field",
-                DataTables::VALUE_MAP_NULL_CODE => 'Unknown',
+                QgisFormControl::QGIS_NULL_VALUE => 'Unknown',
             ),
         );
 
@@ -608,10 +609,10 @@ class DataTablesTest extends TestCase
             DataTables::buildQuickSearchExpression('water', array('landuse'), null, null, $labeledValues)
         );
 
-        // The NULL code and the quotes in the codes
+        // The label of the NULL value is ignored, and the quotes in the codes are escaped
         $labeledValues['landuse']["o'k"] = 'Unknown too';
         $this->assertEquals(
-            '( "landuse" IS NULL OR "landuse" IN ( \'o\'\'k\' ) )',
+            '( "landuse" IN ( \'o\'\'k\' ) )',
             DataTables::buildQuickSearchExpression('unknown', array('landuse'), null, null, $labeledValues)
         );
 
