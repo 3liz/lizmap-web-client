@@ -4567,3 +4567,22 @@ These lines will be removed in the future, when the minimum target version will 
   margin-top: 0.5em;
   margin-left: auto;
 }
+
+/* snap selector */
+
+/* same settings as digitizing button and svg */
+.snap-selector .btn {
+    width: 34px;
+    height: 34px;
+    box-sizing: border-box;
+    padding: 4px;
+}
+
+.snap-selector .dropdown-toggle {
+    width: unset;
+}
+
+.snap-selector svg {
+    width: 24px;
+    height: 24px;
+}

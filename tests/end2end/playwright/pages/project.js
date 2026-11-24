@@ -126,6 +126,18 @@ export class ProjectPage extends BasePage {
      */
     editionForm;
 
+    /**
+     * Digitization form
+     * @type {Locator}
+     */
+    editionPointCoordForm;
+
+    /**
+     * Snap selector component in the edition form
+     * @type {Locator}
+     */
+    editionSnapSelectorComponent;
+
     // Messages
     /**
      * Foreground message bar
@@ -246,6 +258,8 @@ export class ProjectPage extends BasePage {
         this.buttonEditing = page.locator('#button-edition');
         this.buttonMetadata = page.locator('#button-metadata');
         this.editionForm = page.locator('#jforms_view_edition');
+        this.editionPointCoordForm = page.locator('#edition-point-coord-form');
+        this.editionSnapSelectorComponent = this.editionPointCoordForm.locator('lizmap-snap-selector');
 
         const logs = this.logs;
         page.on('console', message => {
@@ -1247,5 +1261,142 @@ export class ProjectPage extends BasePage {
             return dialog.accept();
         });
         await this.page.locator(`#permalink-clear-history`).click();
+    }
+
+    /**
+     * Verifies the DOM structure and internal state of the edition snap selector component.
+     *
+     * @param {'nosnap' | 'vertex' | 'intersection'} snapSelected - Expected snap mode selected in the component.
+     * @param {boolean} active - Whether snapping is expected to be currently active.
+     * @returns {Promise<void>}
+     */
+    async checkEditionSnapSelectorComponentState(snapSelected, active){
+
+        // Verify required child elements are rendered in the component DOM
+        await expect(this.editionSnapSelectorComponent.locator('.snap-selector-intersection')).toHaveCount(1);
+        await expect(this.editionSnapSelectorComponent.locator('.snap-selector-vertex')).toHaveCount(1);
+        await expect(this.editionSnapSelectorComponent.locator('.snap-selector-selected-snap')).toHaveCount(1);
+        await expect(this.editionSnapSelectorComponent.locator('.snap-selector-selected-snap')).toBeVisible();
+
+        // Verify the custom element's internal properties match the expected state
+        expect(await this.editionSnapSelectorComponent.evaluate((e) => e.snapActive)).toBe(active);
+        expect(await this.editionSnapSelectorComponent.evaluate((e) => e.snapSelected)).toBe(snapSelected);
+    }
+
+    /**
+     * Toggles the snap selection dropdown panel and asserts its expected visibility.
+     *
+     * @param {boolean} visible - Expected visibility state of the dropdown menu after clicking.
+     * @param {boolean} mainButton - Whether to click the main selected-snap button
+     *   or the dropdown toggle arrow (`false`).
+     * @returns {Promise<void>}
+     */
+    async toggleEditionSnapSelectorSelectionPanel(visible, mainButton){
+        // click either the primary action button or the secondary dropdown arrow
+        if (mainButton) {
+            await this.editionSnapSelectorComponent.locator('.snap-selector-selected-snap').click();
+        } else {
+            await this.editionSnapSelectorComponent.locator('.dropdown-toggle').click();
+        }
+        // verify the dropdown menu matches the expected visibility state
+        await expect(this.editionSnapSelectorComponent.locator('.dropdown-menu')).toBeVisible({visible:visible});
+    }
+
+    /**
+     * Opens the snap selector dropdown and selects the specified snap mode.
+     *
+     * @param {'vertex' | 'intersection'} type - Snap mode to activate.
+     * @returns {Promise<void>}
+     */
+    async editionSnapSelectorSelectSnap(type){
+        // open the snap mode dropdown menu
+        await this.editionSnapSelectorComponent.locator('.dropdown-toggle').click();
+
+        // select the requested snap option from the menu
+        await this.editionSnapSelectorComponent.locator(`.snap-selector-${type}`).click();
+    }
+
+    /**
+     * Asserts the number of features currently loaded in the OpenLayers snap drawings layer.
+     * This layer dynamically holds the candidate geometries or intersection points generated
+     * for the active snap mode.
+     *
+     * @param {number} expectedFeatureCount - Expected number of features in the snap layer.
+     * @returns {Promise<void>}
+     */
+    async checkeditionSnapDrawingsLayer(expectedFeatureCount){
+        // Retrieve the features array from Lizmap's internal snapping layer and verify its count
+        const features = await this.page.evaluate(() => lizMap.mainLizmap.snapping._snapDrawingsLayer.features);
+        expect(features).toHaveLength(expectedFeatureCount);
+    }
+
+    /**
+     * Verifies OpenLayers 2 snapping behavior and pixel tolerance around a target point during editing.
+     *
+     * Moves the mouse cursor pixel-by-pixel away from `startPoint` in the given `direction` up to
+     * `tolerance` pixels:
+     * - Within tolerance (`i < tolerance`): the sketch point must stay locked onto `startPoint`.
+     * - At the tolerance boundary (`i === tolerance`): the sketch point must unsnap and follow the cursor.
+     *
+     *  **WARNING:** Ensure that moving `tolerance` pixels in `direction` does not enter the snap radius
+     *   of another nearby feature, which would cause a false failure.
+     *
+     * @param {[number, number]} startPoint - Screen coordinates `[x, y]` in pixels of the target snap point.
+     * @param {'left' | 'right' | 'up' | 'down'} direction - Direction to move the cursor away from `startPoint`.
+     * @param {number} [tolerance=10] - Snap tolerance threshold in pixels (default: 10).
+     * @returns {Promise<void>}
+     */
+    async checkEditionOL2SnapAroundPoint(startPoint, direction, tolerance = 10){
+        /**
+         * Computes the cursor screen coordinates shifted by `i` pixels in `direction`.
+         *
+         * @param {number} i - Pixel offset from `startPoint`.
+         * @returns {{ x: number, y: number }} Target cursor coordinates in pixels.
+         */
+        const calcIncrement = (i) => {
+            let shiftX = startPoint[0];
+            let shiftY = startPoint[1];
+            switch(direction){
+                case 'left':
+                    shiftX -= i;
+                    break;
+                case 'right':
+                    shiftX += i;
+                    break;
+                case 'up':
+                    shiftY -= i;
+                    break;
+                case 'down':
+                    shiftY += i;
+                    break;
+                default:
+                    break;
+            }
+
+            return { x:shiftX, y: shiftY };
+        }
+        // sweep cursor outward from startPoint (0px) up to the unsnap threshold (tolerance px)
+        for (let i = 0; i <= tolerance; i++){
+            const incrementPosition = calcIncrement(i);
+            await this.mapOl2.hover({position:incrementPosition});
+
+            // allow OpenLayers 2 snap handler to update the sketch point geometry
+            await this.page.waitForTimeout(200);
+
+            // convert the active sketch point's map coordinates back to screen pixels
+            let snapPointXY = await this.page.evaluate(()=>{
+                const pointGeom = lizMap.mainLizmap.edition.drawControl.handler.point.geometry;
+                const pixel = lizMap.map.getPixelFromLonLat(new OpenLayers.LonLat(pointGeom.x, pointGeom.y));
+
+                return [pixel.x, pixel.y];
+            })
+
+            // Expect the sketch point to unsnap at `i === tolerance`, or remain locked to `startPoint` otherwise
+            const expectedXY = i === tolerance
+                ? [incrementPosition.x, incrementPosition.y]
+                : [startPoint[0], startPoint[1]];
+
+            expect(snapPointXY).toEqual(expectedXY);
+        }
     }
 }

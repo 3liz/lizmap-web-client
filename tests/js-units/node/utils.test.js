@@ -1,9 +1,27 @@
 import { expect } from 'chai';
 import { MockAgent, setGlobalDispatcher, Agent } from 'undici';
+import { readFileSync } from 'fs';
 import { Utils } from 'assets/src/modules/Utils.js';
+import {
+    LineString,
+    Point,
+    Polygon
+} from 'ol/geom.js';
+import { Feature } from 'ol';
 
 const agent = new MockAgent();
 const client = agent.get('http://localhost:8130');
+
+const featureCoordinates = JSON.parse(readFileSync('./tests/js-units/data/snapDrawGeometries.json', 'utf8'));
+
+const linestring_a = new Feature(new LineString(featureCoordinates.linestring_a));
+const linestring_b = new Feature(new LineString(featureCoordinates.linestring_b));
+const circle_a = new Feature(new Polygon(featureCoordinates.circle_a));
+const polygon_a = new Feature(new Polygon(featureCoordinates.polygon_a));
+const polygon_b = new Feature(new Polygon(featureCoordinates.polygon_b));
+const circle_b = new Feature(new Polygon(featureCoordinates.circle_b));
+const point_a = new Feature(new Point(featureCoordinates.point_a));
+const polygon_c = new Feature(new Polygon(featureCoordinates.polygon_c));
 
 const replyGet = (options) => {
     const url = new URL(options.path, options.origin);
@@ -332,4 +350,156 @@ describe('Utils', function () {
             expect(error.options).to.be.undefined;
         }
     });
+
+    it('Calculate intersections points of the given set of features', function () {
+        const test_features = [
+            {
+                features: [linestring_b, circle_a],
+                expectIntersections:0
+            },
+            {
+                features: [polygon_a, circle_a],
+                expectIntersections:0
+            },
+            {
+                features: [polygon_a, circle_a, polygon_b],
+                expectIntersections:0
+            },
+            {
+                features: [linestring_a, linestring_b],
+                expectIntersections:1
+            },
+            {
+                features: [linestring_a, linestring_b, circle_b],
+                expectIntersections:1
+            },
+            {
+                features: [linestring_a, circle_a],
+                expectIntersections:2
+            },
+            {
+                features: [linestring_a, polygon_a],
+                expectIntersections:2
+            },
+            {
+                features: [linestring_a, polygon_a, circle_a],
+                expectIntersections:4
+            },
+            {
+                features: [linestring_a, polygon_a, circle_a, linestring_b],
+                expectIntersections:6
+            },
+            {
+                // point_a lies inside circle_a, no intersection
+                features: [circle_a, point_a],
+                expectIntersections:0
+            },
+            {
+                features: [circle_a, circle_b],
+                expectIntersections:2
+            },
+            {
+                features: [polygon_b, circle_b],
+                expectIntersections:2
+            },
+            {
+                // whole dataset
+                features: [linestring_a, linestring_b, circle_a, circle_b, polygon_a, polygon_b, point_a],
+                expectIntersections:10
+            },
+            {
+                // compare two identical geomtries, no intersection expected
+                features: [linestring_a, linestring_a],
+                expectIntersections:0
+            }
+        ];
+
+        test_features.forEach((param)=>{
+            const intersections = Utils.calculateGeometriesIntersections(param.features);
+            expect(intersections).to.be.an('array').that.have.length(param.expectIntersections)
+        })
+    })
+
+    it('Split features in segments', function () {
+        const test_features = [
+            {
+                feature:linestring_a,
+                expectedSegments:4
+            },
+            {
+                feature:linestring_b,
+                expectedSegments:4
+            },
+            {
+                feature:polygon_a,
+                expectedSegments:4
+            },
+            {
+                // digitized square feature
+                feature:polygon_b,
+                expectedSegments:4
+            },
+            {
+                feature:polygon_c,
+                expectedSegments:5
+            },
+            {
+                // a point has no segments
+                feature:point_a,
+                expectedSegments:0
+            },
+            {
+                // fromCircle with 128 edges
+                feature:circle_a,
+                expectedSegments:128
+            },
+            {
+                // fromCircle with 128 edges
+                feature:circle_b,
+                expectedSegments:128
+            }
+        ]
+
+        test_features.forEach((param)=>{
+            const segments = Utils.getSegmentsFromGeometry(param.feature.getGeometry());
+            expect(segments).to.be.an('array').that.have.length(param.expectedSegments)
+        })
+    })
+
+    it('Return intersection point of two given segment', function () {
+        // using Utils.getSegmentsFromGeometry to get segments
+        const test_features = [
+            {
+                segments:[
+                    Utils.getSegmentsFromGeometry(linestring_a.getGeometry())[0],
+                    Utils.getSegmentsFromGeometry(linestring_b.getGeometry())[0],
+                ],
+                expectedCoords:null
+            },
+            {
+                segments:[
+                    Utils.getSegmentsFromGeometry(linestring_a.getGeometry())[2],
+                    Utils.getSegmentsFromGeometry(linestring_b.getGeometry())[0],
+                ],
+                expectedCoords:[3.8432783872159546, 43.64398255159795]
+            },
+            {
+                segments:[
+                    Utils.getSegmentsFromGeometry(polygon_a.getGeometry())[3],
+                    Utils.getSegmentsFromGeometry(linestring_b.getGeometry())[0],
+                ],
+                expectedCoords:[3.847370494616892, 43.64355697242826]
+            },
+        ]
+
+        test_features.forEach((param)=>{
+            const intersectionPoint = Utils.getLineSegmentsIntersection(param.segments[0],param.segments[1]);
+            if (param.expectedCoords === null) {
+                expect(intersectionPoint).to.be.null;
+            } else {
+                expect(intersectionPoint).to.be.deep.equal(param.expectedCoords);
+            }
+
+        })
+    })
 });
