@@ -1,4 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg">
+<defs>
+    <mask id="magnet-vertex-mask">
+      <rect width="16" height="16" fill="white" />
+      <circle cx="12.5" cy="3.5" r="4.5" fill="black" />
+    </mask>
+    <mask id="magnet-intersection-mask">
+        <rect width="16" height="16" fill="white" />
+        <circle cx="13" cy="3" r="4.5" fill="black" />
+    </mask>
+</defs>
 <symbol id="box" viewBox="0 0 24 24"><path d="M1.48 1029.842h21.04v19.04H1.48Z" style="fill:#e5e5e5;stroke:currentColor;stroke-width:.95975173;stroke-dasharray:1.91950336,.95975168" transform="translate(.05 -1027.676)"/></symbol>
 <symbol id="circle" viewBox="0 0 24 24"><g transform="translate(0 -1028.362)"><circle cx="12.1" cy="1040.272" r="10.509" fill="#ebebeb"/><circle cx="12" cy="1040.362" r="10.5" fill="none" stroke="currentColor" stroke-dasharray="1.99829691 .99914846" stroke-dashoffset=".168" stroke-width=".999"/></g></symbol>
 <!--https://icons.getbootstrap.com/icons/compass/ -->
@@ -49,4 +59,7 @@
 </symbol>
 <symbol id="text" viewBox="0 0 24 24"><text xml:space="preserve" x="2.323" y="15.977" style="font-style:normal;font-variant:normal;font-weight:400;font-stretch:normal;font-size:12px;line-height:125%;font-family:FontAwesome;text-align:start;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:currentColor;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"><tspan x="2.323" y="15.977">Abc</tspan></text></symbol>
 <symbol id="rule" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path stroke="none" d="M0 0h24v24H0z"/><path d="m17 3 4 4L7 21l-4-4zm-1 4-1.5-1.5M13 10l-1.5-1.5M10 13l-1.5-1.5M7 16l-1.5-1.5"/></symbol>
+<symbol id="magnet" fill="currentColor" viewBox="0 0 16 16"><path d="M8 1a7 7 0 0 0-7 7v3h4V8a3 3 0 0 1 6 0v3h4V8a7 7 0 0 0-7-7m7 11h-4v3h4zM5 12H1v3h4zM0 8a8 8 0 1 1 16 0v8h-6V8a2 2 0 1 0-4 0v8H0z"/></symbol>
+<symbol id="magnet-vertex" fill="currentColor" viewBox="0 0 16 16"><path d="M8 1a7 7 0 0 0-7 7v3h4V8a3 3 0 0 1 6 0v3h4V8a7 7 0 0 0-7-7m7 11h-4v3h4zM5 12H1v3h4zM0 8a8 8 0 1 1 16 0v8h-6V8a2 2 0 1 0-4 0v8H0z" mask="url(#magnet-vertex-mask)" /><circle cx="12.5" cy="3.5" r="3" /></symbol>
+<symbol id="magnet-intersection" fill="currentColor" viewBox="0 0 16 16"><path d="M8 1a7 7 0 0 0-7 7v3h4V8a3 3 0 0 1 6 0v3h4V8a7 7 0 0 0-7-7m7 11h-4v3h4zM5 12H1v3h4zM0 8a8 8 0 1 1 16 0v8h-6V8a2 2 0 1 0-4 0v8H0z" mask="url(#magnet-intersection-mask)"/><path d="M11 1l4 4m0-4L11 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
 </svg>

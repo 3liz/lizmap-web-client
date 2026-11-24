@@ -203,7 +203,7 @@ export class DrawPage extends ProjectPage {
      * Checks if the specific constraint DOM input is visible or not
      * @param {string} type - the constraint type
      * @param {boolean} visible - if the constraint should be visible or not
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async checkMeasureConstraintVisibility(type, visible) {
         const constraint = this.drawPanel.locator(`.digitizing-constraint-${type} input.${type}`)
@@ -302,5 +302,58 @@ export class DrawPage extends ProjectPage {
      */
     async clickImportFile() {
         this.drawPanel.locator('.digitizing-import').click();
+    }
+
+    /**
+     * Draw a LineString geometry
+     * @param {Array<Array<number>>} coordinates - coordinates of the line
+     * @returns {Promise<void>}
+     */
+    async drawLine(coordinates){
+        expect(coordinates.length).toBeGreaterThan(1);
+        await this.selectGeometry('line');
+        for (let i = 0; i < coordinates.length; i++){
+            const point = coordinates[i];
+            i == coordinates.length - 1 ? await this.dblClickOnMap(point[0],point[1]) : await this.clickOnMap(point[0],point[1])
+        }
+
+        // toggle tool in the end
+        await this.toggleSelectedTool()
+    }
+
+    /**
+     * Draw a Circle geometry
+     * @param {Array<Array<number>>} coordinates - coordinates of the circle
+     * @returns {Promise<void>}
+     */
+    async drawCirlce(coordinates){
+        expect(coordinates.length).toBe(2);
+        await this.selectGeometry('circle');
+        for (let i = 0; i < coordinates.length; i++){
+            const point = coordinates[i];
+            await this.clickOnMap(point[0],point[1])
+        }
+
+        // toggle tool in the end
+        await this.toggleSelectedTool()
+    }
+
+    /**
+     * Draw a Polygon geometry
+     * @param {Array<Array<number>>} coordinates - coordinates of the polygon
+     * @returns {Promise<void>}
+     */
+    async drawPolygon(coordinates){
+        expect(coordinates.length).toBeGreaterThan(2);
+        await this.selectGeometry('polygon');
+        for (let i = 0; i < coordinates.length; i++){
+            const point = coordinates[i];
+            i == coordinates.length - 1 ? await this.dblClickOnMap(point[0],point[1]) : await this.clickOnMap(point[0],point[1])
+        }
+
+        await this.page.waitForTimeout(500);
+
+        // toggle tool in the end
+        await this.toggleSelectedTool()
     }
 }

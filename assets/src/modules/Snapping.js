@@ -5,11 +5,19 @@
  * @license MPL-2.0
  */
 
+import { Utils } from './Utils.js';
 import { mainEventDispatcher } from '../modules/Globals.js';
 import Edition from './Edition.js';
 import { MapLayerLoadStatus, MapRootState } from './state/MapLayer.js';
 import { TreeRootState } from './state/LayerTree.js';
 import WFS from './WFS.js';
+import { WKT } from 'ol/format.js';
+import { Feature } from 'ol';
+import { fromCircle } from 'ol/geom/Polygon.js';
+import {
+    Circle as CircleGeom,
+} from 'ol/geom.js';
+import Digitizing from './Digitizing.js';
 
 /**
  * @class
@@ -23,8 +31,9 @@ export default class Snapping {
      * @param {MapRootState}  rootMapGroup - Root map group
      * @param {TreeRootState} layerTree    - Root tree layer group
      * @param {object}        lizmap3      - The old lizmap object
+     * @param {Digitizing}    digitizing   - The digitizing module
      */
-    constructor(edition, rootMapGroup, layerTree, lizmap3) {
+    constructor(edition, rootMapGroup, layerTree, lizmap3, digitizing) {
 
         this._edition = edition;
         this._rootMapGroup = rootMapGroup;
@@ -44,6 +53,10 @@ export default class Snapping {
         this._pendingMapReadyListener = null;
         this._wfsErrorNotified = false;
 
+        this._digitizing = digitizing;
+        this._snapOnDrawings = false;
+        this._snapType = null;
+
         // Create layer to store snap features
         const snapLayer = new OpenLayers.Layer.Vector('snaplayer', {
             visibility: false,
@@ -57,7 +70,22 @@ export default class Snapping {
             })
         });
 
+        // create a layer to store drawings snap features.
+        // The layer settings (visibility/style) are the same as those of the main "snapLayer".
+        this._snapDrawingsLayer = new OpenLayers.Layer.Vector('snapDrawingsLayer', {
+            visibility: false,
+            styleMap: new OpenLayers.StyleMap({
+                pointRadius: 2,
+                fill: false,
+                stroke: false,
+                strokeWidth: 3,
+                strokeColor: 'red',
+                strokeOpacity: 0.8
+            })
+        });
+
         this._lizmap3.map.addLayer(snapLayer);
+        this._lizmap3.map.addLayer(this._snapDrawingsLayer);
         this._snapLayer = snapLayer;
 
         const snapControl = new OpenLayers.Control.Snapping({
@@ -66,8 +94,25 @@ export default class Snapping {
                 layer: snapLayer
             }]
         });
-        this._lizmap3.map.addControls([snapControl]);
+
+        this._snapDrawingsControl = new OpenLayers.Control.Snapping({
+            layer: this._edition.editLayer,
+            targets: [{
+                layer: this._snapDrawingsLayer,
+                node:true,
+                vertex:true,
+                edge: true,
+                // fixed tolerance
+                nodeTolerance: 10,
+                vertexTolerance: 10,
+                edgeTolerance:10
+            }]
+        });
+
+        this._lizmap3.map.addControls([snapControl, this._snapDrawingsControl]);
+
         this._lizmap3.controls['snapControl'] = snapControl;
+        this._lizmap3.controls['snapDrawingsControl'] = this._snapDrawingsControl;
 
         this._setSnapLayersRefreshable = () => {
             if(this._active){
@@ -155,6 +200,7 @@ export default class Snapping {
 
                     // Set edition layer as main layer
                     snapControl.setLayer(this._edition.editLayer);
+                    this._snapDrawingsControl.setLayer(this._edition.editLayer);
 
                     snapControl.targets[0].node = this._config.snap_vertices;
                     snapControl.targets[0].vertex = this._config.snap_intersections;
@@ -191,7 +237,9 @@ export default class Snapping {
                     this._pendingMapReadyListener = null;
                 }
                 this.active = false;
+                this._snapOnDrawings = false;
                 this._snapLayer.destroyFeatures();
+                this._snapDrawingsLayer.destroyFeatures();
                 this.config = undefined;
 
                 // Remove listener to moveend event to layers visibility event
@@ -371,6 +419,79 @@ export default class Snapping {
         return "";
     }
 
+    /**
+     * Enable/disable snap on drawings and set
+     * snap features accordingly
+     * @param {Event} e - snap selection event
+     * @returns {void}
+     */
+    setSnapOnDrawings(e){
+        this.removeSnapDigitizingFeatures();
+        this._snapOnDrawings = false;
+        this._snapType = null;
+        if (e.active) {
+            this._snapOnDrawings = true;
+            this._snapType = e.snapSelected;
+            this.addSnapDigitizingFeatures();
+        }
+    }
+
+    /**
+     * Add features to digitizing snap layer
+     * @fires Snapping#snappingDigitizingFeaturesAdded
+     * @returns {void}
+     */
+    addSnapDigitizingFeatures(){
+        if (this._digitizing.featureDrawn?.length && this._snapOnDrawings) {
+            // transfrom Circe gometry in Polygon
+            const transformedFeatures = this._digitizing.featureDrawn.map((f)=>{
+                if(f.getGeometry() instanceof CircleGeom) {
+                    const polygonFromCircleGeom = fromCircle(f.getGeometry(), 128);
+                    return new Feature(polygonFromCircleGeom);
+                }
+
+                return f;
+            })
+
+            // get snap features accordingly to snap type
+            const featuresForSnap = this._snapType == 'intersection' ?
+                Utils.calculateGeometriesIntersections(transformedFeatures) : transformedFeatures;
+
+            // trasform OL10 features to OL2 features
+            const ol2Features = featuresForSnap.map((f)=>{
+                const wktFormat = new WKT();
+                const wkt = wktFormat.writeFeature(f,{
+                    // digiting features are in map projection
+                    dataProjection: this._lizmap3.map.getProjection(),
+                    featureProjection: this._lizmap3.map.getProjection()
+                });
+
+                const wktParser = new OpenLayers.Format.WKT();
+                const wktOl2 = wktParser.read(wkt);
+                wktOl2.attributes.digitizing = true;
+
+                return wktOl2;
+            })
+
+            // add calculated features to snap on drawings layer
+            this._snapDrawingsLayer.addFeatures(ol2Features);
+
+            // dispatch event for external js customization purpose
+            /**
+             * @event snappingDigitizingFeaturesAdded
+             */
+            mainEventDispatcher.dispatch('snapping.digitizingFeatures.added');
+        }
+    }
+
+    /**
+     * Empty snap on drawings layer
+     * @returns {void}
+     */
+    removeSnapDigitizingFeatures(){
+        this._snapDrawingsLayer.destroyFeatures();
+    }
+
     get snapEnabled(){
         return this._snapEnabled;
     }
@@ -405,14 +526,18 @@ export default class Snapping {
         if (this._active) {
             this.getSnappingData();
             this._lizmap3.controls.snapControl.activate();
+            this._snapDrawingsControl.activate();
+            this.addSnapDigitizingFeatures();
         } else {
             // Disable refresh button when snapping is inactive
             this.snapLayersRefreshable = false;
             this._lizmap3.controls.snapControl.deactivate();
+            this._snapDrawingsControl.deactivate();
         }
 
         // Set snap layer visibility
         this._snapLayer.setVisibility(this._active);
+        this._snapDrawingsLayer.setVisibility(this._active);
 
         mainEventDispatcher.dispatch('snapping.active');
     }
