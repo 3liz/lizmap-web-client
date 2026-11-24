@@ -535,6 +535,53 @@ test.describe('Datables Requests @requests @readonly', () => {
         expect(body.features[0].properties.libsquart).toEqual('Millénaire');
     });
 
+    test('Quick search request in the labels of the value maps', async({ request }) => {
+        // The value maps are searched in the labels, not in the codes
+        let params = new URLSearchParams({
+            'repository': repository,
+            'project': 'key_value_mapping',
+            'layerId': 'attribute_table_5a99a714_c29f_40d3_9b85_89deed970e68',
+        });
+        let url = `${base}?${params}`;
+        const data = {
+            start: 0,
+            length: 50,
+            columns: [
+                {'data': 'lizSelected', 'searchable': false},
+                {'data': 'featureToolbar', 'searchable': false},
+                {'data': 'id', 'searchable': true},
+                {'data': 'label_from_int_value_map', 'searchable': true},
+                {'data': 'label_from_text_value_map', 'searchable': true},
+            ],
+            order: [{'column': 2, 'dir': 'asc'}],
+            search: {'value': 'THREE', 'regex': false},
+        };
+        let response = await request.post(url, {data: data});
+        responseExpect(response).toBeJson();
+        let body = await response.json();
+        expect(body).toHaveProperty('recordsTotal', 4);
+        expect(body).toHaveProperty('recordsFiltered', 1);
+        expect(body.quickSearch).toHaveProperty('enabled', true);
+        /** @type {any[]} */
+        let features = body.data.features;
+        expect(features.map(feat => feat.properties.id)).toEqual([3]);
+
+        // Several labels match
+        data.search.value = 't';
+        response = await request.post(url, {data: data});
+        responseExpect(response).toBeJson();
+        body = await response.json();
+        features = body.data.features;
+        expect(features.map(feat => feat.properties.id)).toEqual([2, 3]);
+
+        // The codes are not searched in the value maps
+        data.search.value = 'quatre';
+        response = await request.post(url, {data: data});
+        responseExpect(response).toBeJson();
+        body = await response.json();
+        expect(body).toHaveProperty('recordsFiltered', 0);
+    });
+
     test('Filter featureIds request', async({ request }) => {
         let params = new URLSearchParams({
             'repository': repository,

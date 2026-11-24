@@ -40,6 +40,11 @@ class DataTables
     );
 
     /**
+     * Code used by QGIS in a value map for the NULL value.
+     */
+    public const VALUE_MAP_NULL_CODE = '{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}';
+
+    /**
      * @param DTCriteria $criteria A search criteria provided by DataTables search builder
      *
      * @return string the expression build against criteria. If the criteria is not valid, return an empty string.
@@ -244,16 +249,21 @@ class DataTables
      * are converted to text with concat(), and booleans, geometries or binary data
      * are not searched.
      *
+     * The columns with labels, e.g. a value map, are searched in the labels displayed
+     * in the table: the codes of the matching labels are searched with IN.
+     *
      * @param string                     $search           the value typed by the user
      * @param string[]                   $columns          the names of the searched columns
      * @param null|array<string, string> $dbFieldTypes     the PostgreSQL type of each column, null if the
      *                                                     expression is evaluated by QGIS Server
      * @param null|string                $unaccentFunction the PostgreSQL function removing accents,
      *                                                     unaccent or f_unaccent, or null
+     * @param array<string, array>       $labeledValues    the labels of the columns with labels, as an
+     *                                                     array of labels by code for each column
      *
      * @return string the expression, or an empty string if there is nothing to search
      */
-    public static function buildQuickSearchExpression(string $search, array $columns, ?array $dbFieldTypes = null, ?string $unaccentFunction = null): string
+    public static function buildQuickSearchExpression(string $search, array $columns, ?array $dbFieldTypes = null, ?string $unaccentFunction = null, array $labeledValues = array()): string
     {
         // Only the known functions removing accents
         if (!in_array($unaccentFunction, array('unaccent', 'f_unaccent'), true)) {
@@ -270,6 +280,20 @@ class DataTables
             $columnExpressions = array();
             foreach ($columns as $column) {
                 $quotedColumn = '"'.str_replace('"', '""', $column).'"';
+
+                // Column with labels: search the codes of the labels containing the word
+                if (array_key_exists($column, $labeledValues)) {
+                    $expression = self::buildLabeledColumnExpression(
+                        $quotedColumn,
+                        self::getLabelCodesMatchingWord($labeledValues[$column], $word),
+                        ($dbFieldTypes === null) ? null : ($dbFieldTypes[$column] ?? null),
+                    );
+                    if ($expression !== '') {
+                        $columnExpressions[] = $expression;
+                    }
+
+                    continue;
+                }
 
                 // Evaluated by QGIS Server: any type is converted to text
                 if ($dbFieldTypes === null) {
@@ -307,6 +331,111 @@ class DataTables
         }
 
         return implode(' AND ', $wordExpressions);
+    }
+
+    /**
+     * Remove the accents of a text and convert it to lower case.
+     *
+     * The accents are only removed if the PHP intl extension is installed.
+     *
+     * @param string $text the text
+     *
+     * @return string the text in lower case, without accents if possible
+     */
+    public static function normalizeQuickSearchText(string $text): string
+    {
+        // Decompose the accented characters and remove the combining marks
+        if (class_exists('Normalizer')) {
+            $decomposed = \Normalizer::normalize($text, \Normalizer::FORM_D);
+            if (is_string($decomposed)) {
+                $text = preg_replace('/\p{Mn}/u', '', $decomposed) ?? $text;
+            }
+        }
+
+        return mb_strtolower($text);
+    }
+
+    /**
+     * Get the codes whose label contains a word of the quick search.
+     *
+     * The search is case and accent insensitive. As in a LIKE pattern,
+     * the wildcards % and _ of the word match any characters and any character.
+     *
+     * @param array  $labels the labels, indexed by code
+     * @param string $word   a word of the quick search
+     *
+     * @return string[] the codes of the matching labels
+     */
+    public static function getLabelCodesMatchingWord(array $labels, string $word): array
+    {
+        // Build a regular expression from the LIKE pattern
+        $parts = preg_split('/([%_])/u', self::normalizeQuickSearchText($word), -1, PREG_SPLIT_DELIM_CAPTURE);
+        if ($parts === false) {
+            return array();
+        }
+        $regex = '';
+        foreach ($parts as $part) {
+            if ($part === '%') {
+                $regex .= '.*';
+            } elseif ($part === '_') {
+                $regex .= '.';
+            } else {
+                $regex .= preg_quote($part, '/');
+            }
+        }
+        $regex = '/'.$regex.'/us';
+
+        // Keep the codes of the matching labels
+        $codes = array();
+        foreach ($labels as $code => $label) {
+            if (!is_scalar($label)) {
+                continue;
+            }
+            if (preg_match($regex, self::normalizeQuickSearchText((string) $label))) {
+                $codes[] = (string) $code;
+            }
+        }
+
+        return $codes;
+    }
+
+    /**
+     * Build the condition of the quick search on a column with labels.
+     *
+     * The column must have one of the given codes. The NULL code of the value maps
+     * is converted to IS NULL. When run as SQL, the non text columns are converted
+     * to text with concat(), to compare them safely with the codes.
+     *
+     * @param string      $quotedColumn the quoted name of the column
+     * @param string[]    $codes        the codes of the labels matching the search
+     * @param null|string $dbFieldType  the PostgreSQL type of the column, null if the
+     *                                  expression is evaluated by QGIS Server
+     *
+     * @return string the condition, or an empty string if there is no code
+     */
+    public static function buildLabeledColumnExpression(string $quotedColumn, array $codes, ?string $dbFieldType = null): string
+    {
+        $conditions = array();
+
+        // The NULL value
+        if (in_array(self::VALUE_MAP_NULL_CODE, $codes, true)) {
+            $conditions[] = "{$quotedColumn} IS NULL";
+            $codes = array_values(array_diff($codes, array(self::VALUE_MAP_NULL_CODE)));
+        }
+
+        // The other codes, quoted as strings
+        if (count($codes) > 0) {
+            $quotedCodes = array_map(function ($code) {
+                return "'".str_replace("'", "''", $code)."'";
+            }, $codes);
+            $column = $quotedColumn;
+            if ($dbFieldType !== null && !in_array(strtolower($dbFieldType), self::PG_TEXT_TYPES, true)) {
+                $column = "concat({$quotedColumn})";
+            }
+            $conditions[] = "{$column} IN ( ".implode(', ', $quotedCodes).' )';
+        }
+
+        return implode(' OR ', $conditions);
     }
 
     /**
