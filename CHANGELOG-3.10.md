@@ -47,6 +47,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Add lizmap-feature-button component #7300
 * Attribute table - Restore the quick search in all the columns, run on the server, without accents
   for PostgreSQL layers with the `unaccent` extension, disabled for big layers not queried in PostgreSQL #7522
+* Attribute table - The quick search finds the labels of the value maps, value relations and relation references, not their codes #7546
 * Edition - Snap on drawings during edition #7533
 
 ### Security

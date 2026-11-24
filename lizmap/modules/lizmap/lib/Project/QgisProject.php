@@ -1112,6 +1112,7 @@ class QgisProject
                     $fields_config[$fieldName]['code_field'] = $valueRelationData['key'];
                     $fields_config[$fieldName]['label_field'] = $valueRelationData['value'];
                     $fields_config[$fieldName]['exp_filter'] = $valueRelationData['filterExpression'];
+                    $fields_config[$fieldName]['allow_multi'] = (bool) $valueRelationData['allowMulti'];
                 } else {
                     // RelationReference
                     // We need to get the relation properties
