@@ -925,7 +925,20 @@ var lizAttributeTable = function() {
                         ).addClass('print-in-progress');
 
                         // Trigger download
-                        import('../modules/Utils.js').then(function(UtilsModule) {
+                        Promise.all([
+                            import('../modules/Utils.js'),
+                            import('../modules/PrintLayers.js'),
+                        ]).then(function([UtilsModule, PrintLayersModule]) {
+                            // Print the selected base layer and the visible layers
+                            // instead of the project default visibility
+                            var template = (lizMap.mainLizmap?.config?.printTemplates || []).find(function(t) {
+                                return t && t.title === layoutTitle;
+                            });
+                            Object.assign(wmsParams, PrintLayersModule.getPrintLayersParameters(
+                                PrintLayersModule.getPrintMainMapId(template),
+                                lizMap.mainLizmap.state.baseLayers.selectedBaseLayer,
+                                lizMap.mainLizmap.state.rootMapGroup
+                            ));
                             UtilsModule.Utils.downloadFile(lizMap.mainLizmap.serviceURL, wmsParams, function() {
                                 $button.prop('disabled', false);
                                 document.querySelector('#message .print-in-progress button')?.click();
