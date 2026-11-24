@@ -12,6 +12,7 @@ import { keyed } from 'lit-html/directives/keyed.js';
 
 import MaskLayer from '../modules/Mask.js';
 import { Utils } from '../modules/Utils.js';
+import { getPrintLayersParameters } from '../modules/PrintLayers.js';
 
 import WKT from 'ol/format/WKT.js';
 import { transformExtent, get as getProjection } from 'ol/proj.js';
@@ -252,76 +253,11 @@ export default class Print extends HTMLElement {
         wmsParams[this._mainMapID + ':EXTENT'] = extent.join(',');
         wmsParams[this._mainMapID + ':SCALE'] = this._printScale;
 
-        const printLayers = [];
-        const styleLayers = [];
-        const opacityLayers = [];
-
-        // Add selected base layer if any
-        const selectedBaseLayer = lizMap.mainLizmap.state.baseLayers.selectedBaseLayer;
-        if (selectedBaseLayer && selectedBaseLayer.hasItemState) {
-            printLayers.push(selectedBaseLayer.itemState.wmsName);
-            styleLayers.push(selectedBaseLayer.itemState.wmsSelectedStyleName);
-            opacityLayers.push(parseInt(255 * selectedBaseLayer.itemState.opacity * selectedBaseLayer.layerConfig.opacity));
-        }
-
-        // Add visible layers in defined order
-        const orderedVisibleLayers = {};
-        mainLizmap.state.rootMapGroup.findExplodedMapLayers().forEach(layer => {
-            if (layer.visibility) {
-                orderedVisibleLayers[layer.layerOrder] = layer;
-            }
-        });
-
-        // Selection and filter
-        const filter = [];
-        const selection = [];
-        const legendOn = [];
-        const legendOff = [];
-        for (const layerIndex of Object.keys(orderedVisibleLayers).reverse()) {
-            const layer = orderedVisibleLayers[layerIndex];
-            const layerWmsParams = layer.wmsParameters;
-            // Add layer to the list of printed layers
-            printLayers.push(layerWmsParams['LAYERS']);
-
-            // Optionally add layer style if needed (same order as layers )
-            styleLayers.push(layerWmsParams['STYLES']);
-
-            // Handle qgis layer opacity otherwise client value override it
-            if (layer.layerConfig?.opacity) {
-                opacityLayers.push(parseInt(255 * layer.calculateTotalOpacity() * layer.layerConfig.opacity));
-            } else {
-                opacityLayers.push(parseInt(255 * layer.calculateTotalOpacity()));
-            }
-            if ('FILTERTOKEN' in layerWmsParams) {
-                filter.push(layerWmsParams['FILTERTOKEN']);
-            }
-            if ('SELECTIONTOKEN' in layerWmsParams) {
-                selection.push(layerWmsParams['SELECTIONTOKEN']);
-            }
-            if ('LEGEND_ON' in layerWmsParams) {
-                legendOn.push(layerWmsParams['LEGEND_ON']);
-            }
-            if ('LEGEND_OFF' in layerWmsParams) {
-                legendOff.push(layerWmsParams['LEGEND_OFF']);
-            }
-        }
-
-        wmsParams[this._mainMapID + ':LAYERS'] = printLayers.join(',');
-        wmsParams[this._mainMapID + ':STYLES'] = styleLayers.join(',');
-        wmsParams[this._mainMapID + ':OPACITIES'] = opacityLayers.join(',');
-
-        if (filter.length) {
-            wmsParams.FILTERTOKEN = filter.join(';');
-        }
-        if (selection.length) {
-            wmsParams.SELECTIONTOKEN = selection.join(';');
-        }
-        if (legendOn.length) {
-            wmsParams.LEGEND_ON = legendOn.join(';');
-        }
-        if (legendOff.length) {
-            wmsParams.LEGEND_OFF = legendOff.join(';');
-        }
+        Object.assign(wmsParams, getPrintLayersParameters(
+            this._mainMapID,
+            mainLizmap.state.baseLayers.selectedBaseLayer,
+            mainLizmap.state.rootMapGroup,
+        ));
 
         // If user has made a draw, print it with redlining
         const formatWKT = new WKT();

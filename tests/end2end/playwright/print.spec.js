@@ -717,10 +717,14 @@ test.describe('Print in popup  @readonly', () => {
             'TEMPLATE': 'atlas_quartiers',
             'LAYER': 'quartiers',
             'EXP_FILTER': '$id IN (1)',
+            // The selected base layer and the visible layers are printed
+            'map0:LAYERS': 'OpenStreetMap,quartiers,sousquartiers',
+            'map0:STYLES': 'default,défaut,défaut',
+            'map0:OPACITIES': '204,255,255',
         }
         requestExpect(getPrintRequest).toContainParametersInPostData(expectedParameters);
         const getPrintParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
-        expect(getPrintParams.size).toBe(10);
+        expect(getPrintParams.size).toBe(13);
 
         expect(getPrintParams.has('CRS')).toBe(false)
         expect(getPrintParams.has('LAYERS')).toBe(false)
@@ -734,6 +738,41 @@ test.describe('Print in popup  @readonly', () => {
         // Lizmap evaluates the atlas filenamePattern configured in the project for the printed feature
         // The atlas_quartiers layout has: filenamePattern="'output_'||@atlas_featurenumber"
         expect(response?.headers()['content-disposition']).toBe('attachment; filename="output_1.pdf"');
+
+        // The message has to be closed if all is right
+        await expect(printPage.messageContainer).toBeHidden();
+    });
+
+    test('Atlas print in popup prints the layers displayed in the map', async ({ page }) => {
+        const printPage = new PrintPage(page, 'print');
+
+        // Hide the sousquartiers layer: the atlas print has to follow the map
+        // and not the layers visibility saved in the QGIS project
+        const sousquartiersCheckbox = page.getByTestId('sousquartiers').locator('> div input');
+        await sousquartiersCheckbox.uncheck();
+        await expect(sousquartiersCheckbox).not.toBeChecked();
+
+        const featureAtlasQuartiers = page.locator('#popupcontent lizmap-feature-toolbar[value="quartiers_cc80709a_cd4a_41de_9400_1f492b32c9f7.1"] .feature-atlas');
+
+        const getPrintPromise = printPage.waitForGetPrintAtlasRequest();
+        await featureAtlasQuartiers.locator('button').click();
+        const getPrintRequest = await getPrintPromise;
+        const expectedParameters = {
+            'SERVICE': 'WMS',
+            'REQUEST': 'GetPrintAtlas',
+            'TEMPLATE': 'atlas_quartiers',
+            'LAYER': 'quartiers',
+            'EXP_FILTER': '$id IN (1)',
+            'map0:LAYERS': 'OpenStreetMap,quartiers',
+            'map0:STYLES': 'default,défaut',
+            'map0:OPACITIES': '204,255',
+        }
+        requestExpect(getPrintRequest).toContainParametersInPostData(expectedParameters);
+        const getPrintParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
+        expect(getPrintParams.size).toBe(13);
+
+        // Check response
+        responseExpect(await getPrintRequest.response()).toBePdf();
 
         // The message has to be closed if all is right
         await expect(printPage.messageContainer).toBeHidden();
