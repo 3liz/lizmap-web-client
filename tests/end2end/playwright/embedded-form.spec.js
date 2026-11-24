@@ -17,6 +17,7 @@ test.describe('Edition of an embedded layer', () => {
             edition_layer_embed_line: [],
             edition_layer_embed_point:{
                 id_ext_point: {
+                    allow_multi: false,
                     code_field: "id",
                     exp_filter: "",
                     label_field: "descr",
