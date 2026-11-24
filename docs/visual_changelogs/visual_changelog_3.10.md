@@ -104,6 +104,16 @@ The list of permalinks is visible in the administration interface ([#6765](https
 
 *Funded by digi-studio, Etra & Faunalia - Developed by [Nicolas Boisteault](https://github.com/nboisteault), [René-Luc D'Hont](https://github.com/rldhont) & [Riccardo Beltrami](https://github.com/mind84)*
 
+* Restore the quick search in all the columns, disabled for big layers not queried in PostgreSQL ([#7522]((https://github.com/3liz/lizmap-web-client/pull/7522)))
+
+  ![attribute-table-quicke-search](media/3.10/attribute-table-quicke-search.gif)
+
+* Configuring **export formats** ([#7149](https://github.com/3liz/lizmap-web-client/pull/7149)) and the **maximum number of exportable objects** ([#7347](https://github.com/3liz/lizmap-web-client/pull/7347)) for the attribute table data
+
+  <img width="80%" src="media/3.10/attribute_table_config.png" alt="img_attribute_table_config">
+
+  *Funded by le Grand Narbonne and le Conseil Départemental du Calvados*
+
 ### Editing
 
 * Support for **default value expressions** on all fields:
@@ -164,6 +174,12 @@ The list of permalinks is visible in the administration interface ([#6765](https
 
   *Funded by Etra - Developed by [Riccardo Beltrami](https://github.com/mind84)*
 
+* **Snap on drawings** during edition ([#7533](https://github.com/3liz/lizmap-web-client/pull/7533))
+
+  ![edition_snap_drawings](media/3.10/edition_snap_drawings.gif)
+
+  *Funded by Etra - Developed by [Riccardo Beltrami](https://github.com/mind84)*
+
 ### Legend
 
 **Double-clicking** a layer's checkbox checks or unchecks all its symbology classes ([#6640](https://github.com/3liz/lizmap-web-client/pull/6640)).
@@ -201,6 +217,21 @@ The **rectangle selection tool** is now automatically activated when the selecti
 <img width="80%" src="media/3.10/selection_auto_activated.png" alt="img_selection_auto_activated">
 
 *Developed by [meyerlor](https://github.com/meyerlor)*
+
+### Digitizing
+
+* Added support for **radius constraint on Circle** drawings ([#7463](https://github.com/3liz/lizmap-web-client/pull/7463))
+
+  ![digitizing_circle_constraint](media/3.10/digitizing_circle_constraint.gif)
+
+  *Funded by Faunalia - Developed by [Riccardo Beltrami](https://github.com/mind84)*
+
+* Enhancing the visualization of the constraints layer ([#7463](https://github.com/3liz/lizmap-web-client/pull/7463))
+
+  ![digitizing_distance_constraint](media/3.10/digitizing_distance_constraint.gif)
+
+  *Funded by Faunalia - Developed by [Riccardo Beltrami](https://github.com/mind84)*
+
 
 ## Developers
 
