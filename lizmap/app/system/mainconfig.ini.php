@@ -107,8 +107,7 @@ jauthdb_admin.enabled=on
 master_admin.enabled=on
 multiauth.installparam[manualconfig]=on
 multiauth.installparam[eps]="[index,admin]"
-ldapdao.installparam[noconfigfile]=on
-ldapdao.path="app:vendor/jelix/ldapdao-module/ldapdao"
+multiauth.path="app:vendor/jelix/multiauth-module/multiauth"
 saml.installparam[localconfig]=on
 saml.installparam[authep]=admin
 
@@ -301,6 +300,14 @@ verifyNickname=off
 useJAuthDbAdminRights=on
 ;disableJPref = on
 
+;-------- some parameters for the "multiauth" module
+[multiauth]
+providers[]=ldap:multiauth_ldap
+providers[]=dbaccounts
+
+[multiauth_ldap]
+; profile to use for ldap
+ldapprofile = "lizmapldap"
 
 ;------- some parameters for the "saml" module
 [saml]
