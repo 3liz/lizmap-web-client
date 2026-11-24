@@ -46,6 +46,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Add lizmap-feature-button component #7300
 * Attribute table - Restore the quick search in all the columns, run on the server, without accents
   for PostgreSQL layers with the `unaccent` extension, disabled for big layers not queried in PostgreSQL #7522
+* Edition - Snap on drawings during edition #7533
 
 ### Security
 
@@ -139,6 +140,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Expressions - Show the errors of the text widgets and of the tooltips with Lizmap server plugin 2.16.0 #7509
 * Typos in en_US dictionary and update impacted tests #7518
 * UI: Oversized atlas print buttons in the popup feature toolbar #7532
+* Atlas: print selected baselayer #7542
 
 ### Tests
 
