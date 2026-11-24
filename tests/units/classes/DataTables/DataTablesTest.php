@@ -541,6 +541,102 @@ class DataTablesTest extends TestCase
     }
 
     /**
+     * Test the codes of the labels matching a word of the quick search.
+     */
+    public function testGetLabelCodesMatchingWord(): void
+    {
+        $labels = array(
+            '1' => 'Forêt',
+            '2' => 'Prairie',
+            'U' => 'Zone urbaine',
+            DataTables::VALUE_MAP_NULL_CODE => 'Inconnu',
+        );
+
+        // Case insensitive
+        $this->assertEquals(array('2'), DataTables::getLabelCodesMatchingWord($labels, 'PRAIRIE'));
+        $this->assertEquals(array('2', 'U'), DataTables::getLabelCodesMatchingWord($labels, 'ai'));
+
+        // Accent insensitive, if the intl extension is installed
+        if (class_exists('Normalizer')) {
+            $this->assertEquals(array('1'), DataTables::getLabelCodesMatchingWord($labels, 'foret'));
+            $this->assertEquals(array('1'), DataTables::getLabelCodesMatchingWord($labels, 'FORÊT'));
+        }
+
+        // The NULL code
+        $this->assertEquals(array(DataTables::VALUE_MAP_NULL_CODE), DataTables::getLabelCodesMatchingWord($labels, 'connu'));
+
+        // LIKE wildcards
+        $this->assertEquals(array('U'), DataTables::getLabelCodesMatchingWord($labels, 'zone%ine'));
+        $this->assertEquals(array('2'), DataTables::getLabelCodesMatchingWord($labels, 'pr_irie'));
+
+        // Regular expression characters are not interpreted
+        $this->assertEquals(array(), DataTables::getLabelCodesMatchingWord($labels, '.*'));
+        $this->assertEquals(array(), DataTables::getLabelCodesMatchingWord($labels, 'zone/'));
+
+        // Not found
+        $this->assertEquals(array(), DataTables::getLabelCodesMatchingWord($labels, 'eau'));
+        $this->assertEquals(array(), DataTables::getLabelCodesMatchingWord(array(), 'eau'));
+    }
+
+    /**
+     * Test the quick search on the columns with labels.
+     */
+    public function testBuildQuickSearchExpressionLabels(): void
+    {
+        $labeledValues = array(
+            'landuse' => array(
+                '1' => 'Forest',
+                '2' => 'Forest edge',
+                '3' => "Farmer's field",
+                DataTables::VALUE_MAP_NULL_CODE => 'Unknown',
+            ),
+        );
+
+        // Evaluated by QGIS Server: the codes of the matching labels
+        $this->assertEquals(
+            '( "name" ILIKE \'%forest%\' OR "landuse" IN ( \'1\', \'2\' ) )',
+            DataTables::buildQuickSearchExpression('forest', array('name', 'landuse'), null, null, $labeledValues)
+        );
+
+        // No matching label: the column is not searched
+        $this->assertEquals(
+            '( "name" ILIKE \'%water%\' )',
+            DataTables::buildQuickSearchExpression('water', array('name', 'landuse'), null, null, $labeledValues)
+        );
+        $this->assertEquals(
+            '1 = 0',
+            DataTables::buildQuickSearchExpression('water', array('landuse'), null, null, $labeledValues)
+        );
+
+        // The NULL code and the quotes in the codes
+        $labeledValues['landuse']["o'k"] = 'Unknown too';
+        $this->assertEquals(
+            '( "landuse" IS NULL OR "landuse" IN ( \'o\'\'k\' ) )',
+            DataTables::buildQuickSearchExpression('unknown', array('landuse'), null, null, $labeledValues)
+        );
+
+        // Run as SQL: the non text columns are converted to text
+        $types = array('name' => 'varchar', 'landuse' => 'int');
+        $this->assertEquals(
+            '( "name" ILIKE \'%edge%\' OR concat("landuse") IN ( \'2\' ) )',
+            DataTables::buildQuickSearchExpression('edge', array('name', 'landuse'), $types, null, $labeledValues)
+        );
+        $types['landuse'] = 'varchar';
+        $this->assertEquals(
+            '( "landuse" IN ( \'2\' ) )',
+            DataTables::buildQuickSearchExpression('edge', array('landuse'), $types, 'unaccent', $labeledValues)
+        );
+
+        // The generated expressions are valid
+        foreach (array("' OR 1=1 --", 'forest', 'unknown', "farmer's") as $search) {
+            foreach (array(null, $types) as $dbFieldTypes) {
+                $exp = DataTables::buildQuickSearchExpression($search, array('name', 'landuse'), $dbFieldTypes, null, $labeledValues);
+                $this->assertTrue(SqlTools::validateExpressionFilter($exp), $exp);
+            }
+        }
+    }
+
+    /**
      * Test if the quick search is enabled depending on the size of the layer.
      */
     public function testIsQuickSearchEnabled(): void

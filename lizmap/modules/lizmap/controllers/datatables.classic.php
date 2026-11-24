@@ -242,6 +242,39 @@ class datatablesCtrl extends jController
     }
 
     /**
+     * Get the labels of the searched columns displayed with labels in the table.
+     *
+     * Only the value maps are supported: their labels are stored in the project.
+     *
+     * @param Project         $lproj   the project
+     * @param qgisVectorLayer $layer   the layer
+     * @param string[]        $columns the names of the searched columns
+     *
+     * @return array<string, array> the labels indexed by code, for each column with labels
+     */
+    private function getQuickSearchLabeledValues(Project $lproj, qgisVectorLayer $layer, array $columns): array
+    {
+        $fieldsConfig = $lproj->getLayersLabeledFieldsConfig()[$layer->getName()] ?? array();
+        if (!is_array($fieldsConfig)) {
+            return array();
+        }
+
+        // Keep the value maps of the searched columns
+        $labeledValues = array();
+        foreach ($columns as $column) {
+            $fieldConfig = $fieldsConfig[$column] ?? null;
+            if (!is_array($fieldConfig) || ($fieldConfig['type'] ?? '') !== 'ValueMap') {
+                continue;
+            }
+            if (!empty($fieldConfig['data']) && is_array($fieldConfig['data'])) {
+                $labeledValues[$column] = $fieldConfig['data'];
+            }
+        }
+
+        return $labeledValues;
+    }
+
+    /**
      * Get the PostgreSQL types of the layer fields, if the WFS requests are run as SQL by Lizmap.
      *
      * It follows the conditions of WFSRequest::getfeaturePostgres(): a PostgreSQL table,
@@ -394,9 +427,10 @@ class datatablesCtrl extends jController
             return $enabled;
         }
 
-        // Build the expression, without accents if possible
+        // Build the expression, without accents if possible, on the labels of the value maps
         $unaccentFunction = $sqlQuery ? $this->getUnaccentFunction($layer) : null;
-        $searchFilter = DataTables::buildQuickSearchExpression($this->searchValue, $columns, $dbFieldTypes, $unaccentFunction);
+        $labeledValues = $this->getQuickSearchLabeledValues($lproj, $layer, $columns);
+        $searchFilter = DataTables::buildQuickSearchExpression($this->searchValue, $columns, $dbFieldTypes, $unaccentFunction, $labeledValues);
         if ($searchFilter) {
             $this->expFilter = !$this->expFilter ? $searchFilter : "( {$this->expFilter} ) AND ( {$searchFilter} )";
         }
