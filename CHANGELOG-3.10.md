@@ -23,6 +23,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * **[Faunalia](https://www.faunalia.eu/)** with @mind84
 * **[ETRA SpA Società benefit](https://www.etraspa.it/)** with Faunalia and @mind84
 * **[Klein und Leber GbR](https://www.gisgeometer.de/)** with @meyerlor
+* **[Terre De Provence Agglomération](https://www.terredeprovence-agglo.com/)**
 
 ### Contributors
 
@@ -49,6 +50,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
   for PostgreSQL layers with the `unaccent` extension, disabled for big layers not queried in PostgreSQL #7522
 * Attribute table - The quick search finds the labels of the value maps, value relations and relation references, not their codes #7546
 * Edition - Snap on drawings during edition #7533
+* Edition - Sketch geometry style on snap #7545
 
 ### Security
 
