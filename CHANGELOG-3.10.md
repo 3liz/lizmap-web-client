@@ -19,8 +19,9 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * **[Direction départementale des territoires et de la mer - Hérault](https://ddtm34.lizmap.com/carto/)**
 * **[Geolab | La Réunion](https://geolab.re/)**
 * **[Etablissement Public Foncier LOcal des territoires Oise & Aisne ](https://epflo.fr)**
-* **Tethys** with @mind84
+* **[Tethys](https://www.tethys.srl/)** with Faunalia and @mind84
 * **[Faunalia](https://www.faunalia.eu/)** with @mind84
+* **[ETRA SpA Società benefit](https://www.etraspa.it/)** with Faunalia and @mind84
 * **[Klein und Leber GbR](https://www.gisgeometer.de/)** with @meyerlor
 
 ### Contributors
