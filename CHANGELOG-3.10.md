@@ -46,6 +46,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Add lizmap-feature-button component #7300
 * Attribute table - Restore the quick search in all the columns, run on the server, without accents
   for PostgreSQL layers with the `unaccent` extension, disabled for big layers not queried in PostgreSQL #7522
+* Attribute table - The quick search finds the labels of the value maps, value relations and relation references, not their codes #7546
 * Edition - Snap on drawings during edition #7533
 
 ### Security
@@ -108,9 +109,6 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * PHP: WMTS EPSG:4326 TileMatrix #7295
 * Printing map in projection with axis orientation neu #7320 fixes #4862 and #6164
 * PHP: Support PostgreSQL float arrays in edition forms with QGIS List widget #7209
-* Attribute table - Restore the quick search in all the columns, run on the server, without accents
-  for PostgreSQL layers with the `unaccent` extension, disabled for big layers not queried in PostgreSQL
-* Attribute table - The quick search finds the labels of the value maps, value relations and relation references, not their codes
 * Fix lizmapLogConfig init on docker #7328
 * DXF export per layer enabled #7331
 * Edition Form - Make readonly multi-select checkboxes readonly #7334
