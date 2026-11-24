@@ -293,6 +293,9 @@ useJAuthDbAdminRights=on
 
 
 ;------- some parameters for the "saml" module
+[saml]
+isApplicationSupportingNotification=on
+
 [saml:sp]
 ; list of dao properties that can be used for mapping
 daoPropertiesForMapping="login,email,firstname,lastname,phonenumber"

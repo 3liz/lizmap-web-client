@@ -23,4 +23,16 @@ class lzmAuthListener extends jEventListener
             )
         );
     }
+
+    public function onsamlAccountCreated($event)
+    {
+        $services = lizmap::getServices();
+        $services->sendNotificationEmail(
+            jLocale::get('admin~user.email.admin.newsamlaccount.subject'),
+            jLocale::get(
+                'admin~user.email.admin.newsamlaccount.body',
+                array($event->user->login, $event->user->email)
+            )
+        );
+    }
 }
