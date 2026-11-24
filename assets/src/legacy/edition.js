@@ -907,7 +907,8 @@ var lizEdition = function() {
                         return;
                     // Update form geometry field from added geometry
                     updateGeometryColumnFromFeature( evt.feature );
-
+                    // dispatch event when a feature has been modified
+                    lizMap.mainEventDispatcher.dispatch('edition.feature.modified');
                 },
 
                 featureselected: function(evt) {
