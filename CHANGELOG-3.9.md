@@ -8,6 +8,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Added
+
+* Admin - notification configuration for SAML #7547⁠
+
 ### Fixed
 
 * Print - Reset the button and close the waiting message on error #7555⁠
