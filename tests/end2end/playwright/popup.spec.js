@@ -401,7 +401,7 @@ test.describe('Popup @readonly', () => {
         await expect(lizmapFeaturesTable).toHaveAttribute('layerId');
         await expect(lizmapFeaturesTable).toHaveAttribute('layerTitle', 'children_layer');
         await expect(lizmapFeaturesTable).toHaveAttribute('uniqueField', 'id');
-        await expect(lizmapFeaturesTable).toHaveAttribute('expressionFilter', 'parent_id = \'1\'');
+        await expect(lizmapFeaturesTable).toHaveAttribute('expressionFilter', '"parent_id" = \'1\'');
     });
 
     test('getFeatureInfo request should contain a FILTERTOKEN parameter when the layer is filtered', async ({ page }) => {
