@@ -663,14 +663,21 @@ class qgisVectorLayer extends qgisMapLayer
         $value = htmlspecialchars(strip_tags($value), ENT_NOQUOTES, 'UTF-8');
         $nvalue = 'ST_GeomFromText('.$cnx->quote($value).', '.$this->srid.')';
 
-        // test type
-        $rs = $cnx->query('SELECT GeometryType('.$nvalue.') as geomtype');
+        // Convert between single and multi geometry to match the column type
+        $rs = $cnx->query('SELECT GeometryType(g) AS geomtype, ST_NumGeometries(g) AS nbgeom FROM (SELECT '.$nvalue.' AS g) AS t');
         $rs = $rs->fetch();
-        $geomtype = strtolower($rs->geomtype);
-        if (!preg_match('/'.preg_quote($dbFieldsInfo->geometryType).'/', $geomtype)) {
-            if (preg_match('/'.preg_quote(str_replace('multi', '', $dbFieldsInfo->geometryType)).'/', $geomtype)) {
-                $nvalue = 'ST_Multi('.$nvalue.')';
-            }
+        $conversion = '';
+        if (is_object($rs)) {
+            $conversion = self::getGeometryTypeConversion(
+                $dbFieldsInfo->geometryType,
+                $rs->geomtype,
+                (int) $rs->nbgeom
+            );
+        }
+        if ($conversion == 'multi') {
+            $nvalue = 'ST_Multi('.$nvalue.')';
+        } elseif ($conversion == 'single') {
+            $nvalue = 'ST_GeometryN('.$nvalue.', 1)';
         }
 
         if (substr($dbFieldsInfo->geometryType, -2) == 'zm') {
@@ -682,6 +689,41 @@ class qgisVectorLayer extends qgisMapLayer
         }
 
         return $nvalue;
+    }
+
+    /**
+     * Get the conversion needed to store a geometry in a geometry column.
+     *
+     * A single geometry is promoted to a multi geometry for a multi column.
+     * A multi geometry with only one part is reduced to a single geometry
+     * for a single column, e.g. a MultiPolygon copied from another layer
+     * and stored in a Polygon column.
+     *
+     * @param string $columnType   The geometry type of the column, e.g. 'polygon', 'multilinestringz', 'geometry'
+     * @param string $geometryType The geometry type of the value, as returned by PostGIS GeometryType()
+     * @param int    $nbGeometries The number of geometries of the value, as returned by PostGIS ST_NumGeometries()
+     *
+     * @return string 'multi', 'single' or '' if no conversion is needed or possible
+     */
+    public static function getGeometryTypeConversion($columnType, $geometryType, $nbGeometries)
+    {
+        $pattern = '/^(multi)?(point|linestring|polygon)(zm|z|m)?$/';
+        if (!preg_match($pattern, strtolower($columnType), $column)
+            || !preg_match($pattern, strtolower($geometryType), $geometry)
+            || $column[2] != $geometry[2]) {
+            // Generic geometry column or incompatible geometry types
+            return '';
+        }
+        $columnIsMulti = $column[1] == 'multi';
+        $geometryIsMulti = $geometry[1] == 'multi';
+        if ($columnIsMulti && !$geometryIsMulti) {
+            return 'multi';
+        }
+        if (!$columnIsMulti && $geometryIsMulti && $nbGeometries == 1) {
+            return 'single';
+        }
+
+        return '';
     }
 
     /**
