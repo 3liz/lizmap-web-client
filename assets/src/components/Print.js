@@ -395,7 +395,14 @@ export default class Print extends HTMLElement {
 
             document.querySelector('#message .print-in-progress button').click();
         }, (errorEvent) => {
-            console.error(errorEvent)
+            console.error(errorEvent);
+            // Reset the launch button, so that the user can print again
+            const printLaunch = this.querySelector('#print-launch');
+            printLaunch.disabled = false;
+            printLaunch.classList.remove('spinner');
+
+            // Close the "print in progress" message before displaying the error
+            document.querySelector('#message .print-in-progress button')?.click();
             mainLizmap._lizmap3.addMessage(lizDict['print.error'], 'danger', true).addClass('print-error');
         });
     }

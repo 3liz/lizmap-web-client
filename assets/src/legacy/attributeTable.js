@@ -945,6 +945,8 @@ var lizAttributeTable = function() {
                             }, function(errorEvent) {
                                 $button.prop('disabled', false);
                                 console.error(errorEvent);
+                                // Close the "print in progress" message before displaying the error
+                                document.querySelector('#message .print-in-progress button')?.click();
                                 lizMap.mainLizmap._lizmap3.addMessage(
                                     lizDict['print.error'],
                                     'danger',
