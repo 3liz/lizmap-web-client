@@ -1392,6 +1392,17 @@ window.lizMap = function() {
         return true;
     }
 
+    /**
+     * Display the children features of a popup feature in lizmap-features-table elements.
+     *
+     * The children are filtered with an expression on the referencing field,
+     * quoted as a field name, and on the value of the referenced field,
+     * quoted as a string.
+     * @param {object} layerConfig - The configuration of the parent layer
+     * @param {string} fid         - The feature id of the parent feature
+     * @param {jQuery} self        - The popup element of the parent feature
+     * @returns {boolean} Always true, to continue the jQuery each loop
+     */
     function addChildrenFeaturesTable(layerConfig, fid, self) {
         // Check children_lizmap_features_table
         if ( !('children_lizmap_features_table' in layerConfig) || layerConfig.children_lizmap_features_table !== true) {
@@ -1426,15 +1437,19 @@ window.lizMap = function() {
                 const rLayerConfig = rGetLayerConfig[1];
                 const rAttributeLayerConfig = rGetAttributeLayerConfig[1];
 
-                const exp = `${relation.referencingField} = '${feat.properties[relation.referencedField]}'`;
-                const featuresTablehtml = `
-                    <lizmap-features-table
-                        layerId="${rLayerId}"
-                        layerTitle="${rLayerConfig.title}"
-                        uniqueField="${rAttributeLayerConfig.primaryKey}"
-                        expressionFilter="${exp}"
-                    ></lizmap-features-table>
-                `;
+                // Filter on the referencing field, quoted as a field name,
+                // and on the referenced value, quoted as a string
+                const fieldName = relation.referencingField.replaceAll('"', '""');
+                const fieldValue = String(feat.properties[relation.referencedField]).replaceAll("'", "''");
+                const exp = `"${fieldName}" = '${fieldValue}'`;
+
+                // Build the element with the DOM API: the attribute values,
+                // e.g. the double quotes of the expression, need no HTML escaping
+                const featuresTable = document.createElement('lizmap-features-table');
+                featuresTable.setAttribute('layerId', rLayerId);
+                featuresTable.setAttribute('layerTitle', rLayerConfig.title);
+                featuresTable.setAttribute('uniqueField', rAttributeLayerConfig.primaryKey);
+                featuresTable.setAttribute('expressionFilter', exp);
 
                 // If the parent popup is rendered using the drag-and-drop form,
                 // place the features table inside the matching relation placeholder
@@ -1446,9 +1461,9 @@ window.lizMap = function() {
                     .find('.popup_lizmap_dd_relation')
                     .filter(function () { return this.dataset.relationId === relationId; })[0];
                 if (placeholder) {
-                    placeholder.insertAdjacentHTML("beforeend", featuresTablehtml);
+                    placeholder.append(featuresTable);
                 } else {
-                    parentDiv[0].insertAdjacentHTML("beforeend", featuresTablehtml);
+                    parentDiv[0].append(featuresTable);
                 }
             }
         });
