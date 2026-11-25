@@ -8,6 +8,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Fixed
+
+* Print - Reset the button and close the waiting message on error #7555⁠
+
 ## 3.9.13 - 2026-11-23
 
 ### Funders
