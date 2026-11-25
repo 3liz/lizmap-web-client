@@ -257,8 +257,9 @@ class SqlTools
     protected static function tokenizeSQLString(string $sql): array
     {
         // split the SQL string into tokens using regular expression. Splitting is made on syntaxic elements
+        // A number is a token only when it does not continue a bare word: index1, field_2
         $tokens = preg_split('#('
-            .self::NUMERIC_LITERAL_PATTERN
+            .'(?<![\p{L}\p{N}_])'.self::NUMERIC_LITERAL_PATTERN
             .'|!=|<=|>=|<>|==|\|\||->>|->' // Composed operators
             .'|--|\r\n|\r|\n|/\*|\*/' // comments
             .'|[;:.,()=<>%\'"+*\-/!|&^~?\[\]{}]' // Simple operators, ponctuations, Parentheses, brackets
