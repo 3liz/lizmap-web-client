@@ -180,6 +180,18 @@ La liste des permaliens est visible dans l'interface d'administration ([#6765](h
 
   *Financé par Etra - Développé par [Riccardo Beltrami](https://github.com/mind84)*
 
+* Modifier le **style de la géométrie en cours de dessin** lors de l'accrochage pendant l'édition ([#7545](https://github.com/3liz/lizmap-web-client/pull/7545))
+  * nœud/sommet -> icône *carré*
+  * arête -> icône *cercle*
+  * intersection -> icône *croix*
+
+  ![sketch_geometry_style_snap-1](media/3.10/sketch_geometry_style_snap-1.gif)
+
+  ![sketch_geometry_style_snap-2](media/3.10/sketch_geometry_style_snap-2.gif)
+
+  *Financé par Etra - Développé par [Riccardo Beltrami](https://github.com/mind84)*
+
+
 ### Légende
 
 Un **double-clic** sur la case à cocher d'une couche coche ou décoche toutes ses classes de symbologie ([#6640](https://github.com/3liz/lizmap-web-client/pull/6640)).

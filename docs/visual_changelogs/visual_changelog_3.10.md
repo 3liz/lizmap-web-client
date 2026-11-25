@@ -180,6 +180,18 @@ The list of permalinks is visible in the administration interface ([#6765](https
 
   *Funded by Etra - Developed by [Riccardo Beltrami](https://github.com/mind84)*
 
+* Change the **sketch geometry style** on snapping during editing ([#7545](https://github.com/3liz/lizmap-web-client/pull/7545))
+  * node/vertex -> *square* icon
+  * edge -> *circle* icon
+  * intersection -> *cross* icon
+
+  ![sketch_geometry_style_snap-1](media/3.10/sketch_geometry_style_snap-1.gif)
+
+  ![sketch_geometry_style_snap-2](media/3.10/sketch_geometry_style_snap-2.gif)
+
+  *Funded by Etra - Developed by [Riccardo Beltrami](https://github.com/mind84)*
+
+
 ### Legend
 
 **Double-clicking** a layer's checkbox checks or unchecks all its symbology classes ([#6640](https://github.com/3liz/lizmap-web-client/pull/6640)).
