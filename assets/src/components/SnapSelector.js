@@ -234,7 +234,10 @@ export default class SnapSelector extends HTMLElement {
     }
 
     connectedCallback() {
-        this._componentTitle = this.getAttribute('component-title');
+        // Keep the default title if the attribute is missing or empty,
+        // e.g. when the translation is not available: Bootstrap throws
+        // an error for a tooltip without title.
+        this._componentTitle = this.getAttribute('component-title') || this._componentTitle;
         this.renderTemplate();
         const tooltipTriggerList = this.querySelectorAll('[data-bs-toggle="tooltip"]');
         [...tooltipTriggerList].map(tooltipTriggerEl => {
