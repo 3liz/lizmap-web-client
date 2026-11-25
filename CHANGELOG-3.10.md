@@ -147,6 +147,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Typos in en_US dictionary and update impacted tests #7518
 * UI: Oversized atlas print buttons in the popup feature toolbar #7532
 * Atlas: print selected baselayer #7542
+* SqlTools - Keep the digits of a bare field name in its token #7554
+* Print - Reset the button and close the waiting message on error #7555⁠
 
 ### Tests
 
