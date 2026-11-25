@@ -381,8 +381,8 @@ docker compose --profile dev up -d
 
 Into `lizmap/var/config/localconfig.ini.php`:
 
-1. set `ldapdao.access=2` into the `modules` section
-2. set `driver=ldapdao` into the `coordplugin_auth` section
+1. set `multiauth.enabled=on` into the `modules` section
+2. set `driver=multiauth` into the `coordplugin_auth` section
 3. launch `lizmap-ctl  install`
 
 Be sure there are users into the ldap: execute `lizmap-ctl ldap-users`. It should

@@ -9,14 +9,14 @@
 
 [modules]
 ;; to use ldap for authentication
-;; 1. set ldapdao.access=2
-;; 2. set driver=ldapdao below
+;; 1. set multiauth.enabled=on
+;; 2. set driver=multiauth below
 ;; 3. launch `lizmap-ctl  install`
-ldapdao.access = 0
+multiauth.enabled = off
 
 
 [coordplugin_auth]
-;; change it to ldapdao if you want to use ldap for authentication
+;; change it to multiauth if you want to use ldap for authentication
 driver = Db
 
 

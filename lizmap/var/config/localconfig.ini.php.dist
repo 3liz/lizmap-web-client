@@ -13,7 +13,7 @@
 [modules]
 ;; uncomment it if you want to use ldap for authentication
 ;; see documentation to complete the ldap configuration
-;ldapdao.enable=on
+;multiauth.enable=on
 
 [qgisWrapper]
 ; If off, FCGI is not allowed, only Py-QGIS-Server or QJazz
@@ -25,7 +25,7 @@
 [coordplugin_auth]
 ;; uncomment it if you want to use ldap for authentication
 ;; see documentation to complete the ldap configuration
-;driver=ldapdao
+;driver=multiauth
 
 
 [mailer]
