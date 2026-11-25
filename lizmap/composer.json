@@ -10,12 +10,12 @@
     "jelix/jelix": "dev-jelix-1.8.x",
     "jelix/composer-module-setup": "^1.1.0",
     "jelix/jcommunity-module": "^1.4.7",
-    "jelix/ldapdao-module": "~2.2.4",
+    "jelix/multiauth-module": "dev-master",
     "proj4php/proj4php": "~2.0.0",
     "lizmap/streaming-json-encoder": "^2.0.0",
     "guzzlehttp/guzzle": "^8.0.0",
     "kevinrob/guzzle-cache-middleware": "^8.0",
-    "psr/log": "2.*"
+    "psr/log": "^3.0.2"
   },
   "minimum-stability": "stable",
   "config": {
