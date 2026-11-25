@@ -1500,6 +1500,10 @@ test.describe('Error while printing @readonly', () => {
 
         await expect(page.locator("#message > div:last-child")).toHaveClass(/alert-danger/);
 
+        // The "print in progress" message is closed and the user can print again
+        await expect(page.locator('#message .print-in-progress')).toHaveCount(0);
+        await expect(printPage.launchPrintButton).toBeEnabled();
+
         // Stop listening to WMS requests
         await page.unroute('**/service*');
     });
@@ -1540,6 +1544,10 @@ test.describe('Error while printing @readonly', () => {
         )).toBeVisible();
 
         await expect(page.locator("#message > div:last-child")).toHaveClass(/alert-danger/);
+
+        // The "print in progress" message is closed and the user can print again
+        await expect(page.locator('#message .print-in-progress')).toHaveCount(0);
+        await expect(featureAtlasQuartiers.locator('button')).toBeEnabled();
 
         // Stop listening to WMS requests
         await page.unroute('**/service*');
