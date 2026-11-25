@@ -53,6 +53,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Edition - Sketch geometry style on snap #7545
 * Permalink in URL must win over the first map theme #7283⁠
 * Startup: trigger_filter URL parameter to filter zoomed features #7284⁠
+* Admin - notification configuration for SAML #7547⁠
 
 ### Security
 
@@ -77,6 +78,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * The expression filter sent as EXP_FILTER is now validated more strictly before being used #7505
 * Filter by login: Exact match of multiple values #7508
 * PHP SqlTools - Translate the spatial QGIS expression filters on their tokens #7519
+* Remove the support of ldapdao, update the support of multiauth #7549
 
 ### Fixed
 
@@ -149,6 +151,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Atlas: print selected baselayer #7542
 * SqlTools - Keep the digits of a bare field name in its token #7554
 * Print - Reset the button and close the waiting message on error #7555⁠
+* Snapping - Keep a tooltip title for the snap on drawings selector #7564
 
 ### Tests
 
