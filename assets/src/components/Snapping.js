@@ -48,10 +48,10 @@ export default class Snapping extends HTMLElement {
                     html`<div class="snap-panel-controls">
                         <div class="snap-selector-control">
                             <lizmap-snap-selector context='editing'
-                                component-title="${lizDict['snapping.digitizing.title']}"
+                                component-title="${lizDict['snapping.digitizing.title'] || 'Snap on drawings'}"
                                 @lizmap-snap-selector-update=${(e) => { mainLizmap.snapping.setSnapOnDrawings(e.detail) }}>
                             </lizmap-snap-selector>
-                            <span>${lizDict['snapping.digitizing.label']}</span>
+                            <span>${lizDict['snapping.digitizing.label'] || 'Activate snap on drawings/imported features'}</span>
                         </div>
                         <hr />
                         <p class="snap-layers-list-title">${lizDict['snapping.list.title']}</p>
