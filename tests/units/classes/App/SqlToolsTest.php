@@ -93,6 +93,12 @@ class SqlToolsTest extends TestCase
             array("attribute('quartmno') = 'MC'", $fields, true),
             // A field name, not a function
             array("env = 'MC'", $fields, true),
+            // Field names with digits, unquoted as in the children features table
+            array("index1 = '086511_0_2981'", array('fid', 'index1'), true),
+            array("field_2 = 2 AND index1 > 0", array('index1', 'field_2'), true),
+            array("index1-1 = 0", array('index1'), true),
+            array("index2 = 'MC'", array('index1'), false),
+            array("index1('HOME') = 'MC'", array('index1'), false),
             array("env('HOME') = '/home/qgis'", $fields, false),
             array("env ('HOME') = '/home/qgis'", $fields, false),
             array("env /* comment */ ('HOME') = '/home/qgis'", $fields, false),
