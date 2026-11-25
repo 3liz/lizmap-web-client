@@ -8,6 +8,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Added
+
+* Admin - notification configuration for SAML #7547⁠
+
 ## 3.8.22 - 2026-11-23
 
 ### Security
