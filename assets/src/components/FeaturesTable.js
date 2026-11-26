@@ -57,14 +57,34 @@ export default class FeaturesTable extends HTMLElement {
             this.id = btoa(String.fromCharCode(...new Uint8Array( Array(30).fill().map(() => Math.round(Math.random() * 30)) )));
         }
 
+        // Error text
+        this.error = null;
+
+        // Features
+        this.features = [];
+
+        // Additional Fields JSON
+        this.additionalFields = {fields:[]};
+
+        // Clicked item line number
+        this.activeItemLineNumber = null;
+
+        // The attributes are read when the element is connected, see readAttributes()
+    }
+
+    /**
+     * Read the configuration of the element from its attributes
+     *
+     * The attributes are read when the element is connected, not in the constructor:
+     * an element created with document.createElement() is constructed before
+     * its attributes are set with setAttribute().
+     */
+    readAttributes() {
         // Layer name
         this.layerTitle = this.getAttribute('layerTitle') || 'Features table: error';
 
         // Layer id
         this.layerId = this.getAttribute('layerId');
-
-        // Error text
-        this.error = null;
 
         // Get the layer name & configuration
         this.layerConfig = null;
@@ -93,15 +113,6 @@ export default class FeaturesTable extends HTMLElement {
         // Add drag&drop capability ?
         const draggable = this.getAttribute('draggable');
         this.itemsDraggable = (draggable !== null && ['yes', 'no'].includes(draggable.toLowerCase())) ? draggable : 'no';
-
-        // Features
-        this.features = [];
-
-        // Additional Fields JSON
-        this.additionalFields = {fields:[]};
-
-        // Clicked item line number
-        this.activeItemLineNumber = null;
 
         // Maximum number of features
         this.maxFeatures = (this.dataset.maxFeatures > 0) ? this.dataset.maxFeatures : 1000;
@@ -578,6 +589,9 @@ export default class FeaturesTable extends HTMLElement {
 
 
     connectedCallback() {
+        // Read the attributes, set after the construction of the element
+        this.readAttributes();
+
         // console.log('connectedCallback - top');
         if (this.querySelector("lizmap-field")) {
             const listField = this.querySelectorAll("lizmap-field");
@@ -819,7 +833,8 @@ export default class FeaturesTable extends HTMLElement {
         // Listen to the change of the updated attribute
         // This will trigger the load (refresh the content)
         // Be aware that the name returned here is always lowercase
-        if (name === 'updated') {
+        // Not before the element is connected: its attributes are not read yet
+        if (name === 'updated' && this.isConnected) {
             // console.log('Reload features table');
             this.load();
         }
