@@ -54,6 +54,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Permalink in URL must win over the first map theme #7283⁠
 * Startup: trigger_filter URL parameter to filter zoomed features #7284⁠
 * Admin - notification configuration for SAML #7547⁠
+* Snapping - Reload the snap data when the map has moved #7569
+* Refactor - WFS: share the checks running the requests as SQL #7572⁠
 
 ### Security
 
@@ -79,6 +81,9 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Filter by login: Exact match of multiple values #7508
 * PHP SqlTools - Translate the spatial QGIS expression filters on their tokens #7519
 * Remove the support of ldapdao, update the support of multiauth #7549
+* Update migration script after removing ldpadao #7579⁠
+* Expression filters - Quote the values the same way everywhere #7580
+* Attribute table, form filter - Lighter requests for the labels #7585
 
 ### Fixed
 
@@ -152,6 +157,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * SqlTools - Keep the digits of a bare field name in its token #7554
 * Print - Reset the button and close the waiting message on error #7555⁠
 * Snapping - Keep a tooltip title for the snap on drawings selector #7564
+* Edition: Convert a single part multi geometry for a single geometry column #7563
+* lizmap-features-table: Read the attributes when the element is connected #7571
+* Selection, Attribute table and layer metadata: The export tooltips was not well managed #7574⁠
+* WFS - Keep the EXP_FILTER with FEATUREID and BBOX #7582⁠
 
 ### Tests
 
