@@ -1408,6 +1408,45 @@ test.describe('WFS Requests @requests @readonly', () => {
         expect(feature.properties).toHaveProperty('id', 1);
     });
 
+    test('WFS GetFeature FEATUREID && BBOX && EXP_FILTER', async({ request }) => {
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'selection',
+        });
+        let url = `/index.php/lizmap/service?${params}`;
+        // The FEATUREID is translated to an expression filter, merged with the EXP_FILTER
+        const form = {
+            SERVICE: 'WFS',
+            VERSION: '1.0.0',
+            REQUEST: 'GetFeature',
+            FEATUREID: 'selection_polygon.1,selection_polygon.2',
+            BBOX: '160786,900949,186133,925344',
+            EXP_FILTER: '"id" = 1',
+            OUTPUTFORMAT: 'GeoJSON',
+        };
+        let response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body: the feature 1 matches the FEATUREID, the BBOX and the EXP_FILTER
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(1);
+        let body = await response.json();
+        expect(body.features[0]).toHaveProperty('id', 'selection_polygon.1');
+
+        // The EXP_FILTER is not replaced by the FEATUREID filter
+        form['EXP_FILTER'] = '"id" = 2';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+
+        // check body: the feature 1 does not match the EXP_FILTER, the feature 2 is outside the BBOX
+        await responseExpect(response).toHaveGeoJsonFeaturesLength(0);
+    });
+
     test('WFS GetFeature FEATUREID && BBOX && EXP_FILTER && FORCE_QGIS', async({ request }) => {
         let params = new URLSearchParams({
             repository: 'testsrepository',
