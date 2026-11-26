@@ -334,6 +334,10 @@ export default class SelectionTool {
         return count;
     }
 
+    get oneFeatureTypeSelected() {
+        return this._allFeatureTypeSelected.length === 1;
+    }
+
     get allFeatureTypeSelected() {
         return this._allFeatureTypeSelected;
     }
