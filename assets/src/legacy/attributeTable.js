@@ -709,10 +709,17 @@ var lizAttributeTable = function() {
                  * @param {LayerSelectionChanged} evt
                  */
                 const layerSelectionChanged = (evt) => {
+                    const selector = '#attribute-layer-'+ cleanName;
                     if (evt.selectedFeatures.length > 0 && evt.selectedFeatures.length <= attrLayerConfig.exportMaxFeatures) {
-                        $('#attribute-layer-'+ cleanName + ' button.exportLayer').prop('disabled', false);
+                        document.querySelector(`${selector} button.exportLayer`).disabled = false;
+                        document.querySelector(`${selector} button.exportLayer`).title = lizDict['layer.metadata.export.title'];
                     } else {
-                        $('#attribute-layer-'+ cleanName + ' button.exportLayer').prop('disabled', true);
+                        document.querySelector(`${selector} button.exportLayer`).disabled = true;
+                        if (evt.selectedFeatures.length == 0) {
+                            document.querySelector(`${selector} button.exportLayer`).title = lizDict['switcher.layer.export.warn.no.features'];
+                        } else {
+                            document.querySelector(`${selector} button.exportLayer`).title = lizDict['switcher.layer.export.warn.less.features'];
+                        }
                     }
                 }
                 /**
@@ -722,10 +729,13 @@ var lizAttributeTable = function() {
                 const layerFilterChanged = (evt) => {
                     if (layerState.isFiltered) {
                         const filteredFeaturesLength = config.layers[lname]['filteredFeatures'].length;
+                        const selector = '#attribute-layer-'+ cleanName;
                         if (filteredFeaturesLength > 0 && filteredFeaturesLength <= attrLayerConfig.exportMaxFeatures) {
-                            $('#attribute-layer-'+ cleanName + ' button.exportLayer').prop('disabled', false);
+                            document.querySelector(`${selector} button.exportLayer`).disabled = false;
+                            document.querySelector(`${selector} button.exportLayer`).title = lizDict['layer.metadata.export.title'];
                         } else {
-                            $('#attribute-layer-'+ cleanName + ' button.exportLayer').prop('disabled', true);
+                            document.querySelector(`${selector} button.exportLayer`).disabled = true;
+                            document.querySelector(`${selector} button.exportLayer`).title = lizDict['switcher.layer.export.warn.no.features'];
                         }
                     }
                 }
@@ -877,17 +887,25 @@ var lizAttributeTable = function() {
 
                 // Add listeners about enable/disable export button
                 if (attrLayerConfig.exportLimited) {
+                    const selector = '#attribute-layer-'+ cleanName;
                     // Disable by default the export layer button because export is limited to some features.
-                    $('#attribute-layer-'+ cleanName + ' button.exportLayer').prop('disabled', true);
+                    document.querySelector(`${selector} button.exportLayer`).disabled = true;
+                    document.querySelector(`${selector} button.exportLayer`).title = lizDict['switcher.layer.export.warn.no.features'];
                     // Check if there are already selected features to enable the export button
                     if (layerState.selectedFeatures.length > 0 && layerState.selectedFeatures.length <= attrLayerConfig.exportMaxFeatures) {
-                            $('#attribute-layer-'+ cleanName + ' button.exportLayer').prop('disabled', false);
+                        document.querySelector(`${selector} button.exportLayer`).disabled = false;
+                        if (layerState.selectedFeatures.length == 0) {
+                            document.querySelector(`${selector} button.exportLayer`).title = lizDict['switcher.layer.export.warn.no.features'];
+                        } else {
+                            document.querySelector(`${selector} button.exportLayer`).title = lizDict['switcher.layer.export.warn.less.features'];
+                        }
                     }
                     // Check if there are already filtered features to enable the export button
                     if (layerState.isFiltered) {
                         const filteredFeaturesLength = config.layers[lname]['filteredFeatures'].length;
                         if (filteredFeaturesLength > 0 && filteredFeaturesLength <= attrLayerConfig.exportMaxFeatures) {
-                            $('#attribute-layer-'+ cleanName + ' button.exportLayer').prop('disabled', false);
+                            document.querySelector(`${selector} button.exportLayer`).disabled = false;
+                            document.querySelector(`${selector} button.exportLayer`).title = lizDict['layer.metadata.export.title'];
                         }
                     }
                     layerState.addListener(layerSelectionChanged, 'layer.selection.changed');
