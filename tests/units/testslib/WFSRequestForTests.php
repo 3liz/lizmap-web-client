@@ -152,4 +152,17 @@ class WFSRequestForTests extends WFSRequest
 
         return $this->getFeatureSqlFailureReason($layer);
     }
+
+    /**
+     * Merge the expression filter sent by the client with another expression filter.
+     *
+     * @param string $clientFilter the expression filter sent by the client
+     * @param string $filter       the other expression filter
+     *
+     * @return string the merged expression filter
+     */
+    public function mergeExpFiltersForTests(string $clientFilter, string $filter): string
+    {
+        return $this->mergeExpFilters($clientFilter, $filter);
+    }
 }
