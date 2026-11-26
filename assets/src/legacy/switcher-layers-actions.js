@@ -220,7 +220,7 @@ var lizLayerActionButtons = function() {
                 // Export layer
                 if( options != '' && exportEnabled) {
                     html+= '        <dt>'+lizDict['layer.metadata.export.title']+'</dt>';
-                    html+= '<dd class="d-flex">';
+                    html+= '<dd class="d-flex exportLayer container">';
                     html+= '<select class="exportLayer form-select '+isBaselayer+'">';
                     html+= options;
                     html+= '</select>';
@@ -283,10 +283,21 @@ var lizLayerActionButtons = function() {
          * @param {LayerSelectionChanged} evt
          */
         const layerSelectionChanged = (evt) => {
+            const exportButton = document.querySelector('#sub-dock button.exportLayer');
+            // Check if the export is still here
+            if (exportButton === null) {
+                return;
+            }
             if (evt.selectedFeatures.length > 0 && evt.selectedFeatures.length <= attrLayerConfig.exportMaxFeatures) {
-                $('#sub-dock button.exportLayer').prop('disabled', false);
+                exportButton.disabled = false;
+                document.querySelector('#sub-dock .container.exportLayer').title = '';
             } else {
-                $('#sub-dock button.exportLayer').prop('disabled', true);
+                exportButton.disabled = true;
+                if (evt.selectedFeatures.length == 0) {
+                    document.querySelector('#sub-dock .container.exportLayer').title = lizDict['switcher.layer.export.warn.no.features'];
+                } else {
+                    document.querySelector('#sub-dock .container.exportLayer').title = lizDict['switcher.layer.export.warn.less.features'];
+                }
             }
         }
 
@@ -295,13 +306,21 @@ var lizLayerActionButtons = function() {
          * @param {LayerFilterChanged} evt
          */
         const layerFilterChanged = (evt) => {
-            if (layerState.isFiltered) {
-                const filteredFeaturesLength = lizMap.config.layers[lname]['filteredFeatures'].length;
-                if (filteredFeaturesLength > 0 && filteredFeaturesLength <= attrLayerConfig.exportMaxFeatures) {
-                    $('#sub-dock button.exportLayer').prop('disabled', false);
-                } else {
-                    $('#sub-dock button.exportLayer').prop('disabled', true);
-                }
+            if (!layerState.isFiltered) {
+                return;
+            }
+            const exportButton = document.querySelector('#sub-dock button.exportLayer');
+            // Check if the export is still here
+            if (exportButton === null) {
+                return;
+            }
+            const filteredFeaturesLength = lizMap.config.layers[evt.name]['filteredFeatures'].length;
+            if (filteredFeaturesLength > 0 && filteredFeaturesLength <= attrLayerConfig.exportMaxFeatures) {
+                document.querySelector('#sub-dock button.exportLayer').disabled = false;
+                document.querySelector('#sub-dock .container.exportLayer').title = '';
+            } else {
+                document.querySelector('#sub-dock button.exportLayer').disabled = true;
+                document.querySelector('#sub-dock .container.exportLayer').title = lizDict['switcher.layer.export.warn.no.features'];
             }
         }
 
@@ -316,16 +335,21 @@ var lizLayerActionButtons = function() {
                 // Check if layer has export limited
                 if (attrLayerConfig && attrLayerConfig.exportLimited) {
                     // Disable by default the export layer button because export is limited to some features.
-                    $('#sub-dock button.exportLayer').prop('disabled', true);
+                    document.querySelector('#sub-dock button.exportLayer').disabled = true;
+                    document.querySelector('#sub-dock .container.exportLayer').title = lizDict['switcher.layer.export.warn.no.features'];
                     // Check if there are already selected features to enable the export button
                     if (layerState.selectedFeatures.length > 0 && layerState.selectedFeatures.length <= attrLayerConfig.exportMaxFeatures) {
-                            $('#sub-dock button.exportLayer').prop('disabled', false);
+                        document.querySelector('#sub-dock button.exportLayer').disabled = false;
+                        document.querySelector('#sub-dock .container.exportLayer').title = '';
+                    } else if (layerState.selectedFeatures.length > attrLayerConfig.exportMaxFeatures) {
+                        document.querySelector('#sub-dock .container.exportLayer').title = lizDict['switcher.layer.export.warn.less.features'];
                     }
                     // Check if there are already filtered features to enable the export button
                     if (layerState.isFiltered) {
-                        const filteredFeaturesLength = config.layers[lname]['filteredFeatures'].length;
+                        const filteredFeaturesLength = lizMap.config.layers[layerName]['filteredFeatures'].length;
                         if (filteredFeaturesLength > 0 && filteredFeaturesLength <= attrLayerConfig.exportMaxFeatures) {
-                            $('#sub-dock button.exportLayer').prop('disabled', false);
+                            document.querySelector('#sub-dock button.exportLayer').disabled = false;
+                            document.querySelector('#sub-dock .container.exportLayer').title = '';
                         }
                     }
                     // Add listeners
