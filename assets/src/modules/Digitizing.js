@@ -181,7 +181,7 @@ export class Digitizing {
                             scale: featureTextScale,
                             overflow: true,
                             fill: new Fill({
-                                color: '#000',
+                                color: feature.get('mode') === 'textonly' ? (feature.get('color') || this._drawColor) : '#000',
                             }),
                             stroke: new Stroke({
                                 color: '#fff',
@@ -280,7 +280,7 @@ export class Digitizing {
                     scale: featureTextScale,
                     overflow: true,
                     fill: new Fill({
-                        color: '#000',
+                        color: feature.get('mode') === 'textonly' ? (feature.get('color') || this._drawColor) : '#000',
                     }),
                     stroke: new Stroke({
                         color: '#fff',
@@ -657,7 +657,7 @@ export class Digitizing {
                             text: new Text({
                                 text: lizDict['digitizing.toolbar.newText'],
                                 fill: new Fill({
-                                    color: '#000',
+                                    color: this._drawColor,
                                 }),
                                 stroke: new Stroke({
                                     color: '#fff',
