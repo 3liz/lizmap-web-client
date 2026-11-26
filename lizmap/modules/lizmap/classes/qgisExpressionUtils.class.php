@@ -1,6 +1,7 @@
 <?php
 
 use Lizmap\App\AppContextInterface;
+use Lizmap\App\SqlTools;
 use Lizmap\App\WktTools;
 use Lizmap\Project\Project;
 use Lizmap\Request\Proxy;
@@ -168,7 +169,7 @@ class qgisExpressionUtils
     public static function replaceAtlasVariables($expression, $pageNameExpression, $layerId, $layerName)
     {
         $quote = function ($value) {
-            return "'".str_replace("'", "''", $value)."'";
+            return SqlTools::quoteFilterString((string) $value);
         };
         $replacements = array(
             'feature' => '@feature',

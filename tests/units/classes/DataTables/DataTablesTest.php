@@ -4,6 +4,7 @@ use Lizmap\App\SqlTools;
 use Lizmap\DataTables\DataTables;
 use Lizmap\Form\QgisFormControl;
 use PHPUnit\Framework\Attributes\CoversNothing;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -685,5 +686,64 @@ class DataTablesTest extends TestCase
         // Other limit, or no limit
         $this->assertFalse(DataTables::isQuickSearchEnabled(false, 101, 5, 100));
         $this->assertTrue(DataTables::isQuickSearchEnabled(false, 10000000, 5, 0));
+    }
+
+    /**
+     * Provide search builder criteria with values to quote or to check as numbers.
+     *
+     * @return array the condition, the values, the column type and the expected expression
+     */
+    public static function getConvertCriteriaValuesData(): array
+    {
+        return array(
+            // The single quotes are doubled, the backslashes are kept
+            array('=', "O'Brien", null, 'string', '"name" = \'O\'\'Brien\''),
+            array('=', 'a\b', null, 'string', '"name" = \'a\b\''),
+            array('starts', "l'a", null, 'string', '"name" ILIKE \'l\'\'a%\''),
+            array('contains', "l'a", null, 'string', '"name" ILIKE \'%l\'\'a%\''),
+            array('ends', "l'a", null, 'string', '"name" ILIKE \'%l\'\'a\''),
+            array('between', "a'", "b'", 'string', '"name" BETWEEN \'a\'\'\' AND \'b\'\'\''),
+            // The numbers are trimmed and used as is
+            array('=', ' 5 ', null, 'num', '"name" = 5'),
+            array('>', '-1.5', null, 'num', '"name" > -1.5'),
+            array('between', '1', '10', 'num', '"name" BETWEEN 1 AND 10'),
+            array('!between', 1, 10.5, 'num', '"name" NOT BETWEEN 1 AND 10.5'),
+            // A value which is not a number ignores the criteria
+            array('=', '1 OR 1=1', null, 'num', ''),
+            array('=', "1'", null, 'num', ''),
+            array('=', '', null, 'num', ''),
+            array('<', 'abc', null, 'num', ''),
+            array('between', '1', '10) OR (1=1', 'num', ''),
+            array('between', '1', null, 'num', ''),
+            // A value which is not a scalar
+            array('=', array('a'), null, 'string', ''),
+            // An unknown condition ignores the criteria
+            array('unknown', 'a', null, 'string', ''),
+        );
+    }
+
+    /**
+     * Check the values of the search builder criteria in the expression.
+     *
+     * @param string $condition the search builder condition
+     * @param mixed  $value1    the first value
+     * @param mixed  $value2    the second value, null if not given
+     * @param string $type      the column type
+     * @param string $expected  the expected expression, empty if the criteria is ignored
+     */
+    #[DataProvider('getConvertCriteriaValuesData')]
+    public function testConvertCriteriaValues(string $condition, $value1, $value2, string $type, string $expected): void
+    {
+        $criteria = array(
+            'data' => 'Name',
+            'origData' => 'name',
+            'condition' => $condition,
+            'value1' => $value1,
+            'type' => $type,
+        );
+        if ($value2 !== null) {
+            $criteria['value2'] = $value2;
+        }
+        $this->assertSame($expected, DataTables::convertCriteriaToExpression($criteria));
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Lizmap\DataTables;
 
+use Lizmap\App\SqlTools;
 use Lizmap\Form\QgisFormControl;
 
 /**
@@ -72,12 +73,14 @@ class DataTables
             return '';
         }
 
-        $value = '';
-        $value1 = isset($criteria['value1']) ? addslashes($criteria['value1']) : '';
-        $value2 = isset($criteria['value2']) ? addslashes($criteria['value2']) : '';
+        // The values: numbers for the numeric columns, quoted strings otherwise
+        $value1 = self::getCriteriaLiteral($criteria['value1'] ?? '', $type);
+        $value2 = self::getCriteriaLiteral($criteria['value2'] ?? '', $type);
+        $text1 = self::getCriteriaText($criteria['value1'] ?? '');
 
         // Map DataTables operators to QGIS Server operators
         $qgisOperator = '';
+        $value = '';
 
         switch ($condition) {
             case '=':
@@ -87,47 +90,28 @@ class DataTables
             case '>':
             case '>=':
                 $qgisOperator = $condition;
-                if ($type == 'num') {
-                    $value = $value1;
-                } else {
-                    $value = '\''.$value1.'\'';
-                }
+                $value = $value1;
 
                 break;
 
             case 'starts':
-                $qgisOperator = 'ILIKE';
-                $value = '\''.$value1.'%\'';
-
-                break;
-
             case '!starts':
-                $qgisOperator = 'NOT ILIKE';
-                $value = '\''.$value1.'%\'';
+                $qgisOperator = ($condition == 'starts') ? 'ILIKE' : 'NOT ILIKE';
+                $value = SqlTools::quoteFilterString($text1.'%');
 
                 break;
 
             case 'contains':
-                $qgisOperator = 'ILIKE';
-                $value = '\'%'.$value1.'%\'';
-
-                break;
-
             case '!contains':
-                $qgisOperator = 'NOT ILIKE';
-                $value = '\'%'.$value1.'%\'';
+                $qgisOperator = ($condition == 'contains') ? 'ILIKE' : 'NOT ILIKE';
+                $value = SqlTools::quoteFilterString('%'.$text1.'%');
 
                 break;
 
             case 'ends':
-                $qgisOperator = 'ILIKE';
-                $value = '\'%'.$value1.'\'';
-
-                break;
-
             case '!ends':
-                $qgisOperator = 'NOT ILIKE';
-                $value = '\'%'.$value1.'\'';
+                $qgisOperator = ($condition == 'ends') ? 'ILIKE' : 'NOT ILIKE';
+                $value = SqlTools::quoteFilterString('%'.$text1);
 
                 break;
 
@@ -142,24 +126,16 @@ class DataTables
                 break;
 
             case 'between':
-                $qgisOperator = 'BETWEEN';
-                if ($type == 'num') {
-                    $value = $value1.' AND '.$value2;
-                } else {
-                    $value = '\''.$value1.'\' AND \''.$value2.'\'';
-                }
-
-                break;
-
             case '!between':
-                $qgisOperator = 'NOT BETWEEN';
-                if ($type == 'num') {
-                    $value = $value1.' AND '.$value2;
-                } else {
-                    $value = '\''.$value1.'\' AND \''.$value2.'\'';
-                }
+                $qgisOperator = ($condition == 'between') ? 'BETWEEN' : 'NOT BETWEEN';
+                $value = ($value1 !== null && $value2 !== null) ? $value1.' AND '.$value2 : null;
 
                 break;
+        }
+
+        // Unknown condition, or a value which is not a number for a numeric column
+        if ($qgisOperator === '' || $value === null) {
+            return '';
         }
 
         // Enclose the column name in double quotes so that identifiers with
@@ -169,6 +145,49 @@ class DataTables
         $quotedColumn = '"'.str_replace('"', '""', $column).'"';
 
         return trim("{$quotedColumn} {$qgisOperator} {$value}");
+    }
+
+    /**
+     * Get a search builder value as text.
+     *
+     * The values are sent by the client: they are not always strings.
+     *
+     * @param mixed $value the value given by the search builder
+     *
+     * @return string the value as text, empty if it is not a scalar value
+     */
+    private static function getCriteriaText($value): string
+    {
+        return is_scalar($value) ? (string) $value : '';
+    }
+
+    /**
+     * Get the literal of a search builder value for a filter expression.
+     *
+     * The values of the numeric columns must be numbers in decimal notation, used as is.
+     * The other values are quoted as strings.
+     *
+     * @param mixed  $value the value given by the search builder
+     * @param string $type  the type of the column given by the search builder
+     *
+     * @return null|string the literal, or null if the value is not valid
+     */
+    private static function getCriteriaLiteral($value, string $type): ?string
+    {
+        // Only scalar values
+        if (!is_scalar($value)) {
+            return null;
+        }
+        $value = self::getCriteriaText($value);
+
+        // Numbers are not quoted, to be compared to the numeric columns
+        if ($type == 'num') {
+            $value = trim($value);
+
+            return SqlTools::isFilterNumber($value) ? $value : null;
+        }
+
+        return SqlTools::quoteFilterString($value);
     }
 
     /**
@@ -277,7 +296,7 @@ class DataTables
         $wordExpressions = array();
         foreach ($words as $word) {
             // The pattern, with the single quotes escaped
-            $pattern = "'%".str_replace("'", "''", $word)."%'";
+            $pattern = SqlTools::quoteFilterString('%'.$word.'%');
 
             // One condition by searched column
             $columnExpressions = array();
@@ -448,7 +467,7 @@ class DataTables
 
         // The codes, quoted as strings
         $quotedCodes = array_map(function ($code) {
-            return "'".str_replace("'", "''", $code)."'";
+            return SqlTools::quoteFilterString((string) $code);
         }, $codes);
 
         // The non text columns are converted to text in PostgreSQL
