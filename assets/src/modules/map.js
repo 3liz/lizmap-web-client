@@ -17,7 +17,7 @@ import View from 'ol/View.js';
 import { ADJUSTED_DPI } from '../utils/Constants.js';
 import { StaticWmsGetMapParamList } from './WMS.js';
 import { get as getProjection, getPointResolution } from 'ol/proj.js';
-import { Attribution } from 'ol/control.js';
+import { Attribution, Control } from 'ol/control.js';
 import ImageWMS from 'ol/source/ImageWMS.js';
 import WMTS, {optionsFromCapabilities} from 'ol/source/WMTS.js';
 import { WMTSCapabilities, GeoJSON, WKT } from 'ol/format.js';
@@ -87,6 +87,18 @@ export default class map extends olMap {
         this._lizmap3 = lizmap3;
         this._initialConfig = initialConfig;
         this._newOlMap = true;
+
+        // Map loading indicator: visible while the map is loading data
+        // (pan, zoom, layer toggled on, filter applied...)
+        const loadingElement = document.createElement('div');
+        loadingElement.className = 'map-loading-indicator';
+        loadingElement.setAttribute('aria-hidden', 'true');
+        this.addControl(new Control({
+            element: loadingElement,
+            target: 'map-content',
+        }));
+        this.on('loadstart', () => loadingElement.classList.add('loading'));
+        this.on('loadend', () => loadingElement.classList.remove('loading'));
 
         // Zoom to box
         this._dragZoom = new DragZoom({
