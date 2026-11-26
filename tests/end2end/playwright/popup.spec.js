@@ -391,6 +391,8 @@ test.describe('Popup @readonly', () => {
         await page.unroute('**/service/getProjectConfig*');
 
         let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
+        // The children features table loads its features
+        let displayExpressionPromise = page.waitForRequest('**/lizmap/features/displayExpression*');
         await project.clickOnMap(510, 415);
         let getFeatureInfoRequest = await getFeatureInfoPromise;
         let getFeatureInfoResponse = await getFeatureInfoRequest.response();
@@ -402,6 +404,12 @@ test.describe('Popup @readonly', () => {
         await expect(lizmapFeaturesTable).toHaveAttribute('layerTitle', 'children_layer');
         await expect(lizmapFeaturesTable).toHaveAttribute('uniqueField', 'id');
         await expect(lizmapFeaturesTable).toHaveAttribute('expressionFilter', '"parent_id" = \'1\'');
+
+        // The attributes are read by the element, even if they are set after its creation
+        let displayExpressionRequest = await displayExpressionPromise;
+        expect(displayExpressionRequest.postData()).toContain('"parent_id" = \'1\'');
+        responseExpect(await displayExpressionRequest.response()).toBeJson();
+        await expect(lizmapFeaturesTable.locator('.lizmap-features-table h4')).toHaveText('children_layer');
     });
 
     test('getFeatureInfo request should contain a FILTERTOKEN parameter when the layer is filtered', async ({ page }) => {
