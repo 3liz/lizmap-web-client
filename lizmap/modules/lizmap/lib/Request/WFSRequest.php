@@ -49,6 +49,12 @@ class WFSRequest extends OGCRequest
     protected $selectFields = array();
 
     /**
+     * @var null|array{key: string, result: false|string} the last parsed expression filter,
+     *                                                    see parseExpFilter()
+     */
+    private $parsedExpFilter;
+
+    /**
      * @var array<string, string> Generic GetFeature request parameters
      */
     public static $genericGetFeatureParameters = array(
@@ -937,13 +943,40 @@ class WFSRequest extends OGCRequest
             return '';
         }
 
+        // The filter is parsed once per request: it is checked by getSqlFailureReason()
+        // before being used by getWhereClause(), and an invalid filter is logged once
+        $cacheKey = serialize(array(
+            $exp_filter,
+            $this->param('exp_filter', ''),
+            $this->datasource->key,
+            $this->datasource->geocol ?? '',
+        ));
+        if ($this->parsedExpFilter !== null && $this->parsedExpFilter['key'] === $cacheKey) {
+            return $this->parsedExpFilter['result'];
+        }
+        $result = $this->translateExpFilter($cnx, $exp_filter);
+        $this->parsedExpFilter = array('key' => $cacheKey, 'result' => $result);
+
+        return $result;
+    }
+
+    /**
+     * Validate the expression filter and translate it to SQL.
+     *
+     * @param \jDbConnection $cnx       The database connection
+     * @param string         $expFilter The expression filter, with the filters merged to the client filter
+     *
+     * @return false|string The SQL filter enclosed with parenthesis if the expression filter is valid, false otherwise
+     */
+    private function translateExpFilter($cnx, string $expFilter): false|string
+    {
         // The client filter is put between parenthesis and combined with the other filters:
         // it must be valid on its own, so that it cannot get out of its parenthesis
         if (!$this->validateClientExpFilter()) {
             return false;
         }
 
-        $validFilter = $this->validateFilter($exp_filter);
+        $validFilter = $this->validateFilter($expFilter);
         if (!$validFilter) {
             return false;
         }

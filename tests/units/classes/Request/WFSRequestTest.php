@@ -1024,4 +1024,30 @@ class WFSRequestTest extends TestCase
 
         $this->assertSame($expectedReason, $wfs->getFeatureSqlFailureReasonForTests($layer, $params, $requestXml));
     }
+
+    /**
+     * Check that the expression filter is parsed once per request.
+     *
+     * The filter is checked by getSqlFailureReason() before being used by getWhereClause():
+     * an invalid filter must be logged once, and a new filter must be parsed again.
+     */
+    public function testParseExpFilterOncePerRequest(): void
+    {
+        // An invalid filter is logged once
+        $context = $this->getMockBuilder(ContextForTests::class)->onlyMethods(array('logException'))->getMock();
+        $context->expects($this->once())->method('logException');
+        $wfs = new WFSRequestForTests();
+        $wfs->appContext = $context;
+        $wfs->datasource = (object) array('key' => 'id', 'geocol' => 'geom');
+        $params = array('exp_filter' => 'name > 3 ) OR ( 1=1');
+        $this->assertFalse($wfs->parseMergedExpFilterForTests(new jDbConnectionForTests(), $params['exp_filter'], $params));
+        $this->assertFalse($wfs->parseMergedExpFilterForTests(new jDbConnectionForTests(), $params['exp_filter'], $params));
+
+        // Another filter is parsed again
+        $params = array('exp_filter' => '"name" = \'a\'');
+        $this->assertSame(
+            ' AND ( "name" = \'a\' )',
+            $wfs->parseMergedExpFilterForTests(new jDbConnectionForTests(), $params['exp_filter'], $params)
+        );
+    }
 }
