@@ -50,13 +50,6 @@ export default class FeaturesTable extends HTMLElement {
     constructor() {
         super();
 
-        // Random element id
-        if (window.isSecureContext) {
-            this.id = window.crypto.randomUUID();
-        } else {
-            this.id = btoa(String.fromCharCode(...new Uint8Array( Array(30).fill().map(() => Math.round(Math.random() * 30)) )));
-        }
-
         // Error text
         this.error = null;
 
@@ -69,7 +62,10 @@ export default class FeaturesTable extends HTMLElement {
         // Clicked item line number
         this.activeItemLineNumber = null;
 
-        // The attributes are read when the element is connected, see readAttributes()
+        // The constructor must not add attributes, like the element id, nor read them:
+        // with document.createElement(), the element is constructed before its attributes
+        // are set, and it fails if its constructor adds attributes.
+        // The id is set and the attributes are read when the element is connected.
     }
 
     /**
@@ -589,6 +585,15 @@ export default class FeaturesTable extends HTMLElement {
 
 
     connectedCallback() {
+        // Random element id
+        if (!this.id) {
+            if (window.isSecureContext) {
+                this.id = window.crypto.randomUUID();
+            } else {
+                this.id = btoa(String.fromCharCode(...new Uint8Array( Array(30).fill().map(() => Math.round(Math.random() * 30)) )));
+            }
+        }
+
         // Read the attributes, set after the construction of the element
         this.readAttributes();
 
