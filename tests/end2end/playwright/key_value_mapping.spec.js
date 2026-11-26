@@ -148,6 +148,41 @@ test.describe('Key/value in attribute table @readonly', () => {
         }
     });
 
+    test('must request the labels without geometry and only once', async ({ page }) => {
+        const project = new ProjectPage(page, 'key_value_mapping');
+
+        // Collect the WFS requests getting the labels from the source layers
+        const labelsRequests = [];
+        page.on('request', request => {
+            const postData = request.postData();
+            if (request.method() !== 'POST' || !postData) {
+                return;
+            }
+            const params = new URLSearchParams(postData);
+            if (params.get('REQUEST') === 'GetFeature' && params.get('PROPERTYNAME')?.includes(',')) {
+                labelsRequests.push(params);
+            }
+        });
+
+        // Open the table: the labels are requested without geometry
+        let layerName = 'attribute_table';
+        let datatablesRequest = await project.openAttributeTable(layerName);
+        await datatablesRequest.response();
+        await expect(project.attributeTableWrapper(layerName).locator('div.dt-scroll-body tbody tr')).toHaveCount(4);
+        const count = labelsRequests.length;
+        expect(count).toBeGreaterThan(0);
+        for (const params of labelsRequests) {
+            expect(params.get('GEOMETRYNAME')).toBe('none');
+        }
+
+        // Open the table again: the cached labels are used
+        await project.closeLayerAttributeTable(layerName);
+        datatablesRequest = await project.openAttributeTable(layerName);
+        await datatablesRequest.response();
+        await expect(project.attributeTableWrapper(layerName).locator('div.dt-scroll-body tbody tr')).toHaveCount(4);
+        expect(labelsRequests).toHaveLength(count);
+    });
+
     test('must display values instead of key in children attribute table', async ({ page }) => {
         const project = new ProjectPage(page, 'key_value_mapping');
 
