@@ -610,9 +610,10 @@ class WFSRequest extends OGCRequest
 
             $expFilter = $this->getFeatureIdFilterExp($featureid, $typename, $this->qgisLayer);
 
-            // Update parameters when expression filter has been build
+            // Update parameters when expression filter has been build,
+            // keeping the expression filter sent by the client
             if ($expFilter) {
-                $this->params['exp_filter'] = $expFilter;
+                $this->params['exp_filter'] = $this->mergeExpFilters($this->param('exp_filter', ''), $expFilter);
                 $this->params['typename'] = $typename;
                 unset($this->params['featureid']);
             }
@@ -621,6 +622,27 @@ class WFSRequest extends OGCRequest
         // Else pass query to QGIS Server
         // Get remote data
         return $this->request(true, true);
+    }
+
+    /**
+     * Merge the expression filter sent by the client with another expression filter.
+     *
+     * Both filters are enclosed with parenthesis, so that an OR operator
+     * of a filter does not apply to the other one.
+     *
+     * @param string $clientFilter The expression filter sent by the client, can be empty
+     * @param string $filter       The other expression filter
+     *
+     * @return string The merged expression filter
+     */
+    protected function mergeExpFilters(string $clientFilter, string $filter): string
+    {
+        // No client filter: the other filter only
+        if (trim($clientFilter) === '') {
+            return $filter;
+        }
+
+        return '( '.$clientFilter.' ) AND ( '.$filter.' )';
     }
 
     /**

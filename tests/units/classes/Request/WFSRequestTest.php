@@ -1050,4 +1050,34 @@ class WFSRequestTest extends TestCase
             $wfs->parseMergedExpFilterForTests(new jDbConnectionForTests(), $params['exp_filter'], $params)
         );
     }
+
+    /**
+     * Provide the filters to merge.
+     *
+     * @return array the client filter, the other filter and the expected merged filter
+     */
+    public static function getMergeExpFiltersData(): array
+    {
+        return array(
+            array('', '"id" IN (1)', '"id" IN (1)'),
+            array('  ', '"id" IN (1)', '"id" IN (1)'),
+            array('"name" = \'a\'', '"id" IN (1)', '( "name" = \'a\' ) AND ( "id" IN (1) )'),
+            // The OR operators stay inside their parenthesis
+            array('"a" = 1 OR "b" = 2', '("foo" = 1 AND "id" = 2) OR ("foo" = 3 AND "id" = 4)', '( "a" = 1 OR "b" = 2 ) AND ( ("foo" = 1 AND "id" = 2) OR ("foo" = 3 AND "id" = 4) )'),
+        );
+    }
+
+    /**
+     * Check the merge of the client expression filter with the FEATUREID filter.
+     *
+     * @param string $clientFilter the expression filter sent by the client
+     * @param string $filter       the other expression filter
+     * @param string $expected     the expected merged filter
+     */
+    #[DataProvider('getMergeExpFiltersData')]
+    public function testMergeExpFilters(string $clientFilter, string $filter, string $expected): void
+    {
+        $wfs = new WFSRequestForTests();
+        $this->assertSame($expected, $wfs->mergeExpFiltersForTests($clientFilter, $filter));
+    }
 }
