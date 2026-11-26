@@ -49,6 +49,12 @@ class WFSRequest extends OGCRequest
     protected $selectFields = array();
 
     /**
+     * @var null|array{key: string, result: false|string} the last parsed expression filter,
+     *                                                    see parseExpFilter()
+     */
+    private $parsedExpFilter;
+
+    /**
      * @var array<string, string> Generic GetFeature request parameters
      */
     public static $genericGetFeatureParameters = array(
@@ -440,26 +446,147 @@ class WFSRequest extends OGCRequest
             }
         }
 
-        // Get OGC filter
-        $filter = $this->param('filter', '');
-
-        // Use direct SQL query to improve performance for PostgreSQL layer
-        // but only of not OGC filter is passed (complex to implement)
-        // and only for GeoJSON (specific to Lizmap)
-        // and only if it is not a complex query like table="(SELECT ...)"
-        // and if FORCE_QGIS parameter is not set to 1
-
-        if ($provider == 'postgres'
-            && empty($filter)
-            && strtolower($output) == 'geojson'
-            && $dtparams !== null
-            && $dtparams->table[0] != '('
-            && $this->param('force_qgis', '') != '1'
-        ) {
+        // Use direct SQL query to improve performance for PostgreSQL layer, when possible
+        if ($this->getFeatureSqlFailureReason($qgisLayer) === null) {
             return $this->getfeaturePostgres();
         }
 
         return $this->getfeatureQgis();
+    }
+
+    /**
+     * Get the table fields of the requested layer, if the GetFeature request is run as SQL.
+     *
+     * It tells if Lizmap will query PostgreSQL directly instead of QGIS Server
+     * for this GetFeature request, so that the request parameters can use database
+     * features unknown by QGIS Server, see getFeatureSqlFailureReason().
+     *
+     * @return null|array<string, \jDbFieldProperties> the table fields of the layer,
+     *                                                 null if the request is sent to QGIS Server
+     */
+    public function getSqlTableFields(): ?array
+    {
+        // The requested vector layer
+        $lizmapLayer = $this->project->findLayerByTypeName($this->requestedTypename());
+        if (!$lizmapLayer) {
+            return null;
+        }
+        $layer = $this->project->getLayer($lizmapLayer->id);
+        if (!$layer instanceof \qgisVectorLayer) {
+            return null;
+        }
+
+        // The request must be run as SQL
+        if ($this->getFeatureSqlFailureReason($layer) !== null) {
+            return null;
+        }
+
+        return $layer->getDbFieldList();
+    }
+
+    /**
+     * Get the reason why the GetFeature request can not be run as SQL by Lizmap.
+     *
+     * In addition to the conditions of getSqlFailureReason(), the request
+     * must ask for GeoJSON with GET parameters, and the primary key must be
+     * a single table field, to build the feature ids.
+     *
+     * @param \qgisVectorLayer $layer The requested layer
+     *
+     * @return null|string null if the request can be run as SQL, the reason otherwise
+     */
+    protected function getFeatureSqlFailureReason(\qgisVectorLayer $layer): ?string
+    {
+        // GeoJSON only (specific to Lizmap) and no XML request
+        if ($this->requestXml !== null) {
+            return 'XML requests are not supported';
+        }
+        if (strtolower($this->param('outputformat', '')) != 'geojson') {
+            return 'only the GeoJSON output format is supported';
+        }
+
+        // Common conditions, the selected fields are checked unless only the features are counted
+        $params = $this->parameters();
+        $isHitsRequest = array_key_exists('resulttype', $params) && $params['resulttype'] == 'hits';
+        $reason = $this->getSqlFailureReason($layer, $isHitsRequest);
+        if ($reason !== null) {
+            return $reason;
+        }
+
+        // The primary key is a table field
+        if (!array_key_exists($this->datasource->key, $layer->getDbFieldList())) {
+            return 'the primary key is not a table field';
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the reason why the features of a layer can not be requested with SQL by Lizmap.
+     *
+     * The features are requested directly in PostgreSQL, instead of QGIS Server, if:
+     *
+     * - the layer is a PostgreSQL table, not a SQL query like table="(SELECT ...)",
+     * - the request has no OGC FILTER (complex to implement) and no FORCE_QGIS=1 parameter,
+     * - the fields used by the query are table fields, not virtual fields only known by QGIS Server,
+     * - the expression filter can be translated to SQL.
+     *
+     * The layer and its datasource are stored in the qgisLayer and datasource properties.
+     *
+     * @param \qgisVectorLayer $layer         The requested layer
+     * @param bool             $isHitsRequest True if the features are only counted or aggregated:
+     *                                        the selected fields are not checked
+     *
+     * @return null|string null if the features can be requested with SQL, the reason otherwise
+     */
+    protected function getSqlFailureReason(\qgisVectorLayer $layer, bool $isHitsRequest): ?string
+    {
+        // Only PostgreSQL layers
+        if ($layer->getProvider() != 'postgres') {
+            return 'the layer is not a PostgreSQL layer';
+        }
+        $this->qgisLayer = $layer;
+
+        // No OGC filter, no forced QGIS Server request
+        if (!empty($this->param('filter', ''))) {
+            return 'OGC FILTER parameter is not supported';
+        }
+        if ($this->param('force_qgis', '') == '1') {
+            return 'QGIS Server is forced';
+        }
+
+        // A table, not a SQL query: table="(SELECT ...)"
+        $this->datasource = $layer->getDatasourceParameters();
+        $table = (string) ($this->datasource->table ?? '');
+        if ($table === '' || $table[0] == '(') {
+            return 'the layer datasource is not a table';
+        }
+
+        // The table fields
+        try {
+            $dbFields = $layer->getDbFieldList();
+        } catch (\Exception $e) {
+            return 'the table fields can not be read';
+        }
+        if (empty($dbFields)) {
+            return 'the table fields can not be read';
+        }
+
+        // The fields used by the query must be table fields:
+        // a virtual field is only known by QGIS Server
+        $params = $this->parameters();
+        foreach ($this->getQueryFields($params, $layer->getWfsFields(), $isHitsRequest) as $field) {
+            if (!array_key_exists($field, $dbFields)) {
+                return 'the field "'.$field.'" is not a table field';
+            }
+        }
+
+        // The expression filter must be translated to SQL
+        if ($this->parseExpFilter($layer->getDatasourceConnection(), $params) === false) {
+            return 'the expression filter can not be translated to SQL';
+        }
+
+        return null;
     }
 
     /**
@@ -816,13 +943,40 @@ class WFSRequest extends OGCRequest
             return '';
         }
 
+        // The filter is parsed once per request: it is checked by getSqlFailureReason()
+        // before being used by getWhereClause(), and an invalid filter is logged once
+        $cacheKey = serialize(array(
+            $exp_filter,
+            $this->param('exp_filter', ''),
+            $this->datasource->key,
+            $this->datasource->geocol ?? '',
+        ));
+        if ($this->parsedExpFilter !== null && $this->parsedExpFilter['key'] === $cacheKey) {
+            return $this->parsedExpFilter['result'];
+        }
+        $result = $this->translateExpFilter($cnx, $exp_filter);
+        $this->parsedExpFilter = array('key' => $cacheKey, 'result' => $result);
+
+        return $result;
+    }
+
+    /**
+     * Validate the expression filter and translate it to SQL.
+     *
+     * @param \jDbConnection $cnx       The database connection
+     * @param string         $expFilter The expression filter, with the filters merged to the client filter
+     *
+     * @return false|string The SQL filter enclosed with parenthesis if the expression filter is valid, false otherwise
+     */
+    private function translateExpFilter($cnx, string $expFilter): false|string
+    {
         // The client filter is put between parenthesis and combined with the other filters:
         // it must be valid on its own, so that it cannot get out of its parenthesis
         if (!$this->validateClientExpFilter()) {
             return false;
         }
 
-        $validFilter = $this->validateFilter($exp_filter);
+        $validFilter = $this->validateFilter($expFilter);
         if (!$validFilter) {
             return false;
         }
@@ -1145,21 +1299,8 @@ class WFSRequest extends OGCRequest
         $params = $this->parameters();
 
         // Get database connexion for this layer
+        // The layer and its datasource are checked by getFeatureSqlFailureReason()
         $cnx = $this->qgisLayer->getDatasourceConnection();
-        // Get datasource
-        $this->datasource = $this->qgisLayer->getDatasourceParameters();
-
-        // Get Db fields
-        try {
-            $dbFields = $this->qgisLayer->getDbFieldList();
-        } catch (\Exception $e) {
-            return $this->getfeatureQgis();
-        }
-
-        // Verifying that the datasource key is a db fields
-        if (!array_key_exists($this->datasource->key, $dbFields)) {
-            return $this->getfeatureQgis();
-        }
 
         // For getFeature with parameter RESULTTYPE=hits
         // We should just return the number of features
@@ -1170,15 +1311,6 @@ class WFSRequest extends OGCRequest
 
         // Get WFS fields
         $wfsFields = $this->qgisLayer->getWfsFields();
-
-        // Verifying that the WFS fields used by the query are db fields
-        // if not return getfeatureQgis. Other WFS fields, like virtual fields,
-        // do not prevent the direct SQL query when they are not requested.
-        foreach ($this->getQueryFields($params, $wfsFields, $isHitsRequest) as $field) {
-            if (!array_key_exists($field, $dbFields)) {
-                return $this->getfeatureQgis();
-            }
-        }
 
         // Build SQL
         $sql = $this->buildQueryBase($cnx, $params, $wfsFields, $isHitsRequest);

@@ -908,4 +908,146 @@ class WFSRequestTest extends TestCase
             ),
         );
     }
+
+    /**
+     * Build a vector layer for the tests of the SQL conditions.
+     *
+     * @param string                $provider the layer provider
+     * @param array<string, string> $dtparams the datasource parameters
+     * @param null|array            $dbFields the table fields, null to throw an exception
+     *
+     * @return QgisLayerForTests the layer
+     */
+    private function getSqlLayerForTests(string $provider, array $dtparams, ?array $dbFields): QgisLayerForTests
+    {
+        $layer = $this->getMockBuilder(QgisLayerForTests::class)
+            ->onlyMethods(array('getProvider', 'getDatasourceParameters', 'getDbFieldList', 'getWfsFields', 'getDatasourceConnection'))
+            ->getMock()
+        ;
+        $layer->method('getProvider')->willReturn($provider);
+        $layer->method('getDatasourceParameters')->willReturn((object) $dtparams);
+        $layer->method('getWfsFields')->willReturn(array('id', 'name', 'virtual'));
+        $layer->method('getDatasourceConnection')->willReturn(new jDbConnectionForTests());
+        if ($dbFields === null) {
+            $layer->method('getDbFieldList')->willThrowException(new Exception('No database'));
+        } else {
+            $layer->method('getDbFieldList')->willReturn($dbFields);
+        }
+
+        return $layer;
+    }
+
+    /**
+     * Provide the layers and the parameters for the SQL conditions.
+     *
+     * @return array the provider, the datasource table, the table fields (null to throw an exception),
+     *               the request parameters, the hits flag and the expected failure reason
+     */
+    public static function getSqlFailureReasonData(): array
+    {
+        $dbFields = array('id' => (object) array('type' => 'int4'), 'name' => (object) array('type' => 'text'));
+
+        return array(
+            'valid' => array('postgres', 'public.t', $dbFields, array('propertyname' => 'id,name'), false, null),
+            'valid filter' => array('postgres', 'public.t', $dbFields, array('propertyname' => 'id', 'exp_filter' => '"name" = \'a\''), false, null),
+            'not postgres' => array('ogr', 'public.t', $dbFields, array(), true, 'the layer is not a PostgreSQL layer'),
+            'OGC filter' => array('postgres', 'public.t', $dbFields, array('filter' => '<Filter/>'), true, 'OGC FILTER parameter is not supported'),
+            'forced QGIS' => array('postgres', 'public.t', $dbFields, array('force_qgis' => '1'), true, 'QGIS Server is forced'),
+            'SQL query' => array('postgres', '(SELECT * FROM t)', $dbFields, array(), true, 'the layer datasource is not a table'),
+            'no table' => array('postgres', '', $dbFields, array(), true, 'the layer datasource is not a table'),
+            'fields error' => array('postgres', 'public.t', null, array(), true, 'the table fields can not be read'),
+            'no fields' => array('postgres', 'public.t', array(), array(), true, 'the table fields can not be read'),
+            // A virtual field is checked when it is selected, not when the features are only counted
+            'virtual selected' => array('postgres', 'public.t', $dbFields, array(), false, 'the field "virtual" is not a table field'),
+            'virtual not selected' => array('postgres', 'public.t', $dbFields, array(), true, null),
+            'virtual in filter' => array('postgres', 'public.t', $dbFields, array('exp_filter' => '"virtual" = 1'), true, 'the field "virtual" is not a table field'),
+            'invalid filter' => array('postgres', 'public.t', $dbFields, array('exp_filter' => 'name > 3 ) OR ( 1=1'), true, 'the expression filter can not be translated to SQL'),
+        );
+    }
+
+    /**
+     * Check the conditions to request the features of a layer with SQL.
+     *
+     * @param string      $provider       the layer provider
+     * @param string      $table          the datasource table
+     * @param null|array  $dbFields       the table fields, null to throw an exception
+     * @param array       $params         the request parameters
+     * @param bool        $isHitsRequest  true if the features are only counted
+     * @param null|string $expectedReason the expected failure reason, null if valid
+     */
+    #[DataProvider('getSqlFailureReasonData')]
+    public function testGetSqlFailureReason(string $provider, string $table, ?array $dbFields, array $params, bool $isHitsRequest, ?string $expectedReason): void
+    {
+        $layer = $this->getSqlLayerForTests($provider, array('table' => $table, 'key' => 'id', 'geocol' => 'geom'), $dbFields);
+        $wfs = new WFSRequestForTests();
+        $wfs->appContext = new ContextForTests();
+
+        $this->assertSame($expectedReason, $wfs->getSqlFailureReasonForTests($layer, $params, $isHitsRequest));
+    }
+
+    /**
+     * Provide the parameters for the SQL conditions of the GetFeature request.
+     *
+     * @return array the primary key, the request parameters, the XML request and the expected failure reason
+     */
+    public static function getFeatureSqlFailureReasonData(): array
+    {
+        $geojson = array('outputformat' => 'GeoJSON', 'propertyname' => 'id,name');
+
+        return array(
+            'valid' => array('id', $geojson, null, null),
+            'GML' => array('id', array('outputformat' => 'GML2'), null, 'only the GeoJSON output format is supported'),
+            'XML request' => array('id', $geojson, '<GetFeature/>', 'XML requests are not supported'),
+            // The virtual field is not selected when the features are only counted
+            'hits' => array('id', array('outputformat' => 'geojson', 'resulttype' => 'hits'), null, null),
+            'all fields' => array('id', array('outputformat' => 'geojson'), null, 'the field "virtual" is not a table field'),
+            'key not in table' => array('other', $geojson, null, 'the primary key is not a table field'),
+            'multiple keys' => array('id,name', $geojson, null, 'the primary key is not a table field'),
+        );
+    }
+
+    /**
+     * Check the conditions to run the GetFeature request as SQL.
+     *
+     * @param string      $key            the primary key of the layer
+     * @param array       $params         the request parameters
+     * @param null|string $requestXml     the XML request, if any
+     * @param null|string $expectedReason the expected failure reason, null if valid
+     */
+    #[DataProvider('getFeatureSqlFailureReasonData')]
+    public function testGetFeatureSqlFailureReason(string $key, array $params, ?string $requestXml, ?string $expectedReason): void
+    {
+        $dbFields = array('id' => (object) array('type' => 'int4'), 'name' => (object) array('type' => 'text'));
+        $layer = $this->getSqlLayerForTests('postgres', array('table' => 'public.t', 'key' => $key, 'geocol' => 'geom'), $dbFields);
+        $wfs = new WFSRequestForTests();
+        $wfs->appContext = new ContextForTests();
+
+        $this->assertSame($expectedReason, $wfs->getFeatureSqlFailureReasonForTests($layer, $params, $requestXml));
+    }
+
+    /**
+     * Check that the expression filter is parsed once per request.
+     *
+     * The filter is checked by getSqlFailureReason() before being used by getWhereClause():
+     * an invalid filter must be logged once, and a new filter must be parsed again.
+     */
+    public function testParseExpFilterOncePerRequest(): void
+    {
+        // An invalid filter is logged once
+        $context = $this->getMockBuilder(ContextForTests::class)->onlyMethods(array('logException'))->getMock();
+        $context->expects($this->once())->method('logException');
+        $wfs = new WFSRequestForTests();
+        $wfs->appContext = $context;
+        $wfs->datasource = (object) array('key' => 'id', 'geocol' => 'geom');
+        $params = array('exp_filter' => 'name > 3 ) OR ( 1=1');
+        $this->assertFalse($wfs->parseMergedExpFilterForTests(new jDbConnectionForTests(), $params['exp_filter'], $params));
+        $this->assertFalse($wfs->parseMergedExpFilterForTests(new jDbConnectionForTests(), $params['exp_filter'], $params));
+
+        // Another filter is parsed again
+        $params = array('exp_filter' => '"name" = \'a\'');
+        $this->assertSame(
+            ' AND ( "name" = \'a\' )',
+            $wfs->parseMergedExpFilterForTests(new jDbConnectionForTests(), $params['exp_filter'], $params)
+        );
+    }
 }

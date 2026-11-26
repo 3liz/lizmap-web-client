@@ -119,4 +119,37 @@ class WFSRequestForTests extends WFSRequest
     {
         return $this->parseSrsnameSrid($srsname);
     }
+
+    /**
+     * Get the reason why the features of a layer can not be requested with SQL.
+     *
+     * @param qgisVectorLayer $layer         the requested layer
+     * @param array           $params        the request parameters
+     * @param bool            $isHitsRequest true if the features are only counted or aggregated
+     *
+     * @return null|string null if the features can be requested with SQL, the reason otherwise
+     */
+    public function getSqlFailureReasonForTests($layer, array $params, bool $isHitsRequest): ?string
+    {
+        $this->params = $params;
+
+        return $this->getSqlFailureReason($layer, $isHitsRequest);
+    }
+
+    /**
+     * Get the reason why the GetFeature request can not be run as SQL.
+     *
+     * @param qgisVectorLayer $layer      the requested layer
+     * @param array           $params     the request parameters
+     * @param null|string     $requestXml the XML request, if any
+     *
+     * @return null|string null if the request can be run as SQL, the reason otherwise
+     */
+    public function getFeatureSqlFailureReasonForTests($layer, array $params, ?string $requestXml = null): ?string
+    {
+        $this->params = $params;
+        $this->requestXml = $requestXml;
+
+        return $this->getFeatureSqlFailureReason($layer);
+    }
 }
