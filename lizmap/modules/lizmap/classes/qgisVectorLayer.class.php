@@ -13,6 +13,7 @@
 
 use Jelix\IniFile\IniModifier;
 use Lizmap\App\QgisConnectionStringParserException;
+use Lizmap\App\SqlTools;
 use Lizmap\Project\Project;
 use Lizmap\Request\FeatureStream;
 use Lizmap\Request\Proxy;
@@ -1150,14 +1151,8 @@ class qgisVectorLayer extends qgisMapLayer
             $pkVals = $this->getPrimaryKeyValues($feature);
             $exp_filters = array();
             foreach ($pkVals as $key => $val) {
-                $val = (string) $val;
-                $exp = '"'.$key.'" = ';
-                if (ctype_digit($val)) {
-                    $exp .= $val;
-                } else {
-                    $exp .= "'".addslashes($val)."'";
-                }
-                $exp_filters[] = $exp;
+                // The value is always quoted: it is converted to the type of the key column
+                $exp_filters[] = '"'.str_replace('"', '""', $key).'" = '.SqlTools::quoteFilterString((string) $val);
             }
 
             // Use Lizmap server plugin to calculate a boolean virtual field "filterByLogin"
@@ -1199,14 +1194,8 @@ class qgisVectorLayer extends qgisMapLayer
         $pkVals = $this->getPrimaryKeyValues($feature);
         $exp_filters = array();
         foreach ($pkVals as $key => $val) {
-            $val = (string) $val;
-            $exp = '"'.$key.'" = ';
-            if (ctype_digit($val)) {
-                $exp .= $val;
-            } else {
-                $exp .= "'".addslashes($val)."'";
-            }
-            $exp_filters[] = $exp;
+            // The value is always quoted: it is converted to the type of the key column
+            $exp_filters[] = '"'.str_replace('"', '""', $key).'" = '.SqlTools::quoteFilterString((string) $val);
         }
 
         $params = array(
