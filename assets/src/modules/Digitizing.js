@@ -39,6 +39,11 @@ import {
 import { circular, fromCircle } from 'ol/geom/Polygon.js';
 
 import { getArea, getLength } from 'ol/sphere.js';
+import {
+    formatArea as formatAreaValue,
+    formatLength as formatLengthValue,
+    getMeasures
+} from './utils/Measure.js';
 import Overlay from 'ol/Overlay.js';
 import { unByKey } from 'ol/Observable.js';
 
@@ -1570,26 +1575,15 @@ export class Digitizing {
      * @returns {void}
      */
     _updateTotalMeasureTooltip(coords, geom, geomType, overlay) {
+        // Same content as the measure label sent to the print request
+        overlay.getElement().innerHTML = getMeasures(geom, this._map.getView().getProjection(), true).join('<br>');
         if (geomType === 'Polygon') {
-            // Close LinearRing to get its perimeter
-            const perimeterCoords = Array.from(coords);
-            perimeterCoords.push(Array.from(coords[0]));
-            let totalTooltipContent = this.formatLength(new Polygon([perimeterCoords]));
-            totalTooltipContent += '<br>' + this.formatArea(geom);
-
-            overlay.getElement().innerHTML = totalTooltipContent;
             overlay.setPosition(geom.getInteriorPoint().getCoordinates());
         } else if(geomType == 'Circle') {
             // get polygon from circular geometry by approximating the circle with a 128-sided polygon
-            let circularGeom = fromCircle(geom,128);
-            let totalTooltipContent = this.formatLength(new LineString([coords[0], coords[1]]));
-            totalTooltipContent += '<br>' + this.formatArea(circularGeom);
-
-            overlay.getElement().innerHTML = totalTooltipContent;
-            overlay.setPosition(circularGeom.getInteriorPoint().getCoordinates());
+            overlay.setPosition(fromCircle(geom, 128).getInteriorPoint().getCoordinates());
         }
         else {
-            overlay.getElement().innerHTML = this.formatLength(geom);
             overlay.setPosition(geom.getCoordinateAt(0.5));
         }
     }
@@ -1614,14 +1608,7 @@ export class Digitizing {
      * @returns {string} The formatted length.
      */
     formatLength(geom) {
-        const length = this.getProjectedLength(geom);
-        let output;
-        if (length > 100) {
-            output = Math.round((length / 1000) * 100) / 100 + ' ' + 'km';
-        } else {
-            output = Math.round(length * 100) / 100 + ' ' + 'm';
-        }
-        return output;
+        return formatLengthValue(this.getProjectedLength(geom));
     }
 
     /**
@@ -1631,13 +1618,7 @@ export class Digitizing {
      */
     formatArea(polygon) {
         const area = getArea(polygon, {projection: this._map.getView().getProjection()});
-        let output;
-        if (area > 10000) {
-            output = Math.round((area / 1000000) * 100) / 100 + ' ' + 'km<sup>2</sup>';
-        } else {
-            output = Math.round(area * 100) / 100 + ' ' + 'm<sup>2</sup>';
-        }
-        return output;
+        return formatAreaValue(area, true);
     }
 
     /**
@@ -1716,6 +1697,22 @@ export class Digitizing {
         this._measureTooltips.add([segmentOverlay, totalOverlay]);
         this._map.addOverlay(segmentOverlay);
         this._map.addOverlay(totalOverlay);
+    }
+
+    /**
+     * Get the measure label of the drawn feature at the index, as displayed on the map
+     * when the measure tool is visible: length for a line, perimeter and area for a polygon,
+     * radius and area for a circle. Measures are separated by a new line.
+     * @param {number} index - The index of the drawn feature
+     * @returns {string} The measure label or an empty string if the measure tool is not visible,
+     *                   the feature does not exist at the index or its geometry has no measure
+     */
+    getFeatureDrawnMeasureLabel(index) {
+        if (!this._hasMeasureVisible || !this.featureDrawn?.[index]) {
+            return '';
+        }
+        const geom = this.featureDrawn[index].getGeometry();
+        return getMeasures(geom, this._map.getView().getProjection()).join('\n');
     }
 
     /**

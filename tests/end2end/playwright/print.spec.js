@@ -1190,6 +1190,92 @@ test.describe('Print 3857 @readonly', () => {
         // The message has to be closed if all is right
         await expect(printPage.messageContainer).toBeHidden();
     });
+
+    test('Print requests with redlining measures', async ({ page }) => {
+        test.slow();
+        const printPage = new PrintPage(page, 'draw');
+        const drawProject = new DrawPage(page, 'draw');
+        // Close left dock
+        await drawProject.closeLeftDock();
+        // open draw panel
+        await drawProject.openDrawPanel();
+
+        // select circle to draw
+        await drawProject.selectGeometry('circle');
+
+        // Draw circle
+        await drawProject.clickOnMap(610, 302);
+        await drawProject.clickOnMap(722, 300);
+
+        // Measure is not visible: no label printed
+        await printPage.openPrintPanel();
+        await printPage.setPrintScale('72224');
+        let getPrintPromise = printPage.waitForGetPrintRequest();
+        await printPage.launchPrint();
+        let getPrintRequest = await getPrintPromise;
+        let getPrintParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
+        expect(getPrintParams.has('map0:HIGHLIGHT_GEOM')).toBe(true);
+        expect(getPrintParams.has('map0:HIGHLIGHT_LABELSTRING')).toBe(false);
+
+        // Display measure
+        await drawProject.openDrawPanel();
+        await drawProject.toggleMeasure();
+        await expect(await drawProject.measureLocator()).toHaveClass(/active/);
+        await expect(drawProject.mapAnnotationToolTipStatic).toBeVisible();
+
+        // The printed label is the measure displayed on the map: radius and area
+        const tooltipHtml = await drawProject.mapAnnotationToolTipStatic.innerHTML();
+        const measureLabel = tooltipHtml.replaceAll('<br>', '\n').replaceAll('<sup>2</sup>', '²');
+        expect(measureLabel).toMatch(/^\d+(\.\d+)? k?m\n\d+(\.\d+)? k?m²$/);
+
+        await printPage.openPrintPanel();
+        await printPage.setPrintScale('72224');
+        getPrintPromise = printPage.waitForGetPrintRequest();
+        await printPage.launchPrint();
+        getPrintRequest = await getPrintPromise;
+        requestExpect(getPrintRequest).toContainParametersInPostData({
+            'map0:HIGHLIGHT_GEOM': /CURVEPOLYGON\(CIRCULARSTRING\([\s\d.,]*\)\)/,
+            'map0:HIGHLIGHT_LABELSTRING': measureLabel,
+            'map0:HIGHLIGHT_LABELSIZE': '10',
+            'map0:HIGHLIGHT_LABELBUFFERCOLOR': '#FFFFFF',
+            'map0:HIGHLIGHT_LABELBUFFERSIZE': '1.5',
+            'map0:HIGHLIGHT_LABEL_ROTATION': '0',
+            'map0:HIGHLIGHT_LABEL_HORIZONTAL_ALIGNMENT': 'center',
+            'map0:HIGHLIGHT_LABEL_VERTICAL_ALIGNMENT': 'half',
+        });
+        responseExpect(await getPrintRequest.response()).toBePdf();
+
+        // Add a text to the circle: text and measure are printed
+        await drawProject.openDrawPanel();
+        // The only drawn feature is selected when editing
+        await drawProject.toggleEdit();
+        await drawProject.setTextContentValue('test');
+
+        await printPage.openPrintPanel();
+        await printPage.setPrintScale('72224');
+        getPrintPromise = printPage.waitForGetPrintRequest();
+        await printPage.launchPrint();
+        getPrintRequest = await getPrintPromise;
+        requestExpect(getPrintRequest).toContainParametersInPostData({
+            'map0:HIGHLIGHT_LABELSTRING': 'test\n' + measureLabel,
+        });
+        responseExpect(await getPrintRequest.response()).toBePdf();
+
+        // Hide measure: only the text is printed
+        await drawProject.openDrawPanel();
+        await drawProject.toggleMeasure();
+        await expect(await drawProject.measureLocator()).not.toHaveClass(/active/);
+
+        await printPage.openPrintPanel();
+        await printPage.setPrintScale('72224');
+        getPrintPromise = printPage.waitForGetPrintRequest();
+        await printPage.launchPrint();
+        getPrintRequest = await getPrintPromise;
+        requestExpect(getPrintRequest).toContainParametersInPostData({
+            'map0:HIGHLIGHT_LABELSTRING': 'test',
+        });
+        responseExpect(await getPrintRequest.response()).toBePdf();
+    });
 });
 
 test.describe('Print 2278 @readonly', () => {
