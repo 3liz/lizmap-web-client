@@ -358,9 +358,13 @@ npm run pretest:fix
 
 ## PHP Rector
 
-[PHP Rector](https://getrector.com/) can be run if you're located in `tests/units`.
+[PHP Rector](https://getrector.com/) can be run from inside the php container.
 
 ```bash
+./lizmap-ctl shell
+
+cd /srv/lzm/tests/units/
+
 # Install composer dependencies
 composer install
 
@@ -373,20 +377,21 @@ composer rector:fix
 
 ## Using LDAP
 
-LDAP is not launched by default so you need to start the stack this way:
+To use LDAP, you need to install the multiauth module. 
 
-```bash
-docker compose --profile dev up -d
-```
+Launch the lizmap application as indicated above.
 
-Into `lizmap/var/config/localconfig.ini.php`:
+1. in `lizmap/my-packages`, create the `composer.json` file if it does not exist yet (by copying `composer.json.dist`)
+2. enter into the PHP container: `./lizmap-ctl shell` then `cd /srv/lzm/lizmap/my-packages`
+3. Add package `jelix/multiauth-module`: `composer require jelix/multiauth-module`
+4. If you want an ldap configuration page, add package `jelix/ldapadmin-module`: `composer require jelix/ldapadmin-module`
+5. go into the installation directory: `cd /srv/lzm/lizmap/install`
+6. Enable the multiauth module into lizmap: `php configurator.php multiauth`
+7. If you install ldapadmin, enable it: `php configure.php ldapadmin`
+8. exit and launch `./lizmap-ctl  install`
 
-1. set `multiauth.enabled=on` into the `modules` section
-2. set `driver=multiauth` into the `coordplugin_auth` section
-3. launch `lizmap-ctl  install`
-
-Be sure there are users into the ldap: execute `lizmap-ctl ldap-users`. It should
-show a list of users (Jane and John). If there are not present, launch `lizmap-ctl ldap-reset`.
+Be sure there are users into the ldap: execute `./lizmap-ctl ldap-users`. It should
+show a list of users (Jane and John). If there are not present, launch `./lizmap-ctl ldap-reset`.
 
 You should then be able to connect yourself into lizmap with login `jane` (password: `passjane`) or
 login `john` (password: `passjohn`).
