@@ -52,6 +52,9 @@ export default class Snapping {
         this._snapOnStart = false;
         this._pendingMapReadyListener = null;
         this._wfsErrorNotified = false;
+        // Delay before reloading the snap data after the map has moved
+        this._refreshDelay = 500;
+        this._refreshTimeout = null;
 
         this._digitizing = digitizing;
         this._snapOnDrawings = false;
@@ -179,6 +182,17 @@ export default class Snapping {
         this._setSnapLayersRefreshable = () => {
             if(this._active){
                 this.snapLayersRefreshable = true;
+                // The snap data is restricted to the map extent and to a maximum
+                // number of features: reload it for the new extent, otherwise
+                // a snap activated on a wide extent (e.g. with snap_on_start)
+                // keeps features far from the area the user zoomed to.
+                clearTimeout(this._refreshTimeout);
+                this._refreshTimeout = setTimeout(() => {
+                    this._refreshTimeout = null;
+                    if (this._active) {
+                        this.getSnappingData();
+                    }
+                }, this._refreshDelay);
             }
         }
 
@@ -298,6 +312,8 @@ export default class Snapping {
                     );
                     this._pendingMapReadyListener = null;
                 }
+                clearTimeout(this._refreshTimeout);
+                this._refreshTimeout = null;
                 this.active = false;
                 this._snapOnDrawings = false;
                 this._snapLayer.destroyFeatures();
