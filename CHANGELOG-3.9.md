@@ -8,6 +8,11 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* **[Klein und Leber GbR](https://www.gisgeometer.de/)** with @meyerlor
+* **[Conseil Départemental du Calvados](https://www.calvados.fr/)**
+
 ### Added
 
 * Admin - notification configuration for SAML #7547⁠
