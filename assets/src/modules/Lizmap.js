@@ -17,6 +17,7 @@ import { Digitizing } from './Digitizing.js';
 import Snapping from './Snapping.js';
 import Layers from './Layers.js';
 import WFS from './WFS.js';
+import FieldLabels from './FieldLabels.js';
 import { WMS } from './WMS.js';
 import { Utils } from './Utils.js';
 import Action from './Action.js';
@@ -165,6 +166,7 @@ export default class Lizmap {
             this.layers = new Layers();
             this.proxyEvents = new ProxyEvents();
             this.wfs = new WFS();
+            this.fieldLabels = new FieldLabels(this.wfs, this.lizmap3);
             this.wms = new WMS();
             this.featureStorage = new FeatureStorage();
             // init Legend module and others when the map is ready

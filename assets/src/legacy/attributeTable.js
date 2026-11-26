@@ -345,11 +345,13 @@ var lizAttributeTable = function() {
                         // Use an integer as a placeholder for coming fetched key/values
                         allColumnsKeyValues[fieldName] = responseOrder;
                         responseOrder++;
-                        fetchRequests.push(lizMap.mainLizmap.wfs.getFeature({
-                            TYPENAME: source_typename,
-                            PROPERTYNAME: fieldConf.code_field + ',' + fieldConf.label_field,
-                            // we must not use null for exp_filter but '' if no filter is active
-                            EXP_FILTER: fieldConf.exp_filter ? fieldConf.exp_filter : ''
+                        // The labels are cached for a few minutes, the child tables are built again often
+                        fetchRequests.push(lizMap.mainLizmap.fieldLabels.getLabels({
+                            layerId: fieldConf.source_layer_id,
+                            typeName: source_typename,
+                            codeField: fieldConf.code_field,
+                            labelField: fieldConf.label_field,
+                            expFilter: fieldConf.exp_filter,
                         }));
                     }
                 }
@@ -362,14 +364,9 @@ var lizAttributeTable = function() {
                     for (let index = namedRequests['keyValues']; index < responses.length; index++) {
                         // Get column name using order placeholder defined before
                         const columnName = Object.keys(allColumnsKeyValues).find(key => allColumnsKeyValues[key] === index);
-                        const keyField = lizMap.keyValueConfig[layerName][columnName].code_field;
-                        const valueField = lizMap.keyValueConfig[layerName][columnName].label_field;
 
-                        const keyValue = {};
-
-                        responses[index].features.forEach(feature => keyValue[feature.properties[keyField]] = feature.properties[valueField]);
-
-                        allColumnsKeyValues[columnName] = keyValue;
+                        // A copy of the labels by code, which are shared by the cache
+                        allColumnsKeyValues[columnName] = {...responses[index]};
 
                     }
                     layerConfig['featureCrs'] = 'EPSG:4326';
