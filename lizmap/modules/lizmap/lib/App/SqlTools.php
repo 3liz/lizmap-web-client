@@ -717,6 +717,41 @@ class SqlTools
     }
 
     /**
+     * Quote a value as a string literal of a filter expression.
+     *
+     * The single quotes are doubled, so that the literal is valid both in a QGIS
+     * expression and in PostgreSQL: an expression filter can be evaluated by
+     * QGIS Server or run as SQL by Lizmap. The backslashes are kept as is, as done
+     * by the JavaScript code building the filters.
+     *
+     * The value is always quoted, even if it is a number: PostgreSQL converts the
+     * literal to the type of the compared column, and QGIS compares it as a number.
+     *
+     * @param string $value the value to quote
+     *
+     * @return string the value enclosed with single quotes
+     */
+    public static function quoteFilterString(string $value): string
+    {
+        return "'".str_replace("'", "''", $value)."'";
+    }
+
+    /**
+     * Check that a value is a number which can be used as is in a filter expression.
+     *
+     * Only the decimal notation is accepted: digits, an optional minus sign
+     * and an optional fractional part. It is valid in a QGIS expression and in PostgreSQL.
+     *
+     * @param string $value the value to check
+     *
+     * @return bool true if the value is a number in decimal notation
+     */
+    public static function isFilterNumber(string $value): bool
+    {
+        return preg_match('/^-?\d+(\.\d+)?$/', $value) === 1;
+    }
+
+    /**
      * Translate a QGIS expression filter into a PostGIS compatible SQL filter.
      *
      * Rewrites the geometry predicate functions used by the selection tool and

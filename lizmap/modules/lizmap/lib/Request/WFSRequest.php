@@ -665,41 +665,23 @@ class WFSRequest extends OGCRequest
             return '';
         }
 
-        // mapping primary keys values to be used in an
-        // expression filter
-        if (!$hasDoubleAtSign) {
-            // for single field key
-            $pks = array_map(
-                function ($n) {
-                    if (ctype_digit($n)) {
-                        return $n;
-                    }
-
-                    return "'".addslashes($n)."'";
-                },
-                $pks
-            );
-        } else {
-            // for multi fields key
-            $formatPks = array();
-            foreach ($pks as $pk) {
-                $formatPks[] = array_map(
-                    function ($n) {
-                        if (ctype_digit($n)) {
-                            return $n;
-                        }
-
-                        return "'".addslashes($n)."'";
-                    },
-                    $pk
-                );
-            }
-            $pks = $formatPks;
-        }
-
         // Building the expression filter
         $expFilter = '';
         if ($provider == 'postgres') {
+            // mapping primary keys values to be used in an expression filter:
+            // the values are always quoted, they are converted to the type of the key columns
+            if (!$hasDoubleAtSign) {
+                // for single field key
+                $pks = array_map(array(SqlTools::class, 'quoteFilterString'), $pks);
+            } else {
+                // for multi fields key
+                $formatPks = array();
+                foreach ($pks as $pk) {
+                    $formatPks[] = array_map(array(SqlTools::class, 'quoteFilterString'), $pk);
+                }
+                $pks = $formatPks;
+            }
+
             // for postgres layer we can build the expression filter for
             // simple and multi fields key
             $dtparams = $qgisLayer->getDatasourceParameters();
@@ -727,8 +709,11 @@ class WFSRequest extends OGCRequest
                 $expFilter = implode(' OR ', $filters);
             }
         } else {
-            // for other layers with simple field key
-            $expFilter = '$id IN ('.implode(', ', $pks).')';
+            // for other layers, the feature ids are integers
+            $pks = array_values(array_filter($pks, 'ctype_digit'));
+            if (count($pks) > 0) {
+                $expFilter = '$id IN ('.implode(', ', $pks).')';
+            }
         }
 
         if (!$expFilter) {

@@ -114,11 +114,17 @@ class WFSRequestTest extends TestCase
             array('type.test@@55', 'type', '', array('provider' => 'postgres')), // featureid with multi fields key for postgres layer with simple field key
             array('type.1', 'type', '$id IN (1)', array()),
             array('type.1,type.2', 'type', '$id IN (1, 2)', array()),
-            array('type.1', 'type', '"id" IN (1)', array('provider' => 'postgres')),
-            array('type.1,type.2', 'type', '"id" IN (1, 2)', array('provider' => 'postgres')),
+            // the feature ids of the other layers are integers
+            array('type.1,type.test', 'type', '$id IN (1)', array()),
+            array('type.test', 'type', '', array()),
+            // the values of the PostgreSQL keys are always quoted, the single quotes are doubled
+            array('type.1', 'type', '"id" IN (\'1\')', array('provider' => 'postgres')),
+            array('type.1,type.2', 'type', '"id" IN (\'1\', \'2\')', array('provider' => 'postgres')),
             array('type.test', 'type', '"id" IN (\'test\')', array('provider' => 'postgres')),
-            array('type.test@@55', 'type', '("foo" = \'test\' AND "id" = 55)', array('provider' => 'postgres', 'dtparams' => array('key' => 'foo,id'))),
-            array('type.test@@55,type.bar@@44', 'type', '("foo" = \'test\' AND "id" = 55) OR ("foo" = \'bar\' AND "id" = 44)', array('provider' => 'postgres', 'dtparams' => array('key' => 'foo,id'))),
+            array("type.O'Brien", 'type', '"id" IN (\'O\'\'Brien\')', array('provider' => 'postgres')),
+            array('type.a\b', 'type', '"id" IN (\'a\b\')', array('provider' => 'postgres')),
+            array('type.test@@55', 'type', '("foo" = \'test\' AND "id" = \'55\')', array('provider' => 'postgres', 'dtparams' => array('key' => 'foo,id'))),
+            array('type.test@@55,type.bar@@44', 'type', '("foo" = \'test\' AND "id" = \'55\') OR ("foo" = \'bar\' AND "id" = \'44\')', array('provider' => 'postgres', 'dtparams' => array('key' => 'foo,id'))),
         );
     }
 
