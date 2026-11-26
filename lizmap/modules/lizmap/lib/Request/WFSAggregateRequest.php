@@ -317,9 +317,9 @@ class WFSAggregateRequest extends WFSRequest
     /**
      * Check that the features of the layer can be requested with SQL.
      *
-     * The conditions are the ones used by process_getfeature() and
-     * getfeaturePostgres() to request PostgreSQL directly instead of QGIS Server,
-     * including the fields of the expression filter, which must be table fields.
+     * The conditions are the ones of getSqlFailureReason(), also used by
+     * process_getfeature() to request PostgreSQL directly instead of QGIS Server.
+     * The selected fields are not checked, only the fields of the expression filter.
      * The layer and its datasource are stored in the qgisLayer and datasource properties.
      *
      * @return bool true if possible, false with a failure reason otherwise
@@ -338,33 +338,14 @@ class WFSAggregateRequest extends WFSRequest
             return (bool) $this->fail('the layer is not found');
         }
         $layer = $this->project->getLayer($lizmapLayer->id);
-
-        // Only PostgreSQL tables, without OGC filter or forced QGIS Server request
-        if (!$layer instanceof \qgisVectorLayer || $layer->getProvider() != 'postgres') {
-            return (bool) $this->fail('the layer is not a PostgreSQL layer');
-        }
-        $this->qgisLayer = $layer;
-        if (!empty($this->param('filter', ''))) {
-            return (bool) $this->fail('OGC FILTER parameter is not supported');
-        }
-        if ($this->param('force_qgis', '') == '1') {
-            return (bool) $this->fail('QGIS Server is forced');
-        }
-        // A table, not a SQL query: table="(SELECT ...)"
-        $this->datasource = $this->qgisLayer->getDatasourceParameters();
-        $table = (string) ($this->datasource->table ?? '');
-        if ($table === '' || $table[0] == '(') {
-            return (bool) $this->fail('the layer datasource is not a table');
+        if (!$layer instanceof \qgisVectorLayer) {
+            return (bool) $this->fail('the layer is not a vector layer');
         }
 
-        // The fields cited by the expression filter must be table fields,
-        // as checked by getfeaturePostgres(): a virtual field is only known by QGIS Server
-        $dbFields = $this->qgisLayer->getDbFieldList();
-        $wfsFields = $this->qgisLayer->getWfsFields();
-        foreach ($this->getQueryFields($this->parameters(), $wfsFields, true) as $field) {
-            if (!array_key_exists($field, $dbFields)) {
-                return (bool) $this->fail('the filter uses the field "'.$field.'" which is not a table field');
-            }
+        // The conditions shared with the GetFeature request
+        $reason = $this->getSqlFailureReason($layer, true);
+        if ($reason !== null) {
+            return (bool) $this->fail($reason);
         }
 
         return true;

@@ -334,7 +334,11 @@ class datatablesCtrl extends jController
         }
 
         // The filter on the label, run as SQL by Lizmap if possible
-        $dbFieldTypes = $this->getQuickSearchDbFieldTypes($sourceLayer, '');
+        $dbFieldTypes = $this->getQuickSearchDbFieldTypes(
+            $lproj,
+            $sourceLayer,
+            array('PROPERTYNAME' => $codeField.','.$labelField, 'GEOMETRYNAME' => 'none')
+        );
         $unaccentFunction = ($dbFieldTypes !== null) ? $this->getUnaccentFunction($sourceLayer) : null;
         $filter = DataTables::buildLabelSearchExpression($this->searchValue, $labelField, $dbFieldTypes, $unaccentFunction);
         if ($filter === '') {
@@ -379,50 +383,41 @@ class datatablesCtrl extends jController
     }
 
     /**
-     * Get the PostgreSQL types of the layer fields, if the WFS requests are run as SQL by Lizmap.
+     * Get the PostgreSQL types of the layer fields, if the WFS request is run as SQL by Lizmap.
      *
-     * It follows the conditions of WFSRequest::getfeaturePostgres(): a PostgreSQL table,
-     * not a SQL query, with all the WFS fields in the database (no virtual field) and,
-     * if the expression filter uses $id, a single primary key. When the fields types are
-     * returned, the quick search can use database functions, not known by QGIS Server.
+     * The GetFeature request decides, see WFSRequest::getSqlTableFields(). When the fields
+     * types are returned, the quick search can use database functions, not known by QGIS Server.
      *
-     * @param qgisVectorLayer $layer     the layer
-     * @param string          $expFilter the expression filter of the request
+     * @param Project               $lproj           the project
+     * @param qgisVectorLayer       $layer           the layer
+     * @param array<string, string> $otherParameters the GetFeature parameters, except the type name
      *
-     * @return null|array<string, string> the type of each field, or null if the filter is evaluated by QGIS Server
+     * @return null|array<string, string> the type of each WFS table field,
+     *                                    or null if the request is evaluated by QGIS Server
      */
-    private function getQuickSearchDbFieldTypes(qgisVectorLayer $layer, string $expFilter): ?array
+    private function getQuickSearchDbFieldTypes(Project $lproj, qgisVectorLayer $layer, array $otherParameters): ?array
     {
-        // A PostgreSQL table, not a SQL query
-        if ($layer->getProvider() != 'postgres') {
-            return null;
-        }
-        $dtParams = $layer->getDatasourceParameters();
-        if (!$dtParams->table || $dtParams->table[0] == '(') {
-            return null;
-        }
+        // The table fields, if the request is run as SQL
+        $wfsParams = WFSRequest::buildGetFeatureParameters($layer->getWfsTypeName(), $otherParameters);
+        $wfsrequest = new WFSRequest($lproj, $wfsParams, lizmap::getServices());
 
         try {
-            $dbFields = $layer->getDbFieldList();
+            $dbFields = $wfsrequest->getSqlTableFields();
         } catch (Exception $e) {
+            jLog::logEx($e, 'lizmapadmin');
+
             return null;
         }
-        if (!is_array($dbFields) || !array_key_exists($dtParams->key, $dbFields)) {
+        if ($dbFields === null) {
             return null;
         }
 
-        // All the WFS fields are in the database
+        // The types of the WFS fields stored in the table
         $types = array();
         foreach ($layer->getWfsFields() as $field) {
-            if (!array_key_exists($field, $dbFields)) {
-                return null;
+            if (array_key_exists($field, $dbFields)) {
+                $types[$field] = $dbFields[$field]->type;
             }
-            $types[$field] = $dbFields[$field]->type;
-        }
-
-        // $id can only be translated for a single primary key
-        if ($expFilter && str_contains($expFilter, '$id') && str_contains($dtParams->key, ',')) {
-            return null;
         }
 
         return $types;
@@ -504,13 +499,17 @@ class datatablesCtrl extends jController
     private function applyQuickSearch(Project $lproj, qgisVectorLayer $layer, ?int $featureCount = null): bool
     {
         $columns = $this->getQuickSearchColumns($layer);
-        $dbFieldTypes = $this->getQuickSearchDbFieldTypes($layer, (string) $this->expFilter);
+        $dbFieldTypes = $this->getQuickSearchDbFieldTypes(
+            $lproj,
+            $layer,
+            $this->expFilter ? array('EXP_FILTER' => (string) $this->expFilter) : array()
+        );
         $sqlQuery = ($dbFieldTypes !== null);
 
         // Only the columns which can be searched
         if ($sqlQuery) {
             $columns = array_values(array_filter($columns, function ($column) use ($dbFieldTypes) {
-                return DataTables::isQuickSearchDbType($dbFieldTypes[$column]);
+                return isset($dbFieldTypes[$column]) && DataTables::isQuickSearchDbType($dbFieldTypes[$column]);
             }));
         }
 
