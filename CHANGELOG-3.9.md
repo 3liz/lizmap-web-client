@@ -15,6 +15,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
 ### Fixed
 
 * Print - Reset the button and close the waiting message on error #7555⁠
+* Edition: Convert a single part multi geometry for a single geometry column #7563
+* lizmap-features-table: Read the attributes when the element is connected #7571
+* Selection, Attribute table and layer metadata: The export tooltips was not well managed #7574⁠
+* WFS - Keep the EXP_FILTER with FEATUREID and BBOX #7582⁠
 
 ## 3.9.13 - 2026-11-23
 
