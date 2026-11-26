@@ -107,7 +107,6 @@ jauthdb_admin.enabled=on
 master_admin.enabled=on
 multiauth.installparam[manualconfig]=on
 multiauth.installparam[eps]="[index,admin]"
-multiauth.path="app:vendor/jelix/multiauth-module/multiauth"
 saml.installparam[localconfig]=on
 saml.installparam[authep]=admin
 
