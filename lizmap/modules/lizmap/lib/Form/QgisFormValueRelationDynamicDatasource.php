@@ -2,6 +2,7 @@
 
 namespace Lizmap\Form;
 
+use Lizmap\App\SqlTools;
 use Lizmap\App\WktTools;
 use Lizmap\Request\FeatureStream;
 use Lizmap\Request\WFSRequest;
@@ -159,12 +160,8 @@ class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
 
         $layer = $lproj->getLayer($layerId);
 
-        $filter = '"'.$keyColumn.'" = ';
-        if (is_numeric($key)) {
-            $filter .= ''.$key;
-        } else {
-            $filter .= "'".addslashes($key)."'";
-        }
+        // The key is always quoted: it is converted to the type of the key column
+        $filter = '"'.str_replace('"', '""', $keyColumn).'" = '.SqlTools::quoteFilterString((string) $key);
 
         $typename = $layer->getWfsTypeName();
         $params = array(

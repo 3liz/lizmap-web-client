@@ -95,8 +95,8 @@ class SqlToolsTest extends TestCase
             array("env = 'MC'", $fields, true),
             // Field names with digits, unquoted as in the children features table
             array("index1 = '086511_0_2981'", array('fid', 'index1'), true),
-            array("field_2 = 2 AND index1 > 0", array('index1', 'field_2'), true),
-            array("index1-1 = 0", array('index1'), true),
+            array('field_2 = 2 AND index1 > 0', array('index1', 'field_2'), true),
+            array('index1-1 = 0', array('index1'), true),
             array("index2 = 'MC'", array('index1'), false),
             array("index1('HOME') = 'MC'", array('index1'), false),
             array("env('HOME') = '/home/qgis'", $fields, false),
@@ -268,5 +268,79 @@ class SqlToolsTest extends TestCase
     public function testReplaceIdVariable($filter, $idColumn, $expected): void
     {
         $this->assertSame($expected, SqlTools::replaceIdVariable($filter, $idColumn));
+    }
+
+    /**
+     * Provide the values to quote as strings of a filter expression.
+     *
+     * @return array the value and the expected literal
+     */
+    public static function getQuoteFilterStringData(): array
+    {
+        return array(
+            array('test', "'test'"),
+            array('', "''"),
+            array('5', "'5'"),
+            array("O'Brien", "'O''Brien'"),
+            array("''", "''''''"),
+            // The backslashes are kept as is, as done by the JavaScript code
+            array('a\b', "'a\\b'"),
+            array("a\\'b", "'a\\''b'"),
+        );
+    }
+
+    /**
+     * Check the quoting of a value as a string of a filter expression.
+     *
+     * The quoted value must also be a valid SQL string, accepted by the validator.
+     *
+     * @param string $value    the value to quote
+     * @param string $expected the expected literal
+     */
+    #[DataProvider('getQuoteFilterStringData')]
+    public function testQuoteFilterString(string $value, string $expected): void
+    {
+        $literal = SqlTools::quoteFilterString($value);
+        $this->assertSame($expected, $literal);
+        $this->assertTrue(SqlTools::parseAndValidateSQLString('"field" = '.$literal));
+    }
+
+    /**
+     * Provide the values to check as numbers of a filter expression.
+     *
+     * @return array the value and true if it is a number
+     */
+    public static function getIsFilterNumberData(): array
+    {
+        return array(
+            array('5', true),
+            array('0', true),
+            array('-5', true),
+            array('1.5', true),
+            array('-0.25', true),
+            array('', false),
+            array(' 5', false),
+            array('5 ', false),
+            array('1e5', false),
+            array('+5', false),
+            array('.5', false),
+            array('5.', false),
+            array('0x1A', false),
+            array('1,5', false),
+            array('1 OR 1=1', false),
+            array('1) OR (1=1', false),
+        );
+    }
+
+    /**
+     * Check the numbers which can be used as is in a filter expression.
+     *
+     * @param string $value    the value to check
+     * @param bool   $expected true if the value is a number
+     */
+    #[DataProvider('getIsFilterNumberData')]
+    public function testIsFilterNumber(string $value, bool $expected): void
+    {
+        $this->assertSame($expected, SqlTools::isFilterNumber($value));
     }
 }
