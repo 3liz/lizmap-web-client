@@ -89,5 +89,33 @@
                 "method": "zoom"
             }
         ]
+    },
+    {
+        "name": "layer_action_group_a_only",
+        "title": "Layer action restricted to group_a",
+        "scope": "layer",
+        "layers": ["tramway_lines_4215fd0b_5136_4c19_b3ee_d1617f8df8ea"],
+        "lizmap_user_groups": ["group_a"],
+        "icon": "icon-star",
+        "options": {},
+        "callbacks": []
+    },
+    {
+        "name": "project_action_group_a_only",
+        "title": "Action restricted to group_a",
+        "scope": "project",
+        "lizmap_user_groups": ["group_a"],
+        "icon": "icon-star",
+        "options": {},
+        "callbacks": []
+    },
+    {
+        "name": "project_action_user_only",
+        "title": "Action restricted to one login",
+        "scope": "project",
+        "lizmap_user": ["user_in_group_b"],
+        "icon": "icon-star",
+        "options": {},
+        "callbacks": []
     }
 ]
