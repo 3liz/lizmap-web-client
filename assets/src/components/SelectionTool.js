@@ -119,11 +119,24 @@ export default class SelectionTool extends HTMLElement {
             <i class="icon-filter"></i>
         </button>`;
 
+        const exportTooltipTitle = () => {
+            if (!mainLizmap.selectionTool.oneFeatureTypeSelected) {
+                return lizDict['switcher.layer.export.warn.single.layer'];
+            }
+            if (mainLizmap.selectionTool.isExportable) {
+                return '';
+            }
+            if (mainLizmap.selectionTool.selectedFeaturesCount === 0) {
+                return lizDict['switcher.layer.export.warn.no.features'];
+            }
+            return lizDict['switcher.layer.export.warn.less.features'];
+        }
+
         const exportTemplate = () => this.hasAttribute('layer-export') ? html`
             <div
                 class="btn-group dropup selectiontool-export"
                 role="group"
-                data-original-title="${mainLizmap.selectionTool.isExportable ? '' : lizDict['switcher.layer.export.warn']}"
+                data-original-title="${exportTooltipTitle()}"
                 >
                 <button
                     type="button"
@@ -197,7 +210,8 @@ export default class SelectionTool extends HTMLElement {
         );
 
         // Add tooltip on buttons
-        // TODO allow tooltip on disabled buttons : https://stackoverflow.com/a/19938049/2000654
+        // Allow tooltip on disabled buttons :
+        // https://stackoverflow.com/a/19938049/2000654, https://getbootstrap.com/docs/5.3/components/tooltips/#disabled-elements
         $('.menu-content button, .menu-content .selectiontool-export, .selectiontool-geom-operator', this).tooltip({
             placement: 'top',
             container: this,
