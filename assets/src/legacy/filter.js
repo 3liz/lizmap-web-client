@@ -494,9 +494,6 @@ var lizLayerFilterTool = function () {
              */
             function uniqueValuesFormInput(field_item) {
 
-                // Get data
-                const fetchRequests = [];
-
                 // Get unique values data (and counters)
                 var sdata = {
                     request: 'getUniqueValues',
@@ -505,51 +502,63 @@ var lizLayerFilterTool = function () {
                     filter: ''
                 };
 
-                fetchRequests.push(
-                    fetch(globalThis['filterConfigData'].url + '&' + new URLSearchParams(sdata)).then(response => {
-                        return response.json();
-                    })
-                );
+                const uniqueValuesRequest = fetch(globalThis['filterConfigData'].url + '&' + new URLSearchParams(sdata)).then(response => {
+                    return response.json();
+                });
 
                 // Get keys/values if defined
-                let keyValues = {};
-
                 const layerName = lizMap.getLayerConfigById(field_item.layerId)[0];
                 const fieldConf = lizMap.keyValueConfig[layerName]?.[field_item.field];
-                if (fieldConf) {
-                    if (fieldConf.type == 'ValueMap') {
-                        keyValues = fieldConf.data;
-                    } else {
-                        // Get source layer typename from it ID
-                        let getSourceLayer = lizMap.getLayerConfigById(fieldConf.source_layer_id);
-                        if( getSourceLayer && getSourceLayer.length == 2) {
-                            const sourceLayerConfig = getSourceLayer[1];
-                            const source_typename = sourceLayerConfig?.shortname || sourceLayerConfig?.typename || sourceLayerConfig?.name;
-                            if (source_typename != undefined) {
-                                fetchRequests.push(
-                                    lizMap.mainLizmap.wfs.getFeature({
-                                        TYPENAME: source_typename,
-                                        PROPERTYNAME: fieldConf.code_field + ',' + fieldConf.label_field,
-                                        // we must not use null for exp_filter but '' if no filter is active
-                                        EXP_FILTER: fieldConf.exp_filter ? fieldConf.exp_filter : ''
-                                    })
-                                );
-                            }
-                        }
 
+                /**
+                 * Get the labels of the unique values, for the value maps, value relations and relation references.
+                 * @param {Array} result - The unique values and their counters
+                 * @returns {Promise<object>} The labels by value, empty if there is no label
+                 */
+                const getKeyValues = (result) => {
+                    if (!fieldConf) {
+                        return Promise.resolve({});
                     }
-                }
+                    if (fieldConf.type == 'ValueMap') {
+                        return Promise.resolve(fieldConf.data);
+                    }
 
-                Promise.all(fetchRequests).then(responses => {
-                    const [result, rawKeyValues] = responses;
+                    // Get source layer typename from it ID
+                    let getSourceLayer = lizMap.getLayerConfigById(fieldConf.source_layer_id);
+                    if (!getSourceLayer || getSourceLayer.length != 2) {
+                        return Promise.resolve({});
+                    }
+                    const sourceLayerConfig = getSourceLayer[1];
+                    const source_typename = sourceLayerConfig?.shortname || sourceLayerConfig?.typename || sourceLayerConfig?.name;
+                    if (source_typename == undefined) {
+                        return Promise.resolve({});
+                    }
 
+                    // Only the labels of the unique values are requested
+                    return lizMap.mainLizmap.fieldLabels.getLabels({
+                        layerId: fieldConf.source_layer_id,
+                        typeName: source_typename,
+                        codeField: fieldConf.code_field,
+                        labelField: fieldConf.label_field,
+                        expFilter: fieldConf.exp_filter,
+                        codes: Array.isArray(result) ? result.map(feat => feat['v']) : [],
+                    });
+                };
+
+                // The labels are requested once the unique values are known,
+                // the values are displayed without label if the request fails
+                uniqueValuesRequest.then(result => {
                     if (!checkResult(result)) {
+                        return null;
+                    }
+                    return getKeyValues(result)
+                        .catch(() => ({}))
+                        .then(keyValues => [result, keyValues]);
+                }).then(data => {
+                    if (data === null) {
                         return false;
                     }
-
-                    if (rawKeyValues) {
-                        rawKeyValues.features.forEach(feature => keyValues[feature.properties[fieldConf.code_field]] = feature.properties[fieldConf.label_field]);
-                    }
+                    const [result, keyValues] = data;
 
                     // Build UI
                     var html = '';
