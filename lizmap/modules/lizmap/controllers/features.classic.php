@@ -210,7 +210,6 @@ class featuresCtrl extends jController
         }
 
         $rep = $this->processDisplayExpression($rep);
-        Checker::logoutCredentials($_SERVER);
 
         return $rep;
     }

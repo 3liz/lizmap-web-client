@@ -188,7 +188,6 @@ class mediaCtrl extends jController
         }
 
         $rep = $this->processGetMedia($rep);
-        Checker::logoutCredentials($_SERVER);
 
         return $rep;
     }

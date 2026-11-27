@@ -13,8 +13,11 @@ class Credentials
      */
     public static function handle(): bool
     {
-        // Authenticate with BASIC authentication
-        Checker::checkCredentials($_SERVER);
+        // Authenticate with BASIC authentication, for the current request only
+        // Wrong credentials are refused, even with a session already logged in
+        if (!Checker::checkCredentials($_SERVER)) {
+            return false;
+        }
 
         // If no user is connected, do not authorize access
         return \jAuth::isConnected();

@@ -63,7 +63,6 @@ class serviceCtrl extends jController
         }
 
         $rep = $this->processRequest();
-        Checker::logoutCredentials($_SERVER);
 
         return $rep;
     }

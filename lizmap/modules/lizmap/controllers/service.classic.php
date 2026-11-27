@@ -145,7 +145,6 @@ class serviceCtrl extends jController
             $rep = $this->GetTile($ogcRequest);
         }
 
-        Checker::logoutCredentials($_SERVER);
         if ($rep !== null) {
             return $rep;
         }

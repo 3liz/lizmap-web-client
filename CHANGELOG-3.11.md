@@ -18,4 +18,6 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Changed
 
+* **BASIC authentication**: requests are authenticated without opening a session, and wrong credentials are always refused
+
 ### Backend
